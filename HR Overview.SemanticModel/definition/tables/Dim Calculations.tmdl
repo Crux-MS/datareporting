@@ -1,0 +1,97 @@
+table 'Dim Calculations'
+	lineageTag: 379f4dcf-9461-49c1-a8dd-2d80ce381148
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ea900f74-b321-4dbe-a876-514f138283b2
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Metric Name'
+		dataType: string
+		isHidden
+		lineageTag: 84350fce-59ba-4c6d-91f4-8ee7cd7c3cde
+		summarizeBy: none
+		sourceColumn: Metric Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Semantic Model'
+		dataType: string
+		isHidden
+		lineageTag: 9274866f-e223-438d-b285-69e7422b4d29
+		summarizeBy: none
+		sourceColumn: Semantic Model
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Home Table'
+		dataType: string
+		isHidden
+		lineageTag: c698d19c-58b4-4387-8756-ab2147161aa2
+		summarizeBy: none
+		sourceColumn: Home Table
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		isHidden
+		lineageTag: 148dca9e-6b15-47ed-8edf-8ac6dc5d9744
+		summarizeBy: none
+		sourceColumn: Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Technical Definition'
+		dataType: string
+		isHidden
+		lineageTag: d72eb6ff-db19-4217-ba4e-cfea241adc56
+		summarizeBy: none
+		sourceColumn: Technical Definition
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Type of Calculation'
+		dataType: string
+		isHidden
+		lineageTag: 44125d4d-b62a-4cd1-ab8e-99f4a71d6979
+		summarizeBy: none
+		sourceColumn: Type of Calculation
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Metric Name", "Semantic Model", "Home Table", "Description", "Technical Definition", "Type of Calculation"})
+				in
+				    #"Removed Other Columns"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

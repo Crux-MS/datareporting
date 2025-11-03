@@ -1,0 +1,150 @@
+table 'Dim Employment Start Date'
+	lineageTag: b2ba87f1-a630-4133-b89e-198dbc58c45c
+	dataCategory: Time
+
+	measure DisplayLatestMonth = CALCULATE(MAX('Dim Employment Start Date'[MMM YYYY]), 'Fact Workforce'[LatestStartMonthforExtract Flag] = TRUE(), CROSSFILTER('Dim Employment Start Date'[Employement Start Date], 'Fact Workforce'[Employment start date], Both))
+		lineageTag: e8cb8540-84a0-4caf-bfdd-13dba66f3323
+
+	measure 'Selected Reporting Month' = SELECTEDVALUE('Dim Employment Start Date'[MMM YYYY])
+		lineageTag: e5947328-4932-4061-9425-8472a1a847e3
+
+	column 'Employement Start Date'
+		dataType: dateTime
+		isKey
+		formatString: dd/mm/yy
+		lineageTag: 7c92370a-dda5-4f27-84a4-31b4661a9fa1
+		summarizeBy: none
+		sourceColumn: Employement Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: ec6ab21c-dbbe-4d4e-b4cb-123806a3f14c
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: 71325c19-8e97-431f-9a5c-9aa4146eda40
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Year'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a5a043d1-6c7b-436e-91e4-6561474e0359
+		summarizeBy: none
+		sourceColumn: Start of Year
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Day of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: becb1343-9237-4227-af30-a44011d35ec3
+		summarizeBy: none
+		sourceColumn: Day of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 66167b7f-b97f-42d8-a945-6a2c651198ab
+		summarizeBy: none
+		sourceColumn: Week of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: b88eedf6-5bdb-4e37-8a34-ba3d7f4bae44
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 09f0de83-3933-476d-84c2-b75828a2c82d
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 7f0903a4-0601-42fc-be24-a9eb0125be24
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 06f1a277-4189-4863-bfe0-0c4a5df33cfe
+		summarizeBy: none
+		sourceColumn: Day Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		formatString: 0
+		lineageTag: 526661b8-1353-476b-bd5c-6a4dd77ec917
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Rolling Date Difference'
+		dataType: int64
+		formatString: 0
+		lineageTag: db835b9e-a088-493c-ae34-ece3760b2bd3
+		summarizeBy: none
+		sourceColumn: Rolling Date Difference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: c60b73ea-7774-4cfa-a746-378d81ff1df8
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Employment Start Date' = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "Employement Start Date"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

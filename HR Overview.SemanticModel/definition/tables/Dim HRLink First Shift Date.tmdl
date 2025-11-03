@@ -1,0 +1,147 @@
+table 'Dim HRLink First Shift Date'
+	lineageTag: a70bde13-d10d-4a07-9be2-3589c8ad19bf
+
+	column 'First Shift Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 692d9ca4-dd51-4d21-bc85-fecc9c119ca7
+		summarizeBy: none
+		sourceColumn: First Shift Date
+
+		variation Variation
+			isDefault
+			relationship: 311fedd9-57d6-4414-8bef-347d5b24d195
+			defaultHierarchy: LocalDateTable_9f641684-6aec-4d4f-bc40-37438e6426c8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 61dd23e2-4724-4ac2-ab68-c268f6be91ab
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 9ed8e682-16d2-4c0d-9dc8-7ffed76559f9
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 6914526e-d40f-46da-b51f-91ddfa4213dc
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: c0436530-1d64-442e-ba67-02182bf2b85f
+		summarizeBy: sum
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		formatString: 0
+		lineageTag: a590950d-dfbd-4010-acf1-f8c24e036c41
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: f1cdceeb-def1-4d7c-91b9-e4b07f1d335a
+		summarizeBy: sum
+		sourceColumn: Day Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: 6b129b43-a986-4506-8225-32e8a1e7b8d0
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: 026d681c-8a48-4125-844c-490e9b2c9cc7
+		summarizeBy: sum
+		sourceColumn: Day of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Year'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1e709697-23c9-49af-a352-d6d9a883cb75
+		summarizeBy: none
+		sourceColumn: Start of Year
+
+		variation Variation
+			isDefault
+			relationship: 27c2e7f2-3a6a-401c-a3b7-ba8b5ad45c98
+			defaultHierarchy: LocalDateTable_a2ec2956-3604-44a1-8f7b-90ece417e4ff.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Week of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 7ea029b4-5c56-4bf3-8992-42d4eff5b585
+		summarizeBy: sum
+		sourceColumn: Week of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Rolling Date Difference'
+		dataType: int64
+		formatString: 0
+		lineageTag: 4d37313c-4ab9-4d69-b24d-1f010e8e7bf0
+		summarizeBy: sum
+		sourceColumn: Rolling Date Difference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 6d1ebf05-e345-4e25-9dd1-4175c3d3aa2d
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim HRLink First Shift Date' = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "First Shift Date"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

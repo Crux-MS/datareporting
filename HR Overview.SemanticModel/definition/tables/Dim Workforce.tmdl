@@ -1,0 +1,317 @@
+table 'Dim Workforce'
+	lineageTag: 76ffb514-249f-4002-bee6-ba27663c7fa5
+
+	measure 'Selected Employee Start Date' = IF(ISINSCOPE('Dim Workforce'[Full name]), SELECTEDVALUE('Fact Workforce'[Employment start date]), BLANK())
+		formatString: Short Date
+		displayFolder: Selected Dimensions
+		lineageTag: 1fa06628-3ce1-4cc4-af87-c53f53c8f4a1
+
+	measure 'Selected Employee Manager Status' = IF(ISINSCOPE('Dim Workforce'[Full name]), SELECTEDVALUE('Dim Workforce'[Is manager]), BLANK())
+		displayFolder: Selected Dimensions
+		lineageTag: f0e11c87-7129-4df9-837a-59a80c853c2c
+
+	measure 'Selected Employee Status' = IF(ISINSCOPE('Dim Workforce'[Full name]), SELECTEDVALUE('Dim Workforce'[Employment status]), BLANK())
+		displayFolder: Selected Dimensions
+		lineageTag: 1dd2a51b-d232-4723-8be0-81d26ae10e5d
+
+	measure 'Selected Employee Termination Reason' = IF(ISINSCOPE('Dim Workforce'[Full name]), SELECTEDVALUE('Dim Workforce'[Termination reason]), BLANK())
+		displayFolder: Selected Dimensions
+		lineageTag: 63e8befc-fe86-4dd2-8210-1929f416d829
+
+	measure 'Selected Employee Termination Date' = IF(ISINSCOPE('Dim Workforce'[Full name]), SELECTEDVALUE('Fact Workforce'[Termination date]), BLANK())
+		formatString: Short Date
+		displayFolder: Selected Dimensions
+		lineageTag: e226da86-c344-4e00-b1f3-d2544b40fddf
+
+	measure 'Selected Employee Onboarding Status' = IF(ISINSCOPE('Dim Workforce'[Full name]), SELECTEDVALUE('Dim Workforce'[Onboarding status]), BLANK())
+		displayFolder: Selected Dimensions
+		lineageTag: 1e6824da-0377-4570-9e15-2a36faf0a222
+
+	measure 'Selected Employee Probation End Date' = IF(ISINSCOPE('Dim Workforce'[Full name]), SELECTEDVALUE('Fact Workforce'[Probation end date]), BLANK())
+		formatString: Short Date
+		displayFolder: Selected Dimensions
+		lineageTag: 69dfab0f-59f8-451c-9b9a-87e34e89bf11
+
+	measure 'Selected Employing Division' = ```
+			VAR _countDivisions = DISTINCTCOUNT('Dim Job Categories'[Division])
+			VAR _divisions = CONCATENATEX(VALUES('Dim Job Categories'[Division]), 'Dim Job Categories'[Division], ", ")
+			VAR _logic = IF(ISFILTERED('Dim Job Categories'[Division]),
+			    IF(
+			        _countDivisions <= 3,
+			        _divisions,
+			        _countDivisions & " selected"),
+			    "All selected"
+			)
+			RETURN _logic
+			
+			```
+		displayFolder: Selected Dimensions
+		lineageTag: ac57b3a9-427f-415e-9ae5-37902315c536
+
+	measure 'Selected Employing Entity' = ```
+			VAR _countEmployingEntity = DISTINCTCOUNT('Dim Workforce'[Employing entity])
+			// VAR _countTotalEmployingEntities = CALCULATE(DISTINCTCOUNT('Dim Workforce'[Employing entity]), ALL('Dim Workforce'[Employing entity]))
+			// VAR _countUnselectedEmployingEntities = _countTotalEmployingEntities - _countEmployingEntity
+			VAR _employingEntities = CONCATENATEX(VALUES('Dim Workforce'[Employing entity]), 'Dim Workforce'[Employing entity], ", ")
+			VAR _logic = IF(ISFILTERED('Dim Workforce'[Employing entity]),
+			    IF(
+			        _countEmployingEntity <= 3,
+			        _employingEntities,
+			        _countEmployingEntity & " selected"),
+			    "All selected"
+			)
+			RETURN _logic
+			
+			```
+		displayFolder: Selected Dimensions
+		lineageTag: 35179155-ba24-4020-ba9a-5a99f5d178a6
+
+	column 'First name'
+		dataType: string
+		lineageTag: fb934f3d-44e4-4450-8aba-fc9f444a672a
+		summarizeBy: none
+		sourceColumn: First name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Last name'
+		dataType: string
+		lineageTag: 2b2404d5-e566-4e17-8786-08a132eb7702
+		summarizeBy: none
+		sourceColumn: Last name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employing entity'
+		dataType: string
+		lineageTag: fb158354-f98a-4b2a-9da5-f65dcc3e3886
+		summarizeBy: none
+		sourceColumn: Employing entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee code'
+		dataType: string
+		lineageTag: a005bcf5-a2b1-496a-9ce9-bfd430a992e8
+		summarizeBy: none
+		sourceColumn: Employee code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: 749ca3a6-ab4e-4bf9-acab-ba109091ded2
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Primary cost centre'
+		dataType: string
+		lineageTag: 2994bab6-055f-46de-8613-a4e2fcb9ec89
+		summarizeBy: none
+		sourceColumn: Primary cost centre
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Primary manager'
+		dataType: string
+		lineageTag: c20a04c0-ac75-45e9-bd8b-15da8b6971c2
+		summarizeBy: none
+		sourceColumn: Primary manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Length of probation'
+		dataType: int64
+		formatString: 0
+		lineageTag: e99bed19-d1ca-4301-ae49-8d62214914c0
+		summarizeBy: sum
+		sourceColumn: Length of probation
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Termination type'
+		dataType: string
+		lineageTag: 3f37bf2e-8585-40b1-83e5-f7be9a2329e6
+		summarizeBy: none
+		sourceColumn: Termination type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Termination reason'
+		dataType: string
+		lineageTag: 4c9e0696-4bd4-46e1-8a32-f58ef78d7c3f
+		summarizeBy: none
+		sourceColumn: Termination reason
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is manager'
+		dataType: string
+		lineageTag: 87c18713-9e1d-430f-a45a-ac3f81356a59
+		summarizeBy: none
+		sourceColumn: Is manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employment status'
+		dataType: string
+		lineageTag: fb334756-9e75-4866-a463-79879ad678f1
+		summarizeBy: none
+		sourceColumn: Employment status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Onboarding status'
+		dataType: string
+		lineageTag: ba71fb50-dd91-4458-a06f-4c3e7d5cab2e
+		summarizeBy: none
+		sourceColumn: Onboarding status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Visa type'
+		dataType: string
+		lineageTag: 521adfbf-720b-4258-969a-575b8a34e883
+		summarizeBy: none
+		sourceColumn: Visa type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Extract Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 4019083a-fad3-43d7-9874-64f6c24390e3
+		summarizeBy: none
+		sourceColumn: Extract Date
+
+		variation Variation
+			isDefault
+			relationship: 1a38519d-1fd9-4832-9cc3-1acd4a8d2d47
+			defaultHierarchy: LocalDateTable_7a2f256d-246d-4e58-a27a-7ffebf55138f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Source Entity'
+		dataType: string
+		lineageTag: e01e28df-4ab6-49a7-98ed-dcecc8a71b89
+		summarizeBy: none
+		sourceColumn: Source Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Member ID'
+		dataType: string
+		isHidden
+		lineageTag: e03556b1-7b94-4494-84e2-2428d3e7371d
+		summarizeBy: none
+		sourceColumn: Member ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Full name'
+		dataType: string
+		lineageTag: 89f61b80-84e3-40a5-bc75-a86d28c2026d
+		summarizeBy: none
+		sourceColumn: Full name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: b3074132-d5d0-4c9e-ae6c-238704052ba2
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee address postcode'
+		dataType: int64
+		formatString: 0
+		lineageTag: dcd9d001-3c16-4494-a671-986718fe20e1
+		dataCategory: PostalCode
+		summarizeBy: none
+		sourceColumn: Employee address postcode
+
+		annotation SummarizationSetBy = User
+
+	column Nationality
+		dataType: string
+		lineageTag: e3b9c13d-f716-40cd-9230-bb03ecbf7ab0
+		summarizeBy: none
+		sourceColumn: Nationality
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Middle name'
+		dataType: string
+		lineageTag: 77cdf7c1-0e98-4ab4-a248-719abf4691fc
+		summarizeBy: none
+		sourceColumn: Middle name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Length of probation units'
+		dataType: string
+		lineageTag: 9c8638d9-c5ec-4e6b-a2dc-71696ac2c94f
+		summarizeBy: none
+		sourceColumn: Length of probation units
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmailBirthdayKey = 'Dim Workforce'[Account email]& RELATED('Fact Workforce'[Date of birth])
+		isHidden
+		lineageTag: 8294b561-c1b5-4051-a7d4-03a795d346ad
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Account email'
+		dataType: string
+		lineageTag: c93daa0d-abc7-411a-88dd-42faa787166e
+		summarizeBy: none
+		sourceColumn: Account email
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullNameBirthdayKey = 'Dim Workforce'[Full name]& RELATED('Fact Workforce'[Date of birth])
+		isHidden
+		lineageTag: 02bf48b0-4c79-46ad-89cf-134447f1cd9c
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Groups
+		dataType: string
+		lineageTag: 67ccf06f-c1c5-4bcc-916b-45ae777436e3
+		summarizeBy: none
+		sourceColumn: Groups
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Workforce' = m
+		mode: import
+		queryGroup: Workforce
+		source =
+				let
+				    Source = #"Dim Workforce - Source",
+				    #"Capitalized Each Word" = Table.TransformColumns(Source,{{"Full name", Text.Proper, type text}}),
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Capitalized Each Word", "Length of probation", Splitter.SplitTextByDelimiter(" ", QuoteStyle.Csv), {"Length of probation", "Length of probation units"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Length of probation", Int64.Type}, {"Length of probation units", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

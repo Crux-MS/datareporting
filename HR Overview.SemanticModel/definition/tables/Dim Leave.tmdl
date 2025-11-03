@@ -1,0 +1,114 @@
+table 'Dim Leave'
+	lineageTag: 6e71946f-f349-4306-8964-d76d73a1df2f
+
+	column Balance
+		dataType: double
+		lineageTag: aae9c58b-d32e-4cc4-aa52-3998952fb92c
+		summarizeBy: sum
+		sourceColumn: Balance
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Leave Category'
+		dataType: string
+		lineageTag: 24551e66-d589-4c7a-9e77-5065d815d58e
+		summarizeBy: none
+		sourceColumn: Leave Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Leave Category Disabled'
+		dataType: string
+		lineageTag: 865d3c53-5455-4a5b-9686-8e265b3de1c3
+		summarizeBy: none
+		sourceColumn: Leave Category Disabled
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Extract Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0cfeb634-9b88-443b-bc67-9d83b4eab9e2
+		summarizeBy: none
+		sourceColumn: Extract Date
+
+		variation Variation
+			isDefault
+			relationship: b8653474-a603-42ce-8a40-cc173331717e
+			defaultHierarchy: LocalDateTable_75251bee-b2ed-425a-9b65-168d10044ad8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'First name'
+		dataType: string
+		lineageTag: 30837e60-b539-4dc0-9407-6491eda39157
+		summarizeBy: none
+		sourceColumn: First name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Last name'
+		dataType: string
+		lineageTag: 11ab3620-6f00-4e83-abb0-e51139d6b23e
+		summarizeBy: none
+		sourceColumn: Last name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Member ID'
+		dataType: string
+		isHidden
+		lineageTag: 24cab5b7-ac3a-41ce-8288-918547bea2d5
+		summarizeBy: none
+		sourceColumn: Member ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Source Entity'
+		dataType: string
+		lineageTag: 0c38d612-c4c8-460d-8b74-ff7985aae26d
+		summarizeBy: none
+		sourceColumn: Source Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Leave' = m
+		mode: import
+		source = ```
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"Filtered Rows1" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/DimLeave/"),
+				    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+				    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+				    #"Grouped Rows" = Table.Group(#"Changed Type", {"Source Entity"}, {{"AllExtracts", each _, type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text]}}),
+				    #"Add index to nested tables" = #"Table.TransformColumns"(
+				        #"Grouped Rows",
+				        {
+				            "AllExtracts", 
+				            each Table.AddIndexColumn(
+				                Table.Sort(_, {{"Extract Date", Order.Descending}}), 
+				                "RowIndex", 0, 1, Int64.Type), 
+				                type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text, RowIndex=number]}),
+				    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Add index to nested tables", "AllExtracts", {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}, {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded AllExtracts", each [RowIndex] = 0 and [Attributes]?[Hidden]? <> true),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Rows", "Transform File (5)", each #"Transform File (5)"([Content])),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File (5)", "Extract Date", "Source Entity"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (5)", Table.ColumnNames(#"Transform File (5)"(#"Sample File (5)"))),
+				    #"Replaced Value" = Table.ReplaceValue(#"Expanded Table Column1","",null,Replacer.ReplaceValue,{"Leave Category", "Leave Category Disabled"}),
+				    #"Added Prefix" = Table.TransformColumns(#"Replaced Value", {{"Member ID", each "EH" & _, type text}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Added Prefix",{{"Balance", type number}, {"Leave Category", type text}, {"Leave Category Disabled", type text}, {"First name", type text}, {"Last name", type text}, {"Member ID", type text}})
+				in
+				    #"Changed Type1"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,59 @@
+table 'Fact HRLink First Shift Date'
+	lineageTag: 0ccfd1b3-989d-4da2-ba33-5722ceca0182
+
+	column MemberId
+		dataType: string
+		isHidden
+		lineageTag: 7a20473e-135c-48a0-8764-6d1339c2e96a
+		summarizeBy: none
+		sourceColumn: MemberId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'First Shift Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: a362adf1-4123-43c9-a0a2-054ebf06a2a3
+		summarizeBy: none
+		sourceColumn: First Shift Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExtractDatetime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e73142f4-c682-4d3a-b581-cd1f7e36e79d
+		summarizeBy: none
+		sourceColumn: ExtractDatetime
+
+		variation Variation
+			isDefault
+			relationship: 1122010a-7b7d-4bc5-a9a0-e624059dd14e
+			defaultHierarchy: LocalDateTable_4f1b1d70-86c2-40ed-9cad-50152aa214f0.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Source Entity'
+		dataType: string
+		lineageTag: a8c061f3-49a3-4c80-b0ae-9997fb41d5ff
+		summarizeBy: none
+		sourceColumn: Source Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact HRLink First Shift Date' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="WITH FirstShifts AS(#(lf)#(tab)select#(lf)#(tab)#(tab)'HR' + CAST(m.MemberID as varchar)#(tab)#(tab)#(tab)AS [MemberId]#(lf)#(tab)#(tab),CAST(dbo.FirstShiftForMember(m.MemberID) AS DATE)#(tab)AS [First Shift Date]#(lf)#(tab)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ExtractDatetime]#(lf)#(tab)#(tab),'agy'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Source Entity]#(lf)#(tab)from dbo.member m#(lf)#(tab)where m.MemberID <> 1 )#(lf)Select *#(lf)From FirstShifts"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

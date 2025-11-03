@@ -1,0 +1,207 @@
+table 'Dim Job History'
+	lineageTag: b26dffa4-2660-4e4a-a5f8-4b1811a31515
+
+	column 'Job title'
+		dataType: string
+		lineageTag: bfd44524-840c-4a9a-9bb5-00415bc3b3e7
+		summarizeBy: none
+		sourceColumn: Job title
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employment type'
+		dataType: string
+		lineageTag: 112b1506-0943-4c6a-b24e-a991d6d9741c
+		summarizeBy: none
+		sourceColumn: Employment type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 8da70db8-9083-4b0a-bda1-60a7968bdedf
+		summarizeBy: none
+		sourceColumn: Start date
+
+		variation Variation
+			isDefault
+			relationship: ac134857-9ec0-4d4c-ba6d-57450d2f5999
+			defaultHierarchy: LocalDateTable_bc3a16e8-43ad-4b45-98ab-48bb4c7e0361.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'End date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7156a254-2800-4e0b-ba82-586e9cf02ced
+		summarizeBy: none
+		sourceColumn: End date
+
+		variation Variation
+			isDefault
+			relationship: 1f48c798-58f9-43eb-8de1-c463a62505dc
+			defaultHierarchy: LocalDateTable_58c75f73-be34-4ddf-b70e-ede2a20036c2.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Contract type'
+		dataType: string
+		lineageTag: 9ee354dd-2f69-44bb-833e-2ac64c3d8a1b
+		summarizeBy: none
+		sourceColumn: Contract type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Member ID'
+		dataType: string
+		isHidden
+		lineageTag: 02890612-b051-4a16-b504-f13fd58f8c1c
+		summarizeBy: none
+		sourceColumn: Member ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employing entity'
+		dataType: string
+		lineageTag: 5ef23b59-1ed8-417e-9409-b3f12da5fc58
+		summarizeBy: none
+		sourceColumn: Employing entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column JobKey
+		dataType: string
+		isHidden
+		lineageTag: bd79e25c-ff7a-4677-8f3c-8d52e9677cd5
+		summarizeBy: none
+		sourceColumn: JobKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Extract Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 6f55881a-ff38-439a-b0b3-34093d556001
+		summarizeBy: none
+		sourceColumn: Extract Date
+
+		variation Variation
+			isDefault
+			relationship: f1956ff2-5172-4c3d-80bb-b2cf27898cfc
+			defaultHierarchy: LocalDateTable_13c4aa5e-f53a-4066-908b-80c69c5057e6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Source Entity'
+		dataType: string
+		lineageTag: d08b6087-e4f2-4d6b-967d-5626b5a24746
+		summarizeBy: none
+		sourceColumn: Source Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Job FNC Flag' = ```
+			
+			VAR _logic = SWITCH(
+			    TRUE(), 
+			    RELATED('Dim Job Categories'[Job Category]) = "CYF Residential Care Workers" || 
+			    RELATED('Dim Job Categories'[Job Category]) = "V&A Frontline" || 
+			    RELATED('Dim Job Categories'[Job Category]) = "CYF Youth Workers" || 
+			    RELATED('Dim Job Categories'[Job Category]) = "Disability Team Leaders" || 
+			    RELATED('Dim Job Categories'[Job Category]) = "CYF Team Leaders" || 
+			    RELATED('Dim Job Categories'[Job Category]) = "NHN Nurses" || 
+			    RELATED('Dim Job Categories'[Job Category]) = "Disability Support Workers" || 
+			    RELATED('Dim Job Categories'[Job Category]) = "Treehouse Frontline" ||
+			    RELATED('Fact Workforce'[Source Entity]) = "agy", 
+			    "Frontline",
+			    RELATED('Dim Job Categories'[Job Category]) = "APM Team" ||
+			    RELATED('Dim Job Categories'[Job Category]) = "CYF Case Managers" ||
+			    RELATED('Dim Job Categories'[Job Category]) = "CYF Regional Managers" ||
+			    RELATED('Dim Job Categories'[Job Category]) = "Disability Case Managers" ||
+			    RELATED('Dim Job Categories'[Job Category]) = "Disability Regional Managers" ||
+			    RELATED('Dim Job Categories'[Job Category]) = "SCFDC Team",
+			    "Non-frontline",
+			    "Corporate")
+			RETURN _logic
+			```
+		lineageTag: a6d24c98-ed79-42b1-9ae7-e06c8552c861
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column MemberLatestJobFlag
+		dataType: double
+		formatString: 0
+		lineageTag: b707befc-33a4-4523-abe2-9fc0ed410ca7
+		summarizeBy: none
+		sourceColumn: MemberLatestJobFlag
+
+		annotation SummarizationSetBy = User
+
+	column 'Start Date 2'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 05c14e3f-99f9-4ac7-9da5-28847aba230f
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		variation Variation
+			isDefault
+			relationship: 85a044de-272f-44ba-bd19-95e67a9043a8
+			defaultHierarchy: LocalDateTable_20d6d9b1-e695-4ef8-905c-2c930a6cd51a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Job History' = m
+		mode: import
+		source = ```
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/DimJobHistory/")),
+				    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+				    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+				    #"Grouped Rows" = Table.Group(#"Changed Type", {"Source Entity"}, {{"AllExtracts", each _, type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text]}}),
+				    #"Add index to nested tables" = #"Table.TransformColumns"(
+				        #"Grouped Rows",
+				        {
+				            "AllExtracts", 
+				            each Table.AddIndexColumn(
+				                Table.Sort(_, {{"Extract Date", Order.Descending}}), 
+				                "RowIndex", 0, 1, Int64.Type), 
+				                type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text, RowIndex=number]}),
+				    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Add index to nested tables", "AllExtracts", {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}, {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded AllExtracts", each ([RowIndex] = 0) and [Attributes]?[Hidden]? <> true),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Rows", "Transform File (4)", each #"Transform File (4)"([Content])),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File (4)", "Source Entity", "Extract Date"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (4)", Table.ColumnNames(#"Transform File (4)"(#"Sample File (4)"))),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Expanded Table Column1","",null,Replacer.ReplaceValue,{"Job title", "Employment type", "Start date", "End date", "Contract type", "Employing entity"}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Replaced Value1",{"First name", "Last name"}),
+				    #"Added Prefix" = Table.TransformColumns(#"Removed Columns", {{"Member ID", each "EH" & _, type text}}),
+				    #"Grouped Rows1" = Table.Group(#"Added Prefix", {"Member ID"}, {{"AllMemberData", each _, type table [Job title=text, Employment type=text, Start date=text, End date=text, Contract type=text, Member ID=text, Employing entity=text, Source Entity=text, Extract Date=nullable date]}}),
+				    #"Add index member jobs" = #"Table.TransformColumns"(
+				        #"Grouped Rows1",
+				        {
+				            "AllMemberData", 
+				            each Table.AddIndexColumn(
+				                Table.Sort(_, {{"Start date", Order.Descending}}), 
+				                "MemberLatestJobFlag", 0, 1, Int64.Type), 
+				                type table [Job title=text, Employment type=text, Start date=text, End date=text, Contract type=text, Member ID=text, Employing entity=text, Source Entity=text, Extract Date=nullable date, MemberLatestJobFlag=number]}),
+				    #"Expanded AllMemberData" = Table.ExpandTableColumn(#"Add index member jobs", "AllMemberData", {"Job title", "Employment type", "Start date", "End date", "Contract type", "Employing entity", "Source Entity", "Extract Date", "MemberLatestJobFlag"}, {"Job title", "Employment type", "Start date", "End date", "Contract type", "Employing entity", "Source Entity", "Extract Date", "MemberLatestJobFlag"}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Expanded AllMemberData",{{"Start date", type datetime}, {"End date", type datetime}, {"Extract Date", type datetime}}),
+				    #"Appended Query" = Table.Combine({#"Changed Type1", #"Dim Job History HRLink - Source"}),
+				    #"Added Custom" = Table.AddColumn(#"Appended Query", "JobKey", each [Job title] & [Employing entity]),
+				    #"Replaced Value" = Table.ReplaceValue(#"Added Custom"," ","",Replacer.ReplaceText,{"JobKey"})
+				in
+				    #"Replaced Value"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

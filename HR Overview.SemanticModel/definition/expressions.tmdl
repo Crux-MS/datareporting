@@ -1,0 +1,558 @@
+expression 'Calendar - Source' =
+		let
+		    Source = List.Dates(#date(1994, 1, 1), 15000, #duration(1, 0, 0, 0)),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Column1", type date}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "Date"}}),
+		    #"Inserted Year" = Table.AddColumn(#"Renamed Columns", "Year", each Date.Year([Date]), Int64.Type),
+		    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "Month Name", each Date.MonthName([Date]), type text),
+		    #"Inserted MMM YYYY" = Table.AddColumn(#"Inserted Month Name", "MMM YYYY", each Text.Combine({Date.ToText([Date], "MMM"), " ", Date.ToText([Date], "yyyy")}), type text),
+		    #"Inserted Month Number" = Table.AddColumn(#"Inserted MMM YYYY", "Month Number", each Date.Month([Date]), Int64.Type),
+		    #"Inserted YYYYMM" = Table.AddColumn(#"Inserted Month Number", "YYYYMM", each if [Month Number] <=9 then Text.From([Year]) & "0" & Text.From([Month Number]) else Text.From([Year]) & Text.From([Month Number])),
+		    #"Inserted Day Number" = Table.AddColumn(#"Inserted YYYYMM", "Day Number", each Date.Day([Date]), Int64.Type),
+		    #"Inserted Day Name" = Table.AddColumn(#"Inserted Day Number", "Day Name", each Date.DayOfWeekName([Date]), type text),
+		    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "Day of Week", each Date.DayOfWeek([Date]), Int64.Type),
+		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted Day of Week", "Start of Year", each Date.StartOfYear([Date]), type date),
+		    #"Inserted Week of Year" = Table.AddColumn(#"Inserted Start of Year", "Week of Year", each Date.WeekOfYear([Date]), Int64.Type),
+		    #"Added Custom" = Table.AddColumn(#"Inserted Week of Year", "Rolling Date Difference", each Duration.Days([Date] - Date.From(DateTime.LocalNow()))),
+		    #"Added Custom1" = Table.AddColumn(#"Added Custom", "Slicer MMM YYYY", each let
+		    currentMonthYear = List.First(
+		        Table.SelectRows(#"Added Custom", each [Rolling Date Difference] = 0)[MMM YYYY]
+		    )
+		in
+		    if [MMM YYYY] = currentMonthYear then "Current Month" else [MMM YYYY]),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom1",{{"YYYYMM", Int64.Type}, {"Rolling Date Difference", Int64.Type}, {"Slicer MMM YYYY", type text}})
+		in
+		    #"Changed Type1"
+	lineageTag: 69b23004-0db0-44cb-8ae8-4bc347b948e6
+	queryGroup: Calendar
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Dim Workforce - Source' = ```
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/DimWorkforce/"),
+		    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+		    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+		    #"Grouped Rows" = Table.Group(#"Inserted Text Before Delimiter", {"Source Entity"}, {{"AllExtracts", each _, type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text]}}),
+		    #"Add index to nested tables" = #"Table.TransformColumns"(
+		        #"Grouped Rows",
+		        {
+		            "AllExtracts", 
+		            each Table.AddIndexColumn(
+		                Table.Sort(_, {{"Extract Date", Order.Descending}}), 
+		                "RowIndex", 0, 1, Int64.Type), 
+		                type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text, RowIndex=number]}),
+		    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Add index to nested tables", "AllExtracts", {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}, {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}),
+		    #"Filtered Rows" = Table.SelectRows(#"Expanded AllExtracts", each ([RowIndex] = 0)),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"Extract Date", type date}}),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Changed Type", "Transform File (2)", each #"Transform File (2)"([Content])),
+		    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File (2)", "Source Entity", "Extract Date"}),
+		    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (2)", Table.ColumnNames(#"Transform File (2)"(#"Sample File (2)"))),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Table Column1","",null,Replacer.ReplaceValue,{"Employee code", "Primary cost centre", "Location", "Primary manager", "Termination type", "Termination reason", "Employment status", "Onboarding status", "Length of probation", "Employing entity", "Visa type", "Is manager", "Member ID", "Full name", "Gender", "Middle name", "Employee address postcode", "Nationality"}),
+		    #"Added Prefix" = Table.TransformColumns(#"Replaced Value", {{"Member ID", each "EH" & _, type text}}),
+		    #"Appended Query" = Table.Combine({#"Added Prefix", #"Dim Workforce HRLink - Source"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Appended Query",{{"First name", type text}, {"Last name", type text}, {"Employee code", type text}, {"Primary cost centre", type text}, {"Location", type text}, {"Primary manager", type text}, {"Termination type", type text}, {"Termination reason", type text}, {"Employment status", type text}, {"Onboarding status", type text}, {"Employing entity", type text}, {"Visa type", type text}, {"Is manager", type text}, {"Full name", type text}, {"Gender", type text}, {"Middle name", type text}, {"Employee address postcode", Int64.Type}, {"Nationality", type text}, {"Extract Date", type date}, {"Account email", type text}})
+		in
+		    #"Changed Type1"
+		```
+	lineageTag: 33803f36-48c5-4b3e-989d-5a16e18ef031
+	queryGroup: Workforce
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter5 = #"Sample File (5)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (5)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: ceaba919-9f28-4037-b1ad-82540c15ac16
+	queryGroup: 'Utilities\Transform File from Dim Leave\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (5)' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/DimLeave/"),
+		    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+		    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Text Before Delimiter", each Text.BeforeDelimiter([Name], "-"), type text),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+		    Navigation1 = #"Changed Type"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: d8df3667-b8bb-492a-85f9-4108d40500cf
+	queryGroup: 'Utilities\Transform File from Dim Leave\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (5)' =
+		let
+		    Source = Csv.Document(Parameter5,[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 54825d88-0863-4e02-a7f1-11dbb86a0f55
+	queryGroup: 'Utilities\Transform File from Dim Leave'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (5)' =
+		let
+		    Source = (Parameter5 as binary) => let
+		    Source = Csv.Document(Parameter5,[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (5)""}" ]
+	lineageTag: b9761da7-c5e1-47b8-81ba-0789b7d4a78f
+	queryGroup: 'Utilities\Transform File from Dim Leave\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression Parameter2 = #"Sample File (2)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (2)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 84b6b509-397f-40ab-bbdc-b37b36f4dfc5
+	queryGroup: 'Utilities\Transform File from Dim Workforce - Source\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression Parameter1 = #"Sample File" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 69c2769f-2412-427f-9a9f-1e1dd8165f2b
+	queryGroup: 'Utilities\Transform File from Fact Workforce\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression Parameter4 = #"Sample File (4)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (4)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 86dee0c7-a4fd-4d7a-80bd-6aa63f4c987d
+	queryGroup: 'Utilities\Transform File from Dim Job History\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (2)' = ```
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/DimWorkforce/"),
+		    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+		    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+		    #"Grouped Rows" = Table.Group(#"Changed Type", {"Source Entity"}, {{"AllExtracts", each _, type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text]}}),
+		    #"Add index to nested tables" = #"Table.TransformColumns"(
+		        #"Grouped Rows",
+		        {
+		            "AllExtracts", 
+		            each Table.AddIndexColumn(
+		                Table.Sort(_, {{"Extract Date", Order.Descending}}), 
+		                "RowIndex", 0, 1, Int64.Type), 
+		                type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text, RowIndex=number]}),
+		    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Add index to nested tables", "AllExtracts", {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}, {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}),
+		    #"Filtered Rows" = Table.SelectRows(#"Expanded AllExtracts", each ([RowIndex] = 0)),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    Navigation1 = #"Filtered Hidden Files1"{0}[Content]
+		in
+		    Navigation1
+		```
+	lineageTag: 9099fee7-4cb9-4196-b004-1e406e951c2f
+	queryGroup: 'Utilities\Transform File from Dim Workforce - Source\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (2)' =
+		let
+		    Source = Csv.Document(Parameter2,[Delimiter=",", Columns=22, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 967aa380-67ae-4a74-bb64-2a1c3fa238c5
+	queryGroup: 'Utilities\Transform File from Dim Workforce - Source'
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Transform File (2)' =
+		let
+		    Source = (Parameter2 as binary) => let
+		    Source = Csv.Document(Parameter2,[Delimiter=",", Columns=22, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (2)""}" ]
+	lineageTag: 39bc7c57-28b1-4454-b88b-969ff36c6656
+	queryGroup: 'Utilities\Transform File from Dim Workforce - Source\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Sample File' = ```
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/FactWorkforce/")),
+		    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+		    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+		    #"Grouped Rows" = Table.Group(#"Changed Type", {"Source Entity"}, {{"AllExtracts", each _, type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text]}}),
+		    #"Add index to nested tables" = #"Table.TransformColumns"(
+		        #"Grouped Rows",
+		        {
+		            "AllExtracts", 
+		            each Table.AddIndexColumn(
+		                Table.Sort(_, {{"Extract Date", Order.Descending}}), 
+		                "RowIndex", 0, 1, Int64.Type), 
+		                type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text, RowIndex=number]}),
+		    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Add index to nested tables", "AllExtracts", {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}, {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}),
+		    #"Filtered Rows" = Table.SelectRows(#"Expanded AllExtracts", each ([RowIndex] = 0)),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    Navigation1 = #"Filtered Hidden Files1"{0}[Content]
+		in
+		    Navigation1
+		```
+	lineageTag: e253fe89-dd92-4824-bc22-61b42271276d
+	queryGroup: 'Utilities\Transform File from Fact Workforce\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File' =
+		let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 75330a36-b02d-4379-bc95-9aee58873741
+	queryGroup: 'Utilities\Transform File from Fact Workforce'
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Transform File' =
+		let
+		    Source = (Parameter1 as binary) => let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File""}" ]
+	lineageTag: cae95fb9-ef8c-4c39-bebd-fe497fa7af55
+	queryGroup: 'Utilities\Transform File from Fact Workforce\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Sample File (4)' = ```
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/DimJobHistory/")),
+		    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+		    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+		    #"Grouped Rows" = Table.Group(#"Changed Type", {"Source Entity"}, {{"AllExtracts", each _, type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text]}}),
+		    #"Add index to nested tables" = #"Table.TransformColumns"(
+		        #"Grouped Rows",
+		        {
+		            "AllExtracts", 
+		            each Table.AddIndexColumn(
+		                Table.Sort(_, {{"Extract Date", Order.Descending}}), 
+		                "RowIndex", 0, 1, Int64.Type), 
+		                type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, Extract Date=nullable date, Source Entity=text, RowIndex=number]}),
+		    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Add index to nested tables", "AllExtracts", {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}, {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Extract Date", "RowIndex"}),
+		    #"Filtered Rows" = Table.SelectRows(#"Expanded AllExtracts", each ([RowIndex] = 0)),
+		    Navigation1 = #"Filtered Rows"{0}[Content]
+		in
+		    Navigation1
+		```
+	lineageTag: 2871cee4-f07f-4976-87e4-e5979b14d553
+	queryGroup: 'Utilities\Transform File from Dim Job History\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (4)' =
+		let
+		    Source = Csv.Document(Parameter4,[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: c2ac6415-918b-4132-aaf3-5ede20c1d07a
+	queryGroup: 'Utilities\Transform File from Dim Job History'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (4)' =
+		let
+		    Source = (Parameter4 as binary) => let
+		    Source = Csv.Document(Parameter4,[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (4)""}" ]
+	lineageTag: 27a5b915-b1da-44c1-b3ad-e126c5ebfbad
+	queryGroup: 'Utilities\Transform File from Dim Job History\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Fact Workforce HRLink - Source' =
+		let
+		    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="With workforce AS (#(lf)SELECT#(lf)#(tab)CASE#(lf)#(tab)#(tab)WHEN dbo.IsActiveMember(m.MemberID) = 1 AND #(lf)#(tab)#(tab)#(tab)(ma.ExitReasonId IS NULL OR ma.ExitReasonId = 0) THEN NULL#(lf)#(tab)#(tab)#(tab)--Member is flagged as active and no valid exit reason is recorded#(lf)#(tab)#(tab)WHEN (ma.ExitReasonId IS NOT NULL AND ma.ExitReasonId <> 0) OR #(lf)#(tab)#(tab)#(tab)dbo.IsActiveMember(m.MemberID) = 0 AND#(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE())) IS NULL #(lf)#(tab)#(tab)#(tab)THEN CAST(DATEADD(DAY, 1, dbo.MemberJoined(m.MemberID)) AS DATE)#(lf)#(tab)#(tab)#(tab)--member has a valid exit reason recorded and is flagged as inactive and has no last shift date recorded.#(lf)#(tab)#(tab)WHEN dbo.IsActiveMember(m.MemberID) = 0 OR#(lf)#(tab)#(tab)#(tab)(ma.ExitReasonId IS NOT NULL AND ma.ExitReasonId <> 0) OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL #(lf)#(tab)#(tab)#(tab)THEN dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE()))#(lf)#(tab)#(tab)#(tab)--if last shift was greater than 6 months ago assume the worker no longer takes shifts with us#(lf)#(tab)#(tab)ELSE NULL#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Termination date]#(lf)#(tab),CAST(dbo.MemberJoined(m.MemberID) AS DATE)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Employment start date]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Probation end date]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [FTE value]#(lf)#(tab),mp.VISAExpiryDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Visa expiry date]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN dbo.IsActiveMember(m.MemberID) = 1 AND #(lf)#(tab)#(tab)#(tab)(ma.ExitReasonId IS NULL OR ma.ExitReasonId = 0) THEN NULL#(lf)#(tab)#(tab)#(tab)--Member is flagged as active and no valid exit reason is recorded#(lf)#(tab)#(tab)WHEN (ma.ExitReasonId IS NOT NULL AND ma.ExitReasonId <> 0) OR #(lf)#(tab)#(tab)#(tab)dbo.IsActiveMember(m.MemberID) = 0 AND#(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE())) IS NULL THEN 'Agency Termination' #(lf)#(tab)#(tab)#(tab)--member has a valid exit reason recorded and is flagged as inactive and has no last shift date recorded. #(lf)#(tab)#(tab)WHEN dbo.IsActiveMember(m.MemberID) = 0 OR#(lf)#(tab)#(tab)#(tab)(ma.ExitReasonId IS NOT NULL AND ma.ExitReasonId <> 0) OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL  then 'Agency Termination' #(lf)#(tab)#(tab)#(tab)--if last shift was greater than 6 months ago assume the worker no longer takes shifts with us#(lf)#(tab)#(tab)ELSE null#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Termination type]#(lf)#(tab),'HR' + CAST(m.MemberID AS VARCHAR) #(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Member ID]#(lf)#(tab),CAST(m.BirthDate AS DATE)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Date of birth]#(lf)#(tab),mf.TaxFileNbr#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Tax file number]#(lf)#(tab),'agy'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Source Entity]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Extract Date]#(lf)#(tab),CAST(0#(tab)AS BIT)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [AgyNeverStarts]#(lf)#(tab)--,CAST(dbo.IsActiveMember(m.MemberID) AS BIT)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [AgyActiveMember]#(lf)FROM dbo.member m#(lf)LEFT JOIN dbo.MemberContact mc ON m.MemberID = mc.MemberID#(lf)LEFT JOIN dbo.MemberProfile mp ON m.MemberID = mp.MemberID#(lf)LEFT JOIN (#(lf)#(tab)SELECT MemberID#(lf)#(tab)#(tab),TaxFileNbr#(lf)#(tab)#(tab),LastUpdateDate#(lf)#(tab)FROM (#(lf)#(tab)SELECT MemberID#(lf)#(tab)#(tab),TaxFileNbr#(lf)#(tab)#(tab),LastUpdateDate#(lf)#(tab)#(tab),ROW_NUMBER() OVER(#(lf)#(tab)#(tab)#(tab)PARTITION BY MemberId#(lf)#(tab)#(tab)#(tab)Order by LastUpdateDate Desc) AS RN#(lf)#(tab)FROM dbo.MemberFinance) cmf#(lf)#(tab)where rn = 1) mf on m.MemberID = mf.MemberID#(lf)LEFT JOIN (#(lf)#(tab)SELECT * #(lf)#(tab)FROM dbo.MemberAgency #(lf)#(tab)WHERE AgencyID = 4#(lf)) ma ON ma.MemberID = m.MemberID#(lf)WHERE m.MemberID not in (1, 54326, 56116, 56961, 54389, 54334, 54328, 54193) #(lf))#(lf)#(lf)select *#(lf)from workforce#(lf)where [Employment start date] >= '1994-01-01'"])
+		in
+		    Source
+	lineageTag: 71ce6ba0-b71d-4b17-b072-55fbd13f8c01
+	queryGroup: Workforce
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Dim Workforce HRLink - Source' =
+		let
+		    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="select #(lf)#(tab)m.GivenName#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [First name]#(lf)#(tab),m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Last name]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Employee code]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Primary cost centre]#(lf)#(tab),dbo.MemberOutletName(m.MemberID)#(tab)#(tab)#(tab)#(tab)as [Location]#(lf)#(tab),dbo.php_UserFullName(ma.AgencyRepresentative)#(tab)as [Primary manager]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Termination type]#(lf)#(tab),d.[Description]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Termination reason]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN dbo.IsActiveMember(m.MemberID) = 1 AND #(lf)#(tab)#(tab)#(tab)(ma.ExitReasonId IS NULL OR ma.ExitReasonId = 0) THEN NULL#(lf)#(tab)#(tab)WHEN (ma.ExitReasonId IS NOT NULL AND ma.ExitReasonId <> 0) OR #(lf)#(tab)#(tab)#(tab)dbo.IsActiveMember(m.MemberID) = 0 AND#(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE())) IS NULL THEN 'Terminated' #(lf)#(tab)#(tab)WHEN dbo.IsActiveMember(m.MemberID) = 0 OR#(lf)#(tab)#(tab)#(tab)(ma.ExitReasonId IS NOT NULL AND ma.ExitReasonId <> 0) OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL  then 'Terminated' #(lf)#(tab)#(tab)else null#(lf)#(tab)end#(tab)as [Employment status]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Onboarding status]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Length of probation]#(lf)#(tab),a.[Name]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Employing entity]#(lf)#(tab),v.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Visa type]#(lf)#(tab),'No'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Is manager]#(lf)#(tab),'HR' + CAST(m.MemberID as varchar)#(tab)#(tab)#(tab)#(tab)as [Member ID]#(lf)#(tab),m.GivenName + ' ' + m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)as [Full name]#(lf)#(tab),CASE #(lf)#(tab)#(tab)WHEN m.sex = 'F' THEN 'Female'#(lf)#(tab)#(tab)WHEN m.sex = 'M' THEN 'Male' #(lf)#(tab)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Gender]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Middle name]#(lf)#(tab),mc.Postcode#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Employee address postcode]#(lf)#(tab),null#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Nationality]#(lf)#(tab),'agy'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Source Entity]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Extract Date]#(tab)#(lf)from dbo.member m#(lf)left join dbo.MemberContact mc on m.MemberID = mc.MemberID#(lf)left join dbo.MemberProfile mp on m.MemberID = mp.MemberID#(lf)left join dbo.Visa v on mp.VISAType = v.VisaID#(lf)left join (#(lf)#(tab)select * #(lf)#(tab)from dbo.MemberAgency #(lf)#(tab)where AgencyID = 4#(lf)) ma on ma.MemberID = m.MemberID#(lf)left join (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Exit Reason'#(lf))d on ma.ExitReasonId = d.value #(lf)left join dbo.Agency a on ma.AgencyID = a.AgencyID#(lf)where m.MemberID not in (1, 54326, 56116, 56961, 54389, 54334, 54328, 54193)"])
+		in
+		    Source
+	lineageTag: 56e83c05-7e63-46db-b032-cda0a48a3930
+	queryGroup: Workforce
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Dim Job History HRLink - Source' =
+		let
+		    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT #(lf)#(tab)'Agency Nursing Australia'#(tab)#(tab)#(tab)#(tab)AS [Job title]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN m.EmploymentType = '' then null#(lf)#(tab)#(tab)else m.EmploymentType#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Employment type]#(lf)#(tab),CAST(dbo.FirstShiftForMember(m.MemberID) AS DATE)#(tab)AS [Start Date]#(lf)#(tab),CAST(dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE())) AS DATE)#(tab)AS [End date]#(lf)#(tab),NULL#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Contract type]#(lf)#(tab),'HR' + CAST(m.MemberID as varchar)#(tab)#(tab)AS [Member ID]#(lf)#(tab),a.[Name]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Employing entity]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Extract Date]#(lf)#(tab),'agy'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Source Entity]#(lf)#(tab),0#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS MemberLatestJobFlag#(lf)from dbo.member m#(lf)left join (#(lf)#(tab)select * #(lf)#(tab)from dbo.MemberAgency #(lf)#(tab)where AgencyID = 4#(lf)) ma on ma.MemberID = m.MemberID#(lf)left join dbo.Agency a on ma.AgencyID = a.AgencyID#(lf)#(tab)where m.MemberID <> 1 and ma.AgencyID = 4"])
+		in
+		    Source
+	lineageTag: 5530e55e-a25a-40c8-b4c5-03820fd520c4
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter3 = #"Sample File (3)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (3)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: dc78d72d-8d1c-4beb-9760-cc3413609cf7
+	queryGroup: 'Utilities\Transform File from Fact First Shift Date\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (3)' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Visual Care/")),
+		    #"Filtered Rows2" = Table.SelectRows(#"Filtered Rows", let latest = List.Max(#"Filtered Rows"[Date created]) in each [Date created] = latest),
+		    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows2", "ExtractDate", each Text.BetweenDelimiters([Name], "-", "_"), type text),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Extract Date",{{"ExtractDate", type date}}),
+		    #"Inserted Extract Time" = Table.AddColumn(#"Changed Type", "ExtractTime", each Text.BetweenDelimiters([Name], "_", "."), type text),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Inserted Extract Time",{{"ExtractTime", type time}}),
+		    #"Merged Columns" = Table.CombineColumns(Table.TransformColumnTypes(#"Changed Type1", {{"ExtractDate", type text}, {"ExtractTime", type text}}, "en-AU"),{"ExtractDate", "ExtractTime"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"ExtractDatetime"),
+		    #"Changed Type2" = Table.TransformColumnTypes(#"Merged Columns",{{"ExtractDatetime", type datetime}}),
+		    Navigation1 = #"Changed Type2"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: ac2754f8-d4df-49f4-9633-6781db5cfc96
+	queryGroup: 'Utilities\Transform File from Fact First Shift Date\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (3)' =
+		let
+		    Source = Csv.Document(Parameter3,[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: b95ef03a-ffe0-428a-b1e1-ded1cf179540
+	queryGroup: 'Utilities\Transform File from Fact First Shift Date'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (3)' =
+		let
+		    Source = (Parameter3 as binary) => let
+		    Source = Csv.Document(Parameter3,[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (3)""}" ]
+	lineageTag: b1af45e9-7b8e-4a03-b59b-9d1992ca0e4f
+	queryGroup: 'Utilities\Transform File from Fact First Shift Date\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression Parameter6 = #"Sample File (6)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (6)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 42901bd6-8b46-499b-b374-f7beb40f1da7
+	queryGroup: 'Utilities\Transform File from Dim Timesheets\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression Parameter7 = #"Sample File (7)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (7)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: e7935d41-44ca-4a10-a89d-36c3f3a1300a
+	queryGroup: 'Utilities\Transform File from Bridge KeyPay Users\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (6)' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/KeyPay/Timesheets/"),
+		    Navigation1 = #"Filtered Rows1"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 605ddddd-c252-4933-a882-67cd4e16e34d
+	queryGroup: 'Utilities\Transform File from Dim Timesheets\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (6)' =
+		let
+		    Source = Csv.Document(Parameter6,[Delimiter=",", Columns=30, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 5e260295-f173-43dc-ad7b-d74ff33e0319
+	queryGroup: 'Utilities\Transform File from Dim Timesheets'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (6)' =
+		let
+		    Source = (Parameter6 as binary) => let
+		    Source = Csv.Document(Parameter6,[Delimiter=",", Columns=30, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (6)""}" ]
+	lineageTag: 64b673b0-16b7-46d8-967c-24dcb4bcc861
+	queryGroup: 'Utilities\Transform File from Dim Timesheets\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Sample File (7)' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/KeyPay/MatchUsers/"),
+		    Navigation1 = #"Filtered Rows1"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 8cd37cd0-6134-4990-a4c3-6cb0f1cf890f
+	queryGroup: 'Utilities\Transform File from Bridge KeyPay Users\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (7)' =
+		let
+		    Source = Csv.Document(Parameter7,[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 26a32e7d-ab87-4efa-bdf1-ece3ee327b5d
+	queryGroup: 'Utilities\Transform File from Bridge KeyPay Users'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (7)' =
+		let
+		    Source = (Parameter7 as binary) => let
+		    Source = Csv.Document(Parameter7,[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (7)""}" ]
+	lineageTag: 62e09b2f-1ebb-4552-9746-b0ca76190d40
+	queryGroup: 'Utilities\Transform File from Bridge KeyPay Users\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Data Dictionary - Source' =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [Implementation="2.0", ViewMode="All"]),
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866" = Source{[Id="4a4da78a-6855-44b7-bef3-4064d5ddb866"]}[Items]
+		in
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866"
+	lineageTag: 2775f674-2b26-4d92-9cbb-3d003eab6325
+	queryGroup: 'Utilities\Data Dictionary'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter8 = #"Sample File (8)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (8)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 3bc2671b-ac97-438e-a3d7-1caa10143e07
+	queryGroup: 'Utilities\Transform File from Fact First Shift\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (8)' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Visual Care/Workers/")),
+		    #"Filtered Rows" = Table.SelectRows(#"Filtered Rows1", let latest = List.Max(#"Filtered Rows1"[Date created]) in each [Date created] = latest),
+		    Navigation1 = #"Filtered Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 46849155-e0e3-4dc0-a239-7548db973d80
+	queryGroup: 'Utilities\Transform File from Fact First Shift\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (8)' =
+		let
+		    Source = Csv.Document(Parameter8,[Delimiter=",", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 2e40922c-10ba-4d14-875b-2360a0e4e5e8
+	queryGroup: 'Utilities\Transform File from Fact First Shift'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (8)' =
+		let
+		    Source = (Parameter8 as binary) => let
+		    Source = Csv.Document(Parameter8,[Delimiter=",", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (8)""}" ]
+	lineageTag: 1ef0a476-5e40-4612-b962-8f5f60137cb2
+	queryGroup: 'Utilities\Transform File from Fact First Shift\Helper Queries'
+
+	annotation PBI_ResultType = Function
+

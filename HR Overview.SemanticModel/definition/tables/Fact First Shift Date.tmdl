@@ -1,0 +1,52 @@
+table 'Fact First Shift Date'
+	lineageTag: 4021c3cc-8b52-4507-90a6-c5149a5fdbd6
+
+	column EmailBirthdayKey
+		dataType: string
+		lineageTag: 66706ada-3ac8-4d9b-ae80-dc68a98ecdd4
+		summarizeBy: none
+		sourceColumn: EmailBirthdayKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccountingCode
+		dataType: string
+		lineageTag: 234aed4e-9ad9-49db-8e61-182c866b727d
+		summarizeBy: none
+		sourceColumn: AccountingCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstShiftDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 71c646ca-ea22-4149-8717-79d8f69210ee
+		summarizeBy: none
+		sourceColumn: FirstShiftDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Fact First Shift Date' = m
+		mode: import
+		source =
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Visual Care/Workers/")),
+				    #"Filtered Rows" = Table.SelectRows(#"Filtered Rows1", let latest = List.Max(#"Filtered Rows1"[Date created]) in each [Date created] = latest),
+				    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (8)", each #"Transform File (8)"([Content])),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1", {"Transform File (8)"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (8)", Table.ColumnNames(#"Transform File (8)"(#"Sample File (8)"))),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Table Column1",{{"workers[EmailBirthdayKey]", "EmailBirthdayKey"}, {"workers[AccountingCode]", "AccountingCode"}, {"workers[FirstShiftDate]", "FirstShiftDate"}}),
+				    #"Removed Duplicates" = Table.Distinct(#"Renamed Columns", {"EmailBirthdayKey"}),
+				    #"Extracted Text Before Delimiter" = Table.TransformColumns(#"Removed Duplicates", {{"FirstShiftDate", each Text.BeforeDelimiter(_, "T"), type text}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Extracted Text Before Delimiter",{{"EmailBirthdayKey", type text}, {"AccountingCode", type text}, {"FirstShiftDate", type date}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

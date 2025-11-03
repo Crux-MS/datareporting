@@ -1,0 +1,145 @@
+table 'Dim Extract Date'
+	lineageTag: fc74b12d-e3f7-4257-8d88-52d5e77ffc68
+	dataCategory: Time
+
+	measure 'Selected Extract Month' = SELECTEDVALUE('Dim Extract Date'[MMM YYYY])
+		lineageTag: 7b3a4670-3028-4f40-82c4-38763747fbd6
+
+	column 'Extract Date'
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: 56ab9a7c-4d0b-436f-9557-70ea2a7bd16c
+		summarizeBy: none
+		sourceColumn: Extract Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 88a3180a-9998-4f5a-9d0a-8454bd69dc22
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 09b468c3-e5cd-465a-bc59-6852bf68a132
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 95349a46-662a-4c78-a66b-278dbd8ffb58
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: e3e7781e-b406-45e5-b753-226e8b4dc355
+		summarizeBy: sum
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		formatString: 0
+		lineageTag: 06c245fc-e193-4eeb-b0c7-f94b11d499a8
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = User
+
+	column 'Day Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: de6d5095-48dd-4ba9-a2d0-c66d4d119494
+		summarizeBy: sum
+		sourceColumn: Day Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: a1c5ed21-b859-435c-bda7-73df338d5de6
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: dd448158-5814-4a13-962e-58331d4c0d01
+		summarizeBy: sum
+		sourceColumn: Day of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Year'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c3b112a8-2f10-4262-a4ef-3ff56bf5d472
+		summarizeBy: none
+		sourceColumn: Start of Year
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Week of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: cb92f207-4542-44c3-9b01-9e00febadf35
+		summarizeBy: sum
+		sourceColumn: Week of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Rolling Date Difference'
+		dataType: int64
+		formatString: 0
+		lineageTag: c78951a8-9219-416e-bc16-a5541054e406
+		summarizeBy: sum
+		sourceColumn: Rolling Date Difference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 9393ecaa-017a-4eb0-8944-a832ede553d1
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Extract Date' = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "Extract Date"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

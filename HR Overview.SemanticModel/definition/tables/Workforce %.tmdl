@@ -1,0 +1,49 @@
+table 'Workforce %'
+	lineageTag: 431fd084-5fc6-4be1-9dae-a0020c4a1ec0
+
+	column 'Workforce %'
+		lineageTag: dc0d6832-5839-4a3d-ba1e-1ca9ac73bf12
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Workforce % Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Workforce % Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Workforce % Fields'
+		isHidden
+		lineageTag: 18ff4ca4-59a4-4948-98c4-25e97f90dfe4
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Workforce % Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Workforce % Order'
+		isHidden
+		formatString: 0
+		lineageTag: 095b4d30-e7ab-4dc4-a9f9-1fefb41bf42f
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Workforce %' = calculated
+		mode: import
+		source =
+				{
+				    ("Currently Employed", NAMEOF('Fact Workforce'[Currently Employed %]), 0),
+				    ("New Starters", NAMEOF('Fact Workforce'[New Starters %]), 1),
+				    ("Terminations", NAMEOF('Fact Workforce'[Terminations %]), 2)
+				}
+
+	annotation PBI_Id = aa56f56749374feb867c60ce522e9d19
+

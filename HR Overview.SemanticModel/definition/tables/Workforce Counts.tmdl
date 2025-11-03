@@ -1,0 +1,49 @@
+table 'Workforce Counts'
+	lineageTag: f528bf11-6f20-4b50-a107-dd6a9329f1ad
+
+	column 'Workforce Counts'
+		lineageTag: c3889fe8-0d45-4340-8385-3601630a048a
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Workforce Counts Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Workforce Counts Fields'
+		isHidden
+		lineageTag: 8fc27176-ceaa-425d-9a2b-b56dc9534b81
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: b57087de-cf7e-40d7-b161-76581ad2f036
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Workforce Counts' = calculated
+		mode: import
+		source =
+				{
+				    ("Currently Employed", NAMEOF('Fact Workforce'[Count Currently Employed]), 0),
+				    ("New Starters", NAMEOF('Fact Workforce'[Count New Starters]), 1),
+				    ("Terminations", NAMEOF('Fact Workforce'[Count Terminations]), 2)
+				}
+
+	annotation PBI_Id = b46035a9f4b040cdbca5a76352688edd
+
