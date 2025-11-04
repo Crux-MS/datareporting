@@ -1,0 +1,36 @@
+expression 'Calendar - Source' =
+		let
+		    Source = List.Dates(#date(1994, 1, 1), 15000, #duration(1, 0, 0, 0)),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Column1", type datetime}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "Date"}}),
+		    #"Inserted Year" = Table.AddColumn(#"Renamed Columns", "Year", each Date.Year([Date]), Int64.Type),
+		    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "MonthName", each Date.MonthName([Date]), type text),
+		    #"Inserted MMM YYYY" = Table.AddColumn(#"Inserted Month Name", "MMM YYYY", each Text.Combine({DateTime.ToText([Date], "MMM"), " ", DateTime.ToText([Date], "yyyy")}), type text),
+		    #"Inserted Month Number" = Table.AddColumn(#"Inserted MMM YYYY", "MonthNumber", each Date.Month([Date]), Int64.Type),
+		    #"Inserted YYYYMM" = Table.AddColumn(#"Inserted Month Number", "YYYYMM", each if [MonthNumber] <=9 then Text.From([Year]) & "0" & Text.From([MonthNumber]) else Text.From([Year]) & Text.From([MonthNumber])),
+		    #"Inserted Day Number" = Table.AddColumn(#"Inserted YYYYMM", "DayNumber", each Date.Day([Date]), Int64.Type),
+		    #"Inserted Day Name" = Table.AddColumn(#"Inserted Day Number", "DayName", each Date.DayOfWeekName([Date]), type text),
+		    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "DayOfWeek", each Date.DayOfWeek([Date]), Int64.Type),
+		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted Day of Week", "StartOfYear", each Date.StartOfYear([Date]), type datetime),
+		    #"Inserted Week of Year" = Table.AddColumn(#"Inserted Start of Year", "WeekOfYear", each Date.WeekOfYear([Date]), Int64.Type),
+		    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Week of Year", "StartOfWeek", each Date.StartOfWeek([Date]), type datetime),
+		    #"Added Rolling Date Difference" = Table.AddColumn(#"Inserted Start of Week", "RollingDateDifference", each Duration.Days([Date] - DateTime.From(DateTime.LocalNow()))),
+		    #"Added Slicer MMM YYYY" = Table.AddColumn(#"Added Rolling Date Difference", "SlicerMMM YYYY", each let
+		    currentMonthYear = List.First(
+		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[MMM YYYY]
+		    )
+		in
+		    if [MMM YYYY] = currentMonthYear then "Current Month" else [MMM YYYY]),
+		    #"Added FinancialYear" = Table.AddColumn(#"Added Slicer MMM YYYY", "FinancialYear", each if Date.Month([Date]) >= 7 then Date.Year([Date]) + 1 else Date.Year([Date])),
+		    CurrentFY = if Date.Month(DateTime.LocalNow()) >= 7 then Date.Year(DateTime.LocalNow()) + 1 else Date.Year(DateTime.LocalNow()),
+		    #"Added Custom" = Table.AddColumn(#"Added FinancialYear", "CurrentFYFlag", each if (if Date.Month([Date]) >= 7 then Date.Year([Date]) + 1 else Date.Year([Date])) = CurrentFY then "TRUE" else "FALSE"),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom",{{"RollingDateDifference", Int64.Type}, {"SlicerMMM YYYY", type text}, {"FinancialYear", Int64.Type}, {"CurrentFYFlag", type logical}})
+		in
+		    #"Changed Type1"
+	lineageTag: 026de0c5-5850-4359-bc4a-b26f029e36a7
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

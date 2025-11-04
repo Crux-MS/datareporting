@@ -1,0 +1,147 @@
+table 'Dim Workforce - Duplicates'
+	lineageTag: 4f8a7be6-6275-4be4-9dc4-581f2f5a25d1
+
+	column MemberId
+		dataType: int64
+		formatString: 0
+		lineageTag: 7684241a-aee0-490b-a36e-f277235bce37
+		summarizeBy: none
+		sourceColumn: MemberId
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstName
+		dataType: string
+		lineageTag: e73b26e0-c218-4294-b9bc-9bfb0a8e00e8
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		lineageTag: ccda7fa9-7c53-41cb-8ba5-13409e177765
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: 1d6ac0b5-9671-44f3-a879-2642172329ec
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrimaryManager
+		dataType: string
+		lineageTag: 808e8156-85f6-4694-a10e-a13398eff162
+		summarizeBy: none
+		sourceColumn: PrimaryManager
+
+		annotation SummarizationSetBy = Automatic
+
+	column TerminationReason
+		dataType: string
+		lineageTag: 8f68d863-de86-45a5-9cfd-9a7efd38a351
+		summarizeBy: none
+		sourceColumn: TerminationReason
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmploymentStatus
+		dataType: string
+		lineageTag: 7de48447-8889-442c-a4b7-173e2454c169
+		summarizeBy: none
+		sourceColumn: EmploymentStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployingEntity
+		dataType: string
+		lineageTag: 1e5b2105-1262-4a0f-9c9f-6974db9a9dd4
+		summarizeBy: none
+		sourceColumn: EmployingEntity
+
+		annotation SummarizationSetBy = Automatic
+
+	column VisaType
+		dataType: string
+		lineageTag: 684cc47c-a44b-407b-aa5b-9f9107526aec
+		summarizeBy: none
+		sourceColumn: VisaType
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsManagerFlag
+		dataType: string
+		lineageTag: 59b2c07f-69d3-41c6-a323-068d622a429e
+		summarizeBy: none
+		sourceColumn: IsManagerFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullName
+		dataType: string
+		lineageTag: 27e689f6-524f-415e-b84c-e3b07363f89f
+		summarizeBy: none
+		sourceColumn: FullName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: f1736fd7-26d7-42bb-8368-1a8567387c96
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeAddressPostcode
+		dataType: string
+		lineageTag: de775470-09d7-4da8-bb9b-d0aaedb1518c
+		summarizeBy: none
+		sourceColumn: EmployeeAddressPostcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column WhatPromptedYou
+		dataType: string
+		lineageTag: a75a6f1a-8b17-42f4-804d-c46c9d64acde
+		summarizeBy: none
+		sourceColumn: WhatPromptedYou
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExtractDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d6880fa4-30a7-479b-b589-f49954595962
+		summarizeBy: none
+		sourceColumn: ExtractDate
+
+		variation Variation
+			isDefault
+			relationship: dff4709c-5272-4113-97ad-50958fa25145
+			defaultHierarchy: LocalDateTable_4f4edcfb-8d72-4c16-b1f0-4b263476a7ed.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: c45dea66-a5ae-4dbe-a88a-1fc32c29dd49
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Workforce - Duplicates' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="select #(lf)#(tab)m.MemberID#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [MemberId]#(lf)#(tab),m.GivenName#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [FirstName]#(lf)#(tab),m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [LastName]#(lf)#(tab),dbo.MemberOutletName(m.MemberID)#(tab)#(tab)#(tab)#(tab)as [Location]#(lf)#(tab),dbo.php_UserFullName(ma.AgencyRepresentative)#(tab)as [PrimaryManager]#(lf)#(tab),d.[Description]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [TerminationReason]#(lf)#(tab),case#(lf)#(tab)#(tab)when ma.ExitReasonId is not null OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL then 'Terminated'#(lf)#(tab)#(tab)else null#(lf)#(tab)end#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmploymentStatus]#(lf)#(tab),a.[Name]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployingEntity]#(lf)#(tab),v.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [VisaType]#(lf)#(tab),'No'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [IsManagerFlag]#(lf)#(tab),m.GivenName + ' ' + m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)as [FullName]#(lf)#(tab),CASE #(lf)#(tab)#(tab)WHEN m.sex = 'F' THEN 'Female'#(lf)#(tab)#(tab)WHEN m.sex = 'M' THEN 'Male' #(lf)#(tab)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Gender]#(lf)#(tab),mc.Postcode#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployeeAddressPostcode]#(lf)#(tab),w.Description#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [WhatPromptedYou]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [ExtractDate]#(tab)#(lf)#(tab),l.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [State]#(lf)from dbo.member m#(lf)left join dbo.MemberContact mc on m.MemberID = mc.MemberID#(lf)left join dbo.MemberProfile mp on m.MemberID = mp.MemberID#(lf)LEFT JOIN dbo.location l ON m.LocationID = l.LocationId#(lf)left join dbo.Visa v on mp.VISAType = v.VisaID#(lf)left join (#(lf)#(tab)select * #(lf)#(tab)from dbo.MemberAgency #(lf)#(tab)where AgencyID = 4#(lf)) ma on ma.MemberID = m.MemberID#(lf)left join (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Exit Reason'#(lf))d on ma.ExitReasonId = d.value #(lf)LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'What Prompted You'#(lf)) w on ma.ExitReasonId = w.value #(lf)left join dbo.Agency a on ma.AgencyID = a.AgencyID#(lf)where m.MemberID <> 1 #(lf)"]),
+				    #"Kept Duplicates" = let columnNames = {"FullName"}, addCount = Table.Group(Source, columnNames, {{"Count", Table.RowCount, type number}}), selectDuplicates = Table.SelectRows(addCount, each [Count] > 1), removeCount = Table.RemoveColumns(selectDuplicates, "Count") in Table.Join(Source, columnNames, removeCount, columnNames, JoinKind.Inner)
+				in
+				    #"Kept Duplicates"
+

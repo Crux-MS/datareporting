@@ -1,0 +1,227 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "name": "b60e7734954058bbe0cf",
+  "position": {
+    "x": 426.50246305418722,
+    "y": 27.487684729064039,
+    "z": 4000,
+    "height": 99.3103448275862,
+    "width": 602.95566502463055,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "Count Active Workers"
+                }
+              },
+              "queryRef": "Fact Workforce.Count Active Workers",
+              "nativeQueryRef": "Active workers",
+              "displayName": "Active workers"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "Count Active People on Visa"
+                }
+              },
+              "queryRef": "Fact Workforce.Count Active People on Visa",
+              "nativeQueryRef": "Active workers on visa",
+              "displayName": "Active workers on visa"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Client"
+                    }
+                  },
+                  "Property": "Count Active Clients"
+                }
+              },
+              "queryRef": "Fact Client.Count Active Clients",
+              "nativeQueryRef": "Active Clients",
+              "displayName": "Active Clients"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Workforce"
+                  }
+                },
+                "Property": "Count Active Workers"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "layout": [
+        {
+          "properties": {
+            "orientation": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "rowCount": {
+              "expr": {
+                "Literal": {
+                  "Value": "5L"
+                }
+              }
+            },
+            "columnCount": {
+              "expr": {
+                "Literal": {
+                  "Value": "3L"
+                }
+              }
+            },
+            "style": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cards'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "83399e003ea6c1d9cb32",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "Active member flag"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "a0e7769309880d63bbd4",
+        "ordinal": 1,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "Count People"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "ffeb956ea0b4b7445702",
+        "ordinal": 2,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Workforce"
+                  }
+                },
+                "Property": "Total hours worked nursing australia"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "c1997b41847a4a274897",
+        "ordinal": 3,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Client"
+              }
+            },
+            "Property": "Count Clients"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "d6dc32c63b148a80897e",
+        "ordinal": 4,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Client"
+              }
+            },
+            "Property": "Count Active Clients"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "88fdbfdd3615c5129420",
+        "ordinal": 5,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "Count Active People on Visa"
+          }
+        },
+        "type": "Advanced"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

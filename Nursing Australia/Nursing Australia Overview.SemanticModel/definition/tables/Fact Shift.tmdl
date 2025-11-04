@@ -1,0 +1,363 @@
+table 'Fact Shift'
+	lineageTag: dc261a27-91c1-4de0-b35f-9edf5809287a
+
+	measure ShiftDurationHours = SUM('Fact Shift'[ShiftDurationMins])/60
+		lineageTag: 0b99c30a-7a2e-496e-a9a9-c034a20deecb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure FilledShiftHours = CALCULATE([ShiftDurationHours], 'Fact Shift'[Outcome] = "D-Confirmed Member and Client")
+		displayFolder: KPIs
+		lineageTag: 573a028e-c9ca-4a35-94e8-eb698263bde0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ShiftCancelledByClientHours = CALCULATE([ShiftDurationHours], 'Fact Shift'[Outcome] = "F-Cancelled by Client")
+		displayFolder: KPIs
+		lineageTag: d63b5eb3-a076-42a8-b31b-c5a2d9919624
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure UnfilledShiftHours = CALCULATE([ShiftDurationHours], 'Fact Shift'[Outcome] = "G-Unable to Fill - Still Needed" || 'Fact Shift'[Outcome] = "H-Unable to Fill - No Longer Required")
+		displayFolder: KPIs
+		lineageTag: 73551b33-e6d5-4638-8478-dfa2edb03fed
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ControllableOrdersHours = [FilledShiftHours] + [UnfilledShiftHours]
+		displayFolder: KPIs
+		lineageTag: 05a9e7b9-6549-4ea0-9e4a-82da8a682437
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Controllable Fill Rate' = DIVIDE([FilledShiftHours], [ControllableOrdersHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: KPIs
+		lineageTag: 39c8fd3b-b9b5-4dfb-97c8-9068fefdc65e
+
+	measure ShiftCancelledByClientRate = DIVIDE([ShiftCancelledByClientHours], [TotalOrdersHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: KPIs
+		lineageTag: 7a34998e-f654-4fb0-9a63-91817c87dd79
+
+	measure TotalOrdersHours = [ShiftCancelledByClientHours] + [ControllableOrdersHours]
+		displayFolder: KPIs
+		lineageTag: 0dfdd6ca-338e-47da-8cc3-7eaf1911862d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total hours paid' = SUM('Fact Shift'[PayHrsPaid1]) + SUM('Fact Shift'[PayHrsPaid2])
+		displayFolder: Pay
+		lineageTag: eeac71af-01bd-4a9b-8e78-73c62330686c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ShiftId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bd27a3fd-3259-4061-88c4-cf975251fe33
+		summarizeBy: count
+		sourceColumn: ShiftId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgencyID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1fb60b26-066a-4c69-92c2-fbad95750aa7
+		summarizeBy: count
+		sourceColumn: AgencyID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 64cbba6b-1410-476f-84ab-d6bd13cee573
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MemberID
+		dataType: int64
+		formatString: 0
+		lineageTag: 2649ba08-35a1-4d86-86d0-aa1a5b1d8509
+		summarizeBy: none
+		sourceColumn: MemberID
+
+		annotation SummarizationSetBy = Automatic
+
+	column InvoiceID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d4c98b43-44fd-41b5-a691-55751a4e7efd
+		summarizeBy: count
+		sourceColumn: InvoiceID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayslipID
+		dataType: int64
+		isHidden
+		formatString: 0
+		displayFolder: Pay
+		lineageTag: 26b200fc-9007-43e9-9022-bcf0f750d8aa
+		summarizeBy: count
+		sourceColumn: PayslipID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CampusId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6723d9fd-b6ba-4f0a-80f8-7347ba3e248a
+		summarizeBy: count
+		sourceColumn: CampusId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartDateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 07bd7ddf-9ee6-4a65-9f51-64ec5d97b5df
+		summarizeBy: none
+		sourceColumn: StartDateTime
+
+		variation Variation
+			isDefault
+			relationship: 6efbf5b9-8d61-459b-af7a-829edd0190cd
+			defaultHierarchy: LocalDateTable_7c61d204-22af-4ed6-a356-be5799d29086.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinishDateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 974da8ac-3230-43f4-91db-47a2752cf44d
+		summarizeBy: none
+		sourceColumn: FinishDateTime
+
+		variation Variation
+			isDefault
+			relationship: 3f248edc-ea2c-461a-a4ab-8dfb8c66268e
+			defaultHierarchy: LocalDateTable_6d358562-49f4-4561-9c0d-25d52b3d0984.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 5ca52d40-ef7f-4f1f-909d-185007d1974e
+		summarizeBy: none
+		sourceColumn: StartDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinishDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 0efbfe03-adc8-410d-810b-4e7b6e33e3ae
+		summarizeBy: none
+		sourceColumn: FinishDate
+
+		variation Variation
+			isDefault
+			relationship: 753a5e6c-728d-4343-9fdf-1f84f853a692
+			defaultHierarchy: LocalDateTable_51b42e2b-b068-4fec-9d2c-cfbfdd4bf318.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftDurationMins
+		dataType: int64
+		formatString: 0
+		lineageTag: d5b7f19d-2bb8-4aba-ac9d-4c06a10afb67
+		summarizeBy: sum
+		sourceColumn: ShiftDurationMins
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayHrsPaid1
+		dataType: double
+		displayFolder: Pay
+		lineageTag: eceefa2d-37fa-47b6-baae-7f380c0092da
+		summarizeBy: sum
+		sourceColumn: PayHrsPaid1
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PayRate1
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		displayFolder: Pay
+		lineageTag: 0997a42f-c2ad-443f-8a5d-70b7994f5e23
+		summarizeBy: sum
+		sourceColumn: PayRate1
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayAmount1
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		displayFolder: Pay
+		lineageTag: 097bab0c-8a0c-4757-a214-227261e0cb65
+		summarizeBy: sum
+		sourceColumn: PayAmount1
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayHrsPaid2
+		dataType: double
+		displayFolder: Pay
+		lineageTag: 6847142a-23ba-459b-887c-63ec727a10ee
+		summarizeBy: sum
+		sourceColumn: PayHrsPaid2
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PayRate2
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		displayFolder: Pay
+		lineageTag: 795467c0-df4c-47cd-ace5-066cff87cd6b
+		summarizeBy: sum
+		sourceColumn: PayRate2
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayAmount2
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		displayFolder: Pay
+		lineageTag: ddabc71f-9bcf-4d23-b68d-75cdba659a6a
+		summarizeBy: sum
+		sourceColumn: PayAmount2
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaidMealBreakStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 50e88608-747f-42d2-8eab-7b540eaa5c43
+		summarizeBy: none
+		sourceColumn: PaidMealBreakStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderedBy
+		dataType: string
+		lineageTag: 650a9113-7a22-4352-94b3-cbf513b882a9
+		summarizeBy: none
+		sourceColumn: OrderedBy
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftCreated
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 0af27322-256c-4136-bf9d-2b8d934c7b81
+		summarizeBy: none
+		sourceColumn: ShiftCreated
+
+		variation Variation
+			isDefault
+			relationship: 37d19d43-f8be-488e-b3b5-f70dd104986e
+			defaultHierarchy: LocalDateTable_76290547-5444-47b2-afea-bd16e81875f7.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftConfirmed
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: fd967840-2709-4750-90f5-976403309323
+		summarizeBy: none
+		sourceColumn: ShiftConfirmed
+
+		variation Variation
+			isDefault
+			relationship: 29f4738f-86f1-402d-a766-509c5c74dd36
+			defaultHierarchy: LocalDateTable_eca3aa1d-cd72-422d-8381-c2b0f5374e04.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftLastUpdated
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 68fef919-f81e-4cf9-a120-a6d4abedb717
+		summarizeBy: none
+		sourceColumn: ShiftLastUpdated
+
+		variation Variation
+			isDefault
+			relationship: cdfadcf8-506b-40c5-aa50-e06f1060ba9a
+			defaultHierarchy: LocalDateTable_1f1293be-d717-4b02-8ca3-c93f847f7e4d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column EducationShiftFlag
+		dataType: int64
+		formatString: 0
+		lineageTag: ce0eb2de-cac3-4cde-835b-01eb406264f4
+		summarizeBy: none
+		sourceColumn: EducationShiftFlag
+
+		annotation SummarizationSetBy = User
+
+	column Outcome
+		dataType: string
+		lineageTag: ff7fe35b-ed47-440f-96d1-9ee50dd9ca66
+		summarizeBy: none
+		sourceColumn: Outcome
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExtractDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e21a0e47-0f68-42c4-a679-aacc3aa6ac0a
+		summarizeBy: none
+		sourceColumn: ExtractDate
+
+		variation Variation
+			isDefault
+			relationship: a949d721-1875-4375-81a8-6d2ee59516b3
+			defaultHierarchy: LocalDateTable_ceeff42a-21b6-4e91-ad14-4e538139bd0a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Shift' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)s.ShiftId#(lf)#(tab),s.AgencyID#(lf)#(tab),s.ClientId#(lf)#(tab),s.MemberID#(lf)#(tab),s.InvoiceID#(lf)#(tab),s.PayslipID#(lf)#(tab),s.CampusId#(lf)#(tab),s.StartDate#(tab)#(tab)#(tab)#(tab)#(tab)AS [StartDateTime]#(lf)#(tab),s.FinishDate#(tab)#(tab)#(tab)#(tab)#(tab)AS [FinishDateTime]#(lf)#(tab),CAST(s.StartDate AS DATE)#(tab)#(tab)#(tab)AS [StartDate]#(lf)#(tab),CAST(s.FinishDate AS DATE)#(tab)#(tab)#(tab)AS [FinishDate]#(lf)#(tab),DATEDIFF(MINUTE, s.StartDate, s.FinishDate)#(tab)AS [ShiftDurationMins]#(lf)#(tab),s.PayHrsPaid1#(lf)#(tab),s.PayRate1#(lf)#(tab),s.PayAmount1#(lf)#(tab),s.PayHrsPaid2#(lf)#(tab),s.PayRate2#(lf)#(tab),s.PayAmount2#(lf)#(tab),s.PaidMealBreakStatus#(lf)#(tab),s.OrderedBy#(lf)#(tab),dbo.FirstUpdateForShift(s.ShiftId) AS ShiftCreated#(lf)#(tab),s.ConfirmedDate#(tab)#(tab)#(tab)#(tab)#(tab)AS ShiftConfirmed#(lf)#(tab),dbo.LastUpdateForShift(s.ShiftId)#(tab)AS ShiftLastUpdated#(lf)#(tab),dbo.isEducationShift(s.ShiftID)#(tab)AS [EducationShiftFlag]#(lf)#(tab),o.description#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Outcome]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ExtractDate]#(lf)FROM dbo.Shift s#(lf)LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Outcome'#(lf)) o on s.OutcomeType = o.value #(lf)where --s.AgencyID = 4 #(lf)#(tab)(s.MemberID <> 1 OR s.MemberID IS NULL) and#(lf)#(tab)s.StartDate >= DATEADD(year,-3,GETDATE())#(lf)#(tab)and s.ShiftID NOT IN (6495638, 6495680, 6496332)"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

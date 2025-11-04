@@ -1,0 +1,51 @@
+table Parameter
+	lineageTag: 4e51731c-af94-47b9-8edc-fe71406b6925
+
+	column 'Workforce Dimensions'
+		lineageTag: 0eb7f4ac-49d8-4e48-9836-74800b13638e
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: 78d2b9f6-6cf4-4776-b04c-cf9d44788287
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 4e80e055-55e6-4f2a-b730-7e933099f9e5
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parameter = calculated
+		mode: import
+		source =
+				{
+				    ("State", NAMEOF('Dim Workforce'[State]), 0),
+				    ("Work Location", NAMEOF('Dim Workforce'[Location]), 1),
+				    ("Gender", NAMEOF('Dim Workforce'[Gender]), 2),
+				    ("Visa Type", NAMEOF('Dim Workforce'[VisaType]), 3),
+				    ("Termination Reason", NAMEOF('Dim Workforce'[TerminationReason]), 4)
+				}
+
+	annotation PBI_Id = c358932bca9b4eb4931723553dd2c0cb
+

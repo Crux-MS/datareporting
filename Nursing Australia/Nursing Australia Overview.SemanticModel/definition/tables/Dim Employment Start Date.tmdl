@@ -1,0 +1,168 @@
+table 'Dim Employment Start Date'
+	lineageTag: 6f27a3c1-26fd-4a11-990a-087783658fc4
+
+	column EmploymentStartDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1002f5d8-f831-4878-9dcc-7db545122032
+		summarizeBy: none
+		sourceColumn: EmploymentStartDate
+
+		variation Variation
+			isDefault
+			relationship: ac53d02f-fec2-49be-94a4-198565fb377e
+			defaultHierarchy: LocalDateTable_b67f671a-8f4f-4b8a-b106-61f837f4ebbb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 133bf8ac-3f6a-4bbc-9306-6364671bfcae
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: d1fa0e77-f51f-4e14-8e61-519d0eda6a46
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 5f4b6631-0e07-449a-b117-9c67bc9c7787
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 07b9f4d2-9045-46b1-933f-39a12af8cf7f
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: string
+		lineageTag: 005332c1-8f92-466b-8a5b-9ab5bbc29765
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: cd703768-86b2-417f-acd0-0731f3d05d54
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 7481fb1d-0add-4e9f-98f4-d83e9542ff05
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 67d652aa-ca46-4346-8048-740aa9da6b3c
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a563e259-4bf8-4e66-ab5d-20ed79281339
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		variation Variation
+			isDefault
+			relationship: dcf80007-e4a0-48ed-bd49-89e9010280d2
+			defaultHierarchy: LocalDateTable_34112bc6-2866-4d93-83b2-d57a5a95feed.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: d26a5efd-3819-4d16-bd54-ea8f888c3bff
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d2d861b4-7457-4846-984f-cb26f4384b74
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		variation Variation
+			isDefault
+			relationship: c1c5e535-41b1-48a0-aa1e-811489555b41
+			defaultHierarchy: LocalDateTable_9a929ea4-26df-4ac6-87c9-4e2f909f69c4.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: 56ffd84f-c82b-43eb-922e-60363d4b02bb
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SlicerMMM YYYY'
+		dataType: string
+		lineageTag: 8a450091-4338-4061-9aee-c5a63e6bface
+		summarizeBy: none
+		sourceColumn: SlicerMMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinancialYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 53d52b36-b2ab-4db2-bdc4-efccc6406c4d
+		summarizeBy: sum
+		sourceColumn: FinancialYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column CurrentFYFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: cdeb17c8-0895-409b-82b4-719a04a2780a
+		summarizeBy: none
+		sourceColumn: CurrentFYFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Employment Start Date' = m
+		mode: import
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "EmploymentStartDate"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,151 @@
+table 'Dim Workforce'
+	lineageTag: 2c7c89c1-be83-42f2-8573-98c424add627
+
+	column MemberId
+		dataType: int64
+		formatString: 0
+		lineageTag: 48d307e3-bbc0-41b0-b115-4776517b6bad
+		summarizeBy: none
+		sourceColumn: MemberId
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstName
+		dataType: string
+		lineageTag: 05b8a472-4193-444f-8d82-f9f73611577a
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		lineageTag: 41c34f7c-987b-4341-a705-e82594550572
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: 9f9dc25d-45fb-4e7d-b96f-3831fb937af2
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrimaryManager
+		dataType: string
+		lineageTag: 66319dea-ad84-4c2e-8124-2961984d0daa
+		summarizeBy: none
+		sourceColumn: PrimaryManager
+
+		annotation SummarizationSetBy = Automatic
+
+	column TerminationReason
+		dataType: string
+		lineageTag: 099ac7c9-141b-4961-ac03-73df23d89583
+		summarizeBy: none
+		sourceColumn: TerminationReason
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmploymentStatus
+		dataType: string
+		lineageTag: dd76ab3f-d61f-452a-acf0-281fb35405f8
+		summarizeBy: none
+		sourceColumn: EmploymentStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployingEntity
+		dataType: string
+		lineageTag: de48ec63-6cce-42f7-adb3-815904dec350
+		summarizeBy: none
+		sourceColumn: EmployingEntity
+
+		annotation SummarizationSetBy = Automatic
+
+	column VisaType
+		dataType: string
+		lineageTag: 09a80461-426e-4bb8-b302-255cdbb3f11e
+		summarizeBy: none
+		sourceColumn: VisaType
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsManagerFlag
+		dataType: string
+		lineageTag: 3d990ec5-14c2-4863-bcfa-8656803bbb5f
+		summarizeBy: none
+		sourceColumn: IsManagerFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullName
+		dataType: string
+		lineageTag: 65fbde4c-b621-4c37-bafc-49c005cf21b7
+		summarizeBy: none
+		sourceColumn: FullName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: 1a6efac3-4b4a-4012-86e6-5b2d31fe20ec
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeAddressPostcode
+		dataType: string
+		lineageTag: 8b50b80a-4621-4353-ae16-42cc7bdb1189
+		summarizeBy: none
+		sourceColumn: EmployeeAddressPostcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column WhatPromptedYou
+		dataType: string
+		lineageTag: 02806006-d444-424b-82e2-159ef73d18a6
+		summarizeBy: none
+		sourceColumn: WhatPromptedYou
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExtractDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: bfeec810-c047-4885-94a6-824f2e0d283e
+		summarizeBy: none
+		sourceColumn: ExtractDate
+
+		variation Variation
+			isDefault
+			relationship: c7aed455-2722-4a79-aa45-b5468491d9e7
+			defaultHierarchy: LocalDateTable_c79aaebd-ae53-47c7-8309-8f89a1468071.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 27ea68c7-679a-488d-98a5-8c25c34bd8ae
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Workforce' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="select #(lf)#(tab)m.MemberID#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [MemberId]#(lf)#(tab),m.GivenName#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [FirstName]#(lf)#(tab),m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [LastName]#(lf)#(tab),dbo.MemberOutletName(m.MemberID)#(tab)#(tab)#(tab)#(tab)as [Location]#(lf)#(tab),dbo.php_UserFullName(ma.AgencyRepresentative)#(tab)as [PrimaryManager]#(lf)#(tab),d.[Description]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [TerminationReason]#(lf)#(tab),case#(lf)#(tab)#(tab)when ma.ExitReasonId is not null OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL then 'Terminated'#(lf)#(tab)#(tab)else null#(lf)#(tab)end#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmploymentStatus]#(lf)#(tab),a.[Name]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployingEntity]#(lf)#(tab),v.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [VisaType]#(lf)#(tab),'No'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [IsManagerFlag]#(lf)#(tab),m.GivenName + ' ' + m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)as [FullName]#(lf)#(tab),CASE #(lf)#(tab)#(tab)WHEN m.sex = 'F' THEN 'Female'#(lf)#(tab)#(tab)WHEN m.sex = 'M' THEN 'Male' #(lf)#(tab)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Gender]#(lf)#(tab),mc.Postcode#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployeeAddressPostcode]#(lf)#(tab),w.Description#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [WhatPromptedYou]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [ExtractDate]#(tab)#(lf)#(tab),l.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [State]#(lf)from dbo.member m#(lf)left join dbo.MemberContact mc on m.MemberID = mc.MemberID#(lf)left join dbo.MemberProfile mp on m.MemberID = mp.MemberID#(lf)LEFT JOIN dbo.location l ON m.LocationID = l.LocationId#(lf)left join dbo.Visa v on mp.VISAType = v.VisaID#(lf)left join (#(lf)#(tab)select * #(lf)#(tab)from dbo.MemberAgency #(lf)#(tab)where AgencyID = 4#(lf)) ma on ma.MemberID = m.MemberID#(lf)left join (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Exit Reason'#(lf))d on ma.ExitReasonId = d.value #(lf)LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'What Prompted You'#(lf)) w on ma.ExitReasonId = w.value #(lf)left join dbo.Agency a on ma.AgencyID = a.AgencyID#(lf)where m.MemberID <> 1 #(lf)"]),
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Location", "Location"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

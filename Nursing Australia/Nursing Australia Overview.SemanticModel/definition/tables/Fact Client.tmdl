@@ -1,0 +1,187 @@
+table 'Fact Client'
+	lineageTag: 24c1dd4f-59bb-4df3-9835-ef8e1965316a
+
+	measure 'Count Clients' = COUNT('Fact Client'[ClientId])
+		formatString: 0
+		lineageTag: c40ce85c-9710-4bc4-a4e4-caa170d66a34
+
+	measure 'Count Active Clients' = CALCULATE([Count Clients], 'Fact Client'[ClientIsActive] = TRUE())
+		formatString: 0
+		lineageTag: b115c42e-e3e1-4746-9bd4-3a231756429b
+
+	column ClientId
+		dataType: int64
+		formatString: 0
+		lineageTag: dec7a9bd-2f2e-4072-9019-bb87fcbe8827
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientIsActive
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 3f9154ea-5368-43a5-9406-ba75d74b91fd
+		summarizeBy: none
+		sourceColumn: ClientIsActive
+
+		annotation SummarizationSetBy = Automatic
+
+	column KandaFirstShift
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 354a1c74-39a4-402c-b80c-fe4dbc62e336
+		summarizeBy: none
+		sourceColumn: KandaFirstShift
+
+		variation Variation
+			isDefault
+			relationship: 231dcc67-dc71-4729-bca4-fa2a4f462a57
+			defaultHierarchy: LocalDateTable_1c68d673-6d16-4a57-8e54-9dc785dcfbac.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column KandaLastShift
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 653daf4e-8e3c-4017-9726-7c8e7fa11a46
+		summarizeBy: none
+		sourceColumn: KandaLastShift
+
+		variation Variation
+			isDefault
+			relationship: 1838f94e-8e07-48e8-8f56-50b979c25738
+			defaultHierarchy: LocalDateTable_7243866c-415f-44bf-9df1-624dde3776b9.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column KandaTotalWorkerHours
+		dataType: int64
+		formatString: 0
+		lineageTag: d89e3558-0d83-4f7a-b315-c24df761750e
+		summarizeBy: sum
+		sourceColumn: KandaTotalWorkerHours
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientCampuses
+		dataType: int64
+		formatString: 0
+		lineageTag: b0a4022b-b88f-4b05-842d-b275354ad369
+		summarizeBy: sum
+		sourceColumn: ClientCampuses
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrimaryAgencyID
+		dataType: int64
+		formatString: 0
+		lineageTag: 36619345-134d-4992-a1f1-6262b6286082
+		summarizeBy: count
+		sourceColumn: PrimaryAgencyID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccreditedFacilityStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5bfe0e76-879f-40c1-9af5-ea130f4c2017
+		summarizeBy: none
+		sourceColumn: AccreditedFacilityStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column NoLiftPolicyStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0455c44b-97d2-4c61-aea1-9b6edfe8d49a
+		summarizeBy: none
+		sourceColumn: NoLiftPolicyStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column AcceptMidwifeStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 558bc0c9-8d60-4ba2-a8d3-41b7864df5ec
+		summarizeBy: none
+		sourceColumn: AcceptMidwifeStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column ManualHandlingStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 3407aa6b-6d34-4bb1-aeab-962099130804
+		summarizeBy: none
+		sourceColumn: ManualHandlingStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkingWithChildrenCheck
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0474f252-c023-4839-b64e-b70be0ebfc26
+		summarizeBy: none
+		sourceColumn: WorkingWithChildrenCheck
+
+		annotation SummarizationSetBy = Automatic
+
+	column CriminalRecordCheckStatus
+		dataType: int64
+		formatString: 0
+		lineageTag: d5b16c35-1128-419a-a038-21445908db22
+		summarizeBy: sum
+		sourceColumn: CriminalRecordCheckStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column RequireOrientation
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 289c670d-fab5-4825-abcd-1c6963be2fdc
+		summarizeBy: none
+		sourceColumn: RequireOrientation
+
+		variation Variation
+			isDefault
+			relationship: dbb2d076-1f22-4d8e-8838-e5f0e274ddeb
+			defaultHierarchy: LocalDateTable_bfc2b57b-834e-47bf-968d-c32979609799.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column EnabledStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 730db722-e82a-4130-9982-3160f93a580f
+		summarizeBy: none
+		sourceColumn: EnabledStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column StatusChangedDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 8d49d191-ee2f-4aca-b5be-13425df3a6ab
+		summarizeBy: none
+		sourceColumn: StatusChangedDate
+
+		variation Variation
+			isDefault
+			relationship: 3b297f94-86eb-4e4c-af6b-bbb58f67a850
+			defaultHierarchy: LocalDateTable_9e9ce824-b6bb-45df-9a12-7557d055545b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Client' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)c.ClientId#(lf)#(tab),dbo.IsActiveClient(c.ClientId)#(tab)#(tab)#(tab)#(tab)AS [ClientIsActive]#(lf)#(tab),dbo.FirstShiftForClientAgency(c.ClientId, 4)#(tab)#(tab)AS [KandaFirstShift]#(lf)#(tab),dbo.LastShiftForClientAgency(c.ClientId, 4)#(tab)#(tab)AS [KandaLastShift]#(lf)#(tab),dbo.TotalAgencyHoursWorkedForClient(c.ClientId, 4)#(tab)AS [KandaTotalWorkerHours]#(lf)#(tab),dbo.CountClientCampuses(c.ClientId)#(tab)#(tab)#(tab)AS [ClientCampuses]#(lf)#(tab),c.PrimaryAgencyID#(lf)#(tab),c.AccreditedFacilityStatus#(lf)#(tab),c.NoLiftPolicyStatus#(lf)#(tab),c.AcceptMidwifeStatus#(lf)#(tab),c.ManualHandlingStatus#(lf)#(tab),c.WorkingWithChildrenCheck#(lf)#(tab),c.CriminalRecordCheckStatus#(lf)#(tab),c.RequireOrientation#(lf)#(tab),c.EnabledStatus#(lf)#(tab),c.StatusChangedDate#(lf)FROM dbo.Client c#(lf)LEFT JOIN dbo.ClientAgency ca ON c.ClientId = ca.ClientID#(lf)LEFT JOIN dbo.Location l on c.LocationId = l.LocationId#(lf)LEFT JOIN dbo.Region r on l.RegionID = r.RegionID#(lf)where ca.AgencyID = 4"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
