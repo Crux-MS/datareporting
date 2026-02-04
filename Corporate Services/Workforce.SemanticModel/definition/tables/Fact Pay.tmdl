@@ -1,0 +1,508 @@
+table 'Fact Pay'
+	lineageTag: 6f1c2c4d-1389-47ba-a3d0-6b3798b3ecba
+
+	measure VehicleAllowanceKMsPaid = CALCULATE(SUM('Fact Pay'[Units]), 'Fact Pay'[Pay Category] = "Vehicle Allowance - Up To ATO Limit")
+		formatString: #,0.00
+		lineageTag: 07470a15-8c78-4eac-ad25-86dc760ca6a3
+
+	measure HoursPaid = CALCULATE(SUM('Fact Pay'[Units]), 'Fact Pay'[RateUnit] = "Hourly", ALL('Dim Extract Date'))
+		formatString: #,0
+		displayFolder: Hours Paid
+		lineageTag: 3cd84877-c0e4-457b-92b2-9a6820b76de8
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure FTEPaid = ```
+			VAR _periodStart = MIN('Dim Paid Date'[PaidDate]) //Select start of period
+			VAR _periodEnd = MAX('Dim Paid Date'[PaidDate]) 
+			VAR _countDays = DATEDIFF(_periodStart, _periodEnd, DAY)+1 //Count days in selected period
+			VAR _lastFortnight = IF(
+			    ISFILTERED('Dim Paid Date'[FF (DD MMM YYYY)]),
+			    IF(SELECTEDVALUE('Dim Paid Date'[FortnightOfYear]) = 27, 1, 0),
+			    0)
+			VAR _dailyFTE = DIVIDE(38, 7)
+			VAR _periodBaseFTE = IF(_lastFortnight = 1, 14, _countDays) * _dailyFTE //Calculate denominator for selected period
+			VAR _rateUnit = SELECTEDVALUE('Fact Pay'[RateUnit])
+			VAR _hoursWorked = [HoursPaid] //Calculate numerator for selected period - all hours that aren't 'fixed' or 'annually' paid categories. 
+			VAR _periodFTE = DIVIDE(_hoursWorked, _periodBaseFTE)
+			RETURN _periodFTE
+			```
+		formatString: #,0.00
+		displayFolder: FTEs
+		lineageTag: 74664a83-4092-460c-bf50-52737142af17
+
+	measure LeavePaid = CALCULATE([HoursPaid], 'Fact Pay'[MasterPaymentSummaryClassification] IN {"LeaveOtherPaidLeave", "LeavePaidParentalLeave", "LeaveWorkersCompensation"})
+		formatString: #,0.00
+		displayFolder: Hours Paid
+		lineageTag: b22cc6df-bbd5-4492-afcb-6162e43555b9
+
+	measure OvertimeHoursWorked = CALCULATE([HoursPaid], 'Fact Pay'[MasterPaymentSummaryClassification] = "Overtime")
+		formatString: #,0.00
+		displayFolder: Hours Paid
+		lineageTag: 5f781300-b46f-4c9c-b79f-c7cd2ba0d6b5
+
+	measure 'Overtime Rate' = DIVIDE([OvertimeHoursWorked], [HoursPaid])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Hours Paid
+		lineageTag: 51164659-b0d1-4452-977c-db2358bd956a
+
+	measure PersonalLeavePaid = CALCULATE([LeavePaid], 'Fact Pay'[Pay Category] = "Personal/Carer's Leave Taken")
+		formatString: 0.0
+		displayFolder: Hours Paid
+		lineageTag: 9be16291-03fd-45d0-aa41-5f0b60649a50
+
+	measure UnplannedLeave% = DIVIDE([PersonalLeavePaid], [HoursPaid])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Hours Paid
+		lineageTag: bac89a92-6b66-42ef-9ad1-c1a0067cc0f7
+
+	measure HoursPaid% =
+			CALCULATE(DIVIDE([HoursPaid], CALCULATE(
+			    [HoursPaid],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Paid Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Fact Pay')
+			)), USERELATIONSHIP('Fact Pay'[ReportingMonthStart], 'Dim Extract Date'[Extract Date]))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Hours Paid
+		lineageTag: 581a52de-0841-4a74-9ace-faa8fbfc010f
+
+	measure FTEPaid% =
+			DIVIDE([FTEPaid], CALCULATE(
+			    [FTEPaid],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Paid Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Fact Pay')
+			))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: FTEs
+		lineageTag: 48384748-7bbd-4b9c-b082-26f9dcafb6c9
+
+	measure LeavePaid% =
+			CALCULATE(DIVIDE([LeavePaid], CALCULATE(
+			    [LeavePaid],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Paid Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Fact Pay')
+			)), USERELATIONSHIP('Fact Pay'[ReportingMonthStart], 'Dim Extract Date'[Extract Date]))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Hours Paid
+		lineageTag: 9c1e4241-31a3-4080-a3d7-32ef74aaaa44
+
+	measure OvertimeHours% =
+			CALCULATE(DIVIDE([OvertimeHoursWorked], CALCULATE(
+			    [OvertimeHoursWorked],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Paid Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Fact Pay')
+			)), USERELATIONSHIP('Fact Pay'[ReportingMonthStart], 'Dim Extract Date'[Extract Date]))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Hours Paid
+		lineageTag: 7c9c7e9e-42ae-4831-a21d-084e6edc7d5f
+
+	measure HoursPaidAmount = CALCULATE(SUM('Fact Pay'[Amount]), 'Fact Pay'[RateUnit] = "Hourly", ALL('Dim Extract Date'))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Amount Paid
+		lineageTag: 8f3978c5-a695-41a7-99ef-f6e6e5d9f735
+
+	measure LeavePaidAmount = CALCULATE([HoursPaidAmount], 'Fact Pay'[MasterPaymentSummaryClassification] IN {"LeaveOtherPaidLeave", "LeavePaidParentalLeave", "LeaveWorkersCompensation"})
+		formatString: \$#,0.00;-\$#,0.00;\$#,0.00
+		displayFolder: Amount Paid
+		lineageTag: 2b3b4be4-528c-49bb-8f63-75f994257026
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-AU"}
+
+	measure PersonalLeavePaidAmount = CALCULATE([LeavePaidAmount], 'Fact Pay'[Pay Category] = "Personal/Carer's Leave Taken")
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		displayFolder: Amount Paid
+		lineageTag: 1b8073b6-9d44-426c-a022-05e0e1cccfe4
+
+	measure HoursPaidAmount% =
+			CALCULATE(DIVIDE([HoursPaidAmount], CALCULATE(
+			    [HoursPaidAmount],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Paid Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Fact Pay')
+			)), USERELATIONSHIP('Fact Pay'[ReportingMonthStart], 'Dim Extract Date'[Extract Date]))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Amount Paid
+		lineageTag: d5e9042a-ccf8-4322-a7a8-eb6da4f596b5
+
+	measure OvertimePaidAmount = CALCULATE([HoursPaidAmount], 'Fact Pay'[MasterPaymentSummaryClassification] = "Overtime")
+		displayFolder: Amount Paid
+		lineageTag: 62911042-fe08-40bb-ae3e-6624d2264bea
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure OvertimePaidAmountRate = DIVIDE([OvertimePaidAmount], [HoursPaidAmount])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Amount Paid
+		lineageTag: 86fac4dc-e3c6-42a9-a8c6-1a1ca518ead0
+
+	measure LeavePaidAmount% =
+			CALCULATE(DIVIDE([LeavePaidAmount], CALCULATE(
+			    [LeavePaidAmount],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Paid Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Fact Pay')
+			)), USERELATIONSHIP('Fact Pay'[ReportingMonthStart], 'Dim Extract Date'[Extract Date]))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Amount Paid
+		lineageTag: 7fb87f34-ece8-4a89-aa8a-ced368d4e98f
+
+	measure OvertimePaidAmount% =
+			CALCULATE(DIVIDE([OvertimePaidAmount], CALCULATE(
+			    [OvertimePaidAmount],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Paid Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Fact Pay')
+			)), USERELATIONSHIP('Fact Pay'[ReportingMonthStart], 'Dim Extract Date'[Extract Date]))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Amount Paid
+		lineageTag: 5f0aab4b-0faa-4d6b-b1a9-f1b14e4f9128
+
+	measure HoursPaidAmount2 =
+			VAR _selectedDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = Min('Dim Paid Date'[PaidDate])
+			VAR _paidAmount = CALCULATE(SUM('Fact Pay'[Amount]), 'Fact Pay'[RateUnit] = "Hourly", ALL('Dim Extract Date'))
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    _paidAmount,
+			    BLANK())
+			RETURN _logic
+		displayFolder: Amount Paid
+		lineageTag: 8aab935b-c48c-4775-9ea6-11f4d59c249e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure PersonalLeaveRate = DIVIDE([PersonalLeavePaid], [HoursPaid])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Hours Paid
+		lineageTag: ded325ec-22d8-4f99-8c53-5ff3c61c32a5
+
+	measure PersonalLeavePaidAmountRate = DIVIDE([PersonalLeavePaidAmount], [HoursPaidAmount])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Amount Paid
+		lineageTag: ddf7ba05-497c-463e-bf0a-726d655222ad
+
+	measure DisplayHoursPaid = IF([KP Reporting Year Flag] = 1, [HoursPaid], BLANK())
+		formatString: #,0
+		displayFolder: Hours Paid
+		lineageTag: 3309c24d-2279-40e3-be90-c647a5f70452
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure DisplayFTEsPaid = IF([KP Reporting Year Flag] = 1, [FTEPaid], BLANK())
+		displayFolder: FTEs
+		lineageTag: 7ec9d61b-c0af-4e32-8874-c23d204388d3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayOvertimeRate = IF([KP Reporting Year Flag] = 1, [Overtime Rate], BLANK())
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Hours Paid
+		lineageTag: b84940b6-17c2-4871-9304-a03ccee5d3c3
+
+	measure DisplayLeavePaid = IF([KP Reporting Year Flag] = 1, [LeavePaid], BLANK())
+		displayFolder: Hours Paid
+		lineageTag: e9d6ae6c-b9b4-4c6f-bf5a-63578930b077
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayHoursPaidAmount = IF([KP Reporting Year Flag] = 1, [HoursPaidAmount], BLANK())
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Amount Paid
+		lineageTag: 7f133935-8929-406e-be61-184e6c8ec993
+
+	measure DisplayOvertimeAmountRate = IF([KP Reporting Year Flag] = 1, [OvertimePaidAmountRate], BLANK())
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Amount Paid
+		lineageTag: 81919757-ad09-4577-bcc1-9d160274c03d
+
+	measure DisplayLeavePaidAmount = IF([KP Reporting Year Flag] = 1, [LeavePaidAmount], BLANK())
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Amount Paid
+		lineageTag: 8f4cb046-510d-4a8c-90ce-da9a8afb3139
+
+	column 'Employee Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: e53ef78d-2590-4aa8-8f55-0b644f746ddc
+		summarizeBy: count
+		sourceColumn: Employee Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExternalId
+		dataType: string
+		lineageTag: 5ba03042-b59f-465c-979f-938ec85c940e
+		summarizeBy: none
+		sourceColumn: ExternalId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Pay Category Id'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: de0c3a3c-adcf-4006-9def-0569f69559b1
+		summarizeBy: count
+		sourceColumn: Pay Category Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Pay Category'
+		dataType: string
+		lineageTag: 62c56893-7dc1-452b-a36d-de20ba7a6162
+		summarizeBy: none
+		sourceColumn: Pay Category
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaymentSummaryClassification
+		dataType: string
+		lineageTag: e8dab298-cb60-4e14-93cf-491271615ea4
+		summarizeBy: none
+		sourceColumn: PaymentSummaryClassification
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayCategoryExternalId
+		dataType: string
+		lineageTag: b95a9480-e423-4977-a4d7-455c35953165
+		summarizeBy: none
+		sourceColumn: PayCategoryExternalId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Pay Run'
+		dataType: string
+		lineageTag: 4686e70c-a60e-4d64-ac6f-1d3d02f1616a
+		summarizeBy: none
+		sourceColumn: Pay Run
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Paid'
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 3df8f8fe-d935-4442-873e-a270567770a1
+		summarizeBy: none
+		sourceColumn: Date Paid
+
+		variation Variation
+			isDefault
+			relationship: 41fe3d72-8e3c-44f5-b519-e668f78a5f63
+			defaultHierarchy: LocalDateTable_1ed46c0d-c694-4ce8-a9df-a2296be02204.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Location
+		dataType: string
+		lineageTag: 2b85b0a6-54d0-40f9-8fca-6a3a5514b1d9
+		summarizeBy: none
+		sourceColumn: Location
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Units
+		dataType: double
+		lineageTag: 17a739f2-b06d-461e-9be3-21cb3f0c1ac4
+		summarizeBy: sum
+		sourceColumn: Units
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Rate
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 36f8aa51-bb61-4947-a71d-23ccb1d69fac
+		summarizeBy: sum
+		sourceColumn: Rate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Amount
+		dataType: double
+		displayFolder: Amount Paid
+		lineageTag: 96beac3d-20bc-4f42-bb4c-4343376d8994
+		summarizeBy: sum
+		sourceColumn: Amount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'SG Super'
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 9e9625cd-e8e1-4956-9e99-caf7442190d5
+		summarizeBy: sum
+		sourceColumn: SG Super
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartExtractPeriod
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: ceff5f09-1e0f-4e6a-83dc-d1d2888fa3aa
+		summarizeBy: none
+		sourceColumn: StartExtractPeriod
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EndExtractPeriod
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: e9c2b5c1-4412-4589-9eee-c2d617cabe1a
+		summarizeBy: none
+		sourceColumn: EndExtractPeriod
+
+		variation Variation
+			isDefault
+			relationship: ecd65e2f-1b72-4e04-a9fd-81cda75b54b0
+			defaultHierarchy: LocalDateTable_21d9cc01-3695-47dd-b9ef-8187fed64aa9.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column RateUnit
+		dataType: string
+		lineageTag: fa567559-a74c-4715-ae49-68f53427523d
+		summarizeBy: none
+		sourceColumn: RateUnit
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayRunType
+		dataType: string
+		lineageTag: 83265b59-5221-4b84-9a1d-f86a4fc05187
+		summarizeBy: none
+		sourceColumn: PayRunType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MasterPaymentSummaryClassification
+		dataType: string
+		lineageTag: 713a1086-0e68-47a6-9472-c66f5564c2c6
+		summarizeBy: none
+		sourceColumn: MasterPaymentSummaryClassification
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReportingMonthStart
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 8dcfb850-a072-4fd2-8ec5-d25e5f280a7e
+		summarizeBy: none
+		sourceColumn: ReportingMonthStart
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Tax file number'
+		dataType: string
+		lineageTag: eb3ab8ab-b37a-4c5e-a437-4b03423a753a
+		summarizeBy: none
+		sourceColumn: Tax file number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employing entity'
+		dataType: string
+		lineageTag: 1f6d90f7-67fa-4e11-b1b8-60d33d9bd1aa
+		summarizeBy: none
+		sourceColumn: Employing entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmailExtractKey
+		dataType: string
+		lineageTag: dc6ac674-dfcf-4034-ae82-d7ba40fc6f96
+		summarizeBy: none
+		sourceColumn: EmailExtractKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReportingFortnight = RELATED('Dim Paid Date'[FF (DD MMM YYYY)])
+		lineageTag: c5b36220-55fd-4fa5-9d04-470e2002d6e2
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Pay' = m
+		mode: import
+		queryGroup: KeyPay
+		source =
+				let
+				    Source = #"KeyPay Pay Categories - Source",
+				    #"Merged Queries1" = Table.NestedJoin(Source, {"EmployeeExtractKey"}, #"Bridge KeyPay Workforce", {"EmployeeExtractKey"}, "Bridge KeyPay Workforce", JoinKind.LeftOuter),
+				    #"Expanded Bridge KeyPay Workforce" = Table.ExpandTableColumn(#"Merged Queries1", "Bridge KeyPay Workforce", {"Tax file number", "Email", "Employing entity"}, {"Tax file number", "Email", "Employing entity"}),
+				    #"Added Suffix" = Table.AddColumn(#"Expanded Bridge KeyPay Workforce", "EmailExtractKey", each Text.Combine({[Email], Date.ToText([ReportingMonthStart], "MMMyyyy")}, ""), type text),
+				    #"Merged Queries" = Table.NestedJoin(#"Added Suffix", {"Pay Category Id"}, #"KeyPay Pay Categories Master List", {"Id"}, "KeyPay Pay Categories Master List", JoinKind.LeftOuter),
+				    #"Removed Columns" = Table.RemoveColumns(#"Merged Queries",{"Email", "First Name", "Surname", "Notes", "EmployeeExtractKey"}),
+				    #"Expanded KeyPay Pay Categories Master List" = Table.ExpandTableColumn(#"Removed Columns", "KeyPay Pay Categories Master List", {"RateUnit", "MasterPaymentSummaryClassification"}, {"RateUnit", "MasterPaymentSummaryClassification"}),
+				    #"Inserted PayRunType" = Table.AddColumn(#"Expanded KeyPay Pay Categories Master List", "PayRunType", each Text.BeforeDelimiter([Pay Run], " ("), type text),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted PayRunType",{{"Tax file number", type text}, {"Employing entity", type text}, {"PayCategoryExternalId", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

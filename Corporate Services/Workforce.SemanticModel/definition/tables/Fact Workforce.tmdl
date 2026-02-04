@@ -1,0 +1,712 @@
+table 'Fact Workforce'
+	lineageTag: c97fb911-fdc3-4e48-ac00-fb381fcd9c5a
+
+	measure 'Count People' = ```
+			COALESCE(CALCULATE(
+			    COUNT('Fact Workforce'[MemberExtractId]), 
+			    'Fact Workforce'[Date of birth] <> BLANK()),0)
+			```
+		formatString: #,0
+		lineageTag: ff7e3f75-ea8c-47f6-9229-8c36e9dcaad4
+
+	measure 'Count Currently Employed' = ```
+			VAR _ExtractDate = SELECTEDVALUE('Dim Extract Date'[MMM YYYY])
+			VAR _currentDate = MAX('Dim Employment Start Date'[Employment Start Date])
+			VAR _firstShiftVC = SELECTEDVALUE('Fact Workforce'[FirstShiftDate]) 
+			VAR _nonFrontlineCount = CALCULATE(
+			    [Count People], 
+			    OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			    'Fact Workforce'[NeverStart Flag] = FALSE(),
+			    FILTER(
+			        ALL('Dim Employment Start Date'[Employment Start Date]), 
+			        'Dim Employment Start Date'[Employment Start Date] <= _currentDate),
+			    'Fact Workforce'[NeverStart Flag] = FALSE(),
+			    'Fact Workforce'[Current FNC Flag] <> "Frontline")
+			VAR _frontlineCount = IF(
+			    _firstShiftVC <> BLANK(),
+			    CALCULATE(
+			        [Count People], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Fact First Shift Date'[EarliestDateOfService]),
+			            'Fact First Shift Date'[EarliestDateOfService] <= _currentDate),
+			        'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] <> "agy",
+			        'Fact Workforce'[Current FNC Flag] = "Frontline"),
+			    CALCULATE(
+			        [Count People], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Dim Employment Start Date'[Employment Start Date]), 
+			            'Dim Employment Start Date'[Employment Start Date] <= _currentDate),
+			        'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] <> "agy", 
+			        'Fact Workforce'[Current FNC Flag] = "Frontline"
+			        )
+			    )
+			VAR _logic = CALCULATE(_frontlineCount + _nonFrontlineCount, 
+			        'Dim Job History'[MemberLatestJobFlag] = 0) + [Count Currently Employed Agency]
+			RETURN _logic
+			```
+		formatString: #,0
+		displayFolder: Current Employees
+		lineageTag: c5c0a68b-4661-4c40-abe2-8a8e1f197b9a
+
+	measure CountExits =
+			CALCULATE(
+			    [Count People],
+			    'Dim Workforce'[Employment status] = "Terminated",
+			    'Dim Workforce'[Termination type] <> "Transfer",
+			    'Fact Workforce'[NeverStart Flag] = FALSE(),
+			    USERELATIONSHIP('Fact Workforce'[Termination date], 'Dim Employment Start Date'[Employment Start Date])
+			)
+		formatString: 0
+		displayFolder: Exits
+		lineageTag: d1a8ef8c-dc42-4ed0-a78a-4366992680db
+
+	measure 'Count Currently Employed on Visa' =
+			CALCULATE(
+			    [Count Currently Employed],
+			    'Dim Workforce'[Visa type] <> BLANK(),
+			    'Dim Workforce'[Visa type] <> "Australian Citizen")
+		formatString: #,0
+		displayFolder: Current Employees
+		lineageTag: 8bd7554d-59df-42a0-bb92-271cef384bee
+
+	measure 'Current Workers on Visa %' = DIVIDE([Count Currently Employed on Visa], [Count Currently Employed])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Current Employees
+		lineageTag: 3f7fb6c1-19ba-48b6-b010-1619b146a4f2
+
+	measure 'Count Transfers' =
+			CALCULATE(
+			    [Count People],
+			    'Dim Workforce'[Employment status] = "Terminated",
+			    'Dim Workforce'[Termination type] = "Transfer",
+			    USERELATIONSHIP('Fact Workforce'[Termination date], 'Dim Employment Start Date'[Employment Start Date])
+			)
+		formatString: #,0
+		displayFolder: Exits
+		lineageTag: b3857adb-7988-410b-bcc1-5200db13640c
+
+	measure 'Count New Starters' = ```
+			CALCULATE([Count People], 
+			    'Fact Workforce'[NeverStart Flag] = FALSE())
+			```
+		formatString: 0
+		displayFolder: New Starters
+		lineageTag: d218284d-1b10-4cea-9c9c-a34c6a3ad08f
+
+	measure 'Count Currently Employed Agency' = ```
+			VAR _currentDate = MAX('Dim Employment Start Date'[Employment Start Date])
+			VAR _firstShiftHRL = SELECTEDVALUE('Dim HRLink First Shift Date'[First Shift Date])
+			VAR _agencyCount = IF(
+			    _firstShiftHRL <> BLANK(),
+			    CALCULATE(
+			        [Count People], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Dim HRLink First Shift Date'[First Shift Date]),
+			            'Dim HRLink First Shift Date'[First Shift Date] <= _currentDate),
+			        // 'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] = "agy"
+			    ),
+			    CALCULATE(
+			        [Count People], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Dim Employment Start Date'[Employment Start Date]), 
+			            'Dim Employment Start Date'[Employment Start Date] <= _currentDate),
+			        // 'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] = "agy"
+			        )
+			    )
+			RETURN _agencyCount 
+			```
+		formatString: 0
+		displayFolder: Current Employees
+		lineageTag: 8d4a0f45-452a-4a24-9cd9-9ad2aa31b3d6
+
+		changedProperty = IsHidden
+
+	measure Rolling12MonthTurnover = ```
+			VAR _extractDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _currentMonthEnd = CALCULATE(MAX('Dim Employment Start Date'[Employment Start Date]), 'Fact Workforce'[Extract Date] = _extractDate)
+			VAR _currentMonth = CALCULATE(SELECTEDVALUE('Dim Employment Start Date'[YYYYMM]), 'Fact Workforce'[Employment start date] = _currentMonthEnd)
+			VAR _sameMthEndPrevYr = EOMONTH(_currentMonthEnd, -12)
+			VAR _currentlyEmployed = [Count Currently Employed]
+			VAR _currentEmpsPrevYr = CALCULATE(_currentlyEmployed, 'Dim Employment Start Date'[Employment Start Date] = _sameMthEndPrevYr)
+			VAR _rollingAvgYrEmployees = (_currentlyEmployed + _currentEmpsPrevYr)/2
+			VAR _maxTerminationDate = CALCULATE(MAX('Dim Employment Termination Date'[Termination Date]), 'Dim Employment Termination Date'[YYYYMM] <= _currentMonth, CROSSFILTER('Dim Employment Start Date'[Employment Start Date], 'Fact Workforce'[Employment start date], Both), 'Fact Workforce'[Extract Date] = _extractDate) 
+			VAR _rollingYrTerminations = CALCULATE(
+			    [CountExits], 
+			    'Fact Workforce'[Termination date] <= _maxTerminationDate && 'Fact Workforce'[Termination date] > _sameMthEndPrevYr, 
+			    ALL('Dim Employment Start Date'), 
+			    CROSSFILTER('Dim Employment Start Date'[Employment Start Date], 'Fact Workforce'[Employment start date], Both))
+			VAR _rollingYrTurnover = DIVIDE(_rollingYrTerminations, _rollingAvgYrEmployees)
+			RETURN _rollingYrTurnover
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Turnover
+		lineageTag: b1e4e4f8-a4e2-43d6-b6ac-eda3151f463f
+
+	measure 'Count New Starters on Visa' =
+			CALCULATE(
+			    [Count New Starters],
+			    'Dim Workforce'[Visa type] <> BLANK(),
+			    'Dim Workforce'[Visa type] <> "Australian Citizen")
+		formatString: 0
+		displayFolder: New Starters
+		lineageTag: 24cabaff-1d46-43d0-b314-04bae985b079
+
+	measure 'Count New Starters Unsuccessful Probation' = CALCULATE([Count New Starters], 'Fact Workforce'[ProbationSuccessfulFlag] = FALSE())
+		formatString: 0
+		displayFolder: New Starters
+		lineageTag: ac8664b5-130d-45bf-bace-44011f176345
+
+	measure ProbationaryTurnover = DIVIDE([Count New Starters Unsuccessful Probation], [Count New Starters])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Turnover
+		lineageTag: 6382f364-d5cd-4311-82ac-4a7859c940a4
+
+	measure 'Currently Employed %' = ```
+			DIVIDE([Count Currently Employed], CALCULATE(
+			    [Count Currently Employed], 
+			    ALLSELECTED('Dim Employment Start Date'),
+			    ALLSELECTED('Fact Workforce'),
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Fact First Shift Date')
+			    )
+			)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Current Employees
+		lineageTag: d4d6a729-cb0f-401f-b274-98b8e02ab267
+
+	measure ExitsCategorical% = ```
+			DIVIDE([CountExits], 
+			    CALCULATE(
+			        [CountExits], 
+			        ALLSELECTED('Fact Workforce'[NeverStart Flag]),
+			        ALLSELECTED('Dim Workforce'),
+			        ALLSELECTED('Dim Employment Start Date'),
+			        ALLSELECTED('Dim Job History')
+			    )
+			)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Exits
+		lineageTag: 6c61e51e-de7f-4ac6-9d96-4a6144e276df
+
+	measure 'New Starters %' =
+			DIVIDE([Count New Starters], CALCULATE(
+			    [Count New Starters],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Employment Start Date'),
+			    ALLSELECTED('Fact Workforce'))
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: New Starters
+		lineageTag: 24437a62-551a-4d57-9f6c-390a642105a8
+
+	measure CountNeverStarts = CALCULATE([Count People], 'Fact Workforce'[NeverStart Flag] = TRUE())
+		formatString: 0
+		displayFolder: New Starters
+		lineageTag: 0430b94c-017f-4e62-9d86-d0c0d5665523
+
+	measure ProbationUnsuccessful% =
+			DIVIDE([Count New Starters Unsuccessful Probation], CALCULATE(
+			    [Count New Starters Unsuccessful Probation],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Employment Start Date'),
+			    ALLSELECTED('Fact Workforce'))
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: New Starters
+		lineageTag: ce6bcf4e-910f-45d3-aa88-0e200bc404cd
+
+	measure NeverStarts% =
+			DIVIDE([CountNeverStarts], CALCULATE(
+			    [CountNeverStarts],
+			    ALLSELECTED('Dim Job History'),
+			    ALLSELECTED('Dim Employment Start Date'),
+			    ALLSELECTED('Fact Workforce'))
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: New Starters
+		lineageTag: 232b14d6-b634-4ebb-bdd2-4ea414cd4dbb
+
+	measure AverageWorkerAge = AVERAGE('Fact Workforce'[WorkerAge])
+		displayFolder: Worker Age
+		lineageTag: fbd72fec-92ad-443a-936a-73cf4749850f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AverageWorkerTenureYears = AVERAGE('Fact Workforce'[WorkforceTenure(years)])
+		displayFolder: Worker Tenure
+		lineageTag: 26532ac8-9e61-4614-b097-a794f79c87d1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AverageTenureCurrentlyEmployed = ```
+			VAR _ExtractDate = SELECTEDVALUE('Dim Extract Date'[MMM YYYY])
+			VAR _currentDate = MAX('Dim Employment Start Date'[Employment Start Date])
+			VAR _firstShiftVC = SELECTEDVALUE('Fact Workforce'[FirstShiftDate]) 
+			VAR _nonFrontlineCount = CALCULATE(
+			    [AverageWorkerTenureYears], 
+			    OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			    'Fact Workforce'[NeverStart Flag] = FALSE(),
+			    FILTER(
+			        ALL('Dim Employment Start Date'[Employment Start Date]), 
+			        'Dim Employment Start Date'[Employment Start Date] <= _currentDate),
+			    'Fact Workforce'[NeverStart Flag] = FALSE(),
+			    'Fact Workforce'[Current FNC Flag] <> "Frontline")
+			VAR _frontlineCount = IF(
+			    _firstShiftVC <> BLANK(),
+			    CALCULATE(
+			        [AverageWorkerTenureYears], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Fact First Shift Date'[EarliestDateOfService]),
+			            'Fact First Shift Date'[EarliestDateOfService] <= _currentDate),
+			        'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] <> "agy",
+			        'Fact Workforce'[Current FNC Flag] = "Frontline"),
+			    CALCULATE(
+			        [AverageWorkerTenureYears], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Dim Employment Start Date'[Employment Start Date]), 
+			            'Dim Employment Start Date'[Employment Start Date] <= _currentDate),
+			        'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] <> "agy", 
+			        'Fact Workforce'[Current FNC Flag] = "Frontline"
+			        )
+			    )
+			VAR _logic = CALCULATE(_frontlineCount + _nonFrontlineCount, 
+			        'Dim Job History'[MemberLatestJobFlag] = 0)// + [Count Currently Employed Agency]
+			RETURN _logic
+			```
+		formatString: 0.0
+		displayFolder: Worker Tenure
+		lineageTag: fadd9244-f7f2-4a6a-adc7-0370f2a64d2b
+
+	measure AverageTenureCurrentlyEmployedAgency = ```
+			VAR _currentDate = MAX('Dim Employment Start Date'[Employment Start Date])
+			VAR _firstShiftHRL = SELECTEDVALUE('Dim HRLink First Shift Date'[First Shift Date])
+			VAR _agencyCount = IF(
+			    _firstShiftHRL <> BLANK(),
+			    CALCULATE(
+			        [AverageWorkerTenureYears], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Dim HRLink First Shift Date'[First Shift Date]),
+			            'Dim HRLink First Shift Date'[First Shift Date] <= _currentDate),
+			        // 'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] = "agy"
+			    ),
+			    CALCULATE(
+			        [AverageWorkerTenureYears], 
+			        OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
+			        FILTER(
+			            ALL('Dim Employment Start Date'[Employment Start Date]), 
+			            'Dim Employment Start Date'[Employment Start Date] <= _currentDate),
+			        // 'Fact Workforce'[NeverStart Flag] = FALSE(),
+			        'Dim Workforce'[Source Entity] = "agy"
+			        )
+			    )
+			RETURN _agencyCount 
+			```
+		displayFolder: Worker Tenure
+		lineageTag: 8927a4a9-ba31-4dad-91fe-019b8baee09c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayCurrentEmployees = IF([EH Reporting Year Flag] = 1, [Count Currently Employed], BLANK())
+		formatString: 0
+		displayFolder: Current Employees
+		lineageTag: cbc87dfb-0cf2-4d0f-9673-f8dbd5a61a2d
+
+	measure DisplayRollingTurnover = IF([EH Reporting Year Flag] = 1, [Rolling12MonthTurnover], BLANK())
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Turnover
+		lineageTag: a5d6ccd7-89e2-4aa6-8222-41402c2ed328
+
+	measure DisplayNewStarters = IF([EH Reporting Year Flag] = 1, [Count New Starters], BLANK())
+		formatString: 0
+		displayFolder: New Starters
+		lineageTag: c15bf2f7-48d2-48df-a5cf-f25d5d5ca2a0
+
+	measure DisplayExitCount = IF([EH Reporting Year Flag] = 1, [CountExits], BLANK())
+		displayFolder: Exits
+		lineageTag: 12052194-f502-4c70-ae37-551ebb6977bb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayNewStartersProbationUnsuccessful = IF([EH Reporting Year Flag] = 1, [Count New Starters Unsuccessful Probation], BLANK())
+		formatString: 0
+		displayFolder: New Starters
+		lineageTag: 2f2c79e2-fb16-4250-8fe1-8c4b517996fb
+
+	measure DisplayProbationTurnoverRate = IF([EH Reporting Year Flag] = 1, [ProbationaryTurnover], BLANK())
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Turnover
+		lineageTag: ed8db42b-f01a-454f-8a39-5df1a879c0fa
+
+	measure DisplayNeverStarts = IF([EH Reporting Year Flag] = 1, [CountNeverStarts], BLANK())
+		formatString: 0
+		displayFolder: Exits
+		lineageTag: 878f8be5-f6cc-4596-8541-e06b2c0b6e29
+
+	column 'Extract Date'
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: d6f76fc9-8133-4af6-8bac-1273f51a4744
+		summarizeBy: none
+		sourceColumn: Extract Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Termination date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 7aea721b-4b3f-4679-a4eb-d66ac1932efa
+		summarizeBy: none
+		sourceColumn: Termination date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Employment start date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: e5b705ff-146d-424c-a905-6e07d9ab18e5
+		summarizeBy: none
+		sourceColumn: Employment start date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Probation end date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 8e146e00-7a89-45f4-918c-ab058a899f97
+		summarizeBy: none
+		sourceColumn: Probation end date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'FTE value'
+		dataType: double
+		lineageTag: 3756b59f-5745-4087-a351-baf91bd6d4b1
+		summarizeBy: sum
+		sourceColumn: FTE value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Visa expiry date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 94905bd9-3f54-482c-bab1-41befec731d0
+		summarizeBy: none
+		sourceColumn: Visa expiry date
+
+		variation Variation
+			isDefault
+			relationship: 6df3057b-15be-4648-864f-27b37c8864de
+			defaultHierarchy: LocalDateTable_eeeb47a6-adbf-438a-a400-b590b9c296cf.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Termination type'
+		dataType: string
+		lineageTag: 859baebb-6825-4c90-bb74-4604c45e2e38
+		summarizeBy: none
+		sourceColumn: Termination type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Source Entity'
+		dataType: string
+		lineageTag: 76145424-fdda-479a-9c18-5de6939fc62a
+		summarizeBy: none
+		sourceColumn: Source Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date of birth'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 33a1741f-c8ad-4818-99ba-d0c2ee932938
+		summarizeBy: none
+		sourceColumn: Date of birth
+
+		variation Variation
+			isDefault
+			relationship: 111c9b6c-4f36-4469-9d6e-6768c83c0b45
+			defaultHierarchy: LocalDateTable_af90e738-1686-4fe5-840f-bc612226c3a7.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'NeverStart Flag' = ```
+			VAR _memberId = 'Fact Workforce'[MemberExtractId]
+			VAR _fnc = CALCULATE(SELECTEDVALUE('Dim Job History'[Job FNC Flag]), 
+			    'Dim Job History'[MemberLatestJobFlag] = 0, // Grabs value for each members latest job based on Job Start Date as a member (employee) may have multiple jobs over their employment. 
+			    'Dim Job History'[MemberExtractId] = _memberId, 
+			    CROSSFILTER('Dim Job History'[MemberExtractId], 'Fact Workforce'[MemberExtractId], Both)
+			)
+			VAR _sourceEntity = SELECTEDVALUE('Fact Workforce'[Source Entity])
+			VAR _ehFirstShiftDate = CALCULATE(SELECTEDVALUE('Fact First Shift Date'[EarliestDateOfService]), 'Dim Workforce'[Source Entity] <> "agy", 
+			    CROSSFILTER('Dim Workforce'[MemberExtractId], 'Fact First Shift Date'[MemberExtractId], Both)) 
+			    // CROSSFILTER('Dim First Shift Date'[First Shift Date], 'Fact First Shift Date'[FirstShiftDate], Both))
+			VAR _employmentStartDate = CALCULATE(MAX('Dim Employment Start Date'[Employment Start Date]), 'Fact Workforce'[MemberExtractId] = _memberId,  CROSSFILTER('Dim Employment Start Date'[Employment Start Date], 'Fact Workforce'[Employment start date], Both))
+			VAR _agyVal = CALCULATE(SELECTEDVALUE('Fact Workforce'[AgyNeverStarts]), 'Fact Workforce'[Source Entity] = "agy")
+			VAR _ehVal = CALCULATE(
+			    IF(
+			        _fnc = "Frontline", //Employee is a frontline staff member according to legacy logic. All agency staff are frontline.
+			        IF(
+			            _employmentStartDate >= DATE(2023, 09, 01),
+			            IF(
+			                _ehFirstShiftDate = BLANK(), 
+			                TRUE(), //Employee started after 1/9/2023 (earliest clean shift data) & has no first shift date recorded
+			                FALSE() //Employee started after 1/9/2023 and has a first shift date recorded - therefore started
+			            ),
+			            FALSE() //Employee started prior to 1/9/2023 so we aren't sure if they have a first shift recorded. therefore erring towards false. 
+			        ),
+			        FALSE()// else false - worker isn't frontline so therefore we don't record a first shift for them. 
+			    ), 
+			    'Fact Workforce'[Source Entity] <> "agy")
+			VAR _logic = IF('Fact Workforce'[Source Entity] = "agy", _agyVal, _ehVal)
+			RETURN _logic
+			```
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: 619c4dd3-a147-4dbb-afbd-c7d31b377e81
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Current FNC Flag' = ```
+			VAR _extractDate = SELECTEDVALUE('Fact Workforce'[Extract Date])
+			VAR _logic = 
+			IF(
+			    'Fact Workforce'[Source Entity] <> "agy",
+			    CALCULATE(
+			        SELECTEDVALUE('Dim Job History'[Job FNC Flag]),
+			        'Dim Job History'[MemberLatestJobFlag] = 0,
+			        'Dim Job History'[Extract Date] = _extractDate),
+			    "Frontline"
+			)
+			RETURN _logic
+			```
+		displayFolder: Flags
+		lineageTag: a27e381c-87e4-4512-9384-28076a80327b
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'LatestStartMonthforExtract Flag' =
+			VAR _endOfExtractMonth = CALCULATE(ENDOFMONTH('Fact Workforce'[Extract Date]), CROSSFILTER('Dim Extract Date'[Extract Date], 'Fact Workforce'[Extract Date], Both))
+			VAR _startOfExtractMonth = STARTOFMONTH('Dim Extract Date'[Extract Date])
+			VAR _extractPeriod = DATESBETWEEN('Dim Employment Start Date'[Employment Start Date], _startOfExtractMonth, _endOfExtractMonth)
+			VAR _previousPeriod = PARALLELPERIOD(_extractPeriod, -1, MONTH)
+			VAR _endLastMonth = ENDOFMONTH(_previousPeriod)
+			VAR _startLastMonth = STARTOFMONTH(_previousPeriod)
+			VAR _logic = IF('Fact Workforce'[Employment start date] >= _startLastMonth && 'Fact Workforce'[Employment start date] <= _endLastMonth, TRUE(), FALSE())
+			RETURN _logic
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: 34083a19-50f3-4d0c-abf3-6cdede412102
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'LatestTerminationMonthforExtract Flag' =
+			VAR _endOfExtractMonth = CALCULATE(ENDOFMONTH('Fact Workforce'[Extract Date]), CROSSFILTER('Dim Extract Date'[Extract Date], 'Fact Workforce'[Extract Date], Both))
+			VAR _startOfExtractMonth = STARTOFMONTH('Dim Extract Date'[Extract Date])
+			VAR _extractPeriod = DATESBETWEEN('Dim Employment Start Date'[Employment Start Date], _startOfExtractMonth, _endOfExtractMonth)
+			VAR _previousPeriod = PARALLELPERIOD(_extractPeriod, -1, MONTH)
+			VAR _endLastMonth = ENDOFMONTH(_previousPeriod)
+			VAR _startLastMonth = STARTOFMONTH(_previousPeriod)
+			VAR _logic = IF('Fact Workforce'[Termination date] >= _startLastMonth && 'Fact Workforce'[Termination date] <= _endLastMonth, TRUE(), FALSE())
+			RETURN _logic
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: 56b064a9-a4ca-4322-8ce2-8bd013aa36b1
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstShiftDate = IF('Fact Workforce'[Source Entity] <> "agy", SELECTEDVALUE('Fact First Shift Date'[EarliestDateOfService]), SELECTEDVALUE('Fact HRLink First Shift Date'[First Shift Date]))
+		formatString: General Date
+		lineageTag: 964a6b49-80e5-4ae7-b1c5-d28fba4d577f
+		summarizeBy: none
+
+		variation Variation
+			isDefault
+			relationship: ffd8e8f6-4de9-434a-9f54-fad5f6a0ee3c
+			defaultHierarchy: LocalDateTable_9cb1a9e4-4e02-47b6-b947-32ef9dec8087.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tax file number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 115d3711-d5a9-42b3-bb4b-e8e8263d7b0f
+		summarizeBy: none
+		sourceColumn: Tax file number
+
+		annotation SummarizationSetBy = User
+
+	column AgyNeverStarts
+		dataType: boolean
+		isHidden
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 19aad679-f2b7-4e4c-afcf-c41873ca7e19
+		summarizeBy: none
+		sourceColumn: AgyNeverStarts
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProbationSuccessfulFlag = ```
+			VAR _currentDate = TODAY()
+			VAR _terminationDate = 'Fact Workforce'[Termination date]
+			VAR _probationEnd = 'Fact Workforce'[Probation end date]
+			VAR _startDate = 'Fact Workforce'[Employment start date]
+			VAR _logic = IF(
+			    _terminationDate = BLANK() && _probationEnd <= _currentDate, //No termination date entered (not terminated) and probation end date is before today then they passed. 
+			    TRUE(),
+			    IF(
+			        _probationEnd > _currentDate, //If probation end is after today, they have not yet finished probation therefore not yet successful
+			        FALSE(),
+			        IF(_probationEnd >= _terminationDate, //If probation end date is after termination date, then did not successfully complete probation. 
+			        TRUE(), 
+			        FALSE())))
+			RETURN _logic
+			```
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: f6ac4c63-0446-4669-8700-1154af668ff1
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column MemberExtractId
+		dataType: string
+		lineageTag: cf219fbf-0ad8-4125-bbcb-dee812c4d9f9
+		summarizeBy: none
+		sourceColumn: MemberExtractId
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkforceTenure(years) = 'Fact Workforce'[WorkerTenureDays]/365
+		formatString: 0.00
+		displayFolder: Worker Tenure
+		lineageTag: aba7929e-eba3-4fd0-9fa5-a8910fcb5a3f
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkerTenureDays
+		dataType: int64
+		formatString: 0
+		displayFolder: Worker Tenure
+		lineageTag: 35deeef1-60f7-4f67-9a99-dc8c07b0f935
+		summarizeBy: sum
+		sourceColumn: WorkerTenureDays
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkerAge
+		dataType: int64
+		formatString: 0
+		displayFolder: Worker Age
+		lineageTag: 9d1879b3-5036-4dfa-bcc6-b75d8602d9ef
+		summarizeBy: sum
+		sourceColumn: WorkerAge
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkerAgeBand
+		dataType: string
+		displayFolder: Worker Age
+		lineageTag: 9249eabd-2297-4d45-9396-77f6b8a659af
+		summarizeBy: none
+		sourceColumn: WorkerAgeBand
+		sortByColumn: AgeBandOrder
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgeBandOrder
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d2527e0b-3f06-4859-adc8-0ee66f50aac1
+		summarizeBy: sum
+		sourceColumn: AgeBandOrder
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Workforce' = m
+		mode: import
+		queryGroup: Workforce
+		source =
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/FactWorkforce/")),
+				    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+				    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+				    #"Filtered Hidden Files1" = Table.SelectRows(#"Changed Type", each [Attributes]?[Hidden]? <> true),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File", each #"Transform File"([Content])),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File", "Source Entity", "Extract Date"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File", Table.ColumnNames(#"Transform File"(#"Sample File"))),
+				    #"Removed Columns" = Table.RemoveColumns(#"Expanded Table Column1",{"First name", "Last name"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Removed Columns","N/A",null,Replacer.ReplaceValue,{"Termination date"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","",null,Replacer.ReplaceValue,{"Employment start date", "Probation end date", "FTE value", "Visa expiry date", "Termination type", "Date of birth", "Tax file number"}),
+				    #"Added EH Member ID" = Table.AddColumn(#"Replaced Value1", "EH Member ID", each Text.Combine({"EH", [Member ID], Date.ToText([Extract Date], "MMMyyyy")}, ""), type text),
+				    #"Removed Columns1" = Table.RemoveColumns(#"Added EH Member ID",{"Member ID"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns1",{{"EH Member ID", "Member ID"}}),
+				    #"Appended Query" = Table.Combine({#"Renamed Columns", #"Fact Workforce HRLink - Source"}),
+				    #"Replaced Value2" = Table.ReplaceValue(#"Appended Query"," ","",Replacer.ReplaceText,{"Tax file number"}),
+				    #"Replaced Value3" = Table.ReplaceValue(#"Replaced Value2","-","",Replacer.ReplaceText,{"Tax file number"}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Replaced Value3",{{"Member ID", "MemberExtractId"}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns1",{{"Employment start date", type date}, {"Termination date", type date}, {"Probation end date", type date}, {"FTE value", type number}, {"Visa expiry date", type date}, {"Termination type", type text}, {"MemberExtractId", type text}, {"Date of birth", type date}, {"Extract Date", type date}, {"Tax file number", Int64.Type}}),
+				    #"Added WorkerTenure" = Table.AddColumn(#"Changed Type1", "WorkerTenureDays", each if [Termination date] <> null then Duration.Days([Termination date] - [Employment start date]) else Duration.Days(DateTime.Date(DateTime.LocalNow()) - [Employment start date])),
+				    #"Added WorkerAge" = Table.AddColumn(#"Added WorkerTenure", "WorkerAge", each if [Date of birth] <> null then Number.RoundDown(Duration.Days(DateTime.Date(DateTime.LocalNow()) - [Date of birth])/365, 0) else null),
+				    #"Added WorkerAgeBand" = Table.AddColumn(#"Added WorkerAge", "WorkerAgeBand", each if [WorkerAge] < 21 then "Under 21" else if [WorkerAge] < 35 then "21-34" else if [WorkerAge] < 50 then "35-49" else if [WorkerAge] >= 50 then "50+" else null),
+				    #"Added AgeBandOrder" = Table.AddColumn(#"Added WorkerAgeBand", "AgeBandOrder", each if [WorkerAge] < 21 then 1 else if [WorkerAge] < 35 then 2 else if [WorkerAge] < 50 then 3 else if [WorkerAge] >= 50 then 4 else null),
+				    #"Replaced Errors" = Table.ReplaceErrorValues(#"Added AgeBandOrder", {{"WorkerAgeBand", null}, {"AgeBandOrder", 5}}),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Replaced Errors",{{"WorkerTenureDays", Int64.Type}, {"WorkerAge", Int64.Type}, {"WorkerAgeBand", type text}, {"AgeBandOrder", Int64.Type}})
+				in
+				    #"Changed Type2"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

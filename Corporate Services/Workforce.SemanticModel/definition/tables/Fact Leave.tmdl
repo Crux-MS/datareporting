@@ -1,0 +1,229 @@
+table 'Fact Leave'
+	lineageTag: 6e71946f-f349-4306-8964-d76d73a1df2f
+
+	measure LeaveBalance = CALCULATE(SUM('Fact Leave'[Balance]), CROSSFILTER('Fact Leave'[MemberExtractId], 'Dim Workforce'[MemberExtractId], Both), 'Fact Leave'[Leave Category Disabled] = "No")
+		displayFolder: Balances
+		lineageTag: 2ef95b6b-9c30-4f1a-aefb-6de1250b2ca0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AnnualLeaveBalance = CALCULATE('Fact Leave'[LeaveBalance], 'Fact Leave'[Leave Category] = "Annual Leave")
+		displayFolder: Balances
+		lineageTag: 9e906b99-54f6-4836-959b-26ea655f4f36
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure RDOBalance = CALCULATE('Fact Leave'[LeaveBalance], 'Fact Leave'[Leave Category] = "Rostered Day Off")
+		displayFolder: Balances
+		lineageTag: 3cedabd0-3130-4c3b-b6b7-84d342fb0aae
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure PersonalLeaveBalance = CALCULATE('Fact Leave'[LeaveBalance], OR('Fact Leave'[Leave Category] = "Personal/Carer's Leave", 'Fact Leave'[Leave Category] = "Personal/Carer's Leave (10 days)"))
+		formatString: 0
+		displayFolder: Balances
+		lineageTag: 185b783f-a697-464d-8282-731096f9ae82
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure CountCurrentlyEmployedExcessAnnualLeave = CALCULATE([Count Currently Employed], 'Fact Leave'[ExcessAnnualLeaveFlag] = 1, CROSSFILTER('Fact Leave'[MemberExtractId], 'Dim Workforce'[MemberExtractId], Both))
+		formatString: 0
+		displayFolder: Excess Leave
+		lineageTag: 9fc2505a-faec-4a7f-a72d-1e00738c538e
+
+	measure CountCurrentlyEmployedExcessRDOs = CALCULATE([Count Currently Employed], 'Fact Leave'[ExcessRDOFlag] = 1, CROSSFILTER('Fact Leave'[MemberExtractId], 'Dim Workforce'[MemberExtractId], Both))
+		formatString: 0
+		displayFolder: Excess Leave
+		lineageTag: 1fea92f7-4eaf-4dde-a34d-95d48bd19f76
+
+	measure ExcessAnnualLeaveBalance = CALCULATE([AnnualLeaveBalance], 'Fact Leave'[ExcessAnnualLeaveFlag] = 1)
+		formatString: #,0.00
+		displayFolder: Balances
+		lineageTag: 0b0e56b1-fc41-4ca4-b40a-67b3809b3896
+
+	measure ExcessRDOsBalance = CALCULATE([RDOBalance], 'Fact Leave'[ExcessRDOFlag] = 1)
+		displayFolder: Balances
+		lineageTag: 804edd6e-a271-4957-9b0b-3997b560d7a1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ReportingYearExcessAnnualLeaveCount =
+			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]), CROSSFILTER('Fact Leave'[Extract Date], 'Dim Extract Date'[Extract Date], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = MIN('Dim Leave Reporting Date'[LeaveReportingDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    CALCULATE([CountCurrentlyEmployedExcessAnnualLeave], REMOVEFILTERS('Dim Extract Date')),
+			    BLANK())
+			RETURN _logic
+		displayFolder: Excess Leave
+		lineageTag: e196e317-e10c-4654-860c-8042ab32e0cb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ReportingYearExcessRDOCount =
+			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]), CROSSFILTER('Fact Leave'[Extract Date], 'Dim Extract Date'[Extract Date], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = MIN('Dim Leave Reporting Date'[LeaveReportingDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    CALCULATE([CountCurrentlyEmployedExcessRDOs], REMOVEFILTERS('Dim Extract Date')),
+			    BLANK())
+			RETURN _logic
+		formatString: 0
+		displayFolder: Excess Leave
+		lineageTag: 252a0011-dce1-4b76-81de-54a2652d85cf
+
+	measure ExcessAnnualLeave% = DIVIDE([CountCurrentlyEmployedExcessAnnualLeave], [Count Currently Employed])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Excess Leave
+		lineageTag: b26459db-21ab-4224-beb6-14cea988bebb
+
+	measure ExcessRDO% = DIVIDE([CountCurrentlyEmployedExcessRDOs], [Count Currently Employed])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Excess Leave
+		lineageTag: b5cc5cdf-8a4f-4c57-9f07-10ce803f6425
+
+	measure ReportingYearExcessAnnualLeave% =
+			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]), CROSSFILTER('Fact Leave'[Extract Date], 'Dim Extract Date'[Extract Date], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = MIN('Dim Leave Reporting Date'[LeaveReportingDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    CALCULATE([ExcessAnnualLeave%], REMOVEFILTERS('Dim Extract Date')),
+			    BLANK())
+			RETURN _logic
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Excess Leave
+		lineageTag: 09c6e409-7e2d-4533-b980-408209e1327d
+
+	measure ReportingYearExcessRDO% =
+			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]), CROSSFILTER('Fact Leave'[Extract Date], 'Dim Extract Date'[Extract Date], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = MIN('Dim Leave Reporting Date'[LeaveReportingDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    CALCULATE([ExcessRDO%], REMOVEFILTERS('Dim Extract Date')),
+			    BLANK())
+			RETURN _logic
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Excess Leave
+		lineageTag: b62b9f8d-4753-4763-86cf-3562151ed89a
+
+	column Balance
+		dataType: double
+		displayFolder: Balances
+		lineageTag: aae9c58b-d32e-4cc4-aa52-3998952fb92c
+		summarizeBy: sum
+		sourceColumn: Balance
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Leave Category'
+		dataType: string
+		lineageTag: 24551e66-d589-4c7a-9e77-5065d815d58e
+		summarizeBy: none
+		sourceColumn: Leave Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Leave Category Disabled'
+		dataType: string
+		lineageTag: 865d3c53-5455-4a5b-9686-8e265b3de1c3
+		summarizeBy: none
+		sourceColumn: Leave Category Disabled
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Extract Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0cfeb634-9b88-443b-bc67-9d83b4eab9e2
+		summarizeBy: none
+		sourceColumn: Extract Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Source Entity'
+		dataType: string
+		lineageTag: 0c38d612-c4c8-460d-8b74-ff7985aae26d
+		summarizeBy: none
+		sourceColumn: Source Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column MemberExtractId
+		dataType: string
+		isHidden
+		lineageTag: a49b9b68-873c-4138-87a6-69a725ef9a15
+		summarizeBy: none
+		sourceColumn: MemberExtractId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExcessAnnualLeaveFlag = IF('Fact Leave'[Balance] > 152 && 'Fact Leave'[Leave Category] = "Annual Leave", 1, 0)
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: f4122fe8-b03c-41e3-9a41-8dea46c178f1
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExcessRDOFlag = IF('Fact Leave'[Balance] > 24 && 'Fact Leave'[Leave Category] = "Rostered Day Off", 1, 0)
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 6114b67e-6b8b-45e6-b937-3e3f40e82ba5
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReportingMonthEnd
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2e6771bc-4634-4b4a-a45c-89fe9d68c9f7
+		summarizeBy: none
+		sourceColumn: ReportingMonthEnd
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ExcessAnnualLeaveOrRDOFlag = IF('Fact Leave'[ExcessAnnualLeaveFlag] = 1 || 'Fact Leave'[ExcessRDOFlag] = 1, 1, 0)
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: d63fde4e-dfab-4d4c-a3ff-e30918426633
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Leave' = m
+		mode: import
+		source =
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"Filtered Rows1" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Employment Hero/DimLeave/"),
+				    #"Inserted Extract Date" = Table.AddColumn(#"Filtered Rows1", "Extract Date", each Text.BetweenDelimiters([Name], "_", "-", 0, 2), type text),
+				    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Extract Date", "Source Entity", each Text.BeforeDelimiter([Name], "-"), type text),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"Extract Date", type date}}),
+				    #"Added ReportingMonthEnd" = Table.AddColumn(#"Changed Type", "ReportingMonthEnd", each Date.EndOfMonth(Date.AddMonths([Extract Date],-1))),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Added ReportingMonthEnd", "Transform File (5)", each #"Transform File (5)"([Content])),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File (5)", "Extract Date", "Source Entity", "ReportingMonthEnd"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (5)", Table.ColumnNames(#"Transform File (5)"(#"Sample File (5)"))),
+				    #"Replaced Value" = Table.ReplaceValue(#"Expanded Table Column1","",null,Replacer.ReplaceValue,{"Leave Category", "Leave Category Disabled"}),
+				    #"Added EH Member ID" = Table.AddColumn(#"Replaced Value", "EH Member ID", each Text.Combine({"EH", [Member ID], Date.ToText([Extract Date], "MMMyyyy")}, ""), type text),
+				    #"Removed Columns" = Table.RemoveColumns(#"Added EH Member ID",{"Member ID", "First name", "Last name"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns",{{"EH Member ID", "MemberExtractId"}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Balance", type number}, {"Leave Category", type text}, {"Leave Category Disabled", type text}, {"MemberExtractId", type text}, {"ReportingMonthEnd", type date}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

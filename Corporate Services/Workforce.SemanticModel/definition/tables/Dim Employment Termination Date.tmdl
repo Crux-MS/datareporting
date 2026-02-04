@@ -1,0 +1,139 @@
+table 'Dim Employment Termination Date'
+	lineageTag: 725bf1de-3945-483b-bfe2-a49971c03066
+	dataCategory: Time
+
+	column 'Termination Date'
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 8d91c5c9-16d5-452c-8fee-3b197772a84a
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: f7b07c5e-87bc-4f82-aee3-3097f2b519ce
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 971cb45a-42f2-4a0e-aea3-4eba7b88e5d0
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: ace79c83-8457-46ec-8ed6-2d30f5a70bf1
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c55f24c-5929-47f2-a321-44fa2b9c84e9
+		summarizeBy: sum
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		formatString: 0
+		lineageTag: a8c4b3ec-0fe4-472d-80e4-d2037b883de4
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: eeae4888-1f84-42fa-84fd-94cba6dd3f0b
+		summarizeBy: sum
+		sourceColumn: Day Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: bc601016-1189-4b73-832f-43bbd745b12a
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: a2077130-95be-4ed2-bca0-b249cda63c66
+		summarizeBy: sum
+		sourceColumn: Day of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Year'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 4b8d6a3d-75bc-404f-ae26-2810f8b069a9
+		summarizeBy: none
+		sourceColumn: Start of Year
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Week of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 2f1c6dca-9e62-404f-9f2a-a593507d2f11
+		summarizeBy: sum
+		sourceColumn: Week of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Rolling Date Difference'
+		dataType: int64
+		formatString: 0
+		lineageTag: 0a9dca88-1331-44ce-b226-77dd0add101e
+		summarizeBy: sum
+		sourceColumn: Rolling Date Difference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 0e635940-6c73-4433-a7be-e5c8f3694672
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Employment Termination Date' = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Long Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "Termination Date"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

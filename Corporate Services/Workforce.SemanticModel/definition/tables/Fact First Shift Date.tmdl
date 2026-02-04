@@ -1,0 +1,60 @@
+table 'Fact First Shift Date'
+	lineageTag: 4021c3cc-8b52-4507-90a6-c5149a5fdbd6
+
+	column MemberExtractId
+		dataType: string
+		lineageTag: 9e6f9bab-8cc4-4b08-8746-72ed2afa1871
+		summarizeBy: none
+		sourceColumn: MemberExtractId
+
+		annotation SummarizationSetBy = Automatic
+
+	column EarliestDateOfService
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c8db3d56-f432-49c3-9591-07f982053dc6
+		summarizeBy: none
+		sourceColumn: EarliestDateOfService
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Fact First Shift Date' = m
+		mode: import
+		source = ```
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/Visual Care/Workers/")),
+				    #"Inserted ExtractDate" = Table.AddColumn(#"Filtered Rows1", "ExtractDate", each Text.BetweenDelimiters([Name], "-", "_"), type text),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Inserted ExtractDate",{{"ExtractDate", type date}}),
+				    #"Inserted End of Month" = Table.AddColumn(#"Changed Type1", "End of Month", each Date.EndOfMonth([ExtractDate]), type datetime),
+				    #"Grouped Rows" = Table.Group(#"Inserted End of Month", {"End of Month"}, {{"AllExtracts", each _, type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, ExtractDate=nullable date, End of Month=datetime]}}),
+				    #"Added Monthly Extract Index" = #"Table.TransformColumns"(
+				        #"Grouped Rows",
+				        {
+				            "AllExtracts", 
+				            each Table.AddIndexColumn(
+				                Table.Sort(_, {{"ExtractDate", Order.Descending}}), 
+				                "LatestExtractFlag", 0, 1, Int64.Type), 
+				                type table [Content=binary, Name=text, Extension=text, Date accessed=datetime, Date modified=datetime, Date created=datetime, Attributes=record, Folder Path=text, ExtractDate=nullable date, End of Month=datetime, LatestExtractFlag=number]}),
+				    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Added Monthly Extract Index", "AllExtracts", {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "ExtractDate", "LatestExtractFlag"}, {"Content", "Name", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "ExtractDate", "LatestExtractFlag"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded AllExtracts", each ([LatestExtractFlag] = 0)),
+				    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (3)", each #"Transform File (3)"([Content])),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"ExtractDate", "Transform File (3)"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (3)", Table.ColumnNames(#"Transform File (3)"(#"Sample File (3)"))),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Table Column1",{{"EarliestDateofService[MemberExtractId]", "VCMemberExtractId"}}),
+				    #"Extracted Text Before Delimiter" = Table.TransformColumns(#"Renamed Columns", {{"EarliestDateofService[EarliestDateOfService]", each Text.BeforeDelimiter(_, "T"), type text}}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Extracted Text Before Delimiter",{{"EarliestDateofService[EarliestDateOfService]", "EarliestDateOfService"}}),
+				    AddedMemberExtractId = Table.AddColumn(#"Renamed Columns1", "MemberExtractId", each Text.Combine({[VCMemberExtractId], Date.ToText([ExtractDate], "MMMyyyy")}, ""), type text),
+				    #"Removed Other Columns" = Table.SelectColumns(AddedMemberExtractId,{"MemberExtractId", "EarliestDateOfService"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"EarliestDateOfService", type date}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

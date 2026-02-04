@@ -1,0 +1,778 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "4c41f010ad36c7b44119",
+  "position": {
+    "x": 488.26747720364745,
+    "y": 399.75683890577511,
+    "z": 2250,
+    "height": 287.90273556231006,
+    "width": 767.41641337386022,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Job Categories"
+                    }
+                  },
+                  "Property": "Division"
+                }
+              },
+              "queryRef": "Dim Job Categories.Division",
+              "nativeQueryRef": "Division | Employing entity | Employee",
+              "active": true,
+              "displayName": "Division | Employing entity | Employee"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Job History"
+                    }
+                  },
+                  "Property": "Employing entity"
+                }
+              },
+              "queryRef": "Dim Job History.Employing entity",
+              "nativeQueryRef": "Employing entity",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce"
+                    }
+                  },
+                  "Property": "Full name"
+                }
+              },
+              "queryRef": "Dim Workforce.Full name",
+              "nativeQueryRef": "Full name",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Leave"
+                    }
+                  },
+                  "Property": "CountCurrentlyEmployedExcessAnnualLeave"
+                }
+              },
+              "queryRef": "Fact Leave.CountCurrentlyEmployedExcessAnnualLeave",
+              "nativeQueryRef": "Excess Annual Leave (current employees)",
+              "displayName": "Excess Annual Leave (current employees)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Leave"
+                    }
+                  },
+                  "Property": "ExcessAnnualLeave%"
+                }
+              },
+              "queryRef": "Fact Leave.ExcessAnnualLeave%",
+              "nativeQueryRef": "Excess Annual Leave (% current employees)",
+              "displayName": "Excess Annual Leave (% current employees)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Leave"
+                    }
+                  },
+                  "Property": "ExcessAnnualLeaveBalance"
+                }
+              },
+              "queryRef": "Fact Leave.ExcessAnnualLeaveBalance",
+              "nativeQueryRef": "Annual Leave Balance (hours)",
+              "displayName": "Annual Leave Balance (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Leave"
+                    }
+                  },
+                  "Property": "CountCurrentlyEmployedExcessRDOs"
+                }
+              },
+              "queryRef": "Fact Leave.CountCurrentlyEmployedExcessRDOs",
+              "nativeQueryRef": "Excess RDO's (current employees)",
+              "displayName": "Excess RDO's (current employees)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Leave"
+                    }
+                  },
+                  "Property": "ExcessRDO%"
+                }
+              },
+              "queryRef": "Fact Leave.ExcessRDO%",
+              "nativeQueryRef": "Excess RDO's (% current employees)",
+              "displayName": "Excess RDO's (% current employees)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Leave"
+                    }
+                  },
+                  "Property": "ExcessRDOsBalance"
+                }
+              },
+              "queryRef": "Fact Leave.ExcessRDOsBalance",
+              "nativeQueryRef": "RDO Balance (hours)",
+              "displayName": "RDO Balance (hours)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Leave"
+                  }
+                },
+                "Property": "ExcessAnnualLeave%"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "Dim Job Categories.Division"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Job Categories"
+                    }
+                  },
+                  "Property": "Division"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Job History.Employing entity"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Job History"
+                    }
+                  },
+                  "Property": "Employing entity"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Workforce.Full name"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "null"
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "identityValues": [
+                    {
+                      "Literal": {
+                        "Value": "'KANDA FOUNDATION LIMITED'"
+                      }
+                    }
+                  ],
+                  "isToggled": true
+                }
+              ]
+            },
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "'ASC'"
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "identityValues": [
+                    {
+                      "Literal": {
+                        "Value": "'Access Support Coordination'"
+                      }
+                    }
+                  ],
+                  "isToggled": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "106.4742327525995D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.CountCurrentlyEmployedExcessAnnualLeave"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "96.79173590229637D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.CountCurrentlyEmployedExcessRDOs"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "101.18894424478803D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.ExcessAnnualLeaveBalance"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "65.7413984045161D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.ExcessRDOsBalance"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "161.8686760550649D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Job Categories.Division"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "120.67326081570306D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.ExcessAnnualLeave%"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "94.27365009646195D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.ExcessRDO%"
+          }
+        }
+      ],
+      "columnFormatting": [
+        {
+          "properties": {
+            "styleTotal": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.ExcessAnnualLeaveBalance"
+          }
+        },
+        {
+          "properties": {
+            "styleTotal": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Leave.ExcessRDOsBalance"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Excess leave balances'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Extract Date"
+                    }
+                  },
+                  "Property": "EH Reporting Month"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8c5dd4640b5c44baeb1e",
+        "ordinal": 0,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Leave"
+              }
+            },
+            "Property": "ExcessAnnualLeaveBalance"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "99d6a8570c0c5b808d48",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Job Categories"
+              }
+            },
+            "Property": "Division"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Job Categories",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "Division"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'N/A'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true,
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "58378e47c3aedebaefee",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Job History"
+              }
+            },
+            "Property": "Employing entity"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "6144f0e2809ea79c743c",
+        "ordinal": 3,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Leave"
+              }
+            },
+            "Property": "ExcessAnnualLeave%"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "c4fe161afd8d700f02b9",
+        "ordinal": 4,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Leave"
+              }
+            },
+            "Property": "CountCurrentlyEmployedExcessAnnualLeave"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f6a6326cbd94e785638e",
+        "ordinal": 5,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Leave"
+              }
+            },
+            "Property": "ExcessRDO%"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "59f43157971f625277e6",
+        "ordinal": 6,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Leave"
+              }
+            },
+            "Property": "CountCurrentlyEmployedExcessRDOs"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "622f62f874f05fa79fbb",
+        "ordinal": 7,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce"
+              }
+            },
+            "Property": "Full name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "b0503de04d888bc0d4cc",
+        "ordinal": 8,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Job History"
+              }
+            },
+            "Property": "MemberLatestJobFlag"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Job History",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "d"
+                        }
+                      },
+                      "Property": "MemberLatestJobFlag"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "0L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "d4f44897dc3a4edfe380",
+        "ordinal": 9,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Leave"
+              }
+            },
+            "Property": "ExcessRDOsBalance"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f173e182542c85f80b0e",
+        "ordinal": 10,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Leave"
+              }
+            },
+            "Property": "ExcessAnnualLeaveOrRDOFlag"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "Fact Leave",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "f"
+                        }
+                      },
+                      "Property": "ExcessAnnualLeaveOrRDOFlag"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "1L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

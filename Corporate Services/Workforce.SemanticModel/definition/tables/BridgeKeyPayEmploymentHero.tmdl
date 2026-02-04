@@ -1,0 +1,33 @@
+table BridgeKeyPayEmploymentHero
+	isHidden
+	lineageTag: 3bbc8dda-8531-48d4-83fd-8d71407fd586
+
+	column EmailExtractKey
+		dataType: string
+		isHidden
+		lineageTag: 36a1eba1-3ec0-49f8-98f3-83ddc31a6a79
+		summarizeBy: none
+		sourceColumn: EmailExtractKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BridgeKeyPayEmploymentHero = m
+		mode: import
+		queryGroup: Workforce
+		source =
+				let
+				    Source = #"Dim Workforce - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"EmailExtractKey"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Duplicates", each [EmailExtractKey] <> null and [EmailExtractKey] <> "")
+				in
+				    #"Filtered Rows"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,227 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "071b15c36e78ee5403bc",
+  "position": {
+    "x": 142.88836846213897,
+    "y": 299.76580796252927,
+    "z": 2000,
+    "height": 350.72599531615924,
+    "width": 1031.1943793911007,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Pay"
+                    }
+                  },
+                  "Property": "StartExtractPeriod"
+                }
+              },
+              "queryRef": "Fact Pay.StartExtractPeriod",
+              "nativeQueryRef": "StartExtractPeriod"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Pay"
+                    }
+                  },
+                  "Property": "EndExtractPeriod"
+                }
+              },
+              "queryRef": "Fact Pay.EndExtractPeriod",
+              "nativeQueryRef": "EndExtractPeriod"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Pay"
+                    }
+                  },
+                  "Property": "ReportingMonthStart"
+                }
+              },
+              "queryRef": "Fact Pay.ReportingMonthStart",
+              "nativeQueryRef": "ReportingMonthStart"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Pay"
+                    }
+                  },
+                  "Property": "HoursPaid"
+                }
+              },
+              "queryRef": "Fact Pay.HoursPaid",
+              "nativeQueryRef": "HoursPaid"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Pay"
+                    }
+                  },
+                  "Property": "HoursPaidAmount"
+                }
+              },
+              "queryRef": "Fact Pay.HoursPaidAmount",
+              "nativeQueryRef": "HoursPaidAmount"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Pay"
+                  }
+                },
+                "Property": "StartExtractPeriod"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Amount paid ($) & overtime amount paid %'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'by fortnight'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b4679bbf707264a3afcc",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Employment Start Date"
+              }
+            },
+            "Property": "MMM YYYY"
+          }
+        },
+        "type": "TopN",
+        "howCreated": "User",
+        "isLockedInViewMode": true,
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "ff74c350a57adc8d0b2a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Paid Date"
+              }
+            },
+            "Property": "KP Reporting 6-mth Flag"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "22644ab2cd091061ddac",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Extract Date"
+              }
+            },
+            "Property": "MMM YYYY"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

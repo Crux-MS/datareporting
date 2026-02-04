@@ -1,0 +1,139 @@
+table 'Dim First Shift Date'
+	lineageTag: 8bdcf8e1-dc35-405b-9d8a-d031efd5069b
+	dataCategory: Time
+
+	column 'First Shift Date'
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 2e53e423-55b1-410f-9e0d-058971f94753
+		summarizeBy: none
+		sourceColumn: First Shift Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: a5278297-f406-4386-b9e3-1b82ed048175
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 1abfce81-5e2f-45e4-95c3-bba284942062
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: a891122a-2ce3-46ce-ae37-c8cfbecf02da
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 4b23ea92-e575-4923-91ff-3184a27382c3
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c551f43-ee29-428b-86bb-5d30a954b949
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: af85d41a-26dd-4fe9-9ea6-c27d5952bbe4
+		summarizeBy: none
+		sourceColumn: Day Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: e5e7d36f-63f6-4427-80cd-14308c114218
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3c367da5-311a-4930-9da7-52918c056b48
+		summarizeBy: none
+		sourceColumn: Day of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Year'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8ef446a3-47de-4c5a-ae03-bc876176ab3e
+		summarizeBy: none
+		sourceColumn: Start of Year
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Week of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: d1d64b01-cb62-49f8-b623-c6fdc71a9b1e
+		summarizeBy: none
+		sourceColumn: Week of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Rolling Date Difference'
+		dataType: int64
+		formatString: 0
+		lineageTag: f8613403-e892-4d3f-bd03-df661bd2fc75
+		summarizeBy: none
+		sourceColumn: Rolling Date Difference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 18d30513-4146-44c4-8922-8d5ab6186ddc
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim First Shift Date' = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Long Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "First Shift Date"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

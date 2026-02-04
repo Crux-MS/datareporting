@@ -1,0 +1,49 @@
+table HoursPaidAmount
+	lineageTag: 11a5f580-d114-42f5-9f43-9b5d8eb3df5a
+
+	column HoursPaidAmount
+		lineageTag: bbc32919-f9c1-4789-a6c6-14e7fc8e95ea
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'HoursPaidAmount Order'
+
+		relatedColumnDetails
+			groupByColumn: 'HoursPaidAmount Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'HoursPaidAmount Fields'
+		isHidden
+		lineageTag: a0db8d9e-d723-4b4a-91b9-efb2720e2d25
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'HoursPaidAmount Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'HoursPaidAmount Order'
+		isHidden
+		formatString: 0
+		lineageTag: db9de5d4-7183-4d5e-a9c6-d98a70694ad1
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition HoursPaidAmount = calculated
+		mode: import
+		source =
+				{
+				    ("Amount Paid", NAMEOF('Fact Pay'[HoursPaidAmount%]), 0),
+				    ("Leave Amount Paid", NAMEOF('Fact Pay'[LeavePaidAmount%]), 1),
+				    ("Overtime Amount Paid", NAMEOF('Fact Pay'[OvertimePaidAmount%]), 2)
+				}
+
+	annotation PBI_Id = 974a8f6f0c4f4ecea86c820922f9d788
+

@@ -1,0 +1,232 @@
+table 'Dim Extract Date'
+	lineageTag: fc74b12d-e3f7-4257-8d88-52d5e77ffc68
+	dataCategory: Time
+
+	measure 'Selected Extract Month' = SELECTEDVALUE('Dim Extract Date'[MMM YYYY])
+		lineageTag: 7b3a4670-3028-4f40-82c4-38763747fbd6
+
+	measure 'EH Reporting Month' =
+			VAR _selectedExtractDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _selectedMonth = SELECTEDVALUE('Dim Extract Date'[MMM YYYY])
+			VAR _prevMthDate = FORMAT(EOMONTH(_selectedExtractDate, -1), "MMM YYYY")
+			
+			RETURN _prevMthDate
+		lineageTag: 233f6cc4-06cc-481a-b373-bcdbfbe2f38e
+
+	measure 'EH Reporting Month Flag' =
+			VAR _selectedExtractDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]), CROSSFILTER('Dim Extract Date'[Extract Date], 'Fact Workforce'[Extract Date], Both))
+			VAR _startDate = EOMONTH(_selectedExtractDate, -2)+1
+			VAR _endDate = EOMONTH(_selectedExtractDate, -1)
+			VAR _selectedStartDate = MAX('Dim Employment Start Date'[Employment Start Date])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    1,
+			    0)
+			RETURN _logic
+		formatString: 0
+		lineageTag: ac5e83c4-4018-4d9b-b59d-1e3889ceccae
+
+	measure 'EH Reporting Year Flag' =
+			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]))//, CROSSFILTER('Dim Extract Date'[Extract Date], 'Fact Workforce'[Extract Date], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -13)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = MAX('Dim Employment Start Date'[Employment Start Date])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    1,
+			    0)
+			RETURN _logic
+		formatString: 0
+		lineageTag: 40c17214-0701-4051-ac31-3dce6ac976c8
+
+	column 'Extract Date'
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 56ab9a7c-4d0b-436f-9557-70ea2a7bd16c
+		summarizeBy: none
+		sourceColumn: Extract Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 88a3180a-9998-4f5a-9d0a-8454bd69dc22
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 95349a46-662a-4c78-a66b-278dbd8ffb58
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		formatString: 0
+		lineageTag: 06c245fc-e193-4eeb-b0c7-f94b11d499a8
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = User
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 9393ecaa-017a-4eb0-8944-a832ede553d1
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 2498fa61-e73f-4ff3-aa53-cbd4f0de6557
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: be629286-a9fa-4551-969f-fa1c4a9b54d2
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: e6b516d3-7eef-44c5-ab54-94bd38b12aaf
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 765d653d-b29b-42cd-a817-c5f00e21c0fa
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 84b59d92-c820-440a-8309-889d72bb556b
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: b05d25b8-191f-470c-b488-99332ab6969a
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: ec944873-ddc9-4cd7-a43a-e94c893568f9
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 9ab90bf5-e7f6-48e3-91e0-48f7029af726
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: ffbaf244-0639-48a4-881d-426909173e64
+		summarizeBy: sum
+		sourceColumn: WeekOfMonth
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: 528aace0-ffb1-4111-b6bc-8b9437848811
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column FortnightOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: c9d86eed-4df3-413f-add2-cf590519af53
+		summarizeBy: sum
+		sourceColumn: FortnightOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYFF
+		dataType: int64
+		formatString: 0
+		lineageTag: 39e32e6d-24fe-4ecb-8021-4507bf767398
+		summarizeBy: sum
+		sourceColumn: YYYYFF
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'FF (DD MMM YYYY)'
+		dataType: string
+		lineageTag: bb235d2a-507a-4837-9c9e-15ccee138b98
+		summarizeBy: none
+		sourceColumn: FF (DD MMM YYYY)
+
+		annotation SummarizationSetBy = Automatic
+
+	column ContinuousFortnights
+		dataType: int64
+		formatString: 0
+		lineageTag: 1a6607b7-52c6-4355-83b0-4a8479916716
+		summarizeBy: sum
+		sourceColumn: ContinuousFortnights
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Extract Date' = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Short Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "Extract Date"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

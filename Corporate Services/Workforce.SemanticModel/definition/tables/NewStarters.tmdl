@@ -1,0 +1,60 @@
+table NewStarters
+	lineageTag: 4b073a98-a4b2-4fed-8c1f-a719242cca98
+
+	measure 'Display NewStarter Metric Parameter' =
+			
+			SWITCH(
+			    SELECTEDVALUE('NewStarters'[NewStarters Fields]),
+			    "'Fact Workforce'[New Starters %]", [Count New Starters],
+			    "'Fact Workforce'[ProbationUnsuccessful%]", [Count New Starters Unsuccessful Probation],
+			    "'Fact Workforce'[NeverStarts%]", [CountNeverStarts]
+			)
+		formatString: 0
+		lineageTag: 7f19e3aa-ce9c-4f34-8c21-37af26173f09
+
+	column NewStarters
+		lineageTag: bb2ef13f-4068-4bbf-8344-f1bcd7794aa2
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'NewStarters Order'
+
+		relatedColumnDetails
+			groupByColumn: 'NewStarters Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NewStarters Fields'
+		isHidden
+		lineageTag: b3927a5f-5ee9-4df1-9f92-7be5c79670cc
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'NewStarters Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NewStarters Order'
+		isHidden
+		formatString: 0
+		lineageTag: 7cee7512-5ed6-487d-8e6c-bf94cda2119f
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition NewStarters = calculated
+		mode: import
+		source =
+				{
+				    ("New Starters", NAMEOF('Fact Workforce'[New Starters %]), 0),
+				    ("Probation Unsuccessful", NAMEOF('Fact Workforce'[ProbationUnsuccessful%]), 1),
+				    ("Never Starts", NAMEOF('Fact Workforce'[NeverStarts%]), 2)
+				}
+
+	annotation PBI_Id = 01e87c6ee6ca4887bed1d801bd5cc2cd
+

@@ -1,0 +1,311 @@
+table 'Dim Paid Date'
+	lineageTag: 3cb10c54-5c14-4fd5-86f9-c78f607783e8
+
+	measure 'KP Reporting Year Flag' =
+			VAR _selectedDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = Min('Dim Paid Date'[PaidDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    1,
+			    0)
+			RETURN _logic
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 87183d63-acaa-4503-be62-ea833ab55eb0
+
+	measure 'KP Reporting 6-mth Flag' =
+			VAR _selectedDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _startDate = EOMONTH(_selectedDate, -7)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = Min('Dim Paid Date'[PaidDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    1,
+			    0)
+			RETURN _logic
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: c9d01716-a689-4e2d-a63b-3a9613b38a20
+
+	measure 'KP Reporting Month Flag' =
+			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]), CROSSFILTER('Dim Extract Date'[Extract Date], 'Fact Pay'[ReportingMonthStart], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -2)+1
+			VAR _endDate = EOMONTH(_selectedDate, -1)
+			VAR _selectedStartDate = Min('Dim Paid Date'[PaidDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    1,
+			    0)
+			RETURN _logic
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: ebd0998b-dc28-49b3-846c-d335d8359dcd
+
+	column PaidDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 4aceee86-e2ab-4491-925f-7093419f50fd
+		summarizeBy: none
+		sourceColumn: PaidDate
+
+		variation Variation
+			isDefault
+			relationship: d449c1de-a0e9-4625-a20d-10fd7fbaf9e7
+			defaultHierarchy: LocalDateTable_501fe23b-c062-428e-9a16-98c0be667671.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: a62b4575-6f25-4954-b657-4c82b349439a
+		summarizeBy: sum
+		sourceColumn: Year
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: e220535a-01f2-434f-b4ee-5b5ad898f053
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthNumber
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 1fcfb4ae-1814-495d-8c8d-dc5f9597e291
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: dc5f8efc-0f0d-46e2-8d73-2178fce61f6e
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6e59b90e-873a-43db-9fd9-dfcbdb4f383c
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 994871a9-93c2-4bfa-b345-e55f5c02955a
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: aadcc6b1-f6c4-40b8-a394-89306b29f6d5
+		summarizeBy: none
+		sourceColumn: DayName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: e72d63a5-b8ee-4898-8111-b4868bfde99d
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: dce4dc2d-44c9-4995-bdaf-89f8c5a13d58
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		variation Variation
+			isDefault
+			relationship: 78156e9f-01f4-485c-b68e-c59320433b4d
+			defaultHierarchy: LocalDateTable_bf30cd69-f076-44cb-b162-16f68e124107.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 96716b4e-5a0a-42d3-9e4d-650e12193521
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: abcbf15d-3d17-4bd9-bbfb-7686f6cfb495
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		variation Variation
+			isDefault
+			relationship: 0c0e6bfb-11e4-473b-9710-0b04a48c1bdf
+			defaultHierarchy: LocalDateTable_ca3f2d0e-80e6-4483-a002-ce5622025f93.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: 89270dbd-f6e7-4388-acc6-1bfc20903c2d
+		summarizeBy: sum
+		sourceColumn: WeekOfMonth
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: bdb2d16e-daf4-4972-88b2-14c9716f8dd2
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: f9c48968-d17c-43bc-ae02-0afa45f66e0b
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column FortnightOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 4e16128e-8aa2-4376-a811-ba7285f8c2b0
+		summarizeBy: sum
+		sourceColumn: FortnightOfYear
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYFF
+		dataType: int64
+		formatString: 0
+		lineageTag: 793eb7f4-6cf1-46dd-be50-87d53ec34517
+		summarizeBy: sum
+		sourceColumn: YYYYFF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'FF (DD MMM YYYY)'
+		dataType: string
+		lineageTag: 6c9fb56b-ab37-4621-92f3-3164489300a1
+		summarizeBy: none
+		sourceColumn: FF (DD MMM YYYY)
+		sortByColumn: YYYYFF
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column ContinuousFortnights
+		dataType: int64
+		formatString: 0
+		lineageTag: 42890c63-00c9-40a4-84a5-7e4bbc5103e5
+		summarizeBy: sum
+		sourceColumn: ContinuousFortnights
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Year Hierarchy'
+		lineageTag: 017d36cc-4b70-48cd-a33d-7b0d220c5040
+
+		level Year
+			lineageTag: ea7b8186-340a-4ec4-9906-3ab194c16d65
+			column: Year
+
+		level MonthName
+			lineageTag: b227c09e-a346-40df-9120-18a5f6f98aba
+			column: MonthName
+
+		level DayNumber
+			lineageTag: f457e458-198d-4f2a-a193-49457dddbad0
+			column: DayNumber
+
+	partition 'Dim Paid Date' = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Short Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "PaidDate"}})
+				in
+				    #"Renamed Columns"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

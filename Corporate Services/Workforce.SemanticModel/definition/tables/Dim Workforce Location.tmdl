@@ -1,0 +1,87 @@
+table 'Dim Workforce Location'
+	lineageTag: f3fbb1ca-006a-44c1-9c36-758ae823ba44
+
+	measure 'Selected State' = SELECTEDVALUE('Dim Workforce Location'[State])
+		lineageTag: 1c9d8fb0-79e0-43a8-90e7-cb205d59d795
+
+	measure 'Selected LocationKey' = SELECTEDVALUE('Dim Workforce Location'[LocationKey])
+		lineageTag: fc7b934b-597b-4da8-870e-430af7c375b0
+
+	measure 'Workforce Characteristics Map Title' = MAX('Workforce %'[Workforce %]) * " locations"
+		lineageTag: 0b24f173-67dd-45e6-81a5-20f84d62450e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LocationKey
+		dataType: string
+		lineageTag: 928a954c-7656-4c9b-aae6-0fd6027f9386
+		summarizeBy: none
+		sourceColumn: LocationKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Latitude
+		dataType: double
+		lineageTag: b7b31081-b741-4e46-912f-bafcc7a033bf
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: Latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Longitude
+		dataType: double
+		lineageTag: 7f294248-6a40-4808-8625-85fecdbaed43
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: Longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column State
+		dataType: string
+		lineageTag: 16fdba76-9000-4ee2-920e-44b4444d4618
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: e1e2cb7a-2856-4528-b7ff-69d722086869
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocationName
+		dataType: string
+		lineageTag: 9c704de4-3dc0-44cd-ab51-439a72fabb92
+		summarizeBy: none
+		sourceColumn: LocationName
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Workforce Location' = m
+		mode: import
+		queryGroup: Workforce
+		source =
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"locations EH csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/" = Source{[Name="locations EH.csv",#"Folder Path"="https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/"]}[Content],
+				    #"Imported CSV" = Csv.Document(#"locations EH csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/",[Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Latitude", type number}, {"Longitude", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

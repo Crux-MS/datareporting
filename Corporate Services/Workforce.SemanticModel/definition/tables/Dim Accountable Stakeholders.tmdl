@@ -1,0 +1,70 @@
+table 'Dim Accountable Stakeholders'
+	isHidden
+	lineageTag: 31d845bd-12f1-41a8-a5c1-7c4954de2d0d
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f5192bc9-f910-415e-99fb-888d3d30931e
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 31266290-e349-4754-bba5-60dd9b15b973
+		summarizeBy: count
+		sourceColumn: StakeholderID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderName
+		dataType: string
+		isHidden
+		lineageTag: b8b880c2-7660-4a35-8c64-6f9b22bf513a
+		summarizeBy: none
+		sourceColumn: StakeholderName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderEmail
+		dataType: string
+		isHidden
+		lineageTag: e98badbe-7384-4c6e-b6ff-0bc0ef676325
+		summarizeBy: none
+		sourceColumn: StakeholderEmail
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Accountable Stakeholders' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Accountable Stakeholder"}),
+				    #"Expanded Accountable Stakeholder" = Table.ExpandTableColumn(#"Removed Other Columns", "Accountable Stakeholder", {"id", "value", "email"}, {"id.1", "value", "email"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Accountable Stakeholder",{{"id.1", "StakeholderID"}, {"value", "StakeholderName"}, {"email", "StakeholderEmail"}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Renamed Columns", each ([StakeholderID] <> null)),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"StakeholderID", Int64.Type}, {"StakeholderEmail", type text}, {"StakeholderName", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

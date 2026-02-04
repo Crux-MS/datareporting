@@ -1,0 +1,85 @@
+table 'Dim Job Categories'
+	lineageTag: 16781392-8878-4907-b33c-9f4b0b130921
+
+	column JobKey
+		dataType: string
+		isHidden
+		lineageTag: 3933147b-a955-4995-b9f7-8c2ec4ccd6d5
+		summarizeBy: none
+		sourceColumn: JobKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: febe8d70-5b96-489e-933d-c875bae5b3e3
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column JobCategory
+		dataType: string
+		lineageTag: 2fe6ed33-c211-4ccf-830d-88f88c54cd7a
+		summarizeBy: none
+		sourceColumn: JobCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployingEntity
+		dataType: string
+		lineageTag: 72d3b2fa-73e7-46ae-8861-61240550cc07
+		summarizeBy: none
+		sourceColumn: EmployingEntity
+
+		annotation SummarizationSetBy = Automatic
+
+	column JobTitle
+		dataType: string
+		lineageTag: 7a4a7684-f075-468d-9af4-75a88dfc5d84
+		summarizeBy: none
+		sourceColumn: JobTitle
+
+		annotation SummarizationSetBy = Automatic
+
+	column Proxy
+		dataType: string
+		lineageTag: 60423a0a-f2fb-46dd-8f12-579dc0d0ed8b
+		summarizeBy: none
+		sourceColumn: Proxy
+
+		annotation SummarizationSetBy = Automatic
+
+	column DivisionAcronym
+		dataType: string
+		lineageTag: bbcaf133-c280-4e8b-abbd-1e7317d75f7b
+		summarizeBy: none
+		sourceColumn: DivisionAcronym
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Job Categories' = m
+		mode: import
+		source =
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+				    #"Filtered Rows1" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/")),
+				    #"Kanda Employment Hero Job Mapping xlsx_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/" = #"Filtered Rows1"{[Name="Kanda Employment Hero Job Mapping.xlsx",#"Folder Path"="https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/"]}[Content],
+				    #"Imported Excel Workbook" = Excel.Workbook(#"Kanda Employment Hero Job Mapping xlsx_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/HR Reporting/"),
+				    #"Job Title Mapping_Sheet" = #"Imported Excel Workbook"{[Item="Job Title Mapping",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Job Title Mapping_Sheet", [PromoteAllScalars=true]),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Promoted Headers",{"JobCategory", "EmployingEntity", "JobTitle", "Proxy", "Division", "DivisionAcronym"}),
+				    #"Removed Blank Rows" = Table.SelectRows(#"Removed Other Columns", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Blank Rows",{{"JobCategory", type text}, {"EmployingEntity", type text}, {"JobTitle", type text}}),
+				    #"Added JobKey" = Table.AddColumn(#"Changed Type", "JobKey", each [JobTitle] & [EmployingEntity]),
+				    #"Removed spaces in jobkey" = Table.ReplaceValue(#"Added JobKey"," ","",Replacer.ReplaceText,{"JobKey"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed spaces in jobkey", {"JobKey"})
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
