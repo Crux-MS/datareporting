@@ -1,0 +1,36 @@
+table DimMandatoryRequirementsOR
+	lineageTag: 37f2d789-794b-4b4e-b4ab-c0211370f44a
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 1c555bfd-8d2a-454f-97e1-1656183fef96
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mandatory Requirements'
+		dataType: string
+		lineageTag: 0b5c1ed2-81f9-47fe-894d-872c3b940baf
+		summarizeBy: none
+		sourceColumn: Mandatory Requirements
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimMandatoryRequirementsOR = m
+		mode: import
+		queryGroup: Onboarding
+		source =
+				let
+				    Source = #"Onboarding Register - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Mandatory Requirements"}),
+				    #"Expanded Mandatory Requirements" = Table.ExpandListColumn(#"Removed Other Columns", "Mandatory Requirements"),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Mandatory Requirements", each ([Mandatory Requirements] <> null))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

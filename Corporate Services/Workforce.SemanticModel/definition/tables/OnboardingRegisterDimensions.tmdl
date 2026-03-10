@@ -1,0 +1,49 @@
+table OnboardingRegisterDimensions
+	lineageTag: fa83155a-3813-4373-8041-8958c017f565
+
+	column OnboardingRegisterDimensions
+		lineageTag: 666286ae-bed5-4aa8-898d-a99f740ca68b
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'OnboardingRegisterDimensions Order'
+
+		relatedColumnDetails
+			groupByColumn: 'OnboardingRegisterDimensions Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'OnboardingRegisterDimensions Fields'
+		isHidden
+		lineageTag: b451dfd5-dc4a-4a90-9903-14b8c912e53a
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'OnboardingRegisterDimensions Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'OnboardingRegisterDimensions Order'
+		isHidden
+		formatString: 0
+		lineageTag: 21b1f0c6-8d02-4ed5-b8be-3e482087c7bf
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition OnboardingRegisterDimensions = calculated
+		mode: import
+		source =
+				{
+				    ("Position Title", NAMEOF('DimOnboardingRegister'[PositionTitle]), 0),
+				    ("City", NAMEOF('DimOnboardingRegister'[Work Location]), 1),
+				    ("Division", NAMEOF('DimOnboardingRegister'[Division]), 2)
+				}
+
+	annotation PBI_Id = 9a61fae996c644e79521a98d90187836
+

@@ -230,3 +230,101 @@ relationship 12bdf496-f7e4-4659-71c7-4387646a06e3
 	fromColumn: 'Dim Calculation Semantic Model'.ID
 	toColumn: 'Fact Calculations'.ID
 
+relationship 23d909a4-227f-4a03-9636-9e53f50c9023
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'1st Contact/2nd Emails'
+	toColumn: LocalDateTable_4e32fa17-2b11-40dd-a2ee-582a02aa9374.Date
+
+relationship edf54557-81d9-437d-b84d-6fb3d9139224
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'5 Day Contact'
+	toColumn: LocalDateTable_fec65ac9-8ef1-45ad-bfab-5f2b61a25113.Date
+
+relationship 70690eb4-bb84-4ad0-a92c-e67fdc320a4c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'8 Day Contact'
+	toColumn: LocalDateTable_957e5192-9aef-4ad7-88ef-276b34b17bdd.Date
+
+relationship fb90781c-afb2-4ab5-83a6-4b8448843967
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'14 Day Contact'
+	toColumn: LocalDateTable_9f669a7f-298d-46a5-849a-0f12e07b09e9.Date
+
+relationship c57927f1-2d76-4b78-99dc-60e521cc2b5e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Withdrawal Date'
+	toColumn: LocalDateTable_c07c5709-8c83-487c-9834-c18b5d2109c8.Date
+
+relationship 6fd1f41c-87bf-441a-afd3-9ba155d536c7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Offboarded Date'
+	toColumn: LocalDateTable_1622c203-d360-47a3-8798-1cdfeb0ac774.Date
+
+relationship 32afa3c0-7036-427d-b0ef-9b4579c446a9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.Modified
+	toColumn: LocalDateTable_42ca9a42-daac-4be6-a19c-24fd0983b9e6.Date
+
+relationship 1be79900-d5fc-447b-8c77-a2a2439875a3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Ready for PE'
+	toColumn: LocalDateTable_fc7ebe49-649f-4935-a040-dd782b10756c.Date
+
+relationship e97c594d-4d4a-a0a8-5999-7e8200293c89
+	crossFilteringBehavior: bothDirections
+	fromColumn: DimLineManagerOR.ID
+	toColumn: 'Fact Onboarding Register'.ID
+
+relationship 26462f2c-2b76-90c3-9bb9-dbcb147833ad
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: DimOnboardingRegister.ID
+	toColumn: 'Fact Onboarding Register'.ID
+
+relationship 9db24bdd-8211-73b7-6d07-c6e99db63eed
+	crossFilteringBehavior: bothDirections
+	fromColumn: DimMandatoryRequirementsOR.ID
+	toColumn: 'Fact Onboarding Register'.ID
+
+relationship 3111bc13-706b-4e11-95cc-d32581a59a55
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.Created
+	toColumn: LocalDateTable_3ad05f89-5e30-4ec6-ab3c-5a37ded185e5.Date
+
+relationship bd6065c2-18ec-4371-8a7c-090c06ee59b6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Date Offered'.Date
+	toColumn: LocalDateTable_ded86bbd-783e-483d-b819-48f9a1187941.Date
+
+relationship 5a88cb62-3aab-4f82-b981-8bdc9609865a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Date Offered'.StartOfYear
+	toColumn: LocalDateTable_d32b0a4b-886e-484d-89d4-2c57fd0cbf2d.Date
+
+relationship 107ca90f-e6dc-4f0e-9139-0e3eb4d051e0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Date Offered'.StartOfWeek
+	toColumn: LocalDateTable_8136e54c-cfb0-46aa-9db1-f51439b22d54.Date
+
+relationship c5feb514-a567-e28d-6e65-3ca23390eae1
+	fromColumn: 'Fact Onboarding Register'.CreatedDateKey
+	toColumn: 'Dim Extract Date'.'Extract Date'
+
+relationship 5c200c1d-01c6-fa56-9ab9-40a806e42291
+	fromColumn: 'Fact Onboarding Register'.OfferedDateKey
+	toColumn: 'Dim Date Offered'.Date
+
+relationship 1aeb8d3a-99e4-483c-a6e6-1af711e70696
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Date Offered'
+	toColumn: LocalDateTable_936e0f8b-4c70-4621-907a-df2d9e7a0bf5.Date
+
+relationship d11ce89e-cb30-4043-34ee-f1adcca5f85d
+	isActive: false
+	fromColumn: 'Fact Onboarding Register'.OfferedDateKey
+	toColumn: 'Dim Extract Date'.'Extract Date'
+
+relationship 0b0b9654-ef9f-e4d6-6587-a74858f646df
+	fromColumn: DimOnboardingRegister.'Work Location'
+	toColumn: 'Dim Workforce Location'.LocationKey
+

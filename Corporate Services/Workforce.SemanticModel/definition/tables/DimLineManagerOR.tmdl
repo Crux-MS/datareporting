@@ -1,0 +1,53 @@
+table DimLineManagerOR
+	lineageTag: cefea8b0-dbbc-4eab-9ed1-160669c07a63
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: c6974908-a46c-4c7b-9f4a-0c62e4f590b6
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column title
+		dataType: string
+		lineageTag: 068e7fbd-6356-4ba7-9a02-ed6fd664cb7f
+		summarizeBy: none
+		sourceColumn: title
+
+		annotation SummarizationSetBy = Automatic
+
+	column picture
+		dataType: string
+		lineageTag: 10c578e5-ff9b-45c7-bc25-c9a74cb2b3ee
+		dataCategory: ImageUrl
+		summarizeBy: none
+		sourceColumn: picture
+
+		annotation SummarizationSetBy = Automatic
+
+	column jobTitle
+		dataType: string
+		lineageTag: 3e773ffc-4160-4c31-bb35-7ebf62e23dcd
+		summarizeBy: none
+		sourceColumn: jobTitle
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimLineManagerOR = m
+		mode: import
+		queryGroup: Onboarding
+		source =
+				let
+				    Source = #"Onboarding Register - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Line Manager/s"}),
+				    #"Expanded Line Manager/s" = Table.ExpandTableColumn(#"Removed Other Columns", "Line Manager/s", {"title", "picture", "jobTitle"}, {"title", "picture", "jobTitle"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Line Manager/s", each ([title] <> null))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

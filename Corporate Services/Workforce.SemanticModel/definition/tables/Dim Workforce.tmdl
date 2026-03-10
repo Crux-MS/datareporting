@@ -48,10 +48,8 @@ table 'Dim Workforce'
 		displayFolder: Selected Dimensions
 		lineageTag: ac57b3a9-427f-415e-9ae5-37902315c536
 
-	measure 'Selected Employing Entity' = ```
+	measure 'Selected Employing Entity' =
 			VAR _countEmployingEntity = DISTINCTCOUNT('Dim Workforce'[Employing entity])
-			// VAR _countTotalEmployingEntities = CALCULATE(DISTINCTCOUNT('Dim Workforce'[Employing entity]), ALL('Dim Workforce'[Employing entity]))
-			// VAR _countUnselectedEmployingEntities = _countTotalEmployingEntities - _countEmployingEntity
 			VAR _employingEntities = CONCATENATEX(VALUES('Dim Workforce'[Employing entity]), 'Dim Workforce'[Employing entity], ", ")
 			VAR _logic = IF(ISFILTERED('Dim Workforce'[Employing entity]),
 			    IF(
@@ -61,8 +59,6 @@ table 'Dim Workforce'
 			    "All selected"
 			)
 			RETURN _logic
-			
-			```
 		displayFolder: Selected Dimensions
 		lineageTag: 35179155-ba24-4020-ba9a-5a99f5d178a6
 

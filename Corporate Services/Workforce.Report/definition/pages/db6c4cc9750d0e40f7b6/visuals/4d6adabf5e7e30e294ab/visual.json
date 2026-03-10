@@ -1,0 +1,463 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "4d6adabf5e7e30e294ab",
+  "position": {
+    "x": 54.468085106382979,
+    "y": 497.02127659574472,
+    "z": 7001,
+    "height": 193.55623100303953,
+    "width": 763.52583586626145,
+    "tabOrder": 9006
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimOnboardingRegister"
+                    }
+                  },
+                  "Property": "State Acronym"
+                }
+              },
+              "queryRef": "DimOnboardingRegister.State Acronym",
+              "nativeQueryRef": "State Acronym",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimOnboardingRegister"
+                    }
+                  },
+                  "Property": "Division"
+                }
+              },
+              "queryRef": "DimOnboardingRegister.Division",
+              "nativeQueryRef": "Division",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimLineManagerOR"
+                    }
+                  },
+                  "Property": "title"
+                }
+              },
+              "queryRef": "DimLineManagerOR.title",
+              "nativeQueryRef": "Line Manager",
+              "active": false,
+              "displayName": "Line Manager"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Date Offered"
+                    }
+                  },
+                  "Property": "MMM YYYY"
+                }
+              },
+              "queryRef": "Dim Date Offered.MMM YYYY",
+              "nativeQueryRef": "MMM YYYY",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "CountWorkersOnboarded"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.WorkersOnboarded",
+              "nativeQueryRef": "Workers onboarded",
+              "displayName": "Workers onboarded"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "CountApplicantsWithdrawn"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.CountApplicantsWithdrawn",
+              "nativeQueryRef": "Applications withdrawn",
+              "displayName": "Applications withdrawn"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "CountApplicantsOffboarded"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.CountApplicantsOffboarded",
+              "nativeQueryRef": "Applications offboarded",
+              "displayName": "Applications offboarded"
+            }
+          ]
+        }
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DimOnboardingRegister.State Acronym"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimOnboardingRegister.Division"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimOnboardingRegister"
+                    }
+                  },
+                  "Property": "Division"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimLineManagerOR.title"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Date Offered.MMM YYYY"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "138D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.WorkersOnboarded"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "97D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimOnboardingRegister.Division"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "106D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimOnboardingRegister.State Acronym"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "162D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.CountApplicantsWithdrawn"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "168D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.CountApplicantsOffboarded"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Locations'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Dim Date Offered"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "Function": 3
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "0d1b52132bed91b1a9c0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimOnboardingRegister"
+              }
+            },
+            "Property": "Division"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "2a501d5e6017578b57b1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Onboarding Register"
+              }
+            },
+            "Property": "CountWorkersOnboarded"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "239528d67339249e3db8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Date Offered"
+              }
+            },
+            "Property": "ORReportingMonthFlag"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Date Offered",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "d"
+                        }
+                      },
+                      "Property": "ORReportingMonthFlag"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "1L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "bf8946271d1cbe101a89",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Date Offered"
+              }
+            },
+            "Property": "MMM YYYY"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "5b0bfbbb097c0b018a08",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimLineManagerOR"
+              }
+            },
+            "Property": "title"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "0cd562df920419660a89",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimOnboardingRegister"
+              }
+            },
+            "Property": "State Acronym"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "a70e17c063d04349930a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Onboarding Register"
+              }
+            },
+            "Property": "CountApplicantsWithdrawn"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2f9922cf84c805889d42",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Onboarding Register"
+              }
+            },
+            "Property": "CountApplicantsOffboarded"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

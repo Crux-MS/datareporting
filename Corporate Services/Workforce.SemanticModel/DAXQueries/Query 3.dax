@@ -1,0 +1,56 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		TREATAS({"Current Month"}, 'Dim Extract Date'[Slicer MMM YYYY])
+
+	VAR __DS0FilterTable2 = 
+		TREATAS(
+			{"'DimOnboardingRegister'[PositionTitle]"},
+			'OnboardingRegisterDimensions'[OnboardingRegisterDimensions Fields]
+		)
+
+	VAR __DS0FilterTable3 = 
+		TREATAS({"CYF"}, 'DimOnboardingRegister'[Division])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'DimOnboardingRegister'[PositionTitle],
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			__DS0FilterTable3,
+			"WorkersOnboarded", 'Fact Onboarding Register'[WorkersOnboarded]
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(1001, __DS0Core, [WorkersOnboarded], 0, 'DimOnboardingRegister'[PositionTitle], 1)
+
+	VAR __FullOuterCrossJoinTableDS0_0 = 
+		SUMMARIZECOLUMNS(
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			__DS0FilterTable3,
+			"MinOnboardingRegisterDimensions2", IGNORE(CALCULATE(MIN('OnboardingRegisterDimensions'[OnboardingRegisterDimensions])))
+		)
+
+	VAR __FullOuterCrossJoinTableDS0_1 = 
+		GROUPBY(
+			__DS0Core,
+			"MinWorkersOnboarded", MINX(CURRENTGROUP(), [WorkersOnboarded]),
+			"MaxWorkersOnboarded", MAXX(CURRENTGROUP(), [WorkersOnboarded])
+		)
+
+EVALUATE
+	GENERATEALL(
+		KEEPFILTERS(ROW(
+			"Placeholder", BLANK()
+		)),
+		GENERATEALL(
+			KEEPFILTERS(__FullOuterCrossJoinTableDS0_0),
+			__FullOuterCrossJoinTableDS0_1
+		)
+	)
+
+EVALUATE
+	__DS0PrimaryWindowed
+
+ORDER BY
+	[WorkersOnboarded] DESC, 'DimOnboardingRegister'[PositionTitle]

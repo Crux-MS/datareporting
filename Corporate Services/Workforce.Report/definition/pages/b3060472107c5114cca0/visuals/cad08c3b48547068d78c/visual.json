@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "cad08c3b48547068d78c",
   "position": {
     "x": 48.135072908672292,
@@ -29,6 +29,21 @@
               "queryRef": "Dim Workforce Location.State",
               "nativeQueryRef": "State",
               "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce"
+                    }
+                  },
+                  "Property": "Location"
+                }
+              },
+              "queryRef": "Dim Workforce.Location",
+              "nativeQueryRef": "Location",
+              "active": false
             }
           ]
         }
@@ -81,6 +96,19 @@
       "general": [
         {
           "properties": {}
+        }
+      ],
+      "header": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'State | Location'"
+                }
+              }
+            }
+          }
         }
       ]
     },

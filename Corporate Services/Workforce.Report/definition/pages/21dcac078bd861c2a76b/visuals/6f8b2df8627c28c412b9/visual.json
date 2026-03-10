@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "6f8b2df8627c28c412b9",
   "position": {
-    "x": 55.440729483282681,
-    "y": 149.78723404255319,
+    "x": 91.571072319201988,
+    "y": 122.09476309226932,
     "z": 2000,
-    "height": 487.29483282674772,
-    "width": 782.97872340425533,
+    "height": 487.48129675810475,
+    "width": 691.27182044887775,
     "tabOrder": 1000
   },
   "visual": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Job History"
+                      "Entity": "Dim Extract Date"
                     }
                   },
-                  "Property": "Job title"
+                  "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Job History.Job title",
-              "nativeQueryRef": "Job title"
+              "queryRef": "Dim Extract Date.MMM YYYY",
+              "nativeQueryRef": "MMM YYYY"
             },
             {
               "field": {
@@ -42,9 +42,68 @@
               },
               "queryRef": "Dim Job Categories.DivisionAcronym",
               "nativeQueryRef": "DivisionAcronym"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "Count Currently Employed"
+                }
+              },
+              "queryRef": "Fact Workforce.Count Currently Employed",
+              "nativeQueryRef": "Count Currently Employed"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce"
+                    }
+                  },
+                  "Property": "Employment status"
+                }
+              },
+              "queryRef": "Dim Workforce.Employment status",
+              "nativeQueryRef": "Employment status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce"
+                    }
+                  },
+                  "Property": "Location"
+                }
+              },
+              "queryRef": "Dim Workforce.Location",
+              "nativeQueryRef": "Location"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Dim Workforce"
+                  }
+                },
+                "Property": "Employment status"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
       }
     },
     "objects": {
@@ -603,6 +662,76 @@
               }
             ]
           }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "119D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Job Categories.DivisionAcronym"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "132D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Employment status"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "84D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Location"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "181D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Workforce.Count Currently Employed"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "84D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Extract Date.MMM YYYY"
+          }
         }
       ],
       "columnHeaders": [
@@ -612,6 +741,13 @@
               "expr": {
                 "Literal": {
                   "Value": "'Center'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -1100,6 +1236,45 @@
           }
         },
         "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Job Categories",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "DivisionAcronym"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'CYF'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
         "isHiddenInViewMode": true,
         "isLockedInViewMode": true,
         "objects": {
@@ -1111,69 +1286,112 @@
         }
       },
       {
-        "name": "dc70b7929538d421c500",
+        "name": "eb4647a3889cc19a99cd",
         "field": {
           "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Employment Start Date"
+                "Entity": "Dim Workforce"
               }
             },
-            "Property": "Employment Start Date"
+            "Property": "Location"
           }
         },
-        "type": "RelativeDate",
+        "type": "Categorical",
         "filter": {
           "Version": 2,
           "From": [
             {
               "Name": "d",
-              "Entity": "Dim Employment Start Date",
+              "Entity": "Dim Workforce",
               "Type": 0
             }
           ],
           "Where": [
             {
               "Condition": {
-                "Between": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Location"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Bundaberg'"
                         }
-                      },
-                      "Property": "Employment Start Date"
-                    }
-                  },
-                  "LowerBound": {
-                    "DateSpan": {
-                      "Expression": {
-                        "DateAdd": {
-                          "Expression": {
-                            "DateAdd": {
-                              "Expression": {
-                                "Now": {}
-                              },
-                              "Amount": 1,
-                              "TimeUnit": 0
-                            }
-                          },
-                          "Amount": -1,
-                          "TimeUnit": 3
+                      }
+                    ],
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Gladstone'"
                         }
-                      },
-                      "TimeUnit": 0
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "1fa811f36daa101b229b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Job History"
+              }
+            },
+            "Property": "MemberLatestJobFlag"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Job History",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "MemberLatestJobFlag"
+                      }
                     }
-                  },
-                  "UpperBound": {
-                    "DateSpan": {
-                      "Expression": {
-                        "Now": {}
-                      },
-                      "TimeUnit": 0
-                    }
-                  }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "0D"
+                        }
+                      }
+                    ]
+                  ]
                 }
               }
             }

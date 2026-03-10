@@ -1,0 +1,198 @@
+table DimOnboardingRegister
+	lineageTag: cdbc6509-6821-4b86-a1a9-1cd57a2c3df5
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 37218239-af83-4da2-8bd0-aaedf3dd3276
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeName
+		dataType: string
+		lineageTag: c815150d-c015-4fdf-9b7d-0a1a2e5a432d
+		summarizeBy: none
+		sourceColumn: EmployeeName
+
+		annotation SummarizationSetBy = Automatic
+
+	column picture
+		dataType: string
+		lineageTag: 57160ae7-ee5d-4163-8e01-1418df45340b
+		dataCategory: ImageUrl
+		summarizeBy: none
+		sourceColumn: picture
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: 33f77f41-af3d-443b-b132-7c298023ac5c
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Re-Onboard/Internal Transfer'
+		dataType: string
+		lineageTag: 96820bb7-6639-4a8c-860b-80a1971c8e8c
+		summarizeBy: none
+		sourceColumn: Re-Onboard/Internal Transfer
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country/Region
+		dataType: string
+		isHidden
+		lineageTag: 326d3fc3-8734-421a-9bb7-ece0ba9f906a
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country/Region
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		isHidden
+		lineageTag: 9d9dc9a2-45be-4f36-9992-e9bfe4c0d192
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: State
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		isHidden
+		lineageTag: 15c62f9a-4e31-419f-9454-d603b15fb32f
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: City
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Postal Code'
+		dataType: string
+		isHidden
+		lineageTag: cc100ad1-460c-4173-8ede-9a56fd08f912
+		dataCategory: PostalCode
+		summarizeBy: none
+		sourceColumn: Postal Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Street
+		dataType: string
+		isHidden
+		lineageTag: 772ad3f0-8ba6-426e-96cd-ae6e276a2fd6
+		dataCategory: Address
+		summarizeBy: none
+		sourceColumn: Street
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Work Location'
+		dataType: string
+		isHidden
+		lineageTag: 8ae230f3-f4f8-413a-ad79-6564c3857a28
+		dataCategory: Place
+		summarizeBy: none
+		sourceColumn: Work Location
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Groups
+		dataType: string
+		lineageTag: c6c6d3f1-834a-4491-9805-6e77862b6f98
+		summarizeBy: none
+		sourceColumn: Groups
+
+		annotation SummarizationSetBy = Automatic
+
+	column PositionTitle
+		dataType: string
+		lineageTag: 33c408fe-67af-4a10-977c-7722b7c6808e
+		summarizeBy: none
+		sourceColumn: PositionTitle
+
+		annotation SummarizationSetBy = Automatic
+
+	column Version
+		dataType: string
+		lineageTag: e77725f1-4948-4c59-bb67-c3552432607e
+		summarizeBy: none
+		sourceColumn: Version
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'State Acronym'
+		dataType: string
+		lineageTag: 509a95e3-4eea-4e7f-8145-02a897954084
+		summarizeBy: none
+		sourceColumn: State Acronym
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Work Location: Country/Region Hierarchy'
+		lineageTag: 429c3a9f-89bd-476f-acc4-deb0309ebe70
+
+		level Country/Region
+			lineageTag: 9ab5a195-e40b-4e41-921c-97ed92920a0f
+			column: Country/Region
+
+		level State
+			lineageTag: 7d0e8fa6-b58f-4236-8ec8-db015723c2f9
+			column: State
+
+		level 'Postal Code'
+			lineageTag: 1ae57967-be79-4eb2-9917-a4a5e2e398b4
+			column: 'Postal Code'
+
+		level City
+			lineageTag: 05e82d64-e472-4984-97a6-143d7fd03e63
+			column: City
+
+		level 'Work Location'
+			lineageTag: edca487e-d5bb-4c4b-85e5-a86754d15d2d
+			column: 'Work Location'
+
+		level Street
+			lineageTag: d1ab6ce0-9bdf-4761-bf0f-cb76b9b0ad64
+			column: Street
+
+	partition DimOnboardingRegister = m
+		mode: import
+		queryGroup: Onboarding
+		source =
+				let
+				    Source = #"Onboarding Register - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Employee Name", "Position Title", "Division", "Re-Onboard/Internal Transfer", "Work Location: Country/Region", "Work Location: State", "Work Location: City", "Work Location: Postal Code", "Work Location: Street", "Work Location: Name", "Groups", "Version"}),
+				    #"Expanded Employee Name" = Table.ExpandListColumn(#"Removed Other Columns", "Employee Name"),
+				    #"Expanded Employee Name1" = Table.ExpandRecordColumn(#"Expanded Employee Name", "Employee Name", {"title", "picture"}, {"EmployeeName", "picture"}),
+				    #"Expanded Position Title" = Table.ExpandListColumn(#"Expanded Employee Name1", "Position Title"),
+				    #"Expanded Position Title1" = Table.ExpandRecordColumn(#"Expanded Position Title", "Position Title", {"lookupValue"}, {"PositionTitle"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Expanded Position Title1","",null,Replacer.ReplaceValue,{"Work Location: Country/Region", "Work Location: State", "Work Location: City", "Work Location: Postal Code", "Work Location: Street", "Work Location: Name", "Groups"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","0",null,Replacer.ReplaceValue,{"Re-Onboard/Internal Transfer"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Replaced Value1",{{"Work Location: Name", "Work Location"}, {"Work Location: Street", "Street"}, {"Work Location: Postal Code", "Postal Code"}, {"Work Location: City", "City"}, {"Work Location: State", "State"}, {"Work Location: Country/Region", "Country/Region"}}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Renamed Columns", "State Acronym", each if [State] = "South Australia" then "SA" else if [State] = "Queensland" then "QLD" else if [State] = "Victoria" then "VIC" else if [State] = "New South Wales" then "NSW" else if [State] = "Western Australia" then "WA" else if [State] = "Northern Territory" then "NT" else if [State] = "Tasmania" then "TAS" else if [State] = "Australian Capital Territory" then "ACT" else [State])
+				in
+				    #"Added Conditional Column"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

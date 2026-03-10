@@ -1,0 +1,277 @@
+table 'Fact Onboarding Register'
+	lineageTag: 9d12fb51-ac06-4d43-9b99-ad763ef96214
+
+	measure Rolling3MonthOnboardingProcessing = ```
+			VAR _extractDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _currentMonthEnd = CALCULATE(MAX('Dim Date Offered'[Date]), 'Fact Workforce'[Extract Date] = _extractDate)
+			VAR _sameMthEndPrevQtr = EOMONTH(_currentMonthEnd, -3)
+			VAR _avgDaysOnboardingQtr = CALCULATE(
+			    AVERAGE('Fact Onboarding Register'[Days Onboarding]), 
+			    FILTER(
+			        ALL('Fact Onboarding Register'), 
+			        'Fact Onboarding Register'[Date Offered] >= _sameMthEndPrevQtr && 'Fact Onboarding Register'[Date Offered] <= _currentMonthEnd
+			    )
+			)
+			RETURN _avgDaysOnboardingQtr
+			```
+		lineageTag: cb0dff25-80be-4dfd-99b0-b821c036ce37
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AvgDaysOnboarding = AVERAGE('Fact Onboarding Register'[Days Onboarding])
+		lineageTag: 5d6530fa-e0bc-49c7-bbb3-f90c35d1cc32
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CountWorkersOnboarded = COUNT('Fact Onboarding Register'[ID])
+		formatString: 0
+		lineageTag: 9dfe9cfc-7963-4c10-9df5-81881296967c
+
+	measure 'Selected Onboarding Division' =
+			VAR _countEmployingEntity = DISTINCTCOUNT('DimOnboardingRegister'[Division])
+			VAR _employingEntities = CONCATENATEX(VALUES('DimOnboardingRegister'[Division]), 'DimOnboardingRegister'[Division], ", ")
+			VAR _logic = IF(ISFILTERED('DimOnboardingRegister'[Division]),
+			    IF(
+			        _countEmployingEntity <= 3,
+			        _employingEntities,
+			        _countEmployingEntity & " selected"),
+			    "All selected"
+			)
+			RETURN _logic
+		lineageTag: b83b2380-ff36-43b5-9e9c-d77f06e188bc
+
+	measure CountApplicantsWithdrawn = CALCULATE([CountWorkersOnboarded], 'Fact Onboarding Register'[Withdrawal Date] <> BLANK())
+		formatString: 0
+		lineageTag: 1ae69ee1-b699-49b5-aa15-66edb75ac0b2
+
+	measure CountApplicantsOffboarded = CALCULATE([CountWorkersOnboarded], 'Fact Onboarding Register'[Offboarded Date] <> BLANK())
+		formatString: 0
+		lineageTag: 724d5216-b60f-4c87-83f0-2c5a5dc391fb
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: fde4dc51-ca47-4de7-ad55-11fd7941f21c
+		summarizeBy: count
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column 'Date Offered'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 0e279ca3-d76d-448f-9a66-e7320bae695a
+		summarizeBy: none
+		sourceColumn: Date Offered
+
+		variation Variation
+			isDefault
+			relationship: 1aeb8d3a-99e4-483c-a6e6-1af711e70696
+			defaultHierarchy: LocalDateTable_936e0f8b-4c70-4621-907a-df2d9e7a0bf5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column '1st Contact/2nd Emails'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4b4ec451-2adf-45d8-8939-0a831f10c79f
+		summarizeBy: none
+		sourceColumn: 1st Contact/2nd Emails
+
+		variation Variation
+			isDefault
+			relationship: 23d909a4-227f-4a03-9636-9e53f50c9023
+			defaultHierarchy: LocalDateTable_4e32fa17-2b11-40dd-a2ee-582a02aa9374.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column '5 Day Contact'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 077e5b64-31bd-4409-bfd4-f7a2296a6a48
+		summarizeBy: none
+		sourceColumn: 5 Day Contact
+
+		variation Variation
+			isDefault
+			relationship: edf54557-81d9-437d-b84d-6fb3d9139224
+			defaultHierarchy: LocalDateTable_fec65ac9-8ef1-45ad-bfab-5f2b61a25113.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column '8 Day Contact'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 68318a7f-41e0-4e5e-80f6-e2bd95c4597c
+		summarizeBy: none
+		sourceColumn: 8 Day Contact
+
+		variation Variation
+			isDefault
+			relationship: 70690eb4-bb84-4ad0-a92c-e67fdc320a4c
+			defaultHierarchy: LocalDateTable_957e5192-9aef-4ad7-88ef-276b34b17bdd.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column '14 Day Contact'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 43a90a54-f14b-49b1-801a-6c2534d6302b
+		summarizeBy: none
+		sourceColumn: 14 Day Contact
+
+		variation Variation
+			isDefault
+			relationship: fb90781c-afb2-4ab5-83a6-4b8448843967
+			defaultHierarchy: LocalDateTable_9f669a7f-298d-46a5-849a-0f12e07b09e9.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ready for PE'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a50bbf71-73cc-4b44-8284-adff411f4ac2
+		summarizeBy: none
+		sourceColumn: Ready for PE
+
+		variation Variation
+			isDefault
+			relationship: 1be79900-d5fc-447b-8c77-a2a2439875a3
+			defaultHierarchy: LocalDateTable_fc7ebe49-649f-4935-a040-dd782b10756c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Withdrawal Date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d30832d5-8bf7-46d8-b345-8e3eba9f3e4c
+		summarizeBy: none
+		sourceColumn: Withdrawal Date
+
+		variation Variation
+			isDefault
+			relationship: c57927f1-2d76-4b78-99dc-60e521cc2b5e
+			defaultHierarchy: LocalDateTable_c07c5709-8c83-487c-9834-c18b5d2109c8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Offboarded Date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 600b1ad9-5857-4d9d-9f21-793ed6548400
+		summarizeBy: none
+		sourceColumn: Offboarded Date
+
+		variation Variation
+			isDefault
+			relationship: 6fd1f41c-87bf-441a-afd3-9ba155d536c7
+			defaultHierarchy: LocalDateTable_1622c203-d360-47a3-8798-1cdfeb0ac774.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Days Onboarding'
+		dataType: int64
+		formatString: 0
+		lineageTag: f7369794-a520-4294-b167-a3dc76de0042
+		summarizeBy: sum
+		sourceColumn: Days Onboarding
+
+		annotation SummarizationSetBy = Automatic
+
+	column Modified
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9da50660-bf2b-4367-b751-3771447d62e1
+		summarizeBy: none
+		sourceColumn: Modified
+
+		variation Variation
+			isDefault
+			relationship: 32afa3c0-7036-427d-b0ef-9b4579c446a9
+			defaultHierarchy: LocalDateTable_42ca9a42-daac-4be6-a19c-24fd0983b9e6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Created
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f786c633-6c43-49a5-afbf-103992ee6382
+		summarizeBy: none
+		sourceColumn: Created
+
+		variation Variation
+			isDefault
+			relationship: 3111bc13-706b-4e11-95cc-d32581a59a55
+			defaultHierarchy: LocalDateTable_3ad05f89-5e30-4ec6-ab3c-5a37ded185e5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 7ada3d79-464b-4b0f-a795-5b02c7a4b721
+		summarizeBy: none
+		sourceColumn: CreatedDateKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OfferedDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 0bf54e03-9f46-43da-8fe5-dee33c4812f4
+		summarizeBy: none
+		sourceColumn: OfferedDateKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ApplicantWithdrawnFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ae27bd0b-5c13-4028-a42c-347d819c3621
+		summarizeBy: none
+		sourceColumn: ApplicantWithdrawnFlag
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column ApplicantOffboardedFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8f1834c2-e197-445a-bbe7-14de5547728f
+		summarizeBy: none
+		sourceColumn: ApplicantOffboardedFlag
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Onboarding Register' = m
+		mode: import
+		queryGroup: Onboarding
+		source =
+				let
+				    Source = #"Onboarding Register - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Days Onboarding", "Date Offered", "1st Contact/2nd Emails", "5 Day Contact", "8 Day Contact", "14 Day Contact", "Ready for PE", "Withdrawal Date", "Offboarded Date", "Modified", "Created"}),
+				    #"Inserted Date" = Table.AddColumn(#"Removed Other Columns", "CreatedDateKey", each DateTime.Date([Created]), type date),
+				    #"Inserted Date1" = Table.AddColumn(#"Inserted Date", "OfferedDateKey", each DateTime.Date([Date Offered]), type date),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Date1",{{"Days Onboarding", Int64.Type}}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Changed Type", "ApplicantWithdrawnFlag", each if [Withdrawal Date] <> null then true else false),
+				    Custom1 = Table.AddColumn(#"Added Conditional Column", "ApplicantOffboardedFlag", each if [Offboarded Date] <> null then true else false)
+				in
+				    Custom1
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
