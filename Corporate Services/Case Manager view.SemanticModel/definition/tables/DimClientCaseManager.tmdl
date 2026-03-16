@@ -1,0 +1,66 @@
+table DimClientCaseManager
+	lineageTag: c9ea490e-c70f-447c-86ac-fe667a83d8e2
+
+	column ClientId
+		dataType: int64
+		formatString: 0
+		lineageTag: a7767567-15c8-4750-89f1-adc4ecd99790
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CaseManagerEmail
+		dataType: string
+		lineageTag: 0d4d40cf-59ee-480a-bdba-16ed4928ce36
+		summarizeBy: none
+		sourceColumn: CaseManagerEmail
+
+		annotation SummarizationSetBy = Automatic
+
+	column CaseManagerName
+		dataType: string
+		lineageTag: 8b56496e-d69e-434a-ac8b-4ae29486ea6a
+		summarizeBy: none
+		sourceColumn: CaseManagerName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CaseManagerRole
+		dataType: string
+		lineageTag: 731612b1-4524-4f46-b1c1-ca4688795c6f
+		summarizeBy: none
+		sourceColumn: CaseManagerRole
+
+		annotation SummarizationSetBy = Automatic
+
+	column CaseManagerDivision
+		dataType: string
+		lineageTag: 13066662-8337-47c2-a0a9-7f7a4ca776e8
+		summarizeBy: none
+		sourceColumn: CaseManagerDivision
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimClientCaseManager = m
+		mode: import
+		source =
+				let
+				    Source = #"Clients - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ClientId", "CaseManager", "CaseManager2"}),
+				    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Removed Other Columns", {"ClientId"}, "Attribute", "CaseManagerEmail"),
+				    #"Removed Columns" = Table.RemoveColumns(#"Unpivoted Other Columns",{"Attribute"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Columns", each ([CaseManagerEmail] <> "")),
+				    #"Merged Queries" = Table.NestedJoin(#"Filtered Rows", {"CaseManagerEmail"}, #"Current workers - source", {"Email"}, "Current workers - source", JoinKind.LeftOuter),
+				    #"Expanded Current workers - source" = Table.ExpandTableColumn(#"Merged Queries", "Current workers - source", {"FirstName", "LastName", "RoleDescription", "Division"}, {"FirstName", "LastName", "CaseManagerRole", "CaseManagerDivision"}),
+				    #"Merged Columns" = Table.CombineColumns(#"Expanded Current workers - source",{"FirstName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"CaseManagerName"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Merged Columns",{{"ClientId", Int64.Type}, {"CaseManagerEmail", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

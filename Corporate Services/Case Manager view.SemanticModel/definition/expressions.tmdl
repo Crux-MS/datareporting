@@ -1,0 +1,68 @@
+expression VisualCareUser = "06565c52-b36a-4d8a-8622-b2ea31373630" meta [IsParameterQuery=true, List={"06565c52-b36a-4d8a-8622-b2ea31373630"}, DefaultValue="06565c52-b36a-4d8a-8622-b2ea31373630", Type="Any", IsParameterQueryRequired=true]
+	lineageTag: b36beadd-a130-41eb-93c3-c32da168e61f
+
+	annotation PBI_ResultType = Text
+
+expression VisualCareKey = "44234a579e9872286876c59943d98263e4f40c5fa354784ca1b977e085552f51" meta [IsParameterQuery=true, List={"44234a579e9872286876c59943d98263e4f40c5fa354784ca1b977e085552f51"}, DefaultValue="44234a579e9872286876c59943d98263e4f40c5fa354784ca1b977e085552f51", Type="Any", IsParameterQueryRequired=true]
+	lineageTag: 716b223e-c828-49ea-af82-c7e686c7a700
+
+	annotation PBI_ResultType = Text
+
+expression VisualCareSecret = " f32e2aef9a6d2f08330f163d04ffdaf090f441cde571e7beb1ebe443d2753c33" meta [IsParameterQuery=true, List={" f32e2aef9a6d2f08330f163d04ffdaf090f441cde571e7beb1ebe443d2753c33"}, DefaultValue=" f32e2aef9a6d2f08330f163d04ffdaf090f441cde571e7beb1ebe443d2753c33", Type="Any", IsParameterQueryRequired=true]
+	lineageTag: b0f604e3-010c-4be1-91ae-59c81b700fa8
+
+	annotation PBI_ResultType = Text
+
+expression 'L42D Date' =
+		let
+		    Source = Date.ToText(Date.AddDays(Date.From(DateTime.LocalNow()),-42),[Format="YYYY-MM-DD"])
+		in
+		    Source
+	lineageTag: 72e42c0d-d4a1-4f58-affb-76be619de6e4
+
+	annotation PBI_ResultType = Text
+
+expression 'N28D Date' =
+		let
+		    Source = Date.ToText(Date.AddDays(Date.From(DateTime.LocalNow()),28),[Format="YYYY-MM-DD"])
+		in
+		    Source
+	lineageTag: 80483c9d-2eaa-4f48-8083-9a5df0d9af43
+
+	annotation PBI_ResultType = Text
+
+expression 'Clients - Source' =
+		let
+		    //Source = List.Numbers(0,300000/20000,20000),
+		    //#"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    //#"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "API Index"}}),
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/clients", [Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000", includeNotes="false"], Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    Custom1 = Table.SelectRows(#"Converted to Table", each ([Column1] <> null)),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(Custom1, "Column1", {"ClientId", "ClientCode", "FirstName", "MiddleName", "LastName", "PreferredName", "Gender", "FundingType", "ClientType", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "PhoneSMS", "Fax", "ContactPref", "DateOfBirth", "PayerId", "Area", "Division", "Group", "CaseManager", "CaseManager2", "MaritalStatus", "Aboriginal", "TorresStraitIslander", "LGBQTI", "LanguageEnglish", "LanguageOther", "InterpreterRequired", "ClientNo", "AccountingCode", "MedicareNo", "AmbulanceNo", "Weight", "Height", "DVA", "TSI", "ATSI", "CALD", "CHSP", "SATSS", "HCPLevel", "LiveAlone", "SingleWorker", "CompanionCard", "PrivateHealth", "LegalOrders", "LivingArrangement", "EmploymentType", "Referral", "Referer", "RefererCode", "MACCode", "MyAgedCareReference", "NotesAccess", "NotesRisk", "NotesAlert", "NotesGeneral", "NotesRoster", "NotesClientProfile", "NotesShiftAlert", "CurrentStatus", "ServiceStatus", "ServiceStart", "ServiceEnd", "ServiceReview", "ServiceReview2", "EnquiryDate", "LastServiceReview", "ReasonServiceEnded", "NIDISNo", "NDISNumber", "NDISNote", "PensionNo", "CareRecipientId", "IsDex", "DexClientId", "Slk", "Status", "LocationId", "Current", "CreatedBy", "CreatedTime", "LastModifiedTime", "PreferedWorker", "NonPreferedWorker"}, {"ClientId", "ClientCode", "FirstName", "MiddleName", "LastName", "PreferredName", "Gender", "FundingType", "ClientType", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "PhoneSMS", "Fax", "ContactPref", "DateOfBirth", "PayerId", "Area", "Division", "Group", "CaseManager", "CaseManager2", "MaritalStatus", "Aboriginal", "TorresStraitIslander", "LGBQTI", "LanguageEnglish", "LanguageOther", "InterpreterRequired", "ClientNo", "AccountingCode", "MedicareNo", "AmbulanceNo", "Weight", "Height", "DVA", "TSI", "ATSI", "CALD", "CHSP", "SATSS", "HCPLevel", "LiveAlone", "SingleWorker", "CompanionCard", "PrivateHealth", "LegalOrders", "LivingArrangement", "EmploymentType", "Referral", "Referer", "RefererCode", "MACCode", "MyAgedCareReference", "NotesAccess", "NotesRisk", "NotesAlert", "NotesGeneral", "NotesRoster", "NotesClientProfile", "NotesShiftAlert", "CurrentStatus", "ServiceStatus", "ServiceStart", "ServiceEnd", "ServiceReview", "ServiceReview2", "EnquiryDate", "LastServiceReview", "ReasonServiceEnded", "NIDISNo", "NDISNumber", "NDISNote", "PensionNo", "CareRecipientId", "IsDex", "DexClientId", "Slk", "Status", "LocationId", "Current", "CreatedBy", "CreatedTime", "LastModifiedTime", "PreferedWorker", "NonPreferedWorker"}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Expanded Column1",{"ClientId", "ClientCode", "FirstName", "MiddleName", "LastName", "FundingType", "DateOfBirth", "Area", "Division", "Group", "CaseManager", "CaseManager2", "ServiceStatus", "ServiceStart", "ServiceEnd"}),
+		    #"Filtered Rows" = Table.SelectRows(#"Removed Other Columns", each ([FirstName] <> "Example"))
+		in
+		    #"Filtered Rows"
+	lineageTag: 7ec53f10-2df7-4d78-8950-0f48577cd063
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Current workers - source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/workers", [Query=[includeSkills="FALSE", CarerId="1", includeNonCurrent="TRUE", includeDeleted="TRUE"],Headers=[User=#"VisualCareUser", Key=#"VisualCareKey", Secret=#"VisualCareSecret"]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"CarerId", "CarerCode", "FirstName", "LastName", "PreferredName", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "DateOfBirth", "StartDate", "EndDate", "AccountingCode", "WorkerNumber", "Description", "Sex", "Ethnicity", "Marital", "Smoker", "PetFriendly", "WorkWithChildren", "Languages", "Area", "Division", "Groups", "CaseManager", "BudgetHours", "Rating", "WorkerType", "Role", "AwardCode", "AwardSector", "PayPoint", "PayrateLevel", "InIsolation", "IsolationStartDate", "IsolationEndDate", "CovidVaccine1", "CovidVaccine2", "WebEnabled", "CarerStatus", "ResignReason", "NDISClearance", "ScreenCheckAppNo", "ScreenCheckNo", "Current", "Status", "CreatedBy", "CreatedTime", "LastModifiedTime", "RoleDescription", "AwardDesc", "Skills", "PreferedWorker", "NonPreferedWorker"}, {"CarerId", "CarerCode", "FirstName", "LastName", "PreferredName", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "DateOfBirth", "StartDate", "EndDate", "AccountingCode", "WorkerNumber", "Description", "Sex", "Ethnicity", "Marital", "Smoker", "PetFriendly", "WorkWithChildren", "Languages", "Area", "Division", "Groups", "CaseManager", "BudgetHours", "Rating", "WorkerType", "Role", "AwardCode", "AwardSector", "PayPoint", "PayrateLevel", "InIsolation", "IsolationStartDate", "IsolationEndDate", "CovidVaccine1", "CovidVaccine2", "WebEnabled", "CarerStatus", "ResignReason", "NDISClearance", "ScreenCheckAppNo", "ScreenCheckNo", "Current", "Status", "CreatedBy", "CreatedTime", "LastModifiedTime", "RoleDescription", "AwardDesc", "Skills", "PreferedWorker", "NonPreferedWorker"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00",null,Replacer.ReplaceValue,{"DateOfBirth", "StartDate", "EndDate", "IsolationStartDate", "IsolationEndDate"}),
+		    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"CreatedTime", "LastModifiedTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value2",{{"CarerId", Int64.Type}, {"CarerCode", type text}, {"FirstName", type text}, {"LastName", type text}, {"PreferredName", type text}, {"Address1", type text}, {"Address2", type text}, {"Suburb", type text}, {"State", type text}, {"PostCode", type text}, {"Longitude", type number}, {"Latitude", type number}, {"Email", type text}, {"Phone1", type text}, {"Phone2", type text}, {"DateOfBirth", type date}, {"StartDate", type date}, {"EndDate", type date}, {"AccountingCode", type text}, {"WorkerNumber", type text}, {"Description", type text}, {"Sex", type text}, {"Ethnicity", type text}, {"Marital", type text}, {"Smoker", type logical}, {"PetFriendly", type logical}, {"WorkWithChildren", type logical}, {"Languages", type text}, {"Area", type text}, {"Division", type text}, {"Groups", type text}, {"CaseManager", type text}, {"BudgetHours", type number}, {"Rating", type number}, {"WorkerType", type text}, {"Role", type text}, {"AwardCode", type text}, {"AwardSector", type text}, {"PayPoint", Int64.Type}, {"PayrateLevel", Int64.Type}, {"InIsolation", type logical}, {"IsolationStartDate", type date}, {"IsolationEndDate", type date}, {"CovidVaccine1", type logical}, {"CovidVaccine2", type logical}, {"WebEnabled", type logical}, {"CarerStatus", type text}, {"ResignReason", type text}, {"NDISClearance", type logical}, {"Current", type logical}, {"CreatedTime", type datetime}, {"LastModifiedTime", type datetime}, {"RoleDescription", type text}, {"AwardDesc", type text}, {"Status", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: e5a64be8-b23a-491f-9438-3eca521f6b78
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

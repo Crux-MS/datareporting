@@ -1,0 +1,39 @@
+table RefreshedDate
+	lineageTag: 36b47290-b9db-4930-b3eb-a7afed6f7744
+
+	measure RefreshedDateTime = FORMAT(MAX(RefreshedDate[Refreshed]), "DD/MM/YYYY hh:mm:ss AM/PM")
+		lineageTag: b59c17a8-5df4-44e8-a526-e5b0aabd2196
+
+	column Refreshed
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 8d8de2bd-dcee-495b-86ca-e709bac772ad
+		summarizeBy: none
+		sourceColumn: Refreshed
+
+		variation Variation
+			isDefault
+			relationship: d6b81e75-293c-47e5-8edc-26c5567e62f1
+			defaultHierarchy: LocalDateTable_b88939b8-f2a7-413d-8138-fe202bd7cc20.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RefreshedDate = m
+		mode: import
+		source =
+				let
+				    Source = DateTimeZone.LocalNow(),
+				    AEST = DateTimeZone.SwitchZone(Source, 10),
+				    #"Converted to Table" = #table(1, {{AEST}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "Refreshed"}}),
+				    #"Changed Type with Locale" = Table.TransformColumnTypes(#"Renamed Columns", {{"Refreshed", type datetime}}, "en-AU")
+				in
+				    #"Changed Type with Locale"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

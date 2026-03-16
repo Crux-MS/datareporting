@@ -1,0 +1,133 @@
+table Client
+	lineageTag: cea5b36e-9cb8-422e-badc-49dbf3c07ca2
+
+	measure ClientAge = CALCULATE(DATEDIFF(SELECTEDVALUE('Client'[DateOfBirth]), NOW(), YEAR), CROSSFILTER('Client'[ClientId], 'DimClientCaseManager'[ClientId], Both))
+		formatString: 0
+		lineageTag: b84178bc-facf-418b-82c6-e90119e10f8a
+
+	measure ChildAdultFlag = IF([ClientAge] < 18, "Child", "Adult")
+		lineageTag: 9b12e37b-09c5-466c-b2b5-c7f4e721e1a3
+
+	measure SelectedClientName =
+			VAR _singleSelection = HASONEVALUE('Client'[FullName])
+			VAR _logic = IF(_singleSelection, CALCULATE(SELECTEDVALUE('Client'[FullName]), CROSSFILTER('Client'[ClientId], 'DimClientCaseManager'[ClientId], Both)), BLANK())
+			RETURN _logic
+		lineageTag: 65050a96-d7f7-4427-871d-12d547a95ba7
+
+	measure ShowClientDetails = INT(ISFILTERED('Client'[FullName]))
+		formatString: 0
+		lineageTag: ceb46cc1-b18a-4c51-bdbd-eaec9c1cdf33
+
+	column ClientId
+		dataType: int64
+		formatString: 0
+		lineageTag: bc046225-9a54-4b95-9f00-47413b58dc44
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullName
+		dataType: string
+		lineageTag: 3c8dcea2-7daa-4e7e-83e4-172400ec1b3e
+		summarizeBy: none
+		sourceColumn: FullName
+
+		annotation SummarizationSetBy = Automatic
+
+	column FundingType
+		dataType: string
+		lineageTag: d7249cd3-517c-43c1-8e79-9d28b9a14066
+		summarizeBy: none
+		sourceColumn: FundingType
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateOfBirth
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 60d06a88-f53d-47ac-80a3-006a2bae3312
+		summarizeBy: none
+		sourceColumn: DateOfBirth
+
+		variation Variation
+			isDefault
+			relationship: 18185f95-ddde-475a-a3cc-1c44aad8c814
+			defaultHierarchy: LocalDateTable_fd9c8d28-2a6b-4436-b474-c6e0d551fbbc.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Area
+		dataType: string
+		lineageTag: e2e686b7-cc2c-4f02-8e4c-ee1e97017f20
+		summarizeBy: none
+		sourceColumn: Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: 0d22c2a2-a640-479a-ab3e-1006f9ee5bad
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceStatus
+		dataType: string
+		lineageTag: 050feb01-5fb0-434b-9d08-1eeeb6f4088d
+		summarizeBy: none
+		sourceColumn: ServiceStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceStart
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 362e1312-a89b-4fce-973f-35e5a3393063
+		summarizeBy: none
+		sourceColumn: ServiceStart
+
+		variation Variation
+			isDefault
+			relationship: 733225d5-8068-48b2-a037-1d252857a163
+			defaultHierarchy: LocalDateTable_f26b6f22-fcfc-46de-b785-0d3e57e5db57.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ServiceEnd
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1b468b15-fe1c-4733-85ae-a5abe1e1ec33
+		summarizeBy: none
+		sourceColumn: ServiceEnd
+
+		variation Variation
+			isDefault
+			relationship: 81eb2a93-75a1-4f7f-a73d-3358a208f1a5
+			defaultHierarchy: LocalDateTable_4616a9b8-bb41-4ae6-9a37-c6408cde240b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Client = m
+		mode: import
+		source =
+				let
+				    Source = #"Clients - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ClientId", "FirstName", "MiddleName", "LastName", "FundingType", "DateOfBirth", "Area", "Division", "ServiceStatus", "ServiceStart", "ServiceEnd"}),
+				    #"Merged Columns" = Table.CombineColumns(#"Removed Other Columns",{"FirstName", "MiddleName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"FullName"),
+				    #"Replaced Value" = Table.ReplaceValue(#"Merged Columns","0000-00-00",null,Replacer.ReplaceValue,{"ServiceEnd", "ServiceStart", "DateOfBirth"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"DateOfBirth", type date}, {"ServiceEnd", type date}, {"ServiceStart", type date}, {"ServiceStatus", type text}, {"Division", type text}, {"Area", type text}, {"FundingType", type text}, {"ClientId", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
