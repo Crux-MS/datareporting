@@ -1,0 +1,73 @@
+table FactWorkerDailyStatus
+	lineageTag: 5a4b70b5-03bb-4fb7-8eb5-047dae51f9da
+
+	column FullNameKey
+		dataType: string
+		lineageTag: 6cbd0057-bd96-4fbf-92dd-e28fc3685556
+		summarizeBy: none
+		sourceColumn: FullNameKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 634ceb8b-4901-4931-b922-89e0a737d74d
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Hours
+		dataType: double
+		lineageTag: ea1f8020-f37c-4b1c-9c38-512e34e36c10
+		summarizeBy: sum
+		sourceColumn: Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Title
+		dataType: string
+		lineageTag: c4885904-a697-479f-b02f-dc33c0deb7c0
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column PublicHolidayFlag = ```
+			VAR _workerName = FactWorkerDailyStatus[FullNameKey]
+			VAR _workerState = CALCULATE(SELECTEDVALUE(DimASCEmployees[State]), DimASCEmployees[FullNameKey] = _workerName)
+			VAR _date = FactWorkerDailyStatus[Date]
+			VAR _publicHolidayFlag = CALCULATE(SELECTEDVALUE(DimASCEmployeePublicHolidays[PublicHolidayFlag]),
+			    DimASCEmployeePublicHolidays[date] = _date && DimASCEmployeePublicHolidays[FullNameKey] = _workerState, 
+			    CROSSFILTER(DimCalendar[WorkDate], FactWorkerDailyStatus[Date],Both))
+			RETURN _publicHolidayFlag
+			```
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: be4d9446-e476-426f-89ba-7c0679fe2856
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactWorkerDailyStatus = m
+		mode: import
+		queryGroup: SharePoint
+		source =
+				let
+				    Source = Table.NestedJoin(#"FactWorkerContractHours-Source", {"SpreadsheetKey"}, #"FactWorkerDailyJobTitle-Source", {"SpreadsheetKey"}, "FactWorkerDailyJobTitle", JoinKind.LeftOuter),
+				    #"Expanded FactWorkerDailyJobTitle" = Table.ExpandTableColumn(Source, "FactWorkerDailyJobTitle", {"Title"}, {"Title"}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Expanded FactWorkerDailyJobTitle",{"SpreadsheetKey"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Columns",{{"Date", type date}, {"Hours", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

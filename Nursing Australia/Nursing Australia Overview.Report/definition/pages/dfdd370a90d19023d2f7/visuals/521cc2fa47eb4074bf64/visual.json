@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "521cc2fa47eb4074bf64",
   "position": {
     "x": 47.881773399014776,
@@ -20,22 +20,49 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce"
+                      "Entity": "Dim Shift Remoteness"
                     }
                   },
-                  "Property": "Location"
+                  "Property": "AvgRemotenessDescription"
                 }
               },
-              "queryRef": "Dim Workforce.Location",
-              "nativeQueryRef": "Work Location",
+              "queryRef": "Dim Shift Remoteness.AvgRemotenessDescription",
+              "nativeQueryRef": "Remoteness",
               "active": true,
-              "displayName": "Work Location"
+              "displayName": "Remoteness"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Shift Remoteness"
+                    }
+                  },
+                  "Property": "SA4 Name"
+                }
+              },
+              "queryRef": "Dim Shift Remoteness.SA4 Name",
+              "nativeQueryRef": "SA4 Name",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Shift Remoteness"
+                    }
+                  },
+                  "Property": "SA3 Name"
+                }
+              },
+              "queryRef": "Dim Shift Remoteness.SA3 Name",
+              "nativeQueryRef": "SA3 Name",
+              "active": false
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "isDefaultSort": true
       }
     },
     "expansionStates": [
@@ -46,7 +73,45 @@
         "levels": [
           {
             "queryRefs": [
-              "Dim Workforce.Location"
+              "Dim Shift Remoteness.AvgRemotenessDescription"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Shift Remoteness"
+                    }
+                  },
+                  "Property": "AvgRemotenessDescription"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Shift Remoteness.SA4 Name"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Shift Remoteness"
+                    }
+                  },
+                  "Property": "SA4 Name"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Shift Remoteness.SA3 Name"
             ],
             "isCollapsed": true,
             "isPinned": true
@@ -90,7 +155,45 @@
         {
           "properties": {}
         }
+      ],
+      "header": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Client remoteness rating'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "selection": [
+        {
+          "properties": {
+            "selectAllCheckboxEnabled": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "singleSelect": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
+    },
+    "syncGroup": {
+      "groupName": "AvgRemotenessDescription",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   },

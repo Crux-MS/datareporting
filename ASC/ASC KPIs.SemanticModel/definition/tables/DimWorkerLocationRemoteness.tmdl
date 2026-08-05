@@ -1,0 +1,93 @@
+table DimWorkerLocationRemoteness
+	lineageTag: 41f799b4-1291-4048-b937-c9292ff95a8b
+
+	column PostCode
+		dataType: string
+		lineageTag: b249eb96-7e24-453d-b7e2-91acaf8c4399
+		summarizeBy: none
+		sourceColumn: PostCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgMMM2023
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 41c51437-a9dd-4143-9882-e401e21d82dc
+		summarizeBy: none
+		sourceColumn: AvgMMM2023
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgRemotenessDescription
+		dataType: string
+		lineageTag: d6213662-4617-4656-8ec7-cf7897326e3d
+		summarizeBy: none
+		sourceColumn: AvgRemotenessDescription
+		sortByColumn: AvgMMM2023
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 10c65410-0ffe-4af0-af38-2854f3e036bd
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgLat
+		dataType: double
+		lineageTag: 4f6f38d6-809b-4074-b9d3-b3332222e11f
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: AvgLat
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column AvgLong
+		dataType: double
+		lineageTag: 1f66de3a-e143-4bb8-8d0e-0410f3d2660d
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: AvgLong
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column SA3
+		dataType: string
+		lineageTag: e42b7407-1fbf-4eee-af8a-fb4a6ec0dbef
+		summarizeBy: none
+		sourceColumn: SA3
+
+		annotation SummarizationSetBy = Automatic
+
+	column SA4
+		dataType: string
+		lineageTag: 940d2747-4357-46e6-a890-d37d849cbea8
+		summarizeBy: none
+		sourceColumn: SA4
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimWorkerLocationRemoteness = m
+		mode: import
+		queryGroup: SharePoint
+		source =
+				let
+				    Source = #"DimLocationRemoteness - Source"
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

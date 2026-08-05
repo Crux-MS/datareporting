@@ -1,0 +1,34 @@
+table 'Dim Calculation Semantic Model'
+	isHidden
+	lineageTag: 120462d6-8262-4c61-980f-cf3e6e3881fd
+	sourceLineageTag: 79f6d322-d1ed-40c3-8321-a4970ed731db
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8076d1ff-1252-42e0-ab08-893f3d1b68d6
+		sourceLineageTag: cf2ddba7-b14d-4fd3-b28e-f6cbaa22139b
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column 'Semantic Model'
+		dataType: string
+		isHidden
+		lineageTag: 35730b5e-d333-463f-9d03-3f6cd1bbcd3a
+		sourceLineageTag: 5321e59b-4829-4d35-8409-d610f07ecbcc
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Semantic Model
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Calculation Semantic Model' = entity
+		mode: directQuery
+		source
+			entityName: Dim Calculation Semantic Model
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

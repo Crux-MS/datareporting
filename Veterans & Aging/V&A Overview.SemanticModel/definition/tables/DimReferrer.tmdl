@@ -1,0 +1,71 @@
+table DimReferrer
+	lineageTag: be0e509d-ef9a-4247-b48d-bd39a212434d
+
+	measure ListeReferrerGroups = CALCULATE(CONCATENATEX(DimReferrer, DimReferrer[ReferrerGroup], ", "), CROSSFILTER(DimReferrer[referrer_id], FactPatient[referrer_id], Both))
+		lineageTag: cecbe78b-1b9d-4b90-bd01-905cd791b97a
+
+	column referrer_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a1c8995e-1428-410a-ba69-6f5423dabd04
+		summarizeBy: none
+		sourceColumn: referrer_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column referrer_name
+		dataType: string
+		lineageTag: d342e6d8-6400-4b29-a91d-7d33fdc6603e
+		summarizeBy: none
+		sourceColumn: referrer_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column referrer_suburb
+		dataType: string
+		lineageTag: 317787bf-8d21-4e07-98f6-6df498568ce6
+		summarizeBy: none
+		sourceColumn: referrer_suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	column referrer_state
+		dataType: string
+		lineageTag: 7841d9bc-2b18-48a4-91ae-9c0d9c737408
+		summarizeBy: none
+		sourceColumn: referrer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column referrer_postcode
+		dataType: string
+		lineageTag: 1f54d063-177e-4e97-8b59-b1da439fa1fe
+		summarizeBy: none
+		sourceColumn: referrer_postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReferrerGroup
+		dataType: string
+		lineageTag: 8bba8566-7331-44e0-987a-0bc24a98c866
+		summarizeBy: none
+		sourceColumn: ReferrerGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimReferrer = m
+		mode: import
+		queryGroup: Patients\Referrers
+		source =
+				let
+				    Source = Table.Combine({#"DimReferrerWA - Source", #"DimReferrerNSW - Source", #"DimReferrerVIC - Source", #"DimReferrerSA - Source", #"DimReferrerQLD - Source"})
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

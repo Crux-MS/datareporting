@@ -1,0 +1,922 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "8c94abb310599c48e412",
+  "position": {
+    "x": 397.81155015197572,
+    "y": 122.55319148936171,
+    "z": 2000,
+    "height": 285.95744680851067,
+    "width": 856.89969604863222,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimVisitDate"
+                    }
+                  },
+                  "Property": "VisitDate"
+                }
+              },
+              "queryRef": "DimVisitDate.VisitDate",
+              "nativeQueryRef": "Visit Date",
+              "displayName": "Visit Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "VisitModifiedFlag"
+                }
+              },
+              "queryRef": "FactVisit.VisitModifiedFlag",
+              "nativeQueryRef": "Visit Modified",
+              "displayName": "Visit Modified"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "patient_id"
+                }
+              },
+              "queryRef": "DimPatient.patient_id",
+              "nativeQueryRef": "Patient ID",
+              "displayName": "Patient ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "visit_id"
+                }
+              },
+              "queryRef": "FactVisit.visit_id",
+              "nativeQueryRef": "Visit ID",
+              "displayName": "Visit ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "status"
+                }
+              },
+              "queryRef": "FactVisit.status",
+              "nativeQueryRef": "Status",
+              "displayName": "Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimServiceTypes"
+                    }
+                  },
+                  "Property": "service"
+                }
+              },
+              "queryRef": "DimServiceTypes.service",
+              "nativeQueryRef": "Service",
+              "displayName": "Service"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimServiceTypes"
+                    }
+                  },
+                  "Property": "Claimable"
+                }
+              },
+              "queryRef": "DimServiceTypes.Claimable",
+              "nativeQueryRef": "Claimable"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "fullname"
+                }
+              },
+              "queryRef": "DimPatient.fullname",
+              "nativeQueryRef": "Client",
+              "displayName": "Client"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "patient_state"
+                }
+              },
+              "queryRef": "DimPatient.patient_state",
+              "nativeQueryRef": "State",
+              "displayName": "State"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPatient"
+                    }
+                  },
+                  "Property": "dva_number"
+                }
+              },
+              "queryRef": "FactPatient.dva_number",
+              "nativeQueryRef": "DVA Number",
+              "displayName": "DVA Number"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "VHCReference"
+                }
+              },
+              "queryRef": "FactVisit.VHCReference",
+              "nativeQueryRef": "VHCReference"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "create_timestamp"
+                }
+              },
+              "queryRef": "FactVisit.create_timestamp",
+              "nativeQueryRef": "Created",
+              "displayName": "Created"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "modified_timestamp"
+                }
+              },
+              "queryRef": "FactVisit.modified_timestamp",
+              "nativeQueryRef": "Last Modified",
+              "displayName": "Last Modified"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactVisit"
+                        }
+                      },
+                      "Property": "visit_duration"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactVisit.visit_duration)",
+              "nativeQueryRef": "Sum of visit_duration",
+              "hidden": true
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimVisitDate"
+                  }
+                },
+                "Property": "VisitDate"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "107D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.visit_id"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "268D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.fullname"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "43.673211357703984D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.patient_state"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "271D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimServiceTypes.service"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "78D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimServiceTypes.Claimable"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "86D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.status"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "107D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.patient_id"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "82D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimVisitDate.VisitDate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "163D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.modified_timestamp"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "41D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.create_timestamp.Variation.Date Hierarchy.Year"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "60D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.create_timestamp.Variation.Date Hierarchy.Quarter"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "52D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.create_timestamp.Variation.Date Hierarchy.Month"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "37D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.create_timestamp.Variation.Date Hierarchy.Day"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "163D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.create_timestamp"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "70.72567161962175D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.VisitModifiedFlag"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "93D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactPatient.dva_number"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "110D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.VHCReference"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Un-Completed Visits'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "3d73b1ef5b0365a3bd74",
+        "ordinal": 0,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactVisit"
+                  }
+                },
+                "Property": "visit_duration"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "371e3210b617e2d711ec",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "fullname"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "eec51fc908015b1d59b1",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "patient_state"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "cd737fab872008007769",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactPatient"
+              }
+            },
+            "Property": "dva_number"
+          }
+        },
+        "type": "Categorical",
+        "objects": {
+          "general": [
+            {
+              "properties": {}
+            }
+          ]
+        }
+      },
+      {
+        "name": "27c94d48035390e0b3e4",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "visit_id"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "40de6bbec0388c34c735",
+        "ordinal": 5,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "status"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "FactVisit",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "f"
+                              }
+                            },
+                            "Property": "status"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'Completed'"
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'Cancelled'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "ce6a103731ce5555172c",
+        "ordinal": 6,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "patient_id"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e5e6ebe7313e15a86252",
+        "ordinal": 7,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "service"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "cd8d4a90ac007cd040b1",
+        "ordinal": 8,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "Claimable"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "1be54f7ab4cc0b56d531",
+        "ordinal": 9,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimVisitDate"
+              }
+            },
+            "Property": "VisitDate"
+          }
+        },
+        "type": "RelativeDate"
+      },
+      {
+        "name": "39f76750904e0d7c156d",
+        "ordinal": 10,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "create_timestamp"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "b89707a4390c97b60bda",
+        "ordinal": 11,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "modified_timestamp"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "3b9626246993805819c3",
+        "ordinal": 12,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "VisitModifiedFlag"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "1ac99bd0381a8b05c777",
+        "ordinal": 13,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "FundingStream"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimServiceTypes",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "FundingStream"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'VHC'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "5a39ce1e7dddd01aa833",
+        "ordinal": 14,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "VHCReference"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "b2ecf6165cccb6dfcef0",
+        "ordinal": 15,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimVisitDate"
+              }
+            },
+            "Property": "RollingDateDifference"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimVisitDate",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 4,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "d"
+                        }
+                      },
+                      "Property": "RollingDateDifference"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "0L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

@@ -1,0 +1,93 @@
+table 'Dim Client'
+	lineageTag: 00cf7dd9-6d13-40ff-8144-4125ea7d02d3
+	sourceLineageTag: 84729566-a73c-455a-bfdc-6494d0353f4f
+
+	column ClientId
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		lineageTag: fdcd3f58-00c0-4f12-9b12-a61c0f42f475
+		sourceLineageTag: dba15912-0863-44f2-bc22-58d2cf8db8a7
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		annotation SummarizationSetBy = User
+
+	column ClientName
+		dataType: string
+		lineageTag: 557ee044-e74b-4cce-8fb4-7250ecbbb44e
+		sourceLineageTag: a96ee2c1-173e-413b-a6f9-f45cd91ce50c
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClientName
+
+		annotation SummarizationSetBy = User
+
+	column State
+		dataType: string
+		lineageTag: 4193eb75-a7d2-4bd1-8e5e-9108cfe59a0d
+		sourceLineageTag: faf6d0f5-2592-480c-a63b-2acb99b97e5f
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = User
+
+	column Region
+		dataType: string
+		lineageTag: be26cf93-8fd4-4d2c-8669-669214c1e04f
+		sourceLineageTag: 91ef7b31-0f74-4e3d-a156-d0db2aa1d75c
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = User
+
+	column CEO
+		dataType: string
+		lineageTag: b477bb20-35ed-4bec-bd35-70e21af353df
+		sourceLineageTag: e21af97c-7da3-422c-a0c1-13cf4d8084e9
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: CEO
+
+		annotation SummarizationSetBy = User
+
+	column DON
+		dataType: string
+		lineageTag: 7603b6f2-76bb-4dd7-9cb1-bb6302f01cbd
+		sourceLineageTag: 2d6487de-d619-429a-b1f4-0a67790b2aea
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: DON
+
+		annotation SummarizationSetBy = User
+
+	column BillableClientFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 345bbf2c-ff8f-42bf-a66e-4098fd1379ed
+		sourceLineageTag: f5918e3e-9693-4238-a9e1-241099aad1d1
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: BillableClientFlag
+
+		annotation SummarizationSetBy = User
+
+	column ClientNetworkName
+		dataType: string
+		lineageTag: 3827582b-cd74-4f93-9686-d96d2a9f71a6
+		sourceLineageTag: d9c4c51f-cec9-4bc9-81db-9538870634ad
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClientNetworkName
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Client' = entity
+		mode: directQuery
+		source
+			entityName: Dim Client
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

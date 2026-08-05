@@ -1,0 +1,85 @@
+table 'Dim Shift Remoteness'
+	lineageTag: 707a0c73-3ede-473f-bebe-16eaa65755a8
+
+	column PostCode
+		dataType: string
+		isHidden
+		lineageTag: 2059285c-ccc3-4995-8007-dacdb38ed61b
+		summarizeBy: none
+		sourceColumn: PostCode
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgMMM2023
+		dataType: int64
+		formatString: 0
+		lineageTag: 8cab66e9-4a34-4d2f-9493-b427e3f8632a
+		summarizeBy: sum
+		sourceColumn: AvgMMM2023
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgRemotenessDescription
+		dataType: string
+		lineageTag: fbf394ce-eab6-4f2e-9ff4-8b21cd4260d4
+		summarizeBy: none
+		sourceColumn: AvgRemotenessDescription
+		sortByColumn: AvgMMM2023
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgLatPrecise
+		dataType: double
+		lineageTag: 3b3da31a-30d2-424a-9e98-752a2d03d9ad
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: AvgLatPrecise
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column AvgLongPrecise
+		dataType: double
+		lineageTag: 98642a4b-4105-4794-8155-f749588f0302
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: AvgLongPrecise
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'SA3 Name'
+		dataType: string
+		lineageTag: 86b9318e-d411-4fc0-8251-81004ea3830f
+		summarizeBy: none
+		sourceColumn: SA3 Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SA4 Name'
+		dataType: string
+		lineageTag: bf37764d-a38b-45af-b8ae-a6a8329f163f
+		summarizeBy: none
+		sourceColumn: SA4 Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Shift Remoteness' = m
+		mode: import
+		queryGroup: Shifts
+		source =
+				let
+				    Source = PostCodeRemoteness
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

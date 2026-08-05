@@ -1,0 +1,48 @@
+table PatientParameter
+	lineageTag: f32317e8-92d7-4e3d-aa2b-883346574bf8
+
+	column PatientParameter
+		lineageTag: af3f12ba-fc08-4aef-a752-270539177646
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'PatientParameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'PatientParameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'PatientParameter Fields'
+		isHidden
+		lineageTag: f6270959-018c-4311-931d-20e3ac7e4fd9
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'PatientParameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'PatientParameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: ebc2465b-32cd-48bd-ac6a-4ff420e68709
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PatientParameter = calculated
+		mode: import
+		source =
+				{
+				    ("Active Patients", NAMEOF('FactPatient'[CountCurrentlyActivePatients]), 0),
+				    ("Billed Patients", NAMEOF('FactPatient'[CountBilledPatients]), 1)
+				}
+
+	annotation PBI_Id = a4fe2b90c389479aaada23ceebfb3846
+

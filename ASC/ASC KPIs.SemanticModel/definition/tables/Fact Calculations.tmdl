@@ -1,0 +1,67 @@
+table 'Fact Calculations'
+	isHidden
+	lineageTag: deb19d0d-01c1-4fc9-811c-d7395eadd67e
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 37b33751-374a-483b-b884-5bab5645adc2
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Created
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 60472b6f-5eff-4606-9fff-08630ee41f03
+		summarizeBy: none
+		sourceColumn: Created
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Modified
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 4817de6b-8d51-450c-909d-76a901210f47
+		summarizeBy: none
+		sourceColumn: Modified
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Version
+		dataType: string
+		isHidden
+		lineageTag: 6c6a5626-674d-4210-9ffd-9cab4ed3ebf5
+		summarizeBy: none
+		sourceColumn: Version
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Created", "Modified", "Version"})
+				in
+				    #"Removed Other Columns"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

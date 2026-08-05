@@ -1,0 +1,87 @@
+table 'Fact Calculations'
+	isHidden
+	lineageTag: b56f82da-4c8f-4a36-a2c7-a9a5f6284837
+	sourceLineageTag: 14f21807-e05a-47b7-b90b-43132f94bb2b
+
+	measure 'Data Sources' = EXTERNALMEASURE("Data Sources", STRING, "DirectQuery to AS - Nursing Australia Overview")
+		isHidden
+		lineageTag: a122fed9-50f2-40c6-849d-d20077c27e16
+		sourceLineageTag: 8e1f88aa-4097-4bc6-8b87-3a569179d46f
+		dataCategory: Uncategorized
+
+	measure 'Accountable Stakeholders' = EXTERNALMEASURE("Accountable Stakeholders", STRING, "DirectQuery to AS - Nursing Australia Overview")
+		isHidden
+		lineageTag: 0f10b1ff-3003-497d-946e-8ed290322599
+		sourceLineageTag: de926bdb-e6ad-40f7-8b97-84073e584619
+		dataCategory: Uncategorized
+
+	measure 'Source Calculations list' = EXTERNALMEASURE("Source Calculations list", STRING, "DirectQuery to AS - Nursing Australia Overview")
+		isHidden
+		lineageTag: ed0bc91c-6625-4df3-b7af-c5e95dc03a32
+		sourceLineageTag: dbcae9a2-335f-4244-8e1c-c8b6cb1920a2
+		dataCategory: Uncategorized
+
+	column ID
+		dataType: int64
+		isHidden
+		isNullable: false
+		formatString: 0
+		lineageTag: bd6e966f-4fb8-4c77-ae04-639d47c03ba7
+		sourceLineageTag: 99193149-d101-4137-8bd0-418428317688
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column Created
+		dataType: dateTime
+		isHidden
+		formatString: General Number
+		lineageTag: 7a352ed5-cf38-49b0-bfa3-e24521d9ae99
+		sourceLineageTag: 42a8d2b8-874c-4067-93af-5c21d4686191
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Created
+
+		variation Variation
+			isDefault
+			relationship: 8a1a7a00-7c53-4cf2-a7f0-4ba8bd3e7035
+			defaultHierarchy: LocalDateTable_fe4483d1-c55f-4695-b1f7-963afd8c9f57.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column Modified
+		dataType: dateTime
+		isHidden
+		formatString: General Number
+		lineageTag: 5363ace0-78be-491c-8b13-9bd8f44af06e
+		sourceLineageTag: bd185cdc-91d9-48b4-80fe-0cfc44976d40
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Modified
+
+		variation Variation
+			isDefault
+			relationship: 5dfc45c6-377c-4e6e-80f0-c7a94edaebc7
+			defaultHierarchy: LocalDateTable_06b434bb-48d2-4790-81cf-74e8a834f86b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column Version
+		dataType: double
+		isHidden
+		lineageTag: dcc2fce3-b993-406f-be13-e3d38d21671e
+		sourceLineageTag: 95ad2808-ba04-4ba3-bc73-62be48fb29df
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: Version
+
+		annotation SummarizationSetBy = User
+
+	partition 'Fact Calculations' = entity
+		mode: directQuery
+		source
+			entityName: Fact Calculations
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

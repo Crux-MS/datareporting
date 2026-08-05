@@ -1,0 +1,365 @@
+table 'Fact Shift Audit'
+	lineageTag: 49e479a3-2840-4af5-993d-9d59862dfdce
+
+	measure FilledShiftAuditHours = CALCULATE([ShiftAuditWorkedDurationHours], 'Fact Shift Audit'[Outcome] = "D-Confirmed Member and Client")
+		formatString: #,0.00
+		displayFolder: Duration
+		lineageTag: f4352e84-0750-4a1a-8417-8176578c3a1b
+
+	measure ShiftAuditWorkedDurationHours = CALCULATE(SUM('Fact Shift Audit'[ShiftWorkedDurationMins])/60)
+		displayFolder: Duration
+		lineageTag: e085fd70-87e8-4ccd-88cf-f2a1b62534f1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure UTFShiftAuditStillNeededHours = CALCULATE([ShiftAuditWorkedDurationHours], 'Fact Shift'[Outcome] = "G-Unable to Fill - Still Needed", 'Dim Client'[BillableClientFlag] = TRUE())
+		displayFolder: Duration
+		lineageTag: 627c08d3-1248-4c89-ac0b-cd05739a0d93
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AvailableOpportunityAuditHours = [FilledShiftAuditHours] + [UTFShiftAuditStillNeededHours]
+		formatString: #,0.0
+		displayFolder: Duration
+		lineageTag: 5aa4e60b-6751-4df1-8bac-8a514d36f7ad
+
+	measure AvailableOpportunityAuditFilledRate = DIVIDE(COALESCE([FilledShiftAuditHours], 0), [AvailableOpportunityAuditHours])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: KPIs
+		lineageTag: 663068c3-064c-40dc-801c-cd308322f9e4
+
+	measure CountShiftAudit = DISTINCTCOUNT('Fact Shift Audit'[ShiftAuditID])
+		formatString: 0
+		displayFolder: KPIs
+		lineageTag: 11041a04-e945-402e-8a22-d37367485e6a
+
+	measure CountFilledShiftAudit = CALCULATE([CountShiftAudit], 'Fact Shift Audit'[Outcome] = "D-Confirmed Member and Client")
+		formatString: 0
+		displayFolder: KPIs
+		lineageTag: 303e1c9e-40e3-4c79-9332-0544eeeff5d9
+
+	measure ShiftsUpdatedByAllocatorHeader =
+			VAR _allocatorCount = DISTINCTCOUNT('Fact Shift Audit'[Allocator])
+			VAR _maxAllocators = CALCULATE(DISTINCTCOUNT('Fact Shift Audit'[Allocator]), ALL('Fact Shift Audit'))
+			VAR _logic = "Shift updates by " & IF(_allocatorCount = 1, SELECTEDVALUE('Fact Shift Audit'[Allocator]), "all allocators")
+			RETURN _logic
+		lineageTag: 03aa6840-97a5-4107-b11e-256f8cbcfddd
+
+	measure ShiftAuditMealBreakDurationHours = CALCULATE(SUM('Fact Shift Audit'[MealBreakTime])/60)
+		displayFolder: Duration
+		lineageTag: 55bb5d14-1e13-4634-ae3b-43d7758d8fc1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CancelledByClientShiftAuditHours = CALCULATE([ShiftAuditWorkedDurationHours], 'Fact Shift Audit'[Outcome] = "F-Cancelled by Client")
+		displayFolder: Duration
+		lineageTag: 15cc391d-110a-4191-9adf-79be52abe03f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure UTFShiftAuditNotNeededHours = CALCULATE([ShiftAuditWorkedDurationHours], 'Fact Shift Audit'[Outcome] = "H-Unable to Fill - No Longer Required")
+		displayFolder: Duration
+		lineageTag: 3c38a901-b1b1-4d90-96e3-a73479b77627
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ControllableOrdersShiftAuditHours = [AvailableOpportunityAuditHours] + [UTFShiftAuditNotNeededHours]
+		displayFolder: Duration
+		lineageTag: bc7fc74f-2a94-4fba-a89f-5b88a51d1425
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ControllableOrdersAuditFillRate = DIVIDE([FilledShiftAuditHours], [ControllableOrdersShiftAuditHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: KPIs
+		lineageTag: 4d3b085d-d484-40c3-a7e4-4928429329d2
+
+	measure TotalOrdersShiftAuditHours = [ControllableOrdersHours] + [CancelledByClientShiftAuditHours]
+		formatString: #,0.00
+		displayFolder: Duration
+		lineageTag: 0c786296-9821-43dc-ae06-d9d8cc00849d
+
+	measure CancelledByClientShiftAuditFillRate = DIVIDE([CancelledByClientShiftAuditHours], [TotalOrdersShiftAuditHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: KPIs
+		lineageTag: bbf8eb6a-b447-4913-9fcb-50a79898c715
+
+	measure ShiftConfirmedMemberNotClientAuditHours = CALCULATE([ShiftAuditWorkedDurationHours], 'Fact Shift Audit'[Outcome] = "B-Confirmed Member Not Client")
+		displayFolder: Duration
+		lineageTag: 8244d62e-a28b-418a-aea3-7cc75e560be8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CountShiftConfirmedMemberNotClientAudit = CALCULATE([CountShiftAudit], 'Fact Shift Audit'[Outcome] = "B-Confirmed Member Not Client")
+		formatString: 0
+		displayFolder: KPIs
+		lineageTag: ec23299d-c400-4ba6-b0e3-d8a6682e2cf3
+
+	measure AllocatorDailyTarget = 180
+		formatString: #,0
+		displayFolder: KPIs
+		lineageTag: 6cb973c8-3a41-4b44-b019-b0f201abc401
+
+	measure AllocatorPeriodTarget = ```
+			[AllocatorDailyTarget] *  IF(
+			    DATEDIFF(MIN('Dim Shift Start Date'[ShiftStartDate]), MAX('Dim Shift Start Date'[ShiftStartDate]),DAY) = 0, 
+			    1, 
+			    DATEDIFF(MIN('Dim Shift Start Date'[ShiftStartDate]), MAX('Dim Shift Start Date'[ShiftStartDate]),DAY)
+			)
+			```
+		formatString: #,0
+		displayFolder: KPIs
+		lineageTag: 8c62a248-a7f2-4701-8d6a-7c44c803c0a7
+
+	measure CountShiftConfirmedClientNotMemberAudit = CALCULATE([CountShiftAudit], 'Fact Shift Audit'[Outcome] = "C-Confirmed Client Not Member")
+		formatString: 0
+		lineageTag: 5596d4a8-4d11-4b54-8845-2a1b6a3a21a3
+
+	measure ShiftConfirmedClientNotMemberAuditHours = CALCULATE([ShiftAuditWorkedDurationHours], 'Fact Shift Audit'[Outcome] = "C-Confirmed Client Not Member")
+		formatString: 0
+		lineageTag: 9c9e6c81-d8e4-4fb0-b859-96fbf2c68698
+
+	column ShiftID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5ef0f5b1-40d1-4e6e-852c-bb0bfccd1091
+		summarizeBy: none
+		sourceColumn: ShiftID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftAuditID
+		dataType: int64
+		formatString: 0
+		lineageTag: c8c60839-7f1f-4aec-b90f-b27a29181676
+		summarizeBy: count
+		sourceColumn: ShiftAuditID
+
+		annotation SummarizationSetBy = Automatic
+
+	column MemberID
+		dataType: int64
+		formatString: 0
+		lineageTag: 296a8079-2ad5-4c3a-8740-44abfa8232b8
+		summarizeBy: count
+		sourceColumn: MemberID
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartDate
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: DateTime
+		lineageTag: 6e311835-09b0-4bf5-b6c0-00e7f32bc326
+		summarizeBy: none
+		sourceColumn: StartDate
+
+		variation Variation
+			isDefault
+			relationship: 16ff0532-bb50-4517-bfb9-f1ada412cc07
+			defaultHierarchy: LocalDateTable_72524969-3218-4d21-b831-b54223edd838.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinishDate
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: DateTime
+		lineageTag: e0d1f6d4-d40d-4246-ab97-095fa4bdd912
+		summarizeBy: none
+		sourceColumn: FinishDate
+
+		variation Variation
+			isDefault
+			relationship: da8f4d89-1ed1-410a-8f92-b167ac463b8b
+			defaultHierarchy: LocalDateTable_72ce3ab0-22e7-4e9b-9b94-0d7012cc6164.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Outcome
+		dataType: string
+		lineageTag: e3936f4e-def8-458f-8bea-6bb8d286be78
+		summarizeBy: none
+		sourceColumn: Outcome
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderedBy
+		dataType: string
+		lineageTag: 9024c117-6245-408f-969e-8d201045de0e
+		summarizeBy: none
+		sourceColumn: OrderedBy
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConfirmedWith
+		dataType: string
+		lineageTag: 7deed969-b698-44c2-abf8-05e7e35a9ae2
+		summarizeBy: none
+		sourceColumn: ConfirmedWith
+
+		annotation SummarizationSetBy = Automatic
+
+	column ConfirmedDate
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: DateTime
+		lineageTag: 8dd71350-9d47-4690-b3a6-c2304c6d82e6
+		summarizeBy: none
+		sourceColumn: ConfirmedDate
+
+		variation Variation
+			isDefault
+			relationship: d88aa57e-b1c1-4f7e-9d30-6c3f66528d2b
+			defaultHierarchy: LocalDateTable_e3a1db2e-1088-4bc8-ae6e-eba33ae7f518.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayRequestedClassName
+		dataType: string
+		lineageTag: dda33117-2ea1-4723-b09d-0961a23b93ff
+		summarizeBy: none
+		sourceColumn: PayRequestedClassName
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayClassName
+		dataType: string
+		lineageTag: 2c00ffaf-cf5a-45d5-8c49-9bacc8328e1f
+		summarizeBy: none
+		sourceColumn: PayClassName
+
+		annotation SummarizationSetBy = Automatic
+
+	column InvClassName
+		dataType: string
+		lineageTag: 65716c65-6047-4005-af11-7a0d3ac9c773
+		summarizeBy: none
+		sourceColumn: InvClassName
+
+		annotation SummarizationSetBy = Automatic
+
+	column WillPayClassName
+		dataType: string
+		lineageTag: a77e16cc-0620-4671-9fbc-5763b5e75516
+		summarizeBy: none
+		sourceColumn: WillPayClassName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Allocator
+		dataType: string
+		lineageTag: 8b638cc9-1e54-49eb-95c4-aa012ceb81c7
+		summarizeBy: none
+		sourceColumn: Allocator
+
+		annotation SummarizationSetBy = Automatic
+
+	column UpdateTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: DateTime
+		lineageTag: ca923045-17b7-42f5-acd5-6ee425d1becb
+		summarizeBy: none
+		sourceColumn: UpdateTime
+
+		variation Variation
+			isDefault
+			relationship: bbe86c27-f020-446f-91b4-42d8aa9fa6c9
+			defaultHierarchy: LocalDateTable_839ee13d-f503-45fa-afaa-65cb4e095fda.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column UpdateDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		displayFolder: DateTime
+		lineageTag: 1cddc960-d747-4a20-a757-e6464686d5d4
+		summarizeBy: none
+		sourceColumn: UpdateDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftDurationMins
+		dataType: int64
+		formatString: 0
+		displayFolder: Duration
+		lineageTag: 240b081f-2dad-4479-b6bd-4463d9cb7ece
+		summarizeBy: sum
+		sourceColumn: ShiftDurationMins
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftDurationHours = 'Fact Shift Audit'[ShiftDurationMins]/60
+		displayFolder: Duration
+		lineageTag: dc2d3387-39a6-495f-b6ac-ab29979220b3
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LocationID
+		dataType: int64
+		formatString: 0
+		lineageTag: 79d4bce8-9f16-4d65-929b-8340aae4e2c2
+		summarizeBy: count
+		sourceColumn: LocationID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Agency
+		dataType: string
+		lineageTag: 1425cc58-bb39-4e4f-8d81-1efc063d30d8
+		summarizeBy: none
+		sourceColumn: Agency
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaidMealBreakStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f8eb19ab-f844-42e8-ae97-fa1a76c3efd0
+		summarizeBy: none
+		sourceColumn: PaidMealBreakStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column MealBreakTime
+		dataType: int64
+		formatString: 0
+		displayFolder: Duration
+		lineageTag: 8a477859-2c4c-40fb-b125-26df566621df
+		summarizeBy: sum
+		sourceColumn: MealBreakTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftWorkedDurationMins
+		dataType: int64
+		formatString: 0
+		lineageTag: ac8ae471-910b-4708-910f-39e935e0c465
+		summarizeBy: sum
+		sourceColumn: ShiftWorkedDurationMins
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Shift Audit' = m
+		mode: import
+		queryGroup: Shifts
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="WITH ShiftUnfilled AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 0#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftConfMemNotCli AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 1#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftConfCliNotMem AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 9#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftConfMemAndCli AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 2#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftCancelledbyCli AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 3#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftCancelledbyOp AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 5#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftUTFStillNeeded AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 4#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftUTFNotRequired AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType = 10#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)CombinedFirstShiftAudits AS (#(lf)    SELECT * FROM ShiftUnfilled#(lf)    UNION #(lf)    SELECT * FROM ShiftConfMemNotCli#(lf)    UNION #(lf)    SELECT * FROM ShiftConfCliNotMem#(lf)    UNION #(lf)    SELECT * FROM ShiftConfMemAndCli#(lf)    UNION #(lf)    SELECT * FROM ShiftCancelledbyCli#(lf)    UNION #(lf)    SELECT * FROM ShiftCancelledbyOp#(lf)    UNION #(lf)    SELECT * FROM ShiftUTFStillNeeded#(lf)    UNION #(lf)    SELECT * FROM ShiftUTFNotRequired#(lf)),#(lf)ShiftAuditLog AS(#(lf)    SELECT sa.[ShiftID]#(lf)        ,[ShiftAuditID]#(lf)        ,[MemberID]#(lf)        ,a.Name           AS [Agency]#(lf)        ,[StartDate]#(lf)        ,[FinishDate]#(lf)        ,[LocationID]#(lf)        ,DATEDIFF(MINUTE, StartDate, FinishDate)#(tab)AS [ShiftDurationMins]#(lf)        ,DATEDIFF(MINUTE, StartDate, FinishDate) - MealBreakTime  AS [ShiftWorkedDurationMins]#(lf)        ,o.Description    AS Outcome#(lf)        ,[ConfirmedWith]#(lf)        ,[ConfirmedDate]#(lf)        ,[PayRequestedClassName]#(lf)        ,[PayClassName]#(lf)        ,[InvClassName]#(lf)        ,[OrderedBy]#(lf)        ,[WillPayClassName]#(lf)        ,[PaidMealBreakStatus]#(lf)        ,[MealBreakTime]#(lf)        ,[UserName]       AS Allocator#(lf)        ,[UpdateTime]#(lf)        ,CAST(UpdateTime as date) as UpdateDate#(lf)    FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)    LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Outcome'#(lf)    ) o on sa.OutcomeType = o.value#(lf)    LEFT JOIN dbo.Agency a on sa.AgencyID = a.AgencyID)#(lf)Select sal.[ShiftID]#(lf)        ,[ShiftAuditID]#(lf)        ,[MemberID]#(lf)        ,[Agency]#(lf)        ,[StartDate]#(lf)        ,[FinishDate]#(lf)        ,[LocationID]#(lf)        ,[ShiftDurationMins]#(lf)        ,[ShiftWorkedDurationMins]#(lf)        ,Outcome#(lf)        ,[ConfirmedWith]#(lf)        ,[ConfirmedDate]#(lf)        ,[PayRequestedClassName]#(lf)        ,[PayClassName]#(lf)        ,[InvClassName]#(lf)        ,[OrderedBy]#(lf)        ,[WillPayClassName]#(lf)        ,[PaidMealBreakStatus]#(lf)        ,[MealBreakTime]#(lf)        ,Allocator#(lf)        ,[UpdateTime]#(lf)        ,CAST(UpdateTime as date) as UpdateDate#(lf)FROM CombinedFirstShiftAudits cfsa#(lf)LEFT JOIN ShiftAuditLog sal on sal.ShiftID = cfsa.ShiftID and sal.ShiftAuditID = cfsa.FirstShiftAuditID"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

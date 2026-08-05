@@ -1,0 +1,191 @@
+table DimTimesheetDateOfService
+	lineageTag: 0e0fe63d-6de5-496c-9ddd-636f26026c87
+
+	column Date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 0b3b349f-5753-4a1d-821a-9a481363c278
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 04c5f7ca-62bc-4f75-8052-c8e746153a57
+			defaultHierarchy: LocalDateTable_645c4d46-45e8-4492-855f-d9af4e86a86f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 058759ed-2fb7-47f5-8ca3-f1903e6e8415
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 66b392ab-c521-4641-8232-c00f7a05a450
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 184085f4-7d1a-4c27-9e54-a6a0aa2041c7
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: a0d63cc7-2885-4c06-9568-8a3fb5d74b0f
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'd MMM'
+		dataType: string
+		lineageTag: a8ded93d-c4e3-4385-b38b-1d27c7269b96
+		summarizeBy: none
+		sourceColumn: d MMM
+		sortByColumn: MMdd
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 2cb48475-2fd1-4d01-a206-cb9892e14f61
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: e9a2545e-1b9c-45d9-9907-266a3fea06da
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: d13466d1-21e2-4a60-aa19-7eedc0663baa
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: fe7b17a0-d43f-4c6c-b6e2-0826df5148b5
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 5fc92e93-8505-4b8c-9959-1fdb9cab52f2
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3743dcc6-acf1-413e-bf61-222346d35b29
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		variation Variation
+			isDefault
+			relationship: 56ad1ae9-eeba-4aae-bd49-1ab33f0270a5
+			defaultHierarchy: LocalDateTable_1ce895c5-2919-43c3-a824-e8fabef87c23.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 444602f1-7f48-4671-92ac-1b53928dc263
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: ddb8e548-9747-4dfa-9532-178af0f4eee5
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column MMdd
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 66fd03b0-bfba-46c5-abc8-78818972501c
+		summarizeBy: sum
+		sourceColumn: MMdd
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Week'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 70789d36-d872-44ee-adb5-d1ddc508f3ff
+		summarizeBy: none
+		sourceColumn: Start of Week
+
+		variation Variation
+			isDefault
+			relationship: a416beb2-e0e1-49df-b984-54680af57824
+			defaultHierarchy: LocalDateTable_d64f653a-b1bd-4379-bf46-9536e83ab804.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition DimTimesheetDateOfService = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Calendar - Source"
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

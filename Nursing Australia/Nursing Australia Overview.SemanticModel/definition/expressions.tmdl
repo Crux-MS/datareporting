@@ -12,10 +12,11 @@ expression 'Calendar - Source' =
 		    #"Inserted Day Number" = Table.AddColumn(#"Inserted YYYYMM", "DayNumber", each Date.Day([Date]), Int64.Type),
 		    #"Inserted Day Name" = Table.AddColumn(#"Inserted Day Number", "DayName", each Date.DayOfWeekName([Date]), type text),
 		    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "DayOfWeek", each Date.DayOfWeek([Date]), Int64.Type),
-		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted Day of Week", "StartOfYear", each Date.StartOfYear([Date]), type datetime),
+		    #"Inserted First Characters" = Table.AddColumn(#"Inserted Day of Week", "DayNameAcronym", each Text.Start([DayName], 3), type text),
+		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted First Characters", "StartOfYear", each Date.StartOfYear([Date]), type datetime),
 		    #"Inserted Week of Year" = Table.AddColumn(#"Inserted Start of Year", "WeekOfYear", each Date.WeekOfYear([Date]), Int64.Type),
 		    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Week of Year", "StartOfWeek", each Date.StartOfWeek([Date]), type datetime),
-		    #"Added Rolling Date Difference" = Table.AddColumn(#"Inserted Start of Week", "RollingDateDifference", each Duration.Days([Date] - DateTime.From(DateTime.LocalNow()))),
+		    #"Added Rolling Date Difference" = Table.AddColumn(#"Inserted Start of Week", "RollingDateDifference", each Duration.Days(Date.From([Date]) - Date.From(DateTimeZone.SwitchZone(DateTimeZone.UtcNow(),10, 0)))),
 		    #"Added Slicer MMM YYYY" = Table.AddColumn(#"Added Rolling Date Difference", "SlicerMMM YYYY", each let
 		    currentMonthYear = List.First(
 		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[MMM YYYY]
@@ -29,6 +30,154 @@ expression 'Calendar - Source' =
 		in
 		    #"Changed Type1"
 	lineageTag: 026de0c5-5850-4359-bc4a-b26f029e36a7
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Data Dictionary - Source' =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [Implementation="2.0", ViewMode="All"]),
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866" = Source{[Id="4a4da78a-6855-44b7-bef3-4064d5ddb866"]}[Items]
+		in
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866"
+	lineageTag: 0047be7f-e391-40a0-8a85-abb255432887
+	queryGroup: 'Utilities\Data Dictionary'
+
+	annotation PBI_ResultType = Table
+
+expression Parameter1 = #"Sample File" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 85c8c1b4-3e14-4d5d-8cef-a43c1d2d1c86
+	queryGroup: 'Utilities\Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression PostCodeRemoteness =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/")),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File", each #"Transform File"([Content])),
+		    #"poa_21-mmm_23 csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/" = #"Invoke Custom Function1"{[Name="poa_21-mmm_23.csv",#"Folder Path"="https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/"]}[Content],
+		    #"Imported CSV" = Csv.Document(#"poa_21-mmm_23 csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/",[Delimiter=",", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"PostCode", type text}, {"POA 2021 Area (km2)", type number}, {"MMM 2023", Int64.Type}, {"MMM 2023 Area in POA 2021 (km2)", type number}}),
+		    #"Grouped Rows" = Table.Group(#"Changed Type", {"PostCode"}, {{"AvgMMM2023", each List.Average([MMM 2023]), type nullable number}}),
+		    #"Rounded Down (min-remoteness)" = Table.TransformColumns(#"Grouped Rows",{{"AvgMMM2023", Number.RoundDown, Int64.Type}}),
+		    #"Added Conditional Column" = Table.AddColumn(#"Rounded Down (min-remoteness)", "AvgRemotenessDescription", each if [AvgMMM2023] = 1 then "Metropolitan Area" else if [AvgMMM2023] = 2 then "Regional Centre" else if [AvgMMM2023] = 3 then "Large Rural Town" else if [AvgMMM2023] = 4 then "Medium Rural Town" else if [AvgMMM2023] = 5 then "Small Rural Town" else if [AvgMMM2023] = 6 then "Remote Community" else if [AvgMMM2023] = 7 then "Very Remote Community" else null),
+		    #"Merged Queries" = Table.NestedJoin(#"Added Conditional Column", {"PostCode"}, PostCodeDescriptive, {"postcode"}, "PostCodeDescriptive", JoinKind.LeftOuter),
+		    #"Expanded PostCodeDescriptive" = Table.ExpandTableColumn(#"Merged Queries", "PostCodeDescriptive", {"AvgLatPrecise", "AvgLongPrecise", "SA3 Name", "SA4 Name"}, {"AvgLatPrecise", "AvgLongPrecise", "SA3 Name", "SA4 Name"})
+		in
+		    #"Expanded PostCodeDescriptive"
+	lineageTag: a62b0053-5aea-4030-a7ea-5c3aa2efcead
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Sample File' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/")),
+		    Navigation1 = #"Filtered Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 86ac90af-7bb8-46b6-b1ab-2ea709bfbed6
+	queryGroup: 'Utilities\Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File' =
+		let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 821f7d3e-bfe6-4ee4-b01f-0c5bdcf8a768
+	queryGroup: 'Utilities\Transform File from Query1'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File' =
+		let
+		    Source = (Parameter1 as binary) => let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File""}" ]
+	lineageTag: c153f359-9157-4aa8-9ea9-5e21e6545077
+	queryGroup: 'Utilities\Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression PostCodeDescriptive =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/")),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File", each #"Transform File"([Content])),
+		    #"australian_postcodes csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/" = #"Invoke Custom Function1"{[Name="australian_postcodes.csv",#"Folder Path"="https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/"]}[Content],
+		    #"Imported CSV" = Csv.Document(#"australian_postcodes csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/Nursing Australia/",[Delimiter=",", Columns=41, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"id", Int64.Type}, {"postcode", type text}, {"locality", type text}, {"state", type text}, {"long", type number}, {"lat", type number}, {"dc", type text}, {"type", type text}, {"status", type text}, {"sa3", Int64.Type}, {"sa3name", type text}, {"sa4", Int64.Type}, {"sa4name", type text}, {"region", type text}, {"Lat_precise", type number}, {"Long_precise", type number}, {"SA1_CODE_2021", Int64.Type}, {"SA1_NAME_2021", type text}, {"SA2_CODE_2021", Int64.Type}, {"SA2_NAME_2021", type text}, {"SA3_CODE_2021", type text}, {"SA3_NAME_2021", type text}, {"SA4_CODE_2021", type text}, {"SA4_NAME_2021", type text}, {"RA_2011", Int64.Type}, {"RA_2016", Int64.Type}, {"RA_2021", type text}, {"RA_2021_NAME", type text}, {"MMM_2015", Int64.Type}, {"MMM_2019", Int64.Type}, {"ced", type text}, {"altitude", type number}, {"chargezone", type text}, {"phn_code", type text}, {"phn_name", type text}, {"lgaregion", type text}, {"lgacode", Int64.Type}, {"electorate", type text}, {"electoraterating", type text}, {"sed_code", Int64.Type}, {"sed_name", type text}}),
+		    #"Grouped Rows" = Table.Group(#"Changed Type", {"postcode"}, {{"AvgLatPrecise", each List.Average([Lat_precise]), type nullable number}, {"AvgLongPrecise", each List.Average([Long_precise]), type nullable number}, {"SA3 Name", each List.Max([sa3name]), type nullable text}, {"SA4 Name", each List.Max([sa4name]), type nullable text}})
+		in
+		    #"Grouped Rows"
+	lineageTag: 1ce39313-4071-4aa9-8429-4144e5a5408a
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'ShiftCalendar - Source' =
+		let
+		    Source = List.Dates(Date.AddYears(Date.From(DateTime.LocalNow()), -3), 3000, #duration(1, 0, 0, 0)),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Column1", type datetime}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "Date"}}),
+		    #"Inserted Year" = Table.AddColumn(#"Renamed Columns", "Year", each Date.Year([Date]), Int64.Type),
+		    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "MonthName", each Date.MonthName([Date]), type text),
+		    #"Inserted MMM YYYY" = Table.AddColumn(#"Inserted Month Name", "MMM YYYY", each Text.Combine({DateTime.ToText([Date], "MMM"), " ", DateTime.ToText([Date], "yyyy")}), type text),
+		    #"Inserted Month Number" = Table.AddColumn(#"Inserted MMM YYYY", "MonthNumber", each Date.Month([Date]), Int64.Type),
+		    #"Inserted YYYYMM" = Table.AddColumn(#"Inserted Month Number", "YYYYMM", each if [MonthNumber] <=9 then Text.From([Year]) & "0" & Text.From([MonthNumber]) else Text.From([Year]) & Text.From([MonthNumber])),
+		    #"Inserted Day Number" = Table.AddColumn(#"Inserted YYYYMM", "DayNumber", each Date.Day([Date]), Int64.Type),
+		    #"Inserted Day Name" = Table.AddColumn(#"Inserted Day Number", "DayName", each Date.DayOfWeekName([Date]), type text),
+		    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "DayOfWeek", each Date.DayOfWeek([Date]), Int64.Type),
+		    #"Inserted First Characters" = Table.AddColumn(#"Inserted Day of Week", "DayNameAcronym", each Text.Start([DayName], 3), type text),
+		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted First Characters", "StartOfYear", each Date.StartOfYear([Date]), type datetime),
+		    #"Inserted Start of Month" = Table.AddColumn(#"Inserted Start of Year", "Start of Month", each Date.StartOfMonth([Date]), type datetime),
+		    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Start of Month", "StartOfWeek", each Date.StartOfWeek([Date]), type datetime),
+		    #"Inserted Week of Year" = Table.AddColumn(#"Inserted Start of Week", "WeekOfYear", each Date.WeekOfYear([Date]), Int64.Type),
+		    Custom1 = Table.AddColumn(#"Inserted Week of Year", "RollingWeekDifference", each Duration.Days(Date.From([StartOfWeek]) - Date.StartOfWeek(Date.From(DateTime.LocalNow()))) / 7, Int64.Type),
+		    #"Added Rolling Date Difference" = Table.AddColumn(Custom1, "RollingDateDifference", each Duration.Days(Date.From([Date]) - Date.From(DateTime.LocalNow()))),
+		    #"Added Slicer MMM YYYY" = Table.AddColumn(#"Added Rolling Date Difference", "SlicerMMM YYYY", each let
+		    currentMonthYear = List.First(
+		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[MMM YYYY]
+		    )
+		in
+		    if [MMM YYYY] = currentMonthYear then "Current Month" else [MMM YYYY]),
+		    #"Added FinancialYear" = Table.AddColumn(#"Added Slicer MMM YYYY", "FinancialYear", each if Date.Month([Date]) >= 7 then Date.Year([Date]) + 1 else Date.Year([Date])),
+		    CurrentFY = if Date.Month(DateTime.LocalNow()) >= 7 then Date.Year(DateTime.LocalNow()) + 1 else Date.Year(DateTime.LocalNow()),
+		    #"Added Custom" = Table.AddColumn(#"Added FinancialYear", "CurrentFYFlag", each if (if Date.Month([Date]) >= 7 then Date.Year([Date]) + 1 else Date.Year([Date])) = CurrentFY then "TRUE" else "FALSE"),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom",{{"RollingDateDifference", Int64.Type}, {"SlicerMMM YYYY", type text}, {"FinancialYear", Int64.Type}, {"CurrentFYFlag", type logical}})
+		in
+		    #"Changed Type1"
+	lineageTag: 866485ce-86fd-4f79-964b-29269e5073f8
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Fact Shift Audit old' =
+		let
+		    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="WITH FirstShiftAudits AS(#(lf)    Select ShiftId#(lf)        ,OutcomeType#(lf)        ,MIN(ShiftAuditID)  AS FirstShiftAuditID#(lf)    FROM [HRLink].[dbo].[ShiftAudit] #(lf)    Where StartDate >= DATEADD(year,-3,GETDATE()) and AgencyID = 4 and OutcomeType in (1, 2, 3, 4, 9, 10)#(lf)    GROUP By ShiftID, OutcomeType#(lf)),#(lf)ShiftAuditLog AS(#(lf)    SELECT [ShiftID]#(lf)          ,[ShiftAuditID]#(lf)          ,[MemberID]#(lf)          ,a.Name           AS [Agency]#(lf)          ,[StartDate]#(lf)          ,[FinishDate]#(lf)          ,[LocationID]#(lf)          ,DATEDIFF(MINUTE, StartDate, FinishDate)#(tab)AS [ShiftDurationMins]#(lf)          ,DATEDIFF(MINUTE, StartDate, FinishDate) - MealBreakTime  AS [ShiftWorkedDurationMins]#(lf)          ,o.Description    AS Outcome#(lf)          ,[ConfirmedWith]#(lf)          ,[ConfirmedDate]#(lf)          ,[PayRequestedClassName]#(lf)          ,[PayClassName]#(lf)          ,[InvClassName]#(lf)          ,[OrderedBy]#(lf)          ,[WillPayClassName]#(lf)          ,[PaidMealBreakStatus]#(lf)          ,[MealBreakTime]#(lf)          ,[UserName]       AS Allocator#(lf)          ,[UpdateTime]#(lf)          ,CAST(UpdateTime as date) as UpdateDate#(lf)      FROM [HRLink].[dbo].[ShiftAudit] sa#(lf)      LEFT JOIN (#(lf)#(tab)    select *#(lf)#(tab)    from dbo.decode #(lf)#(tab)    where category = 'Outcome'#(lf)    ) o on sa.OutcomeType = o.value#(lf)    LEFT JOIN dbo.Agency a on sa.AgencyID = a.AgencyID#(lf)      Where StartDate >= DATEADD(year,-3,GETDATE()) and sa.AgencyID = 4 and OutcomeType in (1, 2, 3, 4, 9, 10)#(lf)  )#(lf)Select sal.[ShiftID]#(lf)        ,[ShiftAuditID]#(lf)        ,[MemberID]#(lf)        ,[Agency]#(lf)        ,[StartDate]#(lf)        ,[FinishDate]#(lf)        ,[LocationID]#(lf)        ,[ShiftDurationMins]#(lf)        ,[ShiftWorkedDurationMins]#(lf)        ,Outcome#(lf)        ,[ConfirmedWith]#(lf)        ,[ConfirmedDate]#(lf)        ,[PayRequestedClassName]#(lf)        ,[PayClassName]#(lf)        ,[InvClassName]#(lf)        ,[OrderedBy]#(lf)        ,[WillPayClassName]#(lf)        ,[PaidMealBreakStatus]#(lf)        ,[MealBreakTime]#(lf)        ,Allocator#(lf)        ,[UpdateTime]#(lf)        ,CAST(UpdateTime as date) as UpdateDate#(lf)FROM FirstShiftAudits fsa#(lf)LEFT JOIN ShiftAuditLog sal on sal.ShiftID = fsa.ShiftID and sal.ShiftAuditID = fsa.FirstShiftAuditID#(lf)where sal.ShiftID = 9787243"])
+		in
+		    Source
+	lineageTag: 960a319b-9a33-49c8-8c11-ffd828e244b5
+	queryGroup: Shifts
 
 	annotation PBI_NavigationStepName = Navigation
 

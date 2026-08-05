@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "4d6adabf5e7e30e294ab",
   "position": {
-    "x": 54.468085106382979,
-    "y": 497.02127659574472,
-    "z": 7001,
-    "height": 193.55623100303953,
-    "width": 763.52583586626145,
-    "tabOrder": 9006
+    "x": 54.339622641509429,
+    "y": 483.88140161725067,
+    "z": 5000,
+    "height": 206.14555256064691,
+    "width": 1201.5094339622642,
+    "tabOrder": 7000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -23,12 +23,13 @@
                       "Entity": "DimOnboardingRegister"
                     }
                   },
-                  "Property": "State Acronym"
+                  "Property": "Division"
                 }
               },
-              "queryRef": "DimOnboardingRegister.State Acronym",
-              "nativeQueryRef": "State Acronym",
-              "active": true
+              "queryRef": "DimOnboardingRegister.Division",
+              "nativeQueryRef": "Division | State",
+              "active": true,
+              "displayName": "Division | State"
             },
             {
               "field": {
@@ -38,28 +39,13 @@
                       "Entity": "DimOnboardingRegister"
                     }
                   },
-                  "Property": "Division"
+                  "Property": "State Acronym"
                 }
               },
-              "queryRef": "DimOnboardingRegister.Division",
-              "nativeQueryRef": "Division",
-              "active": false
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimLineManagerOR"
-                    }
-                  },
-                  "Property": "title"
-                }
-              },
-              "queryRef": "DimLineManagerOR.title",
-              "nativeQueryRef": "Line Manager",
+              "queryRef": "DimOnboardingRegister.State Acronym",
+              "nativeQueryRef": "State | Division | Line Manager",
               "active": false,
-              "displayName": "Line Manager"
+              "displayName": "State | Division | Line Manager"
             },
             {
               "field": {
@@ -92,8 +78,8 @@
                 }
               },
               "queryRef": "Fact Onboarding Register.WorkersOnboarded",
-              "nativeQueryRef": "Workers onboarded",
-              "displayName": "Workers onboarded"
+              "nativeQueryRef": "Onboarding started",
+              "displayName": "Onboarding started"
             },
             {
               "field": {
@@ -124,9 +110,101 @@
               "queryRef": "Fact Onboarding Register.CountApplicantsOffboarded",
               "nativeQueryRef": "Applications offboarded",
               "displayName": "Applications offboarded"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "CountApplicantsReadyForPE"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.CountApplicantsReadyForPE",
+              "nativeQueryRef": "Applications ready for PE",
+              "displayName": "Applications ready for PE"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "CountApplicantsReadyToGo"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.CountApplicantsReadyToGo",
+              "nativeQueryRef": "Applications ready to go",
+              "displayName": "Applications ready to go"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "Rolling3MonthOnboardingProcessing"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.Rolling3MonthOnboardingProcessing",
+              "nativeQueryRef": "Days onboarding (3 month rolling avg)",
+              "displayName": "Days onboarding (3 month rolling avg)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "Rolling3MonthPEProcessing"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.Rolling3MonthPEProcessing",
+              "nativeQueryRef": "Days in PE (3 month rolling avg days)",
+              "displayName": "Days in PE (3 month rolling avg days)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Onboarding Register"
+                    }
+                  },
+                  "Property": "Rolling3MonthTotalProcessing"
+                }
+              },
+              "queryRef": "Fact Onboarding Register.Rolling3MonthTotalProcessing",
+              "nativeQueryRef": "Total days (3 month rolling avg)",
+              "displayName": "Total days (3 month rolling avg)"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Onboarding Register"
+                  }
+                },
+                "Property": "Rolling3MonthTotalProcessing"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "expansionStates": [
@@ -135,13 +213,6 @@
           "Rows"
         ],
         "levels": [
-          {
-            "queryRefs": [
-              "DimOnboardingRegister.State Acronym"
-            ],
-            "isCollapsed": true,
-            "isPinned": true
-          },
           {
             "queryRefs": [
               "DimOnboardingRegister.Division"
@@ -163,9 +234,21 @@
           },
           {
             "queryRefs": [
-              "DimLineManagerOR.title"
+              "DimOnboardingRegister.State Acronym"
             ],
             "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimOnboardingRegister"
+                    }
+                  },
+                  "Property": "State Acronym"
+                }
+              }
+            ],
             "isPinned": true
           },
           {
@@ -186,7 +269,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "138D"
+                  "Value": "89.2525029474113D"
                 }
               }
             }
@@ -200,7 +283,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "97D"
+                  "Value": "172.63762544928605D"
                 }
               }
             }
@@ -214,7 +297,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "106D"
+                  "Value": "211D"
                 }
               }
             }
@@ -228,7 +311,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "162D"
+                  "Value": "91.29698953348242D"
                 }
               }
             }
@@ -242,13 +325,83 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "168D"
+                  "Value": "93.62410081872262D"
                 }
               }
             }
           },
           "selector": {
             "metadata": "Fact Onboarding Register.CountApplicantsOffboarded"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "91D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.CountApplicantsReadyForPE"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "97.58680614436004D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.CountApplicantsReadyToGo"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "141.34039987943436D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.Rolling3MonthOnboardingProcessing"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "137.5606334005955D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.Rolling3MonthPEProcessing"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "133.72238606445825D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Onboarding Register.Rolling3MonthTotalProcessing"
           }
         }
       ]
@@ -267,7 +420,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Locations'"
+                  "Value": "'Onboarding outcomes by date offered'"
                 }
               }
             }
@@ -309,34 +462,6 @@
   },
   "filterConfig": {
     "filters": [
-      {
-        "name": "0d1b52132bed91b1a9c0",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimOnboardingRegister"
-              }
-            },
-            "Property": "Division"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "2a501d5e6017578b57b1",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Fact Onboarding Register"
-              }
-            },
-            "Property": "CountWorkersOnboarded"
-          }
-        },
-        "type": "Advanced"
-      },
       {
         "name": "239528d67339249e3db8",
         "field": {
@@ -387,76 +512,6 @@
         "howCreated": "User",
         "isHiddenInViewMode": true,
         "isLockedInViewMode": true
-      },
-      {
-        "name": "bf8946271d1cbe101a89",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Date Offered"
-              }
-            },
-            "Property": "MMM YYYY"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "5b0bfbbb097c0b018a08",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimLineManagerOR"
-              }
-            },
-            "Property": "title"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "0cd562df920419660a89",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimOnboardingRegister"
-              }
-            },
-            "Property": "State Acronym"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "a70e17c063d04349930a",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Fact Onboarding Register"
-              }
-            },
-            "Property": "CountApplicantsWithdrawn"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "2f9922cf84c805889d42",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Fact Onboarding Register"
-              }
-            },
-            "Property": "CountApplicantsOffboarded"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

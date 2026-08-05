@@ -1,0 +1,231 @@
+table DimPatientStartDate
+	lineageTag: 93154704-5a96-483e-a64a-32804db1561f
+	dataCategory: Time
+
+	measure 'Patient Reporting Year Flag' =
+			VAR _selectedDate = CALCULATE(MAX('DimPatientStartDate'[Date]))//, CROSSFILTER(DimPatientStartDate[Date], FactPatient[care_start_date], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, 0)
+			VAR _selectedStartDate = MAX(DimPatientStartDate[Date])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    1,
+			    0)
+			RETURN _logic
+		formatString: 0
+		lineageTag: 2444279d-c2a4-4cec-bbd3-cebef2a273a9
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: d/m/yyyy
+		lineageTag: 44839a4e-beef-47a7-9048-9060886668a6
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: b8d89dec-7511-4ca6-8292-5135a0fbf33d
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 58e2c45a-fcd3-4a03-a169-12876be047ad
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 1eaea4b6-819a-4c0e-b05e-b63233a69ace
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: c99bf246-389e-4d47-947c-bcfbc6fbf91c
+		summarizeBy: none
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e12b99fa-f65f-448d-b687-cd0719078c5b
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 314fda20-2f77-44ec-975b-a67db0039bed
+		summarizeBy: none
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: ef0ffcc5-24b5-48b0-9615-c5f6740f1b0c
+		summarizeBy: none
+		sourceColumn: DayName
+		sortByColumn: DayOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: a5fa7ccc-e1e2-4cc8-b617-2d2d22be9cb6
+		summarizeBy: none
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1368b049-fa72-4526-a38d-2bf4aa0299bc
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: d8223530-b86d-4cf1-bc3e-87fc30d88fda
+		summarizeBy: none
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: b3cc3a52-c67e-419a-880b-f277e150b3ae
+		summarizeBy: none
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 5cff498b-66af-4ed9-aa71-c8e656def000
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'd MMM'
+		dataType: string
+		lineageTag: 283ffa39-edb2-4fd7-a050-065b4e78a276
+		summarizeBy: none
+		sourceColumn: d MMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column MMdd
+		dataType: int64
+		formatString: 0
+		lineageTag: 02e805a1-4bdf-4fe8-bc09-d321af689fe2
+		summarizeBy: none
+		sourceColumn: MMdd
+
+		annotation SummarizationSetBy = Automatic
+
+	column FortnightOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: ab6c55ed-8b15-4467-b961-3ff471ace954
+		summarizeBy: none
+		sourceColumn: FortnightOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYFF
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 13bf656d-7c9a-4cbf-ae76-c3f5ae10b496
+		summarizeBy: none
+		sourceColumn: YYYYFF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'FF (DD MMM YYYY)'
+		dataType: string
+		lineageTag: b53d8913-bb24-4393-b06b-97d7a360deb7
+		summarizeBy: none
+		sourceColumn: FF (DD MMM YYYY)
+		sortByColumn: YYYYFF
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 95f915c3-b11b-4c12-9593-f1a747f8a406
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column SlicerStartOfWeek
+		dataType: string
+		lineageTag: 111f814b-4dc6-4359-944c-39d6642612f2
+		summarizeBy: none
+		sourceColumn: SlicerStartOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimPatientStartDate = m
+		mode: import
+		queryGroup: Patients
+		source =
+				let
+				    Source = #"Calendar - Source"
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

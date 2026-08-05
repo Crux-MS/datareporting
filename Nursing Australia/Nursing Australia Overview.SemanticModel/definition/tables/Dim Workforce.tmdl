@@ -136,14 +136,30 @@ table 'Dim Workforce'
 
 		annotation SummarizationSetBy = Automatic
 
+	column PhoneNumbers
+		dataType: string
+		lineageTag: 040cda2b-9088-4804-833d-2b48309ec661
+		summarizeBy: none
+		sourceColumn: PhoneNumbers
+
+		annotation SummarizationSetBy = Automatic
+
+	column Emails
+		dataType: string
+		lineageTag: f41ae0d3-e57d-455e-aac9-1d644046a611
+		summarizeBy: none
+		sourceColumn: Emails
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Dim Workforce' = m
 		mode: import
+		queryGroup: Workers
 		source =
 				let
-				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="select #(lf)#(tab)m.MemberID#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [MemberId]#(lf)#(tab),m.GivenName#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [FirstName]#(lf)#(tab),m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [LastName]#(lf)#(tab),dbo.MemberOutletName(m.MemberID)#(tab)#(tab)#(tab)#(tab)as [Location]#(lf)#(tab),dbo.php_UserFullName(ma.AgencyRepresentative)#(tab)as [PrimaryManager]#(lf)#(tab),d.[Description]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [TerminationReason]#(lf)#(tab),case#(lf)#(tab)#(tab)when ma.ExitReasonId is not null OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL then 'Terminated'#(lf)#(tab)#(tab)else null#(lf)#(tab)end#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmploymentStatus]#(lf)#(tab),a.[Name]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployingEntity]#(lf)#(tab),v.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [VisaType]#(lf)#(tab),'No'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [IsManagerFlag]#(lf)#(tab),m.GivenName + ' ' + m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)as [FullName]#(lf)#(tab),CASE #(lf)#(tab)#(tab)WHEN m.sex = 'F' THEN 'Female'#(lf)#(tab)#(tab)WHEN m.sex = 'M' THEN 'Male' #(lf)#(tab)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Gender]#(lf)#(tab),mc.Postcode#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployeeAddressPostcode]#(lf)#(tab),w.Description#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [WhatPromptedYou]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [ExtractDate]#(tab)#(lf)#(tab),l.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [State]#(lf)from dbo.member m#(lf)left join dbo.MemberContact mc on m.MemberID = mc.MemberID#(lf)left join dbo.MemberProfile mp on m.MemberID = mp.MemberID#(lf)LEFT JOIN dbo.location l ON m.LocationID = l.LocationId#(lf)left join dbo.Visa v on mp.VISAType = v.VisaID#(lf)left join (#(lf)#(tab)select * #(lf)#(tab)from dbo.MemberAgency #(lf)#(tab)where AgencyID = 4#(lf)) ma on ma.MemberID = m.MemberID#(lf)left join (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Exit Reason'#(lf))d on ma.ExitReasonId = d.value #(lf)LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'What Prompted You'#(lf)) w on ma.ExitReasonId = w.value #(lf)left join dbo.Agency a on ma.AgencyID = a.AgencyID#(lf)where m.MemberID <> 1 #(lf)"]),
-				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Location", "Location"}})
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="select #(lf)#(tab)m.MemberID#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [MemberId]#(lf)#(tab),m.GivenName#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [FirstName]#(lf)#(tab),m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [LastName]#(lf)#(tab),dbo.MemberOutletName(m.MemberID)#(tab)#(tab)#(tab)#(tab)AS [Location]#(lf)#(tab),dbo.php_UserFullName(ma.AgencyRepresentative)#(tab)AS [PrimaryManager]#(lf)#(tab),dbo.MemberPhoneNumbers(m.MemberID, ', ')#(tab)#(tab)AS [PhoneNumbers]#(lf)#(tab),dbo.MemberEmails(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Emails]#(lf)#(tab),d.[Description]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [TerminationReason]#(lf)#(tab),case#(lf)#(tab)#(tab)when ma.ExitReasonId is not null OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL then 'Terminated'#(lf)#(tab)#(tab)else null#(lf)#(tab)end#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmploymentStatus]#(lf)#(tab),a.[Name]#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployingEntity]#(lf)#(tab),v.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [VisaType]#(lf)#(tab),'No'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [IsManagerFlag]#(lf)#(tab),m.GivenName + ' ' + m.Surname#(tab)#(tab)#(tab)#(tab)#(tab)as [FullName]#(lf)#(tab),CASE #(lf)#(tab)#(tab)WHEN m.sex = 'F' THEN 'Female'#(lf)#(tab)#(tab)WHEN m.sex = 'M' THEN 'Male' #(lf)#(tab)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [Gender]#(lf)#(tab),mc.Postcode#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [EmployeeAddressPostcode]#(lf)#(tab),w.Description#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [WhatPromptedYou]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)as [ExtractDate]#(tab)#(lf)#(tab),l.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [State]#(lf)from dbo.member m#(lf)left join dbo.MemberContact mc on m.MemberID = mc.MemberID#(lf)left join dbo.MemberProfile mp on m.MemberID = mp.MemberID#(lf)LEFT JOIN dbo.location l ON m.LocationID = l.LocationId#(lf)left join dbo.Visa v on mp.VISAType = v.VisaID#(lf)left join (#(lf)#(tab)select * #(lf)#(tab)from dbo.MemberAgency #(lf)#(tab)where AgencyID = 4#(lf)) ma on ma.MemberID = m.MemberID#(lf)left join (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Exit Reason'#(lf))d on ma.ExitReasonId = d.value #(lf)LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'What Prompted You'#(lf)) w on ma.ExitReasonId = w.value #(lf)left join dbo.Agency a on ma.AgencyID = a.AgencyID#(lf)WHERE m.MemberID not in (1, 54326, 56116, 56961, 54389, 54334, 54328, 54193, 71295, 15578)#(lf)"])
 				in
-				    #"Renamed Columns"
+				    Source
 
 	annotation PBI_NavigationStepName = Navigation
 

@@ -1,0 +1,98 @@
+table DimEmployees
+	lineageTag: 8465e962-6afa-4d6f-a4b4-e91302731420
+
+	measure ExitedEmployeeName = CALCULATE(SELECTEDVALUE(DimEmployees[Employee Name]), USERELATIONSHIP(DimDate[Date], DimEmployees[Termination Date]))
+		lineageTag: 6bf21a1d-82bc-4be6-bb99-5552423f144e
+
+	column 'Id Manager'
+		dataType: string
+		isHidden
+		lineageTag: c8e97e35-5b04-4f26-a797-5d3c84bbc1c6
+		summarizeBy: none
+		sourceColumn: Id Manager
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Name'
+		dataType: string
+		lineageTag: 6eb44af3-5ea4-4e96-af2b-5f79b4495a5b
+		summarizeBy: none
+		sourceColumn: Employee Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Status'
+		dataType: string
+		lineageTag: 05b587af-b5dc-4dd7-a6b4-8e335d8421a6
+		summarizeBy: none
+		sourceColumn: Employee Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: c6c40931-793b-41dc-bee5-6011fec55ee7
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start Date'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 4b1bc163-81da-4dae-b261-b450a0a3c0e0
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Termination Date'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 6a7e7617-0916-4ea5-904c-55b873f1b0d9
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Job Title'
+		dataType: string
+		lineageTag: df6df088-20b3-4895-877e-f9ff23f3d655
+		summarizeBy: none
+		sourceColumn: Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employment Type'
+		dataType: string
+		lineageTag: 10480539-a716-47fd-a14f-0f8fdd6ee332
+		summarizeBy: none
+		sourceColumn: Employment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimEmployees = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Dim_employee = Source{[Schema="Dim",Item="employee"]}[Data],
+				    #"Removed Other Columns" = Table.SelectColumns(Dim_employee,{"Id_Manager", "Employee_Name", "Employee_Status", "Employment_Type", "Job_Title", "Location", "Start_Date", "Termination_Date"}),
+				    #"Clean Column Names" = fnCleanColumnNames(#"Removed Other Columns")
+				in
+				    #"Clean Column Names"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

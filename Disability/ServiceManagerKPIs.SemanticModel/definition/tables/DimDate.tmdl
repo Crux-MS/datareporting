@@ -1,0 +1,163 @@
+table DimDate
+	lineageTag: bd4d6852-7194-465c-8a5d-96d43a83b66b
+	dataCategory: Time
+
+	column 'Id Date'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8572879b-a82f-47a2-8715-562ad2ef4cf4
+		summarizeBy: sum
+		sourceColumn: Id Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: 514fbb7b-408a-4360-a5e1-31f8bd2e3a9d
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 583eee02-004a-40d4-861d-66c13ded9769
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: 680879ba-68d7-45c0-a987-c50c2c28d9d8
+		summarizeBy: sum
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: a77e6213-9e5f-4aac-a21a-a57b4bdc3dde
+		summarizeBy: sum
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 8587a155-d266-4660-8a87-0c57054caa6e
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: 152cb114-a6bd-4b1a-abd6-fce14004d2f0
+		summarizeBy: sum
+		sourceColumn: Day
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: 74fddc92-5797-4c97-800a-0949d7aebcd8
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: f5376da1-82b6-42fc-a446-c00890b23d39
+		summarizeBy: sum
+		sourceColumn: Day Of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: cdd182f9-55d0-4d1d-b8b5-f6bae5b32e48
+		summarizeBy: sum
+		sourceColumn: Week Of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Weekend'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f206ea67-1718-46b7-b8f7-d0a660b04b4a
+		summarizeBy: none
+		sourceColumn: Is Weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Financial Year'
+		dataType: string
+		lineageTag: 4c2b778c-cd4e-4c89-8b82-c526a4f7e692
+		summarizeBy: none
+		sourceColumn: Financial Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Financial Quarter'
+		dataType: int64
+		formatString: 0
+		lineageTag: 0b74e7af-b4f2-4564-8bb8-ff9054f7e08a
+		summarizeBy: sum
+		sourceColumn: Financial Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Week (Monday)'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 522a6315-cf02-40be-b335-bc15d7009ab2
+		summarizeBy: none
+		sourceColumn: Start of Week (Monday)
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Start of Month'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 48c7294a-a39a-4915-be15-1870c0e9033e
+		summarizeBy: none
+		sourceColumn: Start of Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Dim_date = Source{[Schema="Dim",Item="date"]}[Data],
+				    #"Clean Column Names" = fnCleanColumnNames(Dim_date),
+				    #"Inserted Start of Week" = Table.AddColumn(#"Clean Column Names", "Start of Week (Monday)", each Date.StartOfWeek([Date], Day.Monday), type date),
+				    #"Inserted Start of Month" = Table.AddColumn(#"Inserted Start of Week", "Start of Month", each Date.StartOfMonth([Date]), type date)
+				in
+				    #"Inserted Start of Month"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

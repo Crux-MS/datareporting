@@ -28,20 +28,10 @@ relationship 9c28a4e1-ec00-413d-8b7a-19b81007e551
 	fromColumn: 'Fact Workforce'.DateOfBirth
 	toColumn: LocalDateTable_5f0c2bdb-c6bd-403d-b596-971af2e97fc5.Date
 
-relationship 350ce7cb-8e64-4b23-bdd4-78c4570cea2e
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Fact Workforce'.ExtractDate
-	toColumn: LocalDateTable_59a59357-5625-4a35-96c2-954f23bb4c19.Date
-
 relationship c7aed455-2722-4a79-aa45-b5468491d9e7
 	joinOnDateBehavior: datePartOnly
 	fromColumn: 'Dim Workforce'.ExtractDate
 	toColumn: LocalDateTable_c79aaebd-ae53-47c7-8309-8f89a1468071.Date
-
-relationship 6efbf5b9-8d61-459b-af7a-829edd0190cd
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Fact Shift'.StartDateTime
-	toColumn: LocalDateTable_7c61d204-22af-4ed6-a356-be5799d29086.Date
 
 relationship 3f248edc-ea2c-461a-a4ab-8dfb8c66268e
 	joinOnDateBehavior: datePartOnly
@@ -110,17 +100,17 @@ relationship ad55901b-a049-4237-854b-0b0b33883cbe
 
 relationship ac53d02f-fec2-49be-94a4-198565fb377e
 	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Dim Employment Start Date'.EmploymentStartDate
+	fromColumn: 'Dim Workforce Start Date'.EmploymentStartDate
 	toColumn: LocalDateTable_b67f671a-8f4f-4b8a-b106-61f837f4ebbb.Date
 
 relationship dcf80007-e4a0-48ed-bd49-89e9010280d2
 	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Dim Employment Start Date'.StartOfYear
+	fromColumn: 'Dim Workforce Start Date'.StartOfYear
 	toColumn: LocalDateTable_34112bc6-2866-4d93-83b2-d57a5a95feed.Date
 
 relationship c1c5e535-41b1-48a0-aa1e-811489555b41
 	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Dim Employment Start Date'.StartOfWeek
+	fromColumn: 'Dim Workforce Start Date'.StartOfWeek
 	toColumn: LocalDateTable_9a929ea4-26df-4ac6-87c9-4e2f909f69c4.Date
 
 relationship dff4709c-5272-4113-97ad-50958fa25145
@@ -149,21 +139,155 @@ relationship AutoDetected_ffa09630-9c79-4693-a176-2a62ccc97594
 	toColumn: 'Dim Client'.ClientId
 
 relationship 2ce4c412-9a5a-ebd2-c3ed-0c50a6f2b2f1
+	crossFilteringBehavior: bothDirections
 	fromColumn: 'Fact Shift'.StartDate
 	toColumn: 'Dim Shift Start Date'.ShiftStartDate
 
 relationship 9ce70eee-91ef-6012-91b0-b7cd514ea8c5
 	fromColumn: 'Fact Workforce'.EmploymentStartDate
-	toColumn: 'Dim Employment Start Date'.EmploymentStartDate
+	toColumn: 'Dim Workforce Start Date'.EmploymentStartDate
 
 relationship 5f6192a0-a7e0-88c4-bc60-b085af82b8e9
 	isActive: false
 	fromColumn: 'Fact Workforce'.TerminationDate
-	toColumn: 'Dim Employment Start Date'.EmploymentStartDate
+	toColumn: 'Dim Workforce Start Date'.EmploymentStartDate
 
 relationship c2adfb65-2e4f-13bf-630c-bc3ca28c0aa1
 	crossFilteringBehavior: bothDirections
 	fromCardinality: one
 	fromColumn: 'Fact Workforce'.MemberId
 	toColumn: 'Dim Workforce - Duplicates'.MemberId
+
+relationship 4cf5bcca-ad3b-43c1-946d-293db7cdbbba
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Calculations'.Created
+	toColumn: LocalDateTable_fe4483d1-c55f-4695-b1f7-963afd8c9f57.Date
+
+relationship fc3154cb-1294-4076-be2e-5c2eca4e1b84
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Calculations'.Modified
+	toColumn: LocalDateTable_06b434bb-48d2-4790-81cf-74e8a834f86b.Date
+
+relationship 7330efff-0299-a071-5dd2-4d0ea594f5ca
+	fromColumn: 'Dim Accountable Stakeholders'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 83f44c8b-3bcb-b311-9d82-de2fa1729f6c
+	fromColumn: 'Dim Calculation Data Source'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship a89d3196-c8b8-b879-1ffa-a6ee1f705052
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Dim Calculations'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship e1619601-92b2-14cd-86f7-7b883af5b438
+	fromColumn: 'Dim Related Calculations'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship cff0dfee-4c80-343b-ca65-2ed204cf6fa8
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Dim Technical Owner'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 93e04796-eee2-de54-0e94-1f69250556a1
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Calculation Semantic Model'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship AutoDetected_504e0503-df49-4660-82a3-f7c331892623
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Dim Shift'.ShiftId
+	toColumn: 'Fact Shift'.ShiftId
+
+relationship a01baea2-cf8a-af50-8bd4-87c6394c309b
+	crossFilteringBehavior: bothDirections
+	toCardinality: many
+	fromColumn: 'Dim Shift Remoteness'.PostCode
+	toColumn: 'Dim Shift'.Postcode
+
+relationship AutoDetected_5b248560-4588-4009-84b6-ce030e44ab7d
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Workforce Work Areas'.MemberId
+	toColumn: 'Fact Workforce'.MemberId
+
+relationship c36487ec-8b47-442c-ba72-4ad71b82dadb
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Workforce Trades'.AnniversaryDate
+	toColumn: LocalDateTable_ca158bdf-7a17-48eb-9997-d37f2f6f22e2.Date
+
+relationship 417537af-da28-4d93-9249-f73764a3bed9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Workforce Trades'.CompletionDate
+	toColumn: LocalDateTable_cf180014-24f1-4b5b-991e-2bce3743a02f.Date
+
+relationship 22c020dd-fa67-4159-83a9-ce2b4e51196f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Workforce Trades'.PracCertExpiryDate
+	toColumn: LocalDateTable_dd37b291-55d6-4caa-98a8-085c6db976ca.Date
+
+relationship e8a059b0-5ed7-7881-ff0d-d7fd3c3f82bd
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Workforce Trades'.MemberId
+	toColumn: 'Fact Workforce'.MemberId
+
+relationship 12717ebc-5f31-80fc-a48f-df61dc6c8834
+	fromColumn: 'Dim Workforce'.EmployeeAddressPostcode
+	toColumn: 'Dim Workforce Remoteness'.PostCode
+
+relationship 9509cbb9-58aa-49de-4e9d-bd24cda5701b
+	fromColumn: 'Dim Shift Allocation'.ShiftID
+	toColumn: 'Fact Shift'.ShiftId
+
+relationship 27b0be07-3df9-41a9-890b-b9672d5e4101
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Shift Allocation'.Time
+	toColumn: LocalDateTable_55dbae95-400f-4da6-9e38-3f74214aeedb.Date
+
+relationship da8f4d89-1ed1-410a-8f92-b167ac463b8b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Shift Audit'.FinishDate
+	toColumn: LocalDateTable_72ce3ab0-22e7-4e9b-9b94-0d7012cc6164.Date
+
+relationship d88aa57e-b1c1-4f7e-9d30-6c3f66528d2b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Shift Audit'.ConfirmedDate
+	toColumn: LocalDateTable_e3a1db2e-1088-4bc8-ae6e-eba33ae7f518.Date
+
+relationship 9e0ca606-4ab7-cbbb-7c4b-d95ad68b528a
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Fact Shift Audit'.ShiftID
+	toColumn: 'Dim Shift'.ShiftId
+
+relationship bbe86c27-f020-446f-91b4-42d8aa9fa6c9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Shift Audit'.UpdateTime
+	toColumn: LocalDateTable_839ee13d-f503-45fa-afaa-65cb4e095fda.Date
+
+relationship e99d29c9-2cab-84ba-2728-81bc4d7b3400
+	fromColumn: 'Fact Shift Audit'.UpdateDate
+	toColumn: 'Dim Shift Audit Update Date'.Date
+
+relationship b650f9ee-8a65-42ee-bf95-f09637af1b67
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dim Shift Start Date'.'Start of Month'
+	toColumn: LocalDateTable_94572139-cb29-4f93-8fdf-391e2644b6f1.Date
+
+relationship 78448d39-8ac7-48b3-b65b-c6de2ac92418
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Shift'.StartDateTime
+	toColumn: LocalDateTable_46179633-0ad1-477f-9920-5043f86a27a5.Date
+
+relationship d377198a-3e34-3683-b64c-8042ff715f32
+	isActive: false
+	fromColumn: 'Fact Shift'.StartDate
+	toColumn: 'Dim Workforce Start Date'.EmploymentStartDate
+
+relationship 16ff0532-bb50-4517-bfb9-f1ada412cc07
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Shift Audit'.StartDate
+	toColumn: LocalDateTable_72524969-3218-4d21-b831-b54223edd838.Date
 

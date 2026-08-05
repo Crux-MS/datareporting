@@ -1,0 +1,166 @@
+table DimWorkforceLeave
+	lineageTag: 2c43d3fc-8c6a-44fd-8b6a-a2c6df48fd95
+
+	column LeaveId
+		dataType: int64
+		formatString: 0
+		lineageTag: 8c1a35d1-633c-4c56-bae2-f4ee04e97e80
+		summarizeBy: none
+		sourceColumn: LeaveId
+
+		annotation SummarizationSetBy = User
+
+	column CarerId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 025ff0d3-a975-4abd-8809-5e4e13c8bf1e
+		summarizeBy: none
+		sourceColumn: CarerId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TimeFrom
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9576897e-50bb-4205-8785-8eb79146f878
+		summarizeBy: none
+		sourceColumn: TimeFrom
+
+		variation Variation
+			isDefault
+			relationship: 331618de-9069-4d97-b4a8-f7165d5381e8
+			defaultHierarchy: LocalDateTable_81004801-2e25-42e8-a992-e36af94be2e9.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column TimeTo
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 91f57a78-bbee-4923-99df-0b1a5ac9f033
+		summarizeBy: none
+		sourceColumn: TimeTo
+
+		variation Variation
+			isDefault
+			relationship: 0f501d24-cb2d-4e61-9a79-356dc8934a15
+			defaultHierarchy: LocalDateTable_8c2dbcc1-fa6f-44f8-b4ed-f8c17676e58d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column EntireDay
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: e86300bc-f84f-4bc7-9ce3-c811338397f7
+		summarizeBy: none
+		sourceColumn: EntireDay
+
+		annotation SummarizationSetBy = Automatic
+
+	column Type
+		dataType: string
+		lineageTag: 322d709b-e3ab-4ff9-9697-caa622d44946
+		summarizeBy: none
+		sourceColumn: Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Note
+		dataType: string
+		lineageTag: f5f229a0-2ae3-450c-94da-16fc463b5d6e
+		summarizeBy: none
+		sourceColumn: Note
+
+		annotation SummarizationSetBy = Automatic
+
+	column Remark
+		dataType: string
+		lineageTag: ece6c64f-6b0c-4c68-babe-d518713b5b60
+		summarizeBy: none
+		sourceColumn: Remark
+
+		annotation SummarizationSetBy = Automatic
+
+	column Timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a2fb34b1-15f5-4f18-aa75-acf7df144799
+		summarizeBy: none
+		sourceColumn: Timestamp
+
+		variation Variation
+			isDefault
+			relationship: abf55fb7-267e-488a-baae-2bb9cb3a0275
+			defaultHierarchy: LocalDateTable_09fc232e-f525-4ed2-8115-ff97cda50d8c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 4a9baa12-6931-4732-a616-a176893577e4
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column StatusTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 113d9668-0633-4a34-b016-f6b440079cc6
+		summarizeBy: none
+		sourceColumn: StatusTime
+
+		variation Variation
+			isDefault
+			relationship: a1a99030-518c-4e81-b180-499413b98d88
+			defaultHierarchy: LocalDateTable_9f85440d-f461-48d0-8cf6-24f0cccfc233.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column StatusBy
+		dataType: string
+		lineageTag: 66602f4b-930a-4699-b40c-d3b56d632718
+		summarizeBy: none
+		sourceColumn: StatusBy
+
+		annotation SummarizationSetBy = Automatic
+
+	column LeaveDurationHours =
+			VAR _carerId = DimWorkforceLeave[CarerId]
+			VAR _dateDiff = DATEDIFF(DimWorkforceLeave[TimeFrom], DimWorkforceLeave[TimeTo], HOUR)
+			VAR _budgetHours = CALCULATE(SUM(FactWorkforceVisualCare[BudgetHours]), FactWorkforceVisualCare[CarerId] = _carerId)
+			VAR _logic = IF(DimWorkforceLeave[EntireDay] = TRUE(), _budgetHours, _dateDiff)
+			RETURN _logic
+		formatString: 0.00
+		lineageTag: 27bf3cf0-f06b-443c-812c-44663a47aaf7
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column LeaveDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1755f7df-9f11-489d-85d9-57484c5911d4
+		summarizeBy: none
+		sourceColumn: LeaveDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition DimWorkforceLeave = m
+		mode: import
+		queryGroup: Workers
+		source =
+				let
+				    Source = #"Worker Leave - source",
+				    #"Inserted Date" = Table.AddColumn(Source, "LeaveDate", each DateTime.Date([TimeFrom]), type date)
+				in
+				    #"Inserted Date"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

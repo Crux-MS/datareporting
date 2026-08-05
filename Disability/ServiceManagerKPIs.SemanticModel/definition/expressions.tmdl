@@ -1,0 +1,47 @@
+expression 'Data Dictionary - Source' =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [Implementation="2.0", ViewMode="All"]),
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866" = Source{[Id="4a4da78a-6855-44b7-bef3-4064d5ddb866"]}[Items]
+		in
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866"
+	lineageTag: 462cf545-2f07-4c54-a8c9-9cb4583c6f35
+	queryGroup: 'Utilities\Data Dictionary'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression ServerName = "yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com" meta [IsParameterQuery=true, List={"yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com"}, DefaultValue="yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 9f067971-8fd3-4e22-b337-6caab436c82d
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression DatabaseName = "L4_Analytical" meta [IsParameterQuery=true, List={"L3_Conformed", "L4_Analytical"}, DefaultValue="L4_Analytical", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: fd622919-806a-40de-b45f-545fd7665547
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression fnCleanColumnNames =
+		let
+		    fnCleanColumnNames = (tbl as table) as table =>
+		        let
+		            OldNames = Table.ColumnNames(tbl),
+		            NewNames = List.Transform(OldNames, each Text.Proper(Text.Replace(_, "_", " "))),
+		            Result   = Table.RenameColumns(tbl, List.Zip({OldNames, NewNames}))
+		        in
+		            Result
+		in
+		      fnCleanColumnNames
+	lineageTag: 4073fc95-6d78-4bb6-b6ab-8dd8e981b341
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+

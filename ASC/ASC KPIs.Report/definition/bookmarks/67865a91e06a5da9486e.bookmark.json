@@ -1,0 +1,1135 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.0.0/schema.json",
+  "displayName": "MP Close",
+  "name": "67865a91e06a5da9486e",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "2147d23c1ceaa801cba8",
+      "98d8f83b81b2a991a9d7",
+      "3952310b5027a5560cdc",
+      "f5eacbce747a39bea74b",
+      "018161a13a0574ac4606",
+      "4dc3bba97c307ab00e69",
+      "5f00660c066009893b00",
+      "7bde7c98b180ccb7e9b5",
+      "9a94e9f68e426c374e29",
+      "bf9ea0008005abd1d0a9",
+      "d12846301bb3a0c104b7",
+      "ec44e72702a903a6a609",
+      "f670d0ddc42a1bbc1470"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.40",
+    "activeSection": "0acab3b50d742cdb0807",
+    "sections": {
+      "0acab3b50d742cdb0807": {
+        "visualContainers": {
+          "018161a13a0574ac4606": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "12929fa5e60f40f7aa35": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "153b58175e041479c2b3",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Date Granularity"
+                        }
+                      },
+                      "Property": "Date Granularity"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "advancedSlicerVisual",
+              "objects": {
+                "merge": {
+                  "general": [
+                    {
+                      "properties": {
+                        "filter": {
+                          "filter": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "d",
+                                "Entity": "Date Granularity",
+                                "Type": 0
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "d"
+                                            }
+                                          },
+                                          "Property": "Date Granularity Fields"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "'''DimCalendar''[MMM YYYY]'"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "selection": [
+                    {
+                      "properties": {
+                        "strictSingleSelect": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "cachedFilterDisplayItems": [
+                {
+                  "id": {
+                    "scopeId": {
+                      "Comparison": {
+                        "ComparisonKind": 0,
+                        "Left": {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "Date Granularity"
+                              }
+                            },
+                            "Property": "Date Granularity Fields"
+                          }
+                        },
+                        "Right": {
+                          "Literal": {
+                            "Value": "'''DimCalendar''[MMM YYYY]'"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "displayName": "Months"
+                }
+              ]
+            }
+          },
+          "1e235c3550ae9b0c08e0": {
+            "singleVisual": {
+              "visualType": "image",
+              "objects": {}
+            }
+          },
+          "3952310b5027a5560cdc": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "4158b53f725e36d15d5a": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "6488f0bc07c999a2c188",
+                  "type": "RelativeDate",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "d",
+                        "Entity": "DimCalendar",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Between": {
+                            "Expression": {
+                              "Column": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "d"
+                                  }
+                                },
+                                "Property": "WorkDate"
+                              }
+                            },
+                            "LowerBound": {
+                              "DateSpan": {
+                                "Expression": {
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "Now": {}
+                                    },
+                                    "Amount": -12,
+                                    "TimeUnit": 2
+                                  }
+                                },
+                                "TimeUnit": 2
+                              }
+                            },
+                            "UpperBound": {
+                              "DateSpan": {
+                                "Expression": {
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "Now": {}
+                                    },
+                                    "Amount": -1,
+                                    "TimeUnit": 2
+                                  }
+                                },
+                                "TimeUnit": 2
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "WorkDate"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "fe3fad8b8079038519d8",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "88985240c507b1cece46",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "EstablishedBillableHoursRate"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "299b77e0c5ae682c071e",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "NewStarterBillableHoursRate"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "125680674a00959d0306",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "BillableHoursRate"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "lineChart",
+              "objects": {},
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                ]
+              },
+              "projections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                ],
+                "Y": [
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "EstablishedBillableHoursRate"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "NewStarterBillableHoursRate"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "BillableHoursRate"
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "Category": [
+                  {
+                    "expr": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Date Granularity"
+                          }
+                        },
+                        "Property": "Date Granularity"
+                      }
+                    },
+                    "index": 0,
+                    "length": 1
+                  }
+                ]
+              }
+            }
+          },
+          "5308260d8dbacbba29d8": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "66f87ff9162751e37f64": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "a32aa2c655a8625a91bb",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "NewStarterContractedHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "052f2f9a5e4e389b09e3",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "EstablishedContractedHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "280efe9075d4a2995825",
+                  "type": "RelativeDate",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "WorkDate"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "56871949128a62e1bae0",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "CountCurrentlyEmployed"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "2e744982b1276bb25ab8",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "BillableHoursRate"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "b9481331e398d5b7e598",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "EstablishedBillableHoursRate"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "4d16887699c69847b2cd",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "NewStarterBillableHoursRate"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "4609d4692da98fbeffff",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ContractedHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "a7ef5ccbd3f78149b4fd",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "AvailableHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "6f782fc18377d8a3b560",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ApprovedLeave"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "759bbf607a2ea7a19d32",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "BillableHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "519ddd593c11c995fea1",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactCareViewCaseNotes"
+                        }
+                      },
+                      "Property": "CountClientProfiles"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "98fa16e7b65bfca5dcca",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "UnbillableHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "38c17c67f82e76bfa3d4",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "7f8ec9c9a4dd042e4495",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "PublicHolidayHours"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "d5f95a6853519f0d751a",
+                  "type": "RelativeDate",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "d",
+                        "Entity": "DimCalendar",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Between": {
+                            "Expression": {
+                              "Column": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "d"
+                                  }
+                                },
+                                "Property": "Start of Month"
+                              }
+                            },
+                            "LowerBound": {
+                              "DateSpan": {
+                                "Expression": {
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "DateAdd": {
+                                        "Expression": {
+                                          "Now": {}
+                                        },
+                                        "Amount": 1,
+                                        "TimeUnit": 0
+                                      }
+                                    },
+                                    "Amount": -13,
+                                    "TimeUnit": 2
+                                  }
+                                },
+                                "TimeUnit": 0
+                              }
+                            },
+                            "UpperBound": {
+                              "DateSpan": {
+                                "Expression": {
+                                  "Now": {}
+                                },
+                                "TimeUnit": 0
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "Start of Month"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "65cde6e970f74960c649",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ASCUnbillableHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "f6fcf5decda546981707",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ClientUnbillableHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "74e7020d055a63489099",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactClientFunding"
+                        }
+                      },
+                      "Property": "CountClientsVeryHighOverspend"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "128e62a1a07580a2db60",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactClientFunding"
+                        }
+                      },
+                      "Property": "CountClientsVeryHighUnderspend"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "fb8a22ff71e0952136b0",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "DeliveredHours"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "01cd7d98318c00d09078",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactCareViewCaseNotes"
+                        }
+                      },
+                      "Property": "CountBilledClients"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Columns": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                ]
+              },
+              "projections": {
+                "Columns": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimCalendar"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                ],
+                "Values": [
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "CountCurrentlyEmployed"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "BillableHoursRate"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "EstablishedBillableHoursRate"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "NewStarterBillableHoursRate"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ContractedHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "EstablishedContractedHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "NewStarterContractedHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ApprovedLeave"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "AvailableHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "BillableHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ASCUnbillableHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "ClientUnbillableHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "UnbillableHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactASCEmployees"
+                        }
+                      },
+                      "Property": "DeliveredHours"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactCareViewCaseNotes"
+                        }
+                      },
+                      "Property": "CountBilledClients"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactClientFunding"
+                        }
+                      },
+                      "Property": "CountClientsVeryHighOverspend"
+                    }
+                  },
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactClientFunding"
+                        }
+                      },
+                      "Property": "CountClientsVeryHighUnderspend"
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "Columns": [
+                  {
+                    "expr": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Date Granularity"
+                          }
+                        },
+                        "Property": "Date Granularity"
+                      }
+                    },
+                    "index": 0,
+                    "length": 1,
+                    "sortDirection": 2
+                  }
+                ]
+              }
+            }
+          },
+          "7bde7c98b180ccb7e9b5": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "bf9ea0008005abd1d0a9": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "d12846301bb3a0c104b7": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "ec44e72702a903a6a609": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "f5eacbce747a39bea74b": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "f670d0ddc42a1bbc1470": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "visualContainerGroups": {
+          "98d8f83b81b2a991a9d7": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {
+      "merge": {
+        "outspacePane": [
+          {
+            "properties": {
+              "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              },
+              "visible": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

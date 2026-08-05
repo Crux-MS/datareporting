@@ -216,15 +216,6 @@ relationship c9cdd6f4-80f1-9dac-8261-c23b48863bdc
 	fromColumn: 'Fact Pay'.ReportingMonthStart
 	toColumn: 'Dim Extract Date'.'Extract Date'
 
-relationship 41fe3d72-8e3c-44f5-b519-e668f78a5f63
-	joinOnDateBehavior: datePartOnly
-	fromColumn: 'Fact Pay'.'Date Paid'
-	toColumn: LocalDateTable_1ed46c0d-c694-4ce8-a9df-a2296be02204.Date
-
-relationship 64b2497c-517f-8fb4-4f63-da7e305331c2
-	fromColumn: 'Fact Pay'.StartExtractPeriod
-	toColumn: 'Dim Paid Date'.PaidDate
-
 relationship 12bdf496-f7e4-4659-71c7-4387646a06e3
 	crossFilteringBehavior: bothDirections
 	fromColumn: 'Dim Calculation Semantic Model'.ID
@@ -307,6 +298,7 @@ relationship 107ca90f-e6dc-4f0e-9139-0e3eb4d051e0
 	toColumn: LocalDateTable_8136e54c-cfb0-46aa-9db1-f51439b22d54.Date
 
 relationship c5feb514-a567-e28d-6e65-3ca23390eae1
+	isActive: false
 	fromColumn: 'Fact Onboarding Register'.CreatedDateKey
 	toColumn: 'Dim Extract Date'.'Extract Date'
 
@@ -320,11 +312,50 @@ relationship 1aeb8d3a-99e4-483c-a6e6-1af711e70696
 	toColumn: LocalDateTable_936e0f8b-4c70-4621-907a-df2d9e7a0bf5.Date
 
 relationship d11ce89e-cb30-4043-34ee-f1adcca5f85d
-	isActive: false
 	fromColumn: 'Fact Onboarding Register'.OfferedDateKey
 	toColumn: 'Dim Extract Date'.'Extract Date'
 
-relationship 0b0b9654-ef9f-e4d6-6587-a74858f646df
-	fromColumn: DimOnboardingRegister.'Work Location'
-	toColumn: 'Dim Workforce Location'.LocationKey
+relationship 9af7eb43-e221-4e74-9e31-e05bf7323672
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Date Booked for PE'
+	toColumn: LocalDateTable_ee3eba0c-225a-4ffe-ac81-855eb259e3b9.Date
+
+relationship ac3d9a72-88df-4adb-b96c-845f84d0a392
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'RTG for Shifts (HR Ops)'
+	toColumn: LocalDateTable_dab69a29-35c4-4bf3-ad4d-e089f59a58a5.Date
+
+relationship c97abc04-0307-46ff-92d8-0516fcf7c500
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Fixed Term End Date'
+	toColumn: LocalDateTable_ca9c53fc-5ae6-4268-8b45-b71dd3cbb6cb.Date
+
+relationship f8b73bcd-b93d-4473-9c29-fad5314a9b18
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Date Teams Invite Sent'
+	toColumn: LocalDateTable_416d2f67-087b-4b1e-b500-1b7576ae3aef.Date
+
+relationship 19429e55-d38d-41ca-b002-4ba6c1b95946
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Date PE Completed'
+	toColumn: LocalDateTable_e35b2071-79f5-4534-aafc-af8edfcb234c.Date
+
+relationship c8d8fb54-42c8-405b-8917-5f5477ef33e8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Date Initial Invite Sent'
+	toColumn: LocalDateTable_91a81a31-8c50-4eb1-b4f8-66101b48e51e.Date
+
+relationship be2525fc-906d-4db4-96d2-fc1948f6ffaa
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Onboarding Register'.'Date Confirmation Sent'
+	toColumn: LocalDateTable_56a5c65a-c524-4a0a-97aa-64fdfc7de321.Date
+
+relationship 6c90fc88-ae5d-4462-905c-a178999eb5ab
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Pay'.StartExtractPeriod
+	toColumn: LocalDateTable_64c9631c-4ed5-4352-8402-c27d778dfa7a.Date
+
+relationship 7d5ef392-1274-6361-2034-8babba5b9577
+	fromColumn: 'Fact Pay'.'Date Paid'
+	toColumn: 'Dim Paid Date'.PaidDate
 

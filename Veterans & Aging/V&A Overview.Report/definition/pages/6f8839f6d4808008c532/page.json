@@ -1,0 +1,160 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "6f8839f6d4808008c532",
+  "displayName": "Individual visit details",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "364ad20c0990901e0c7d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimNurse"
+              }
+            },
+            "Property": "active_ind"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "eab1853a6332bab470c9",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "service"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      },
+      {
+        "name": "3a2f7512c8ce3da96efd",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "fullname"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimPatient",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "fullname"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Dremalei Rose  NDIS  BERRY (NB)'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "Drillthrough"
+      },
+      {
+        "name": "4b61cb7f390a1c727030",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "FundingStream"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      }
+    ]
+  },
+  "pageBinding": {
+    "name": "2b8186f689031e742896",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "a755136bbda55298b6c3",
+        "boundFilter": "eab1853a6332bab470c9",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "service"
+          }
+        }
+      },
+      {
+        "name": "49153e11f20b4335aabc",
+        "boundFilter": "3a2f7512c8ce3da96efd",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "fullname"
+          }
+        }
+      },
+      {
+        "name": "adb3f63575b93f0ac1c3",
+        "boundFilter": "4b61cb7f390a1c727030",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "FundingStream"
+          }
+        }
+      }
+    ]
+  },
+  "visibility": "HiddenInViewMode"
+}

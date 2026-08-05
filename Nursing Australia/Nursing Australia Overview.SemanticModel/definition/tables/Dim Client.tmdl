@@ -50,11 +50,29 @@ table 'Dim Client'
 
 		annotation SummarizationSetBy = Automatic
 
+	column BillableClientFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f5918e3e-9693-4238-a9e1-241099aad1d1
+		summarizeBy: none
+		sourceColumn: BillableClientFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientNetworkName
+		dataType: string
+		lineageTag: d9c4c51f-cec9-4bc9-81db-9538870634ad
+		summarizeBy: none
+		sourceColumn: ClientNetworkName
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Dim Client' = m
 		mode: import
+		queryGroup: Clients
 		source =
 				let
-				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)c.ClientId#(tab)AS [ClientId]#(lf)#(tab),c.Name#(tab)#(tab)AS [ClientName]#(lf)#(tab),l.Name#(tab)#(tab)AS [State]#(lf)#(tab),r.Name#(tab)#(tab)AS [Region]#(lf)#(tab),c.CEO#(tab)#(tab)AS [CEO]#(lf)#(tab),c.DON#(tab)#(tab)AS [DON]#(lf)FROM dbo.Client c#(lf)LEFT JOIN dbo.Location l on c.LocationId = l.LocationId#(lf)LEFT JOIN dbo.Region r on l.RegionID = r.RegionID"])
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)c.ClientId#(tab)AS [ClientId]#(lf)#(tab),c.Name#(tab)#(tab)AS [ClientName]#(lf)#(tab),cn.Name#(tab)AS [ClientNetworkName]#(lf)#(tab),l.Name#(tab)#(tab)AS [State]#(lf)#(tab),r.Name#(tab)#(tab)AS [Region]#(lf)#(tab),c.CEO#(tab)#(tab)AS [CEO]#(lf)#(tab),c.DON#(tab)#(tab)AS [DON]#(lf)#(tab),CAST(CASE #(lf)#(tab)#(tab)WHEN c.ClientId IN #(lf)#(tab)#(tab)(8171, 10394, 8154, 11443, 10343, 8155, 10393, 11446, 10344, 9366, 8213, 11447, 10392, 11445, 10342, 8156, 10391, 11442, 10341, 8153, 11444, 10340)#(lf)#(tab)#(tab)THEN 0#(lf)#(tab)#(tab)ELSE 1#(lf)#(tab)END AS BIT) AS [BillableClientFlag]#(lf)FROM dbo.Client c#(lf)LEFT JOIN dbo.Location l on c.LocationId = l.LocationId#(lf)LEFT JOIN dbo.Region r on l.RegionID = r.RegionID#(lf)LEFT JOIN dbo.ClientNetwork cn on cn.ClientNetworkID = c.ClientNetworkID"])
 				in
 				    Source
 

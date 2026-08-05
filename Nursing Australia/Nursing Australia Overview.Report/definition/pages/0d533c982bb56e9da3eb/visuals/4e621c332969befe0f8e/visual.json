@@ -1,0 +1,143 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "4e621c332969befe0f8e",
+  "position": {
+    "x": 1073.7157107231919,
+    "y": 130.17456359102243,
+    "z": 3000,
+    "height": 567.38154613466327,
+    "width": 182.24438902743142,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "CountActiveWorkers"
+                }
+              },
+              "queryRef": "Fact Workforce.Count Active Workers",
+              "nativeQueryRef": "Currently active workers",
+              "displayName": "Currently active workers"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "CountActiveWorkers0Hours"
+                }
+              },
+              "queryRef": "Fact Workforce.CountActiveWorkers0Hours",
+              "nativeQueryRef": "Active workers with no shifts (all time)",
+              "displayName": "Active workers with no shifts (all time)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "CountNewStarters"
+                }
+              },
+              "queryRef": "Fact Workforce.CountNewStarters2",
+              "nativeQueryRef": "New starters",
+              "displayName": "New starters"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "Count Exited Workers"
+                }
+              },
+              "queryRef": "Fact Workforce.Count Exited Workers",
+              "nativeQueryRef": "Exits this month",
+              "displayName": "Exits this month"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Workforce"
+                  }
+                },
+                "Property": "CountActiveWorkers"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "layout": [
+        {
+          "properties": {
+            "orientation": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "rowCount": {
+              "expr": {
+                "Literal": {
+                  "Value": "5L"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "2c841e960a29a0e7d6e0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce Start Date"
+              }
+            },
+            "Property": "SlicerMMM YYYY"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      }
+    ]
+  }
+}

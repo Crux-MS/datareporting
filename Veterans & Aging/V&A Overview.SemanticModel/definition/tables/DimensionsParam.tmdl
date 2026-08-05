@@ -1,0 +1,81 @@
+table DimensionsParam
+	lineageTag: f28bd313-ef4e-4d34-8418-ad9b8fb3ec4f
+
+	measure VisitsParamTitle =
+			SWITCH(
+			    SELECTEDVALUE(
+			        DimensionsParam[Parameter Fields]),
+			        "'DimAustralianStates'[Acronym]", "Visits by patient residential state",
+			        "'DimFundingStreams'[FundingStream]", "Visits by funding stream")
+		lineageTag: 59b98253-4e69-4251-b3ad-086ea0416acb
+
+	measure ActiveClientsParamTitle =
+			SWITCH(
+			    SELECTEDVALUE(
+			        DimensionsParam[Parameter Fields]),
+			        "'DimAustralianStates'[Acronym]", "Active clients by patient residential state",
+			        "'DimFundingStreams'[FundingStream]", "Active clients by funding stream")
+		lineageTag: 87431f47-8aa4-40f9-9359-4c2a63b41e31
+
+	measure BilledClientsParamTitle =
+			SWITCH(
+			    SELECTEDVALUE(
+			        DimensionsParam[Parameter Fields]),
+			        "'DimAustralianStates'[Acronym]", "Billed clients by patient residential state",
+			        "'DimFundingStreams'[FundingStream]", "Billed clients by funding stream")
+		lineageTag: 83816a77-cb6d-413a-b869-7157ebb6e3c8
+
+	measure DisplayActivePatients =
+			SWITCH(
+			    SELECTEDVALUE(
+			        DimensionsParam[Parameter Fields]),
+			        "'DimAustralianStates'[Acronym]", SUM(FactStateActivePatients[CountPatients]),
+			        "'DimFundingStreams'[FundingStream]", SUM(FactServicesActivePatients[ActivePatients]))
+		formatString: #,0
+		lineageTag: 567703bd-43e2-4b1b-bbbe-3f950a3e48d5
+
+	column Parameter
+		lineageTag: 698622d6-57d3-449c-a77a-27089f743864
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: b0568646-abb8-47fb-a45a-6a5893a69a6b
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: c3b00b51-e64c-497e-92bf-b4f43e5bace6
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimensionsParam = calculated
+		mode: import
+		source =
+				{
+				    ("State", NAMEOF(DimAustralianStates[Acronym]), 0),
+				    ("Funder", NAMEOF(DimFundingStreams[FundingStream]), 1)
+				}
+
+	annotation PBI_Id = e3b69cff22854ba18abab92cde24832d
+

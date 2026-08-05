@@ -1,0 +1,33 @@
+table 'Dim Workforce Work Areas'
+	lineageTag: 0e1c903c-298f-42a7-b0a0-b14a180fae3f
+
+	column MemberId
+		dataType: int64
+		formatString: 0
+		lineageTag: c3038977-3057-460f-a266-d94d3ed0ba83
+		summarizeBy: none
+		sourceColumn: MemberId
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkArea
+		dataType: string
+		lineageTag: 5f30fff6-cebb-447f-9882-9c8c9d8c99f7
+		summarizeBy: none
+		sourceColumn: WorkArea
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Workforce Work Areas' = m
+		mode: import
+		queryGroup: Workers
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT mwa.[MemberId]#(lf)      ,wa.Name     AS [WorkArea]#(lf)  FROM [HRLink].[dbo].[MemberWorkArea] mwa#(lf)  LEFT JOIN dbo.WorkArea wa on wa.WorkAreaId = mwa.WorkAreaId#(lf)  where mwa.MemberId <> 1#(lf)  order by mwa.MemberId"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

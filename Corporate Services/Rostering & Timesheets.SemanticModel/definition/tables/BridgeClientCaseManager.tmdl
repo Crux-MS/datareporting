@@ -1,0 +1,60 @@
+table BridgeClientCaseManager
+	isHidden
+	lineageTag: 1dba54cc-3bf9-43c6-afcf-b36d75bafbdb
+
+	column ClientId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 62c5e2ce-d545-48ff-992d-aa7ee3045176
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CaseManagerEmail
+		dataType: string
+		isHidden
+		lineageTag: d58629f0-c9c5-4de0-a102-dbc58af59a9e
+		summarizeBy: none
+		sourceColumn: CaseManagerEmail
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CaseManagerType
+		dataType: string
+		isHidden
+		lineageTag: b94fc29e-2a60-4d6b-a96d-6ce7ed2fbadc
+		summarizeBy: none
+		sourceColumn: CaseManagerType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BridgeClientCaseManager = m
+		mode: import
+		queryGroup: Clients
+		source =
+				let
+				    Source = #"Clients - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ClientId", "CaseManager", "CaseManager2"}),
+				    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Removed Other Columns", {"ClientId"}, "CaseManagerType", "CaseManagerEmail"),
+				    #"Replaced Value" = Table.ReplaceValue(#"Unpivoted Other Columns","CaseManager","Primary",Replacer.ReplaceText,{"CaseManagerType"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","Primary2","Secondary",Replacer.ReplaceText,{"CaseManagerType"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value1",{{"CaseManagerEmail", type text}, {"ClientId", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = Name
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,53 @@
+table WorkforceDimensions
+	lineageTag: 50443162-0833-4319-b96c-0dbb95e4bda4
+	sourceLineageTag: 4e51731c-af94-47b9-8edc-fe71406b6925
+
+	measure DisplayParameterTitle = EXTERNALMEASURE("DisplayParameterTitle", STRING, "DirectQuery to AS - Nursing Australia Overview")
+		lineageTag: 8d0ab6da-296c-49c7-b747-ee8db2f0876c
+		sourceLineageTag: 1ebfc417-2cbf-4e46-950d-899706033e65
+		dataCategory: Uncategorized
+
+	column 'Workforce Dimensions'
+		dataType: string
+		lineageTag: 72ee5598-55bc-44d8-8cb5-31e652d21e3d
+		sourceLineageTag: 0eb7f4ac-49d8-4e48-9836-74800b13638e
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Workforce Dimensions
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'Parameter Fields'
+		dataType: string
+		isHidden
+		lineageTag: f0cdc807-5cef-4757-8df4-329780337f94
+		sourceLineageTag: 78d2b9f6-6cf4-4776-b04c-cf9d44788287
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Parameter Fields
+		sortByColumn: 'Parameter Order'
+
+		annotation SummarizationSetBy = User
+
+	column 'Parameter Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d6f971da-b990-4d31-a359-bb07bde02305
+		sourceLineageTag: 4e80e055-55e6-4f2a-b730-7e933099f9e5
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: Parameter Order
+
+		annotation SummarizationSetBy = User
+
+	partition WorkforceDimensions = entity
+		mode: directQuery
+		source
+			entityName: WorkforceDimensions
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

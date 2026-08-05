@@ -1,0 +1,84 @@
+table 'Dim Workforce Remoteness'
+	lineageTag: 824f4abb-7701-471d-8a6b-aa518a7278b8
+	sourceLineageTag: 15490017-b25f-403a-9ad6-c7e07ae30be5
+
+	column PostCode
+		dataType: string
+		isHidden
+		isNullable: false
+		lineageTag: ae592aa9-6f90-41b5-af30-3532ac6a9f3c
+		sourceLineageTag: 65774b05-5861-492e-a0a6-e4905adb23e0
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: PostCode
+
+		annotation SummarizationSetBy = User
+
+	column AvgMMM2023
+		dataType: int64
+		formatString: 0
+		lineageTag: 66058e77-3016-4518-9b9c-44822632c665
+		sourceLineageTag: cf6afdf9-4fb5-4c26-a155-591695d6ff39
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AvgMMM2023
+
+		annotation SummarizationSetBy = User
+
+	column AvgRemotenessDescription
+		dataType: string
+		lineageTag: 5d463724-2209-40c8-9d49-d45eec19856e
+		sourceLineageTag: d24a542b-d4e8-4420-b366-6c72af7d9231
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AvgRemotenessDescription
+		sortByColumn: AvgMMM2023
+
+		annotation SummarizationSetBy = User
+
+	column AvgLatPrecise
+		dataType: double
+		lineageTag: 5971d557-46e0-4860-a81d-d7ae5ba680eb
+		sourceLineageTag: 538998ad-7134-4e05-92d0-0d80254c2db5
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AvgLatPrecise
+
+		annotation SummarizationSetBy = User
+
+	column AvgLongPrecise
+		dataType: double
+		lineageTag: eb0366c0-41b2-4c1f-9406-756a7b5b6301
+		sourceLineageTag: 3a50cbc7-fac7-4785-94a2-c8364c207aa1
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AvgLongPrecise
+
+		annotation SummarizationSetBy = User
+
+	column 'SA3 Name'
+		dataType: string
+		lineageTag: fc995d4e-000e-4427-bdcc-94e503e0cc46
+		sourceLineageTag: d1fe2854-97ad-450a-8b13-330161926df0
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: SA3 Name
+
+		annotation SummarizationSetBy = User
+
+	column 'SA4 Name'
+		dataType: string
+		lineageTag: 228e7f87-c251-446a-8aba-1abc229a95d6
+		sourceLineageTag: 769ecdf5-d26e-4862-b213-d29d3f992a2c
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: SA4 Name
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Workforce Remoteness' = entity
+		mode: directQuery
+		source
+			entityName: Dim Workforce Remoteness
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

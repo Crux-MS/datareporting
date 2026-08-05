@@ -1,0 +1,49 @@
+table Areas
+	lineageTag: 0cff91f3-ffdb-43d5-8843-7c6636a4b3f2
+
+	column Areas
+		lineageTag: 3e60b9f2-d9f3-4663-bc7a-1e7f826946eb
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Areas Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Areas Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Areas Fields'
+		isHidden
+		lineageTag: 4db04a07-b57a-4853-9fd5-4cddb92a1462
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Areas Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Areas Order'
+		isHidden
+		formatString: 0
+		lineageTag: 5d1625a3-9fbb-4f0d-9cf3-979e14692b90
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Areas = calculated
+		mode: import
+		source =
+				{
+				    ("Client areas", NAMEOF('Dim Clients'[Area]), 0),
+				    ("Location areas", NAMEOF('DimRosterLocationsVisualCare'[Area]), 1)//,
+				    // ("Worker areas", NAMEOF('DimWorkforceVisualCare'[Area]), 2)
+				}
+
+	annotation PBI_Id = bba94818208c4989b7d24742ddea54e1
+

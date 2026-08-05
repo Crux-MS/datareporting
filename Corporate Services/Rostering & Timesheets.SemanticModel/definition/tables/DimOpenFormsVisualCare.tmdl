@@ -1,0 +1,47 @@
+table DimOpenFormsVisualCare
+	lineageTag: f4c6880c-fb1d-4fb0-aa56-b5a4fc7930d2
+
+	column RosterItemId
+		dataType: int64
+		formatString: 0
+		lineageTag: aa54c374-f78a-4915-8b50-9fe5c20b90fe
+		summarizeBy: none
+		sourceColumn: RosterItemId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 32b49392-b6c0-4434-b0ed-c3ac7a0a6955
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column CountForms
+		dataType: int64
+		formatString: 0
+		lineageTag: 3b94e950-f9fc-4ff3-8618-bbe5c16f13df
+		summarizeBy: none
+		sourceColumn: CountForms
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimOpenFormsVisualCare = m
+		mode: import
+		queryGroup: Forms
+		source =
+				let
+				    Source = Table.Combine({#"Form17- Source", #"Form23- Source", #"Form38- Source", #"Form43- Source"}),
+				    #"Expanded FormData" = Table.ExpandRecordColumn(Source, "FormData", {"new", "flag", "notes", "created_at", "updated_at"}, {"new", "flag", "notes", "created_at", "updated_at"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Expanded FormData","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"created_at", "updated_at"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"new", Int64.Type}, {"flag", Int64.Type}, {"notes", type text}, {"created_at", type datetime}, {"updated_at", type datetime}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each ([RosterItemId] <> -1) and ([Status] = "OPEN")),
+				    #"Grouped Rows" = Table.Group(#"Filtered Rows", {"RosterItemId", "Status"}, {{"CountForms", each Table.RowCount(_), Int64.Type}})
+				in
+				    #"Grouped Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

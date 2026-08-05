@@ -1,0 +1,54 @@
+table 'Dim Related Calculations'
+	isHidden
+	lineageTag: 34a53253-d607-44aa-a0a8-a486b743283e
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d67b0f1d-8c8c-4091-831f-4b9aded884e6
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RelatedCalculationId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0e43c240-8fc0-4543-b9d9-5b85482bc2e3
+		summarizeBy: count
+		sourceColumn: RelatedCalculationId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RelatedCalculation
+		dataType: string
+		isHidden
+		lineageTag: 73cace7d-5d95-4848-9de8-0b0acfcbe07f
+		summarizeBy: none
+		sourceColumn: RelatedCalculation
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Related Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID","Related Calculations"}),
+				    #"Expanded Related Calculations" = Table.ExpandTableColumn(#"Removed Other Columns", "Related Calculations", {"lookupId", "lookupValue"}, {"RelatedCalculationId", "RelatedCalculation"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Related Calculations", each ([RelatedCalculationId] <> null)),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"RelatedCalculationId", Int64.Type}, {"RelatedCalculation", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+

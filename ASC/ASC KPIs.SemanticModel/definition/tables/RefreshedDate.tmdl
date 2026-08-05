@@ -1,0 +1,38 @@
+table RefreshedDate
+	lineageTag: aaef7c59-3c67-44a9-a89d-5bc2ef9d9fd4
+
+	measure RefreshedDateTime = MAX(RefreshedDate[Refreshed])
+		formatString: d/mm/yyyy h:nn:ss AM/PM
+		lineageTag: 3c4ff40e-a15b-4332-8e3b-517a7b244900
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Refreshed
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 44325567-56dc-4504-9984-a263d801ff9d
+		summarizeBy: none
+		sourceColumn: Refreshed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RefreshedDate = m
+		mode: import
+		queryGroup: Utilities
+		source =
+				let
+				    Source = DateTimeZone.LocalNow(),
+				    AEST = DateTimeZone.SwitchZone(Source, 10),
+				    #"Converted to Table" = #table(1, {{AEST}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "Refreshed"}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Refreshed", type datetimezone}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

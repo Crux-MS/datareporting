@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "c38934ad6b2242de9c3c",
   "position": {
-    "x": 55,
-    "y": 25.288753799392097,
+    "x": 54.763092269326684,
+    "y": 25.137157107231918,
     "z": 1000,
-    "height": 80,
-    "width": 300,
+    "height": 110.42394014962593,
+    "width": 331.2718204488778,
     "tabOrder": 1000
   },
   "visual": {
@@ -30,11 +30,22 @@
               {
                 "textRuns": [
                   {
-                    "value": "Summary",
+                    "value": "Current Year ",
                     "textStyle": {
                       "fontWeight": "bold",
                       "fontFamily": "Arial",
                       "fontSize": "18pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Current Financial Year",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#333333"
                     }
                   }
                 ]
@@ -61,6 +72,25 @@
                     },
                     "textStyle": {
                       "fontFamily": "Arial",
+                      "fontSize": "9pt",
+                      "color": "#333333"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": {
+                      "propertyIdentifier": {
+                        "objectName": "values",
+                        "propertyName": "expr"
+                      },
+                      "selector": {
+                        "id": "IncludedDateRange"
+                      }
+                    },
+                    "textStyle": {
                       "fontSize": "9pt",
                       "color": "#333333"
                     }
@@ -141,6 +171,62 @@
           },
           "selector": {
             "id": "Last Refreshed DateTime"
+          }
+        },
+        {
+          "properties": {
+            "expr": {
+              "expr": {
+                "Min": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "Subquery": {
+                          "Query": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "f",
+                                "Entity": "Fact Shift",
+                                "Type": 0
+                              }
+                            ],
+                            "Select": [
+                              {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "f"
+                                    }
+                                  },
+                                  "Property": "IncludedShiftDateRangePage"
+                                },
+                                "Name": "Fact Shift.IncludedShiftDateRange"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "Property": "Fact Shift.IncludedShiftDateRange"
+                    }
+                  },
+                  "IncludeAllTypes": 1
+                },
+                "Annotations": {
+                  "NaturalLanguage": {
+                    "version": 1,
+                    "kind": "NaturalLanguage",
+                    "annotation": {
+                      "name": "IncludedDateRange",
+                      "utterance": "included shift date range"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "IncludedDateRange"
           }
         }
       ]

@@ -1,0 +1,723 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "77928f17192e57d7d80c",
+  "position": {
+    "x": 53.957845433255272,
+    "y": 469.63309914129587,
+    "z": 3000,
+    "height": 197.84543325526934,
+    "width": 1201.0616705698674,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "visit_id"
+                }
+              },
+              "queryRef": "Sum(FactVisit.visit_id)",
+              "nativeQueryRef": "Saturn Visit ID",
+              "displayName": "Saturn Visit ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "status"
+                }
+              },
+              "queryRef": "FactVisit.status",
+              "nativeQueryRef": "Saturn Visit Status",
+              "displayName": "Saturn Visit Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatientServicePlans"
+                    }
+                  },
+                  "Property": "DVA file number"
+                }
+              },
+              "queryRef": "DimPatientServicePlans.DVA file number",
+              "nativeQueryRef": "Client File Number",
+              "displayName": "Client File Number"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "SurnameOnly"
+                }
+              },
+              "queryRef": "DimPatient.SurnameOnly",
+              "nativeQueryRef": "Client Family Name",
+              "displayName": "Client Family Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "FirstNameOnly"
+                }
+              },
+              "queryRef": "DimPatient.FirstNameOnly",
+              "nativeQueryRef": "Client Given Name1",
+              "displayName": "Client Given Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimServiceTypes"
+                    }
+                  },
+                  "Property": "ServiceType"
+                }
+              },
+              "queryRef": "DimServiceTypes.ServiceType",
+              "nativeQueryRef": "Service Type",
+              "displayName": "Service Type"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatientServicePlans"
+                    }
+                  },
+                  "Property": "ServicePeriodCode"
+                }
+              },
+              "queryRef": "CountNonNull(DimPatientServicePlans.ServicePeriodCode)",
+              "nativeQueryRef": "Service Period Code",
+              "displayName": "Service Period Code"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactVisit"
+                        }
+                      },
+                      "Property": "VisitDurationHours"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactVisit.VisitDurationHours)",
+              "nativeQueryRef": "Hours",
+              "displayName": "Hours"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimVisitDate"
+                    }
+                  },
+                  "Property": "YYYYMMDD"
+                }
+              },
+              "queryRef": "DimVisitDate.YYYYMMDD",
+              "nativeQueryRef": "Delivery Date",
+              "displayName": "Delivery Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "VHCReference"
+                }
+              },
+              "queryRef": "FactVisit.VHCReference",
+              "nativeQueryRef": "Provider Reference",
+              "displayName": "Provider Reference"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimVisitDate"
+                  }
+                },
+                "Property": "YYYYMMDD"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "101.239512372138D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "CountNonNull(DimPatientServicePlans.ServicePeriodCode)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "70.76595084777591D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimVisitDate.YYYYMMDD"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "137.012487692878D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.FirstNameOnly"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "59.026555131703454D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimServiceTypes.ServiceType"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Visit Reference Data'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "5f620dcd333cabe7e95c",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "surname"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "1cb18816b40944641258",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "firstname"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "f31d08f398be48b2b0a0",
+        "ordinal": 2,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatientServicePlans"
+              }
+            },
+            "Property": "Reason code"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "562d3cb06110924e9778",
+        "ordinal": 3,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatientServicePlans"
+              }
+            },
+            "Property": "Reason description text"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "b5f5f0b70870c74ad070",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatientServicePlans"
+              }
+            },
+            "Property": "ServicePeriodCode"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3d73b1ef5b0365a3bd74",
+        "ordinal": 5,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactVisit"
+                  }
+                },
+                "Property": "visit_duration"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "28c9fe079645c580aece",
+        "ordinal": 6,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimVisitDate"
+              }
+            },
+            "Property": "YYYYMMDD"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e7618aa64be1751a8b23",
+        "ordinal": 7,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatientServicePlans"
+              }
+            },
+            "Property": "Service Plan Number"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "990eefa752eb672c8908",
+        "ordinal": 8,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "VHCReference"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "8230da218408066b9a21",
+        "ordinal": 9,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimVisitDate"
+              }
+            },
+            "Property": "Slicer MMM YYYY"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "ccd1da4f4c3776976000",
+        "ordinal": 10,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "ServiceTypeServiceCodeCol"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "676d33a77351dd007804",
+        "ordinal": 11,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "ServiceTypeServiceCodeCol"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "835978999543bb6c57b7",
+        "ordinal": 12,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "status"
+          }
+        },
+        "type": "Categorical",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "868e1f5fc30dda015922",
+        "ordinal": 13,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatientServicePlans"
+              }
+            },
+            "Property": "DVA file number"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "59227959c0361d491c3e",
+        "ordinal": 14,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatientServicePlans"
+              }
+            },
+            "Property": "Service Type"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "3c1516f8df24c7bf6f80",
+        "ordinal": 15,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "visit_id"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e4729c0f93f7a64d061c",
+        "ordinal": 16,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactPatient"
+              }
+            },
+            "Property": "dva_number"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "FactPatient",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "f"
+                              }
+                            },
+                            "Property": "dva_number"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "null"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true,
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "2642f1ee484891ddf1f1",
+        "ordinal": 17,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "Claimable"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "ed37ef91f7a599a18a0f",
+        "ordinal": 18,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactVisit"
+                  }
+                },
+                "Property": "VisitDurationHours"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6e74b23edd6849326169",
+        "ordinal": 19,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "FirstNameOnly"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "798f2ce08267ec1ed1eb",
+        "ordinal": 20,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimPatient"
+              }
+            },
+            "Property": "SurnameOnly"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ccf7c5538f654ed9a581",
+        "ordinal": 21,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "ServiceType"
+          }
+        },
+        "type": "Categorical"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

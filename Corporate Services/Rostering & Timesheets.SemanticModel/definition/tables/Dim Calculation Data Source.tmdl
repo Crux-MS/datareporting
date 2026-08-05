@@ -1,0 +1,50 @@
+table 'Dim Calculation Data Source'
+	isHidden
+	lineageTag: 3961dc13-9ae8-449e-9c9e-b1e62823ba24
+
+	measure 'Data Sources' = CONCATENATEX(VALUES('Dim Calculation Data Source'[Data Source]), 'Dim Calculation Data Source'[Data Source], ", ")
+		isHidden
+		lineageTag: 59ccdbb5-3d84-4f2e-93c1-6fc75a9b1ac9
+
+		changedProperty = IsHidden
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2ede328b-cc20-4db3-bc4c-ec0b19abdad4
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Source'
+		dataType: string
+		isHidden
+		lineageTag: 9251cd3e-1aba-4877-8b38-8d5886e5bdeb
+		summarizeBy: none
+		sourceColumn: Data Source
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculation Data Source' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Data Source"}),
+				    #"Expanded Data Source" = Table.ExpandListColumn(#"Removed Other Columns", "Data Source")
+				in
+				    #"Expanded Data Source"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

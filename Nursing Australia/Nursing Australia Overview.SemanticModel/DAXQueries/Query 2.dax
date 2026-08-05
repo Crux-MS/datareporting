@@ -1,0 +1,31 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		TREATAS(
+			{"'Fact Shift'[UTFShiftNoLongerRequiredHours]"},
+			'ShiftFillParameter'[Parameter Fields]
+		)
+
+	VAR __DS0FilterTable2 = 
+		FILTER(
+			KEEPFILTERS(VALUES('Dim Shift Start Date'[ShiftStartDate])),
+			'Dim Shift Start Date'[ShiftStartDate] >= DATE(2026, 2, 1)
+		)
+
+	VAR __DS0FilterTable3 = 
+		FILTER(
+			KEEPFILTERS(VALUES('Dim Shift Start Date'[Start of Month])),
+			AND(
+				'Dim Shift Start Date'[Start of Month] >= DATE(2023, 2, 27),
+				'Dim Shift Start Date'[Start of Month] < DATE(2026, 2, 28)
+			)
+		)
+
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		__DS0FilterTable2,
+		__DS0FilterTable3,
+		"UTFShiftNoLongerRequiredHours", IGNORE('Fact Shift'[UTFShiftNoLongerRequiredHours]),
+		"UTFShiftStillNeededHours", IGNORE('Fact Shift'[UTFShiftStillNeededHours]),
+		"FilledShiftHours", IGNORE('Fact Shift'[FilledShiftHours])
+	)

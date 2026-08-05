@@ -1,0 +1,124 @@
+table DimPatientSuburbGeocode
+	lineageTag: 15dd98d0-f1c7-402c-9dfb-893cc2160562
+
+	column id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: db3db916-ee88-404b-9b53-2fd6c85ace17
+		summarizeBy: none
+		sourceColumn: id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column postcode
+		dataType: string
+		lineageTag: b3174a3a-46a2-4505-868d-3b96b82466d5
+		summarizeBy: none
+		sourceColumn: postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column suburb
+		dataType: string
+		lineageTag: cad87727-bf72-4ec2-840f-d84e3156626b
+		summarizeBy: none
+		sourceColumn: suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		isHidden
+		lineageTag: 12e21f3c-f9c7-4b8f-b1ae-3eb3bd7f7039
+		summarizeBy: none
+		sourceColumn: state
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column comments
+		dataType: string
+		lineageTag: b85f92da-8c83-4ce8-bd05-d13f5d9893ed
+		summarizeBy: none
+		sourceColumn: comments
+
+		annotation SummarizationSetBy = Automatic
+
+	column deliveryoffice
+		dataType: string
+		lineageTag: e3fa0c20-e18f-479a-baa6-cc3a868490e0
+		summarizeBy: none
+		sourceColumn: deliveryoffice
+
+		annotation SummarizationSetBy = Automatic
+
+	column geocode_source
+		dataType: string
+		lineageTag: 227f7849-9ffa-4dc1-83a6-50e2d048ff9a
+		summarizeBy: none
+		sourceColumn: geocode_source
+
+		annotation SummarizationSetBy = Automatic
+
+	column lat
+		dataType: double
+		lineageTag: b7f23c85-b163-4b3d-97c1-0e5446b14daf
+		dataCategory: Latitude
+		summarizeBy: sum
+		sourceColumn: lat
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column longt
+		dataType: double
+		lineageTag: d2266f49-1ef3-4e0f-9b80-45ac6838f68c
+		dataCategory: Longitude
+		summarizeBy: sum
+		sourceColumn: longt
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column match_suburb
+		dataType: string
+		lineageTag: 4b9f2c29-040c-4098-bff5-de1aeba59838
+		summarizeBy: none
+		sourceColumn: match_suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	column create_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9ad24fb4-a18d-4970-9643-fa84f926717e
+		summarizeBy: none
+		sourceColumn: create_timestamp
+
+		variation Variation
+			isDefault
+			relationship: 70415b8c-f832-4aaf-a2b6-c68cae8a74a3
+			defaultHierarchy: LocalDateTable_b0db37ec-7c0c-4b5e-b4fd-caced173ca97.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimPatientSuburbGeocode = m
+		mode: import
+		queryGroup: Patients
+		source =
+				let
+				    Source = #"Source - WA",
+				    suburb_geocode_Table = Source{[Name="suburb_geocode",Kind="Table"]}[Data]
+				in
+				    suburb_geocode_Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

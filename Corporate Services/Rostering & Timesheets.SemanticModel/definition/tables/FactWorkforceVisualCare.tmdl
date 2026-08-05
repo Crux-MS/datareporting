@@ -1,0 +1,261 @@
+table FactWorkforceVisualCare
+	lineageTag: 0966fdca-da41-4241-ac4e-6961a606d10f
+
+	measure CountWorkers = CALCULATE(COUNT(FactWorkforceVisualCare[CarerId]), CROSSFILTER(DimWorkforceVisualCare[CarerId], FactRostersVisualCare[CarerId], Both))
+		formatString: 0
+		lineageTag: ab5f6896-449d-4b5c-8aea-fa25930a2cea
+
+	measure CountCurrentWorkers = CALCULATE([CountWorkers], DimWorkforceVisualCare[Current] = TRUE(), CROSSFILTER(FactRostersVisualCare[CarerId], DimWorkforceVisualCare[CarerId], Both))
+		formatString: 0
+		lineageTag: 942d9908-251d-4b09-aab2-9ae16c5736b3
+
+	measure DisplayCurrentCount = IF(ISINSCOPE(DimWorkforceVisualCare[FullName]), [CountCurrentWorkers], BLANK())
+		formatString: 0
+		lineageTag: 1d26af2c-a2bd-4e44-b4fb-e49cc5d54cbc
+
+	measure TotalBudgetHours =
+			VAR _countDays = COUNT(DimRosterDateOfService[Date])
+			VAR _logic = CALCULATE(_countDays * SUM(FactWorkforceVisualCare[BudgetHours]), CROSSFILTER(DimWorkforceVisualCare[CarerId], FactRostersVisualCare[CarerId], Both))
+			RETURN _logic
+		formatString: #,0.00
+		lineageTag: e1e7f7f1-1f96-497d-8492-6d8167e0b4c9
+
+	measure WorkerHoursPaid = [RosteredHours] + CALCULATE(SUM(DimWorkforceLeave[LeaveDurationHours]), CROSSFILTER(DimWorkforceVisualCare[CarerId], FactRostersVisualCare[CarerId], Both)) + 1
+		formatString: #,0.0
+		lineageTag: 3a5d69e1-a229-4874-8729-62f2e089c111
+
+	measure MissingBudgetHours =
+			VAR _missingHours = [TotalBudgetHours] - FactWorkforceVisualCare[WorkerHoursPaid]
+			VAR _logic = IF(_missingHours < 0, 0, _missingHours)
+			Return _missingHours
+		formatString: #,0.0
+		lineageTag: 188ddb32-3ce8-467c-9782-5a0331aee6c8
+
+	measure MissingBudgetHoursRate = DIVIDE([MissingBudgetHours], [TotalBudgetHours])
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		lineageTag: f66fcb65-d49b-42dc-bdd4-91b2c66a017c
+
+	measure SelectedworkerArea = SELECTEDVALUE(DimWorkforceVisualCare[Area])
+		lineageTag: b6ae6d14-dd8d-42f7-b298-d9914f36717a
+
+	column CarerId
+		dataType: int64
+		formatString: 0
+		lineageTag: 8781a1ec-cc64-44f0-912a-6ce41ee91b2a
+		summarizeBy: none
+		sourceColumn: CarerId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Longitude
+		dataType: double
+		lineageTag: 75d0ba30-8135-4cf4-bd8f-35cdaafaff79
+		summarizeBy: sum
+		sourceColumn: Longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Latitude
+		dataType: double
+		lineageTag: 83b86edd-c94c-4820-afc4-e2b8f1bd7923
+		summarizeBy: sum
+		sourceColumn: Latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DateOfBirth
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: e7cb7e63-9c4f-4836-b01c-b803d3991d33
+		summarizeBy: none
+		sourceColumn: DateOfBirth
+
+		variation Variation
+			isDefault
+			relationship: e5db1ade-07c0-4da2-ab81-ad86d4c3affe
+			defaultHierarchy: LocalDateTable_76251f0a-d0d6-4207-85d2-ed2bdfc702b2.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column StartDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 82cfea28-debc-4e43-bac4-c12fd5a97bdf
+		summarizeBy: none
+		sourceColumn: StartDate
+
+		variation Variation
+			isDefault
+			relationship: 359af35a-889a-4c75-8d1c-437cc23b7b8b
+			defaultHierarchy: LocalDateTable_59a2bd0a-7882-4f26-8e9f-cfd1f7b026aa.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EndDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 65efa414-08c1-499e-90bd-3791425a61a0
+		summarizeBy: none
+		sourceColumn: EndDate
+
+		variation Variation
+			isDefault
+			relationship: 80b758a4-ce31-460f-aca2-984fe8908eae
+			defaultHierarchy: LocalDateTable_d93ccb29-d787-493b-94f3-bfb96736f237.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column AccountingCode
+		dataType: string
+		lineageTag: 773fcd68-2c91-4533-bec3-c05dbc1bcf8d
+		summarizeBy: none
+		sourceColumn: AccountingCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkerNumber
+		dataType: string
+		lineageTag: f8925113-bab7-45e4-8611-61ae9b587ea7
+		summarizeBy: none
+		sourceColumn: WorkerNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column BudgetHours
+		dataType: double
+		lineageTag: 3225651e-5db6-431f-ba64-59349820c537
+		summarizeBy: sum
+		sourceColumn: BudgetHours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Rating
+		dataType: double
+		lineageTag: 4caaa45e-cdc7-468d-9d99-95af0b28a0ff
+		summarizeBy: sum
+		sourceColumn: Rating
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Role
+		dataType: string
+		lineageTag: f2797dde-a167-42fb-a216-5e3e61a8c0e7
+		summarizeBy: none
+		sourceColumn: Role
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayPoint
+		dataType: int64
+		formatString: 0
+		lineageTag: 212b18c9-a32a-4f2c-a8f4-b0ad3fffca20
+		summarizeBy: sum
+		sourceColumn: PayPoint
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayrateLevel
+		dataType: int64
+		formatString: 0
+		lineageTag: 0ec24d03-97b0-48ed-9ad4-e49875490a43
+		summarizeBy: sum
+		sourceColumn: PayrateLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsolationStartDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 19dc7db9-b4e9-4e05-a3ab-8a4ed34ba6d5
+		summarizeBy: none
+		sourceColumn: IsolationStartDate
+
+		variation Variation
+			isDefault
+			relationship: 8ae8e9f6-80d4-4ce4-8f66-8b8f8e6bf753
+			defaultHierarchy: LocalDateTable_0a5b79a6-484b-4685-b7fb-ac93608615ae.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column IsolationEndDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 042000df-0920-4e1b-a4d3-47b47fbed40d
+		summarizeBy: none
+		sourceColumn: IsolationEndDate
+
+		variation Variation
+			isDefault
+			relationship: 6c521f48-dac9-4d9b-bc81-9222214029aa
+			defaultHierarchy: LocalDateTable_2d4fa54b-107d-4767-a0f7-1aea9672de60.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CreatedTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 90c8fb4d-c05b-4491-8a29-d247b3242751
+		summarizeBy: none
+		sourceColumn: CreatedTime
+
+		variation Variation
+			isDefault
+			relationship: 0fabe806-5e2e-4fe5-b2a3-28d3d549c10e
+			defaultHierarchy: LocalDateTable_e7c4c858-a826-498c-97e0-2233f7c4a631.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastModifiedTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 59bf4056-3595-41aa-822d-f85141c3ac0d
+		summarizeBy: none
+		sourceColumn: LastModifiedTime
+
+		variation Variation
+			isDefault
+			relationship: f968a8cf-426f-4083-8056-381ed6cdee13
+			defaultHierarchy: LocalDateTable_82376a15-33a2-459a-9697-bc4b735d019b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: f1625014-ec00-4e59-9ce1-39a5360cf4a8
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactWorkforceVisualCare = m
+		mode: import
+		queryGroup: Workers
+		source =
+				let
+				    Source = #"Current workers - source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"CarerId", "Longitude", "Latitude", "DateOfBirth", "StartDate", "EndDate", "AccountingCode", "WorkerNumber", "BudgetHours", "Rating", "Role", "PayPoint", "PayrateLevel", "IsolationStartDate", "IsolationEndDate", "Status", "CreatedTime", "LastModifiedTime"})
+				in
+				    #"Removed Other Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

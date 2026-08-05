@@ -1,0 +1,191 @@
+table DimRosterDateOfService
+	lineageTag: b86de36f-86e5-44aa-a58b-898449afd071
+	dataCategory: Time
+
+	measure IncludedRosteredDatesofService = "Included dates: " & FORMAT(MIN(DimRosterDateOfService[Date]), "DD/MM/YYYY") & " - " & FORMAT(MAX(DimRosterDateOfService[Date]), "DD/MM/YYYY")
+		lineageTag: 3911db6d-1ea3-4d69-888c-b32a9f93a920
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: e67334de-aab2-4b8e-b822-f433d6f9f35f
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 0e914028-e2c8-4087-863c-462c84aaa0ae
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 8524c53a-8f86-4ebd-99ee-d896acc58559
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c3540f93-772d-48e6-b8fe-b6f76432964f
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: a8b80702-fa22-4e02-be97-3f29552526b1
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'd MMM'
+		dataType: string
+		lineageTag: 487cd259-28d8-4d63-b27b-68466fda2c1d
+		summarizeBy: none
+		sourceColumn: d MMM
+		sortByColumn: MMdd
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 794d6848-5bb0-4dc6-96d0-064ce4dfc523
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 7ec18103-54f2-4430-b2ce-e5b0a2a313fd
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: dabfd4f5-d664-4a2d-8161-c192dde1493e
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 20a468bb-70d0-4016-9243-2b0c17bb6554
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 6863993b-dca6-4496-997c-304887702649
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8826b1d7-b5b9-4a81-98ca-b6671e747a5a
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 5b3f5add-30c1-44bc-b790-9b0de8d535b0
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: 3b943a28-aa80-43a4-8a17-8d87951240fd
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column MMdd
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 63ae80a7-98b2-4172-94a3-e6754722f36c
+		summarizeBy: sum
+		sourceColumn: MMdd
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PastPresentFutureFlag
+		dataType: string
+		lineageTag: e8fae128-18b6-48f9-aa71-a7f1e97b4d59
+		summarizeBy: none
+		sourceColumn: PastPresentFutureFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Week'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: b9c77780-ae65-429b-8543-21f9ad0c07bf
+		summarizeBy: none
+		sourceColumn: Start of Week
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition DimRosterDateOfService = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Added Conditional Column" = Table.AddColumn(Source, "Custom", each if [RollingDateDifference] = 0 then "Today" else if [RollingDateDifference] < 0 then "Past" else if [RollingDateDifference] > 0 then "Planned" else null),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Conditional Column",{{"Custom", "PastPresentFutureFlag"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

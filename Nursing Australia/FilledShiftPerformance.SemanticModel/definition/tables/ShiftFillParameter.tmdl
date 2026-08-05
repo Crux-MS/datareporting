@@ -1,0 +1,54 @@
+table ShiftFillParameter
+	lineageTag: 84464b23-5ef0-419c-8a3e-d49e2f0d0c25
+	sourceLineageTag: b789383c-1dbc-4981-98d1-db5f5d483a9b
+
+	measure ShiftFillParameterTopNFlag = EXTERNALMEASURE("ShiftFillParameterTopNFlag", DOUBLE, "DirectQuery to AS - Nursing Australia Overview")
+		formatString: #,0.00
+		lineageTag: d089582f-a295-4721-be78-20b61300e811
+		sourceLineageTag: bf41f6a6-9ded-4bd6-9eed-3eb22a21582c
+		dataCategory: Uncategorized
+
+	column Parameter
+		dataType: string
+		lineageTag: 703f7685-b5aa-4a15-ac8d-6076ebadf21a
+		sourceLineageTag: 9f887187-09e2-46ec-bdc4-aa348010b454
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Parameter
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'Parameter Fields'
+		dataType: string
+		isHidden
+		lineageTag: f003a711-cd4e-4fdf-9fc2-7790ae00e430
+		sourceLineageTag: 69644651-1d95-423f-b652-fa7aab91085b
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Parameter Fields
+		sortByColumn: 'Parameter Order'
+
+		annotation SummarizationSetBy = User
+
+	column 'Parameter Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b4cfe764-d29a-4303-aa1c-61c129b3da25
+		sourceLineageTag: c38d7092-78fe-461e-9844-a5c8575921f0
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: Parameter Order
+
+		annotation SummarizationSetBy = User
+
+	partition ShiftFillParameter = entity
+		mode: directQuery
+		source
+			entityName: ShiftFillParameter
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

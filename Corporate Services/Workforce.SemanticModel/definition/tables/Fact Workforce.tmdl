@@ -10,13 +10,11 @@ table 'Fact Workforce'
 		lineageTag: ff7e3f75-ea8c-47f6-9229-8c36e9dcaad4
 
 	measure 'Count Currently Employed' = ```
-			VAR _ExtractDate = SELECTEDVALUE('Dim Extract Date'[MMM YYYY])
 			VAR _currentDate = MAX('Dim Employment Start Date'[Employment Start Date])
 			VAR _firstShiftVC = SELECTEDVALUE('Fact Workforce'[FirstShiftDate]) 
 			VAR _nonFrontlineCount = CALCULATE(
 			    [Count People], 
 			    OR('Fact Workforce'[Termination date] >= _currentDate, 'Fact Workforce'[Termination date] = BLANK()),
-			    'Fact Workforce'[NeverStart Flag] = FALSE(),
 			    FILTER(
 			        ALL('Dim Employment Start Date'[Employment Start Date]), 
 			        'Dim Employment Start Date'[Employment Start Date] <= _currentDate),
@@ -358,6 +356,12 @@ table 'Fact Workforce'
 		displayFolder: Exits
 		lineageTag: 878f8be5-f6cc-4596-8541-e06b2c0b6e29
 
+	measure 'NeverStart note' =
+			"Never Starts and Probation Unsuccessful will always trend upwards for the final few months of any dataset. This is because a new starter is:
+			 - counted as a Never Start until they do their first shift (if Frontline), and
+			 - included in the Probation Unsuccessful count until their probation period ends."
+		lineageTag: c393517d-38a5-426a-b8c4-6f8cf0a0065c
+
 	column 'Extract Date'
 		dataType: dateTime
 		isHidden
@@ -475,7 +479,7 @@ table 'Fact Workforce'
 			    CROSSFILTER('Dim Job History'[MemberExtractId], 'Fact Workforce'[MemberExtractId], Both)
 			)
 			VAR _sourceEntity = SELECTEDVALUE('Fact Workforce'[Source Entity])
-			VAR _ehFirstShiftDate = CALCULATE(SELECTEDVALUE('Fact First Shift Date'[EarliestDateOfService]), 'Dim Workforce'[Source Entity] <> "agy", 
+			VAR _vcFirstShiftDate = CALCULATE(SELECTEDVALUE('Fact First Shift Date'[EarliestDateOfService]), 'Dim Workforce'[Source Entity] <> "agy", 
 			    CROSSFILTER('Dim Workforce'[MemberExtractId], 'Fact First Shift Date'[MemberExtractId], Both)) 
 			    // CROSSFILTER('Dim First Shift Date'[First Shift Date], 'Fact First Shift Date'[FirstShiftDate], Both))
 			VAR _employmentStartDate = CALCULATE(MAX('Dim Employment Start Date'[Employment Start Date]), 'Fact Workforce'[MemberExtractId] = _memberId,  CROSSFILTER('Dim Employment Start Date'[Employment Start Date], 'Fact Workforce'[Employment start date], Both))
@@ -486,7 +490,7 @@ table 'Fact Workforce'
 			        IF(
 			            _employmentStartDate >= DATE(2023, 09, 01),
 			            IF(
-			                _ehFirstShiftDate = BLANK(), 
+			                _vcFirstShiftDate = BLANK(), 
 			                TRUE(), //Employee started after 1/9/2023 (earliest clean shift data) & has no first shift date recorded
 			                FALSE() //Employee started after 1/9/2023 and has a first shift date recorded - therefore started
 			            ),

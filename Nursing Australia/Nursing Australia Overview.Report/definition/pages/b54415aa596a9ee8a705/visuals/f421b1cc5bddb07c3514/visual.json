@@ -1,0 +1,382 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "f421b1cc5bddb07c3514",
+  "position": {
+    "x": 629.50819672131149,
+    "y": 122.90398126463701,
+    "z": 8001,
+    "height": 597.53317720530833,
+    "width": 583.54410616705707,
+    "tabOrder": 10004
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Start Date"
+                    }
+                  },
+                  "Property": "MMM YYYY"
+                }
+              },
+              "queryRef": "Dim Workforce Start Date.MMM YYYY",
+              "nativeQueryRef": "MMM YYYY"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce"
+                    }
+                  },
+                  "Property": "FullName"
+                }
+              },
+              "queryRef": "Dim Workforce.FullName",
+              "nativeQueryRef": "FullName"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "EmploymentStart"
+                }
+              },
+              "queryRef": "Fact Workforce.EmploymentStart",
+              "nativeQueryRef": "EmploymentStart"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Fact Workforce"
+                        }
+                      },
+                      "Property": "MinShiftHours"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Fact Workforce.MinShiftHours)",
+              "nativeQueryRef": "MinShiftHours",
+              "displayName": "MinShiftHours"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "ShiftDurationHoursWorked"
+                }
+              },
+              "queryRef": "Fact Shift.ShiftDurationHoursWorked",
+              "nativeQueryRef": "ShiftDurationHoursWorked"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "NewStarterFilledShiftHours"
+                }
+              },
+              "queryRef": "Fact Workforce.NewStarterFilledShiftHours",
+              "nativeQueryRef": "NewStarterFilledShiftHours"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "FilledShiftHours"
+                }
+              },
+              "queryRef": "Fact Shift.FilledShiftHours",
+              "nativeQueryRef": "FilledShiftHours"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "NewStarterShiftConfirmedMemberHours"
+                }
+              },
+              "queryRef": "Fact Workforce.NewStarterShiftConfirmedMemberHours",
+              "nativeQueryRef": "NewStarterShiftConfirmedMemberHours"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "NewStarterUnbillableFilledShiftHours"
+                }
+              },
+              "queryRef": "Fact Workforce.NewStarterUnbillableFilledShiftHours",
+              "nativeQueryRef": "NewStarterUnbillableFilledShiftHours"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Workforce"
+                  }
+                },
+                "Property": "EmploymentStart"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "82.07965231825396D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Workforce.NewStarterFilledShiftHours"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "68.0359291175646D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.FilledShiftHours"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "93.07024562306248D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.ShiftDurationHoursWorked"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "102.12882068440314D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Workforce.NewStarterShiftConfirmedMemberHours"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "85.12726837230014D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Workforce.NewStarterUnbillableFilledShiftHours"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ae06b98dacd7055cd538",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce Start Date"
+              }
+            },
+            "Property": "MMM YYYY"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "de826081bdbda75cda1a",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce"
+              }
+            },
+            "Property": "FullName"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "9a05b8150699b5417c05",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "FilledShiftHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "27beb07e30089498b59c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "NewStarterFilledShiftHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7b7ce034ab08326da4b3",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "ShiftDurationHoursWorked"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "254550d63cbdc4e084a0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "NewStarterUnbillableFilledShiftHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "601abfb8e1dc8a078514",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "NewStarterShiftConfirmedMemberHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "769c4f53e3262581209d",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Workforce"
+                  }
+                },
+                "Property": "MinShiftHours"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "713e224b4b94c37793b8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "EmploymentStart"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

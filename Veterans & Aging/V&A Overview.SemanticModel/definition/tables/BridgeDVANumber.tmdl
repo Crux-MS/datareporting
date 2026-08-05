@@ -1,0 +1,29 @@
+table BridgeDVANumber
+	lineageTag: d4e4ff77-61e5-424a-8cc5-27a2c10e6f4f
+
+	column dva_number
+		dataType: string
+		lineageTag: d504e008-472e-4070-8d09-b30231a7d97d
+		summarizeBy: none
+		sourceColumn: dva_number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BridgeDVANumber = m
+		mode: import
+		queryGroup: Patients\BridgeDVA
+		source =
+				let
+				    Source = Table.Combine({#"BridgeDVANumberWA - Source", #"BridgeDVANumberNSW - Source", #"BridgeDVANumberVIC - Source", #"BridgeDVANumberSA - Source", #"BridgeDVANumberQLD - Source"}),
+				    #"Removed Duplicates" = Table.Distinct(Source)
+				in
+				    #"Removed Duplicates"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

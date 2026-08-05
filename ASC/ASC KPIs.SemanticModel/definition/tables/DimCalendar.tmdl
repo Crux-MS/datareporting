@@ -1,0 +1,264 @@
+table DimCalendar
+	lineageTag: c68cc82f-229a-41f2-9e49-cea300435646
+	dataCategory: Time
+
+	measure CountWeekDays = CALCULATE(COUNT(DimCalendar[WorkDate]), DimCalendar[DayName] <> "Saturday", DimCalendar[DayName] <> "Sunday")
+		formatString: 0
+		lineageTag: fae19b06-8d9a-4223-9a09-e484eb17ebd2
+
+	measure CountWorkDays = [CountWeekDays] - [CountPublicHolidays]
+		formatString: 0
+		lineageTag: d3bf7da9-44c7-43b8-8909-f6a9d72b776d
+
+	measure CountPublicHolidays =
+			VAR _workerId = SELECTEDVALUE(DimASCEmployees[id])
+			VAR _workerState = CALCULATE(SELECTEDVALUE(DimASCEmployees[State]), DimASCEmployees[id] = _workerId)
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _logic = CALCULATE(DISTINCTCOUNT(DimASCEmployeePublicHolidays[date]), DimASCEmployeePublicHolidays[State] = _workerState, DimASCEmployeePublicHolidays[date] = _currentDate)
+			RETURN _logic
+		formatString: 0
+		lineageTag: b8724f6e-6a26-496a-bea7-75e243c0d158
+
+	measure FTE = [CountWorkDays] * 8
+		formatString: 0
+		lineageTag: 16f16649-66bb-4de9-8512-f0db2e3f3a65
+
+	measure MaxFTEs = [FTE] * CALCULATE(COUNT(FactASCEmployees[id]), FactWorkerDailyStatus[Hours] >0, CROSSFILTER(BridgeEmployeeNames[fullName], DimASCEmployees[FullNameKey], Both))
+		formatString: 0
+		lineageTag: a342e105-316c-41e0-8092-09d3a4f6037a
+
+	measure SelectedDates = FORMAT(MIN(DimCalendar[WorkDate]), "d/m/yyyy") & " - " & FORMAT(MAX(DimCalendar[WorkDate]), "d/m/yyyy")
+		lineageTag: af977a5e-1f7b-43a6-8c82-a93acb288a23
+
+	column WorkDate
+		dataType: dateTime
+		isKey
+		formatString: d/m/yyyy
+		lineageTag: 69bfdbe7-9bf6-4391-98d2-511fbecd35d4
+		summarizeBy: none
+		sourceColumn: WorkDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: c9a6b7a5-f02b-4dab-a2aa-9518166dbc3e
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 01d1c7fd-8aef-46a1-8445-a6dcea3090cd
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 272a22cf-7725-41b9-9a76-e9fe39daba32
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 673cf4dc-c94a-40b6-9f3c-1ace51b00587
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: string
+		isHidden
+		lineageTag: 563d2d77-9c33-4048-9e7a-85dccb9709b0
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 9253ce1d-0465-4ad3-a8b5-ce9cb6df4beb
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 137d40da-eb38-4441-876f-a8441907acff
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: ba01359a-3d68-41ae-a3cc-6222eff308c6
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5de0ffe4-d404-4bbe-859a-66f499369d4e
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 8a2c4c5b-a183-41a5-80bb-90f72a42e579
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 2e019804-43cc-47de-985f-83a1cd8fcf70
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column WeekOfMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: a7d4bf8c-1b55-484c-a1a9-e2376466b7b8
+		summarizeBy: sum
+		sourceColumn: WeekOfMonth
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: f39e041a-8760-4098-b003-901a90fbe58d
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: abd03f17-441b-47ad-8dff-92c79b2cef80
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column FortnightOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 6f3de4fa-7947-4da6-927c-c570135d8cee
+		summarizeBy: sum
+		sourceColumn: FortnightOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYFF
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: dfdd6631-1e5c-4ec6-a10f-bf53df918ecc
+		summarizeBy: sum
+		sourceColumn: YYYYFF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'FF (DD MMM YYYY)'
+		dataType: string
+		lineageTag: 1ddf49a7-5247-4c65-8fa0-8bd48d9eaa42
+		summarizeBy: none
+		sourceColumn: FF (DD MMM YYYY)
+		sortByColumn: YYYYFF
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column ContinuousFortnights
+		dataType: int64
+		formatString: 0
+		lineageTag: 0e94118b-2c28-4c85-a855-9088fdea029f
+		summarizeBy: sum
+		sourceColumn: ContinuousFortnights
+
+		annotation SummarizationSetBy = Automatic
+
+	column PublicHolidayFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: b8bd6c00-8a37-42b6-9cbf-a9a16b3b32df
+		summarizeBy: none
+		sourceColumn: PublicHolidayFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Month'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 116c54e3-e6fd-45fb-9ee4-00f5c7a9f606
+		summarizeBy: none
+		sourceColumn: Start of Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Slicer StartOfWeek'
+		dataType: string
+		lineageTag: 3fb453f4-36be-457a-8014-dcadad6023d4
+		summarizeBy: none
+		sourceColumn: Slicer StartOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCalendar = m
+		mode: import
+		source =
+				let
+				    Source = #"Short Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "WorkDate"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

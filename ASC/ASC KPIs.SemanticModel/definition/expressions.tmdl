@@ -1,0 +1,768 @@
+expression 'Data Dictionary - Source' =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [Implementation="2.0", ViewMode="All"]),
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866" = Source{[Id="4a4da78a-6855-44b7-bef3-4064d5ddb866"]}[Items]
+		in
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866"
+	lineageTag: 462cf545-2f07-4c54-a8c9-9cb4583c6f35
+	queryGroup: 'Utilities\Data Dictionary'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'KeyPay API Authorisation String' = "Basic REPLACE_WITH_KEYPAY_TOKEN_LOCALLY" meta [IsParameterQuery=true, List={"Basic REPLACE_WITH_KEYPAY_TOKEN_LOCALLY"}, DefaultValue="Basic REPLACE_WITH_KEYPAY_TOKEN_LOCALLY", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 026c8938-c7dc-412a-b14f-3e40c0085ec5
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression ASCKeyPayEmployees-Source =
+		let
+		    Source = List.Numbers(0,1000/100,100),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "API Index"}}),
+		    Custom1 = Table.AddColumn(#"Renamed Columns", "Custom", each Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/employee",[Query=[#"$top"="100",#"$skip"=Number.ToText([API Index])],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))),
+		    #"Removed Other Columns" = Table.SelectColumns(Custom1,{"Custom"}),
+		    #"Expanded Custom" = Table.ExpandListColumn(#"Removed Other Columns", "Custom"),
+		    #"Filtered Rows" = Table.SelectRows(#"Expanded Custom", each ([Custom] <> null)),
+		    #"Expanded Custom1" = Table.ExpandRecordColumn(#"Filtered Rows", "Custom", {"id", "externalId", "firstName", "surname", "jobTitle", "residentialPostCode", "residentialCountry", "startDate", "endDate", "paySchedule", "primaryPayCategory", "primaryLocation", "hoursPerDay", "hoursPerWeek"}, {"id", "externalId", "firstName", "surname", "jobTitle", "residentialPostCode", "residentialCountry", "startDate", "endDate", "paySchedule", "primaryPayCategory", "primaryLocation", "hoursPerDay", "hoursPerWeek"}),
+		    #"Split Column by Delimiter" = Table.SplitColumn(#"Expanded Custom1", "primaryLocation", Splitter.SplitTextByDelimiter("/", QuoteStyle.Csv), {"Division", "State", "Region", "Area"}),
+		    #"Trimmed Text" = Table.TransformColumns(#"Split Column by Delimiter",{{"Division", Text.Trim, type text}, {"State", Text.Trim, type text}, {"Region", Text.Trim, type text}, {"Area", Text.Trim, type text}}),
+		    #"Parsed Date" = Table.TransformColumns(#"Trimmed Text",{{"startDate", each Date.From(DateTimeZone.From(_)), type date}, {"endDate", each Date.From(DateTimeZone.From(_)), type date}}),
+		    #"Merged Columns" = Table.CombineColumns(#"Parsed Date",{"firstName", "surname"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"fullName"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Merged Columns",{{"id", Int64.Type}, {"externalId", Int64.Type}, {"jobTitle", type text}, {"residentialPostCode", type text}, {"residentialCountry", type text}, {"paySchedule", type text}, {"primaryPayCategory", type text}, {"hoursPerDay", type number}, {"hoursPerWeek", type number}})
+		in
+		    #"Changed Type"
+	lineageTag: a399834e-5887-4a39-9033-2dbdb57320e3
+	queryGroup: 'KeyPay API'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'L13M Date' =
+		let
+		    Source = Date.ToText(Date.AddMonths(Date.StartOfMonth(Date.From(DateTime.LocalNow())),-13),[Format="YYYY-MM-DD"])
+		in
+		    Source
+	lineageTag: 8cdd417d-dab4-466d-a9a6-2b8505f6284d
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'Today Date' =
+		let
+		    Source = Date.ToText(Date.From(DateTime.LocalNow()),[Format="YYYY-MM-DD"])
+		in
+		    Source
+	lineageTag: c4b6a7ea-31d2-4418-bddb-09652ca26c65
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'EH Payroll Leave Function' = ```
+		let
+		    Source = (startdate as date) =>
+		    let
+		        fromDate = Date.ToText(startdate, "yyyy-MM-dd"),
+		        toDate = Date.ToText(startdate, "yyyy-MM-dd"),// ,+#duration(0,23,59,99), "yyyy-MM-dd"),
+		        apiUrl = "https://api.yourpayroll.com.au/api/v2/business/325716/leaverequest",
+		        headers = [#"Authorization"=#"KeyPay API Authorisation String"],
+		        apiQuery = [
+		            filter.fromDate=fromDate, 
+		            filter.toDate=toDate, 
+		            filter.status="Approved", filter.restrictOverlappingLeave="True"],
+		        source = Json.Document(Web.Contents(apiUrl, [Query=apiQuery, Headers=headers]))
+		    in
+		        source
+		in
+		    Source
+		```
+	lineageTag: 1c73f451-216b-4d9a-b376-a4b151303dcc
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression 'EH Employee Working Schedule Function' =
+		let
+		    Source = (employeeid as number) =>
+		    let
+		        Source = Json.Document(
+		            Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/employee",
+		            [RelativePath=Text.Combine({"/",Number.ToText(employeeid),"/standardhours"}),
+		            Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))
+		    in
+		        Source
+		in
+		    Source
+	lineageTag: f7ebe52d-847a-49ae-ae94-7684c0a28204
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression 'SharePointFiles - Source' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData")
+		in
+		    Source
+	lineageTag: f8df3000-3f05-45e5-a7b4-0b93d17e5d3c
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'CareViewCaseNotesStatic - Source' =
+		let
+		    Source = #"SharePointFiles - Source",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/CoSCaseNoteReports-Static/"),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (4)", each #"Transform File (4)"([Content])),
+		    #"Renamed Columns1" = Table.RenameColumns(#"Invoke Custom Function1", {"Name", "Source.Name"}),
+		    #"Removed Other Columns1" = Table.SelectColumns(#"Renamed Columns1", {"Transform File (4)"}),
+		    #"Expanded Transform File" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (4)", Table.ColumnNames(#"Transform File (4)"(#"Sample File (4)"))),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Transform File",{{"Created By", type text}, {"Client", type text}, {"Service Contract Reference Number", type text}, {"Created Date", type date}, {"Delivered Date", type date}, {"Case Note Status", type text}, {"Delivery Status", type text}, {"Header Reference", type text}, {"DS Number", type text}, {"Contact Type", type text}, {"Hours", type duration}, {"KMs", Int64.Type}, {"Delivery Amount", type number}, {"Subject", type text}, {"Line Item Code", type text}, {"Service Region", type text}, {"Unit Rate", type number}}),
+		    #"Multiplied Column" = Table.TransformColumns(#"Changed Type", {{"Hours", each _ * 24, type number}}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Multiplied Column",{{"Hours", type number}})
+		in
+		    #"Changed Type1"
+	lineageTag: 1c341bb1-03ce-4479-b443-a86d9908c201
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Short Calendar - Source' = ```
+		let
+		    Source = List.Dates(#date(2013, 1, 1), 8000, #duration(1, 0, 0, 0)),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Column1", type date}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "Date"}}),
+		    #"Inserted Year" = Table.AddColumn(#"Renamed Columns", "Year", each Date.Year([Date]), Int64.Type),
+		    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "MonthName", each Date.MonthName([Date]), type text),
+		    #"Inserted MMM YYYY" = Table.AddColumn(#"Inserted Month Name", "MMM YYYY", each Text.Combine({Date.ToText([Date], "MMM"), " ", Date.ToText([Date], "yyyy")}), type text),
+		    #"Inserted Month Number" = Table.AddColumn(#"Inserted MMM YYYY", "MonthNumber", each Date.Month([Date]), Int64.Type),
+		    #"Inserted Start of Month" = Table.AddColumn(#"Inserted Month Number", "Start of Month", each Date.StartOfMonth([Date]), type date),
+		    #"Inserted YYYYMM" = Table.AddColumn(#"Inserted Start of Month", "YYYYMM", each if [MonthNumber] <=9 then Text.From([Year]) & "0" & Text.From([MonthNumber]) else Text.From([Year]) & Text.From([MonthNumber])),
+		    #"Inserted Day Number" = Table.AddColumn(#"Inserted YYYYMM", "DayNumber", each Date.Day([Date]), Int64.Type),
+		    #"Inserted Day Name" = Table.AddColumn(#"Inserted Day Number", "DayName", each Date.DayOfWeekName([Date]), type text),
+		    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "DayOfWeek", each Date.DayOfWeek([Date]), Int64.Type),
+		    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Day of Week", "StartOfWeek", each Date.StartOfWeek([Date]), type date),
+		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted Start of Week", "StartOfYear", each Date.StartOfYear([Date]), type date),
+		    #"Inserted Week of Year" = Table.AddColumn(#"Inserted Start of Year", "WeekOfYear", each Date.WeekOfYear([Date]), Int64.Type),
+		    #"Added Week of Month" = Table.AddColumn(#"Inserted Week of Year", "WeekOfMonth", each if [DayNumber] > 28 then 5 else if [DayNumber] > 21 then 4 else if [DayNumber] > 14 then 3 else if [DayNumber] > 7 then 2 else if [DayNumber] >= 1 then 1 else null),
+		    #"Added Rolling Date Difference" = Table.AddColumn(#"Added Week of Month", "RollingDateDifference", each Duration.Days([Date] - Date.From(DateTime.LocalNow()))),
+		    #"Added Slicer MMM YYYY" = Table.AddColumn(#"Added Rolling Date Difference", "Slicer MMM YYYY", each let
+		    currentMonthYear = List.First(
+		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[MMM YYYY]
+		    )
+		in
+		    if [MMM YYYY] = currentMonthYear then "Current Month" else [MMM YYYY]),
+		    #"Added Slicer Start of Week" = Table.AddColumn(#"Added Slicer MMM YYYY", "Slicer StartOfWeek", each let
+		    currentMonthYear = List.First(
+		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[StartOfWeek]
+		    )
+		in
+		    if [StartOfWeek] = currentMonthYear then "Current Week" else [StartOfWeek]),
+		    #"Added FortnightOfYear" = Table.AddColumn(#"Added Slicer Start of Week", "FortnightOfYear", each Number.RoundUp(Date.DayOfYear([Date])/14)),
+		    #"Added YYYYFF" = Table.AddColumn(#"Added FortnightOfYear", "YYYYFF", each if [FortnightOfYear] <= 9 then Text.From([Year]) & "0" & Text.From([FortnightOfYear]) else Text.From([Year]) & Text.From([FortnightOfYear])),
+		    #"Added FF (DD MMM YYYY)" = Table.AddColumn(#"Added YYYYFF", "FF (DD MMM YYYY)", each 
+		let 
+		   DaysSinceStart = Duration.Days([Date] - [StartOfYear]),
+		   FortnightStartDate = Date.AddDays([StartOfYear], ([FortnightOfYear] - 1) * 14),
+		   AdjustedStartDate = if FortnightStartDate > [Date] then Date.AddDays(FortnightStartDate, -14) else FortnightStartDate,
+		   MonthAbbrev = Date.ToText(AdjustedStartDate, "dd MMM yyyy"),
+		   FFLabel = Text.From([FortnightOfYear]) & " (" & MonthAbbrev & ")"
+		in
+		  FFLabel),
+		    StartDate = List.Min(Source),
+		    #"Added ContinuousFortnight" = Table.AddColumn(#"Added FF (DD MMM YYYY)", "ContinuousFortnights", each Number.RoundDown(Duration.Days([Date] - StartDate)/14)+1),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Added ContinuousFortnight",{{"ContinuousFortnights", Int64.Type}, {"FF (DD MMM YYYY)", type text}, {"YYYYFF", Int64.Type}, {"FortnightOfYear", Int64.Type}, {"Slicer MMM YYYY", type text}, {"RollingDateDifference", Int64.Type}, {"WeekOfMonth", Int64.Type}}),
+		    #"Merged Queries" = Table.NestedJoin(#"Changed Type1", {"Date"}, DimASCEmployeePublicHolidays, {"date"}, "DimASCEmployeePublicHolidays", JoinKind.LeftOuter),
+		    Custom1 = Table.TransformColumns(#"Merged Queries", {"DimASCEmployeePublicHolidays", each Table.RowCount(_) > 0, type logical}),
+		    #"Renamed Columns1" = Table.RenameColumns(Custom1,{{"DimASCEmployeePublicHolidays", "PublicHolidayFlag"}})
+		in
+		    #"Renamed Columns1"
+		```
+	lineageTag: 01ac19d6-c2d1-4b90-b6f6-a354c0a30269
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter2 = #"Sample File (2)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (2)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: fff60b6e-ad8c-455e-b3fd-16530f4c3413
+	queryGroup: 'Utilities\Transform File from ClientProfileReport\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Transform Sample File (2)' =
+		let
+		    Source = Excel.Workbook(Parameter2, null, true),
+		    #"Client Profile Report_Sheet" = Source{[Item="Client Profile Report",Kind="Sheet"]}[Data],
+		    #"Filtered Rows" = Table.SelectRows(#"Client Profile Report_Sheet", each ([Column1] <> null)),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true]),
+		    #"Removed Columns" = Table.RemoveColumns(#"Promoted Headers",{"#"}),
+		    #"Filtered Rows1" = Table.SelectRows(#"Removed Columns", each ([Full Name] <> ". ."))
+		in
+		    #"Filtered Rows1"
+	lineageTag: 7374dbe0-6836-42c0-8b85-13e06735c5df
+	queryGroup: 'Utilities\Transform File from ClientProfileReport'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Sample File (2)' =
+		let
+		    Source = #"SharePointFiles - Source",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/ClientProfileReports/"),
+		    #"Sorted Rows" = Table.Sort(#"Filtered Rows",{{"Date created", Order.Descending}}),
+		    Navigation1 = #"Sorted Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: c719ad17-6af2-4272-b003-55e675966676
+	queryGroup: 'Utilities\Transform File from ClientProfileReport\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Transform File (2)' =
+		let
+		    Source = (Parameter2 as binary) => let
+		    Source = Excel.Workbook(Parameter2, null, true),
+		    #"Client Profile Report_Sheet" = Source{[Item="Client Profile Report",Kind="Sheet"]}[Data],
+		    #"Filtered Rows" = Table.SelectRows(#"Client Profile Report_Sheet", each ([Column1] <> null)),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true]),
+		    #"Removed Columns" = Table.RemoveColumns(#"Promoted Headers",{"#"}),
+		    #"Filtered Rows1" = Table.SelectRows(#"Removed Columns", each ([Full Name] <> ". ."))
+		in
+		    #"Filtered Rows1"
+		in
+		    Source
+	lineageTag: 44f28fba-299c-4edd-b848-ba796bf915b8
+	queryGroup: 'Utilities\Transform File from ClientProfileReport\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression CareViewClients-Source =
+		let
+		    Source = #"SharePointFiles - Source",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/ClientProfileReports/"),
+		    #"Sorted Rows" = Table.Sort(#"Filtered Rows",{{"Date created", Order.Descending}}),
+		    // #"Filtered Rows2" = Table.SelectRows(#"Filtered Rows", let latest = List.Max(#"Filtered Rows"[Date created]) in each [Date created] = latest),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Sorted Rows", "Transform File (2)", each #"Transform File (2)"([Content])),
+		    #"Removed Other Columns1" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File (2)", "Date created"}),
+		    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (2)", Table.ColumnNames(#"Transform File (2)"(#"Sample File (2)"))),
+		    #"Trimmed Text" = Table.TransformColumns(#"Expanded Table Column1",{{"PostCode", Text.Trim, type text}}),
+		    #"Added ClientFullNameKey" = Table.AddColumn(#"Trimmed Text", "ClientFullNameKey",each Text.Replace([Full Name], " ", ""), type text),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added ClientFullNameKey",{{"Assigned To", type text}, {"Client Id", type text}, {"Full Name", type text}, {"NDIS Number", type text}, {"Plan End Date ", type date}, {"Plan Start Date", type date}, {"PostCode", type text}, {"Region", type text}, {"Status", type text}, {"State", type text}, {"Date created", type date}})
+		in
+		    #"Changed Type"
+	lineageTag: 8863bc25-1e2f-448c-9d96-7ebb60824fa3
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter3 = #"Sample File (3)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (3)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 869acd6f-b8bf-40c6-b027-b3e099e7aec8
+	queryGroup: 'Utilities\Transform File from Manual FTE Mapping\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (3)' =
+		let
+		    Source = Excel.Workbook(Parameter3, null, true),
+		    #"SC FTE Mapping!_xlnm _FilterDatabase_DefinedName" = Source{[Item="SC FTE Mapping!_xlnm._FilterDatabase",Kind="DefinedName"]}[Data]
+		in
+		    #"SC FTE Mapping!_xlnm _FilterDatabase_DefinedName"
+	lineageTag: 0bfd4594-a67b-43d3-833e-6119a0d79793
+	queryGroup: 'Utilities\Transform File from Manual FTE Mapping'
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Sample File (3)' =
+		let
+		    Source = SharePoint.Contents("https://cruxscss.sharepoint.com/IP/SC", [ApiVersion = 15]),
+		    #"Shared Documents" = Source{[Name="Shared Documents"]}[Content],
+		    _Performance = #"Shared Documents"{[Name="_Performance"]}[Content],
+		    Dashboard_data = _Performance{[Name="Dashboard_data"]}[Content],
+		    #"Filtered Rows" = Table.SelectRows(Dashboard_data, each [Name] = "SCSS ASC Manual FTE.xlsx"),
+		    Navigation1 = #"Filtered Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: aa8f78ac-7c03-4109-87fc-563ce5aff7ed
+	queryGroup: 'Utilities\Transform File from Manual FTE Mapping\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform File (3)' =
+		let
+		    Source = (Parameter3 as binary) => let
+		    Source = Excel.Workbook(Parameter3, null, true),
+		    #"SC FTE Mapping_Sheet" = Source{[Item="SC FTE Mapping",Kind="Sheet"]}[Data]
+		in
+		    #"SC FTE Mapping_Sheet"
+		in
+		    Source
+	lineageTag: b2426011-549e-41bb-a0b6-74e4f72f48e4
+	queryGroup: 'Utilities\Transform File from Manual FTE Mapping\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression ASCEmployeePublicHolidays-Source =
+		let
+		    Source = List.Union({{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2023"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2024"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2025"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2026"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2027"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))}
+		}),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandListColumn(#"Converted to Table", "Column1"),
+		    #"Expanded Column2" = Table.ExpandRecordColumn(#"Expanded Column1", "Column1", {"date", "states"}, {"date", "states"}),
+		    #"Extracted First Characters" = Table.TransformColumns(#"Expanded Column2", {{"date", each Text.Start(_, 10), type text}}),
+		    #"Added ACT" = Table.AddColumn(#"Extracted First Characters", "ACT", each List.Contains([states], "ACT")),
+		    #"Added NSW" = Table.AddColumn(#"Added ACT", "NSW", each List.Contains([states], "NSW")),
+		    #"Added NT" = Table.AddColumn(#"Added NSW", "NT", each List.Contains([states], "NT")),
+		    #"Added QLD" = Table.AddColumn(#"Added NT", "QLD", each List.Contains([states], "QLD")),
+		    #"Added SA" = Table.AddColumn(#"Added QLD", "SA", each List.Contains([states], "SA")),
+		    #"Added TAS" = Table.AddColumn(#"Added SA", "TAS", each List.Contains([states], "TAS")),
+		    #"Added VIC" = Table.AddColumn(#"Added TAS", "VIC", each List.Contains([states], "VIC")),
+		    #"Added WA" = Table.AddColumn(#"Added VIC", "WA", each List.Contains([states], "WA")),
+		    #"Removed Columns" = Table.RemoveColumns(#"Added WA",{"states"}),
+		    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Removed Columns", {"date"}, "State", "PublicHolidayFlag")
+		in
+		    #"Unpivoted Other Columns"
+	lineageTag: 58446db8-1a0c-418c-a5f4-dd43d06ed2c2
+	queryGroup: 'KeyPay API'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter1 = #"Sample File" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 3ca83a1e-f489-43c3-a1c2-ef01a772f1de
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesDynamic - Source\Helper Queries'
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Transform Sample File' =
+		let
+		    Source = Excel.Workbook(Parameter1, null, true),
+		    #"CoS Case Note Report_Sheet" = Source{[Item="CoS Case Note Report",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(#"CoS Case Note Report_Sheet", [PromoteAllScalars=true]),
+		    #"Filtered Rows" = Table.SelectRows(#"Promoted Headers", each ([Created By] <> null))
+		in
+		    #"Filtered Rows"
+	lineageTag: 74eff39f-eb0d-4d19-8a79-17f6779f67e9
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesDynamic - Source'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Sample File' =
+		let
+		    Source = #"SharePointFiles - Source",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/CoSCaseNoteReports-Dynamic/"),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    Navigation1 = #"Filtered Hidden Files1"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 484b8141-9c4a-47cd-9b1a-f7c4727165a1
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesDynamic - Source\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform File' =
+		let
+		    Source = (Parameter1 as binary) => let
+		    Source = Excel.Workbook(Parameter1, null, true),
+		    #"CoS Case Note Report_Sheet" = Source{[Item="CoS Case Note Report",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(#"CoS Case Note Report_Sheet", [PromoteAllScalars=true]),
+		    #"Filtered Rows" = Table.SelectRows(#"Promoted Headers", each ([Created By] <> null))
+		in
+		    #"Filtered Rows"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File""}" ]
+	lineageTag: eb35c5f3-5f2c-4e3d-b2e3-9acb42873446
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesDynamic - Source\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression ASCKeyPayLeave-Source = ```
+		let
+		    Source = List.Dates(Date.From(#"L13M Date"),Duration.Days(DateTime.Date(DateTime.LocalNow())-Date.From(#"L13M Date"))+200,#duration(1, 0, 0, 0)),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Inserted Day Name1" = Table.AddColumn(#"Converted to Table", "Day Name", each Date.DayOfWeekName([Column1]), type text),
+		    #"Filtered Rows" = Table.SelectRows(#"Inserted Day Name1", each ([Day Name] <> "Saturday" and [Day Name] <> "Sunday")),
+		    #"Renamed Columns" = Table.RenameColumns(#"Filtered Rows",{{"Column1", "leaveDate"}}),
+		    Custom1 = Table.AddColumn(#"Renamed Columns", "Custom", each #"EH Payroll Leave Function"([leaveDate])),
+		    #"Expanded Custom" = Table.ExpandListColumn(Custom1, "Custom"),
+		    #"Filtered Rows1" = Table.SelectRows(#"Expanded Custom", each ([Custom] <> null)),
+		    #"Expanded Custom1" = Table.ExpandRecordColumn(#"Filtered Rows1", "Custom", {"totalHours", "hoursApplied", "id", "employeeId", "leaveCategoryId", "employee", "leaveCategory", "fromDate", "toDate", "notes", "status", "attachmentId"}, {"totalHours", "hoursApplied", "id", "employeeId", "leaveCategoryId", "employee", "leaveCategory", "fromDate", "toDate", "notes", "status", "attachmentId"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Custom1",{{"fromDate", type datetime}, {"toDate", type datetime}, {"leaveDate", type date}}),
+		    #"Added CountWorkDays" = Table.AddColumn(#"Changed Type", "CountWorkDays", each List.Count(
+		    List.Select(
+		        List.Dates(
+		            Date.From([fromDate]), 
+		            Duration.TotalDays(
+		                [toDate]-[fromDate]
+		            ) + 1, 
+		            #duration(1,0,0,0)
+		        ), 
+		        each Date.DayOfWeek(_,1) < 5
+		    )
+		)),
+		    #"Inserted Multiplication" = Table.AddColumn(#"Added CountWorkDays", "DailyHours", each [totalHours] / [CountWorkDays], type number)
+		in
+		    #"Inserted Multiplication"
+		```
+	lineageTag: 277f1f35-f852-4508-9c42-4e0a5b69653b
+	queryGroup: 'KeyPay API'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression WorkerManualMappings-Source =
+		let
+		    Source = SharePoint.Contents("https://cruxscss.sharepoint.com/IP/SC", [ApiVersion = 15]),
+		    #"Shared Documents" = Source{[Name="Shared Documents"]}[Content],
+		    _Performance = #"Shared Documents"{[Name="_Performance"]}[Content],
+		    Dashboard_data = _Performance{[Name="Dashboard_data"]}[Content],
+		    #"SCSS ASC Manual FTE xlsx" = Dashboard_data{[Name="SCSS ASC Manual FTE.xlsx"]}[Content],
+		    #"Imported Excel Workbook" = Excel.Workbook(#"SCSS ASC Manual FTE xlsx")
+		in
+		    #"Imported Excel Workbook"
+	lineageTag: 06e5388c-6871-45d2-92bb-7bef93c04bf4
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactWorkerContractHours-Source =
+		let
+		    Source = #"WorkerManualMappings-Source",
+		    #"SC FTE Mapping_Sheet" = Source{[Item="SC FTE Mapping",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(#"SC FTE Mapping_Sheet", [PromoteAllScalars=true]),
+		    #"Filtered Rows" = Table.SelectRows(#"Promoted Headers", each ([Support Coordinator Careview Name] <> null)),
+		    #"Replaced Value" = Table.ReplaceValue(#"Filtered Rows"," ","",Replacer.ReplaceText,{"Support Coordinator Careview Name"}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Replaced Value",{{"Support Coordinator Careview Name", "FullNameKey"}}),
+		    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Renamed Columns", {"FullNameKey"}, "Date", "Hours"),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Unpivoted Other Columns", "SpreadsheetKey", each Text.Combine({[FullNameKey], Text.From([Date], "en-AU")}), type text)
+		in
+		    #"Inserted Merged Column"
+	lineageTag: 398c15d0-91b7-4130-a22f-30f46bccad2a
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactWorkerDailyJobTitle-Source =
+		let
+		    Source = #"WorkerManualMappings-Source",
+		    #"SC Job Title Mapping_Sheet" = Source{[Item="SC Job Title Mapping",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(#"SC Job Title Mapping_Sheet", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Support Coordinator Careview Name", type text}, {"1/01/2024", type text}, {"2/01/2024", type text}, {"3/01/2024", type text}, {"4/01/2024", type text}, {"5/01/2024", type text}, {"8/01/2024", type text}, {"9/01/2024", type text}, {"10/01/2024", type text}, {"11/01/2024", type text}, {"12/01/2024", type text}, {"15/01/2024", type text}, {"16/01/2024", type text}, {"17/01/2024", type text}, {"18/01/2024", type text}, {"19/01/2024", type text}, {"22/01/2024", type text}, {"23/01/2024", type text}, {"24/01/2024", type text}, {"25/01/2024", type text}, {"26/01/2024", type text}, {"29/01/2024", type text}, {"30/01/2024", type text}, {"31/01/2024", type text}, {"1/02/2024", type text}, {"2/02/2024", type text}, {"5/02/2024", type text}, {"6/02/2024", type text}, {"7/02/2024", type text}, {"8/02/2024", type text}, {"9/02/2024", type text}, {"12/02/2024", type text}, {"13/02/2024", type text}, {"14/02/2024", type text}, {"15/02/2024", type text}, {"16/02/2024", type text}, {"19/02/2024", type text}, {"20/02/2024", type text}, {"21/02/2024", type text}, {"22/02/2024", type text}, {"23/02/2024", type text}, {"26/02/2024", type text}, {"27/02/2024", type text}, {"28/02/2024", type text}, {"29/02/2024", type text}, {"1/03/2024", type text}, {"4/03/2024", type text}, {"5/03/2024", type text}, {"6/03/2024", type text}, {"7/03/2024", type text}, {"8/03/2024", type text}, {"11/03/2024", type text}, {"12/03/2024", type text}, {"13/03/2024", type text}, {"14/03/2024", type text}, {"15/03/2024", type text}, {"18/03/2024", type text}, {"19/03/2024", type text}, {"20/03/2024", type text}, {"21/03/2024", type text}, {"22/03/2024", type text}, {"25/03/2024", type text}, {"26/03/2024", type text}, {"27/03/2024", type text}, {"28/03/2024", type text}, {"29/03/2024", type text}, {"1/04/2024", type text}, {"2/04/2024", type text}, {"3/04/2024", type text}, {"4/04/2024", type text}, {"5/04/2024", type text}, {"8/04/2024", type text}, {"9/04/2024", type text}, {"10/04/2024", type text}, {"11/04/2024", type text}, {"12/04/2024", type text}, {"15/04/2024", type text}, {"16/04/2024", type text}, {"17/04/2024", type text}, {"18/04/2024", type text}, {"19/04/2024", type text}, {"22/04/2024", type text}, {"23/04/2024", type text}, {"24/04/2024", type text}, {"25/04/2024", type text}, {"26/04/2024", type text}, {"29/04/2024", type text}, {"30/04/2024", type text}, {"1/05/2024", type text}, {"2/05/2024", type text}, {"3/05/2024", type text}, {"6/05/2024", type text}, {"7/05/2024", type text}, {"8/05/2024", type text}, {"9/05/2024", type text}, {"10/05/2024", type text}, {"13/05/2024", type text}, {"14/05/2024", type text}, {"15/05/2024", type text}, {"16/05/2024", type text}, {"17/05/2024", type text}, {"20/05/2024", type text}, {"21/05/2024", type text}, {"22/05/2024", type text}, {"23/05/2024", type text}, {"24/05/2024", type text}, {"27/05/2024", type text}, {"28/05/2024", type text}, {"29/05/2024", type text}, {"30/05/2024", type text}, {"31/05/2024", type text}, {"3/06/2024", type text}, {"4/06/2024", type text}, {"5/06/2024", type text}, {"6/06/2024", type text}, {"7/06/2024", type text}, {"10/06/2024", type text}, {"11/06/2024", type text}, {"12/06/2024", type text}, {"13/06/2024", type text}, {"14/06/2024", type text}, {"17/06/2024", type text}, {"18/06/2024", type text}, {"19/06/2024", type text}, {"20/06/2024", type text}, {"21/06/2024", type text}, {"24/06/2024", type text}, {"25/06/2024", type text}, {"26/06/2024", type text}, {"27/06/2024", type text}, {"28/06/2024", type text}, {"1/07/2024", type text}, {"2/07/2024", type text}, {"3/07/2024", type text}, {"4/07/2024", type text}, {"5/07/2024", type text}, {"8/07/2024", type text}, {"9/07/2024", type text}, {"10/07/2024", type text}, {"11/07/2024", type text}, {"12/07/2024", type text}, {"15/07/2024", type text}, {"16/07/2024", type text}, {"17/07/2024", type text}, {"18/07/2024", type text}, {"19/07/2024", type text}, {"22/07/2024", type text}, {"23/07/2024", type text}, {"24/07/2024", type text}, {"25/07/2024", type text}, {"26/07/2024", type text}, {"29/07/2024", type text}, {"30/07/2024", type text}, {"31/07/2024", type text}, {"1/08/2024", type text}, {"2/08/2024", type text}, {"5/08/2024", type text}, {"6/08/2024", type text}, {"7/08/2024", type text}, {"8/08/2024", type text}, {"9/08/2024", type text}, {"12/08/2024", type text}, {"13/08/2024", type text}, {"14/08/2024", type text}, {"15/08/2024", type text}, {"16/08/2024", type text}, {"19/08/2024", type text}, {"20/08/2024", type text}, {"21/08/2024", type text}, {"22/08/2024", type text}, {"23/08/2024", type text}, {"26/08/2024", type text}, {"27/08/2024", type text}, {"28/08/2024", type text}, {"29/08/2024", type text}, {"30/08/2024", type text}, {"2/09/2024", type text}, {"3/09/2024", type text}, {"4/09/2024", type text}, {"5/09/2024", type text}, {"6/09/2024", type text}, {"9/09/2024", type text}, {"10/09/2024", type text}, {"11/09/2024", type text}, {"12/09/2024", type text}, {"13/09/2024", type text}, {"16/09/2024", type text}, {"17/09/2024", type text}, {"18/09/2024", type text}, {"19/09/2024", type text}, {"20/09/2024", type text}, {"23/09/2024", type text}, {"24/09/2024", type text}, {"25/09/2024", type text}, {"26/09/2024", type text}, {"27/09/2024", type text}, {"30/09/2024", type text}, {"1/10/2024", type text}, {"2/10/2024", type text}, {"3/10/2024", type text}, {"4/10/2024", type text}, {"7/10/2024", type text}, {"8/10/2024", type text}, {"9/10/2024", type text}, {"10/10/2024", type text}, {"11/10/2024", type text}, {"14/10/2024", type text}, {"15/10/2024", type text}, {"16/10/2024", type text}, {"17/10/2024", type text}, {"18/10/2024", type text}, {"21/10/2024", type text}, {"22/10/2024", type text}, {"23/10/2024", type text}, {"24/10/2024", type text}, {"25/10/2024", type text}, {"28/10/2024", type text}, {"29/10/2024", type text}, {"30/10/2024", type text}, {"31/10/2024", type text}, {"1/11/2024", type text}, {"4/11/2024", type text}, {"5/11/2024", type text}, {"6/11/2024", type text}, {"7/11/2024", type text}, {"8/11/2024", type text}, {"11/11/2024", type text}, {"12/11/2024", type text}, {"13/11/2024", type text}, {"14/11/2024", type text}, {"15/11/2024", type text}, {"18/11/2024", type text}, {"19/11/2024", type text}, {"20/11/2024", type text}, {"21/11/2024", type text}, {"22/11/2024", type text}, {"25/11/2024", type text}, {"26/11/2024", type text}, {"27/11/2024", type text}, {"28/11/2024", type text}, {"29/11/2024", type text}, {"2/12/2024", type text}, {"3/12/2024", type text}, {"4/12/2024", type text}, {"5/12/2024", type text}, {"6/12/2024", type text}, {"9/12/2024", type text}, {"10/12/2024", type text}, {"11/12/2024", type text}, {"12/12/2024", type text}, {"13/12/2024", type text}, {"16/12/2024", type text}, {"17/12/2024", type text}, {"18/12/2024", type text}, {"19/12/2024", type text}, {"20/12/2024", type text}, {"23/12/2024", type text}, {"24/12/2024", type text}, {"25/12/2024", type text}, {"26/12/2024", type text}, {"27/12/2024", type text}, {"30/12/2024", type text}, {"31/12/2024", type text}, {"1/01/2025", type text}, {"2/01/2025", type text}, {"3/01/2025", type text}, {"6/01/2025", type text}, {"7/01/2025", type text}, {"8/01/2025", type text}, {"9/01/2025", type text}, {"10/01/2025", type text}, {"13/01/2025", type text}, {"14/01/2025", type text}, {"15/01/2025", type text}, {"16/01/2025", type text}, {"17/01/2025", type text}, {"20/01/2025", type text}, {"21/01/2025", type text}, {"22/01/2025", type text}, {"23/01/2025", type text}, {"24/01/2025", type text}, {"27/01/2025", type text}, {"28/01/2025", type text}, {"29/01/2025", type text}, {"30/01/2025", type text}, {"31/01/2025", type text}, {"3/02/2025", type text}, {"4/02/2025", type text}, {"5/02/2025", type text}, {"6/02/2025", type text}, {"7/02/2025", type text}, {"10/02/2025", type text}, {"11/02/2025", type text}, {"12/02/2025", type text}, {"13/02/2025", type text}, {"14/02/2025", type text}, {"17/02/2025", type text}, {"18/02/2025", type text}, {"19/02/2025", type text}, {"20/02/2025", type text}, {"21/02/2025", type text}, {"24/02/2025", type text}, {"25/02/2025", type text}, {"26/02/2025", type text}, {"27/02/2025", type text}, {"28/02/2025", type text}, {"3/03/2025", type text}, {"4/03/2025", type text}, {"5/03/2025", type text}, {"6/03/2025", type text}, {"7/03/2025", type text}, {"10/03/2025", type text}, {"11/03/2025", type text}, {"12/03/2025", type text}, {"13/03/2025", type text}, {"14/03/2025", type text}, {"17/03/2025", type text}, {"18/03/2025", type text}, {"19/03/2025", type text}, {"20/03/2025", type text}, {"21/03/2025", type text}, {"24/03/2025", type text}, {"25/03/2025", type text}, {"26/03/2025", type text}, {"27/03/2025", type text}, {"28/03/2025", type text}, {"31/03/2025", type text}, {"1/04/2025", type text}, {"2/04/2025", type text}, {"3/04/2025", type text}, {"4/04/2025", type text}, {"7/04/2025", type text}, {"8/04/2025", type text}, {"9/04/2025", type text}, {"10/04/2025", type text}, {"11/04/2025", type text}, {"14/04/2025", type text}, {"15/04/2025", type text}, {"16/04/2025", type text}, {"17/04/2025", type text}, {"18/04/2025", type text}, {"21/04/2025", type text}, {"22/04/2025", type text}, {"23/04/2025", type text}, {"24/04/2025", type text}, {"25/04/2025", type text}, {"28/04/2025", type text}, {"29/04/2025", type text}, {"30/04/2025", type text}, {"1/05/2025", type text}, {"2/05/2025", type text}, {"5/05/2025", type text}, {"6/05/2025", type text}, {"7/05/2025", type text}, {"8/05/2025", type text}, {"9/05/2025", type text}, {"12/05/2025", type text}, {"13/05/2025", type text}, {"14/05/2025", type text}, {"15/05/2025", type text}, {"16/05/2025", type text}, {"19/05/2025", type text}, {"20/05/2025", type text}, {"21/05/2025", type text}, {"22/05/2025", type text}, {"23/05/2025", type text}, {"26/05/2025", type text}, {"27/05/2025", type text}, {"28/05/2025", type text}, {"29/05/2025", type text}, {"30/05/2025", type text}, {"2/06/2025", type text}, {"3/06/2025", type text}, {"4/06/2025", type text}, {"5/06/2025", type text}, {"6/06/2025", type text}, {"9/06/2025", type text}, {"10/06/2025", type text}, {"11/06/2025", type text}, {"12/06/2025", type text}, {"13/06/2025", type text}, {"16/06/2025", type text}, {"17/06/2025", type text}, {"18/06/2025", type text}, {"19/06/2025", type text}, {"20/06/2025", type text}, {"23/06/2025", type text}, {"24/06/2025", type text}, {"25/06/2025", type text}, {"26/06/2025", type text}, {"27/06/2025", type text}, {"30/06/2025", type text}, {"1/07/2025", type text}, {"2/07/2025", type text}, {"3/07/2025", type text}, {"4/07/2025", type text}, {"7/07/2025", type text}, {"8/07/2025", type text}, {"9/07/2025", type text}, {"10/07/2025", type text}, {"11/07/2025", type text}, {"14/07/2025", type text}, {"15/07/2025", type text}, {"16/07/2025", type text}, {"17/07/2025", type text}, {"18/07/2025", type text}, {"21/07/2025", type text}, {"22/07/2025", type text}, {"23/07/2025", type text}, {"24/07/2025", type text}, {"25/07/2025", type text}, {"28/07/2025", type text}, {"29/07/2025", type text}, {"30/07/2025", type text}, {"31/07/2025", type text}, {"1/08/2025", type text}, {"4/08/2025", type text}, {"5/08/2025", type text}, {"6/08/2025", type text}, {"7/08/2025", type text}, {"8/08/2025", type text}, {"11/08/2025", type text}, {"12/08/2025", type text}, {"13/08/2025", type text}, {"14/08/2025", type text}, {"15/08/2025", type text}, {"18/08/2025", type text}, {"19/08/2025", type text}, {"20/08/2025", type text}, {"21/08/2025", type text}, {"22/08/2025", type text}, {"25/08/2025", type text}, {"26/08/2025", type text}, {"27/08/2025", type text}, {"28/08/2025", type text}, {"29/08/2025", type text}, {"1/09/2025", type text}, {"2/09/2025", type text}, {"3/09/2025", type text}, {"4/09/2025", type text}, {"5/09/2025", type text}, {"8/09/2025", type text}, {"9/09/2025", type text}, {"10/09/2025", type text}, {"11/09/2025", type text}, {"12/09/2025", type text}, {"15/09/2025", type text}, {"16/09/2025", type text}, {"17/09/2025", type text}, {"18/09/2025", type text}, {"19/09/2025", type text}, {"22/09/2025", type text}, {"23/09/2025", type text}, {"24/09/2025", type text}, {"25/09/2025", type text}, {"26/09/2025", type text}, {"29/09/2025", type text}, {"30/09/2025", type text}, {"1/10/2025", type text}, {"2/10/2025", type text}, {"3/10/2025", type text}, {"6/10/2025", type text}, {"7/10/2025", type text}, {"8/10/2025", type text}, {"9/10/2025", type text}, {"10/10/2025", type text}, {"13/10/2025", type text}, {"14/10/2025", type text}, {"15/10/2025", type text}, {"16/10/2025", type text}, {"17/10/2025", type text}, {"20/10/2025", type text}, {"21/10/2025", type text}, {"22/10/2025", type text}, {"23/10/2025", type text}, {"24/10/2025", type text}, {"27/10/2025", type text}, {"28/10/2025", type text}, {"29/10/2025", type text}, {"30/10/2025", type text}, {"31/10/2025", type text}, {"3/11/2025", type text}, {"4/11/2025", type text}, {"5/11/2025", type text}, {"6/11/2025", type text}, {"7/11/2025", type text}, {"10/11/2025", type text}, {"11/11/2025", type text}, {"12/11/2025", type text}, {"13/11/2025", type text}, {"14/11/2025", type text}, {"17/11/2025", type text}, {"18/11/2025", type text}, {"19/11/2025", type text}, {"20/11/2025", type text}, {"21/11/2025", type text}, {"24/11/2025", type text}, {"25/11/2025", type text}, {"26/11/2025", type text}, {"27/11/2025", type text}, {"28/11/2025", type text}, {"1/12/2025", type text}, {"2/12/2025", type text}, {"3/12/2025", type text}, {"4/12/2025", type text}, {"5/12/2025", type text}, {"8/12/2025", type text}, {"9/12/2025", type text}, {"10/12/2025", type text}, {"11/12/2025", type text}, {"12/12/2025", type text}, {"15/12/2025", type text}, {"16/12/2025", type text}, {"17/12/2025", type text}, {"18/12/2025", type text}, {"19/12/2025", type text}, {"22/12/2025", type text}, {"23/12/2025", type text}, {"24/12/2025", type text}, {"25/12/2025", type text}, {"26/12/2025", type text}, {"29/12/2025", type text}, {"30/12/2025", type text}, {"31/12/2025", type text}, {"1/01/2026", type text}, {"2/01/2026", type text}, {"5/01/2026", type text}, {"6/01/2026", type text}, {"7/01/2026", type text}, {"8/01/2026", type text}, {"9/01/2026", type text}, {"12/01/2026", type text}, {"13/01/2026", type text}, {"14/01/2026", type text}, {"15/01/2026", type text}, {"16/01/2026", type text}, {"19/01/2026", type text}, {"20/01/2026", type text}, {"21/01/2026", type text}, {"22/01/2026", type text}, {"23/01/2026", type text}, {"26/01/2026", type text}, {"27/01/2026", type text}, {"28/01/2026", type text}, {"29/01/2026", type text}, {"30/01/2026", type text}, {"2/02/2026", type text}, {"3/02/2026", type text}, {"4/02/2026", type text}, {"5/02/2026", type text}, {"6/02/2026", type text}, {"9/02/2026", type text}, {"10/02/2026", type text}, {"11/02/2026", type text}, {"12/02/2026", type text}, {"13/02/2026", type text}, {"16/02/2026", type text}, {"17/02/2026", type text}, {"18/02/2026", type text}, {"19/02/2026", type text}, {"20/02/2026", type text}, {"23/02/2026", type text}, {"24/02/2026", type text}, {"25/02/2026", type text}, {"26/02/2026", type text}, {"27/02/2026", type text}, {"2/03/2026", type text}, {"3/03/2026", type text}, {"4/03/2026", type text}, {"5/03/2026", type text}, {"6/03/2026", type text}, {"9/03/2026", type text}, {"10/03/2026", type text}, {"11/03/2026", type text}, {"12/03/2026", type text}, {"13/03/2026", type text}, {"16/03/2026", type text}, {"17/03/2026", type text}, {"18/03/2026", type text}, {"19/03/2026", type text}, {"20/03/2026", type text}, {"23/03/2026", type text}, {"24/03/2026", type text}, {"25/03/2026", type text}, {"26/03/2026", type text}, {"27/03/2026", type text}, {"30/03/2026", type text}, {"31/03/2026", type text}, {"1/04/2026", type text}, {"2/04/2026", type text}, {"3/04/2026", type text}, {"6/04/2026", type text}, {"7/04/2026", type text}, {"8/04/2026", type text}, {"9/04/2026", type text}, {"10/04/2026", type text}, {"13/04/2026", type text}, {"14/04/2026", type text}, {"15/04/2026", type text}, {"16/04/2026", type text}, {"17/04/2026", type text}, {"20/04/2026", type text}, {"21/04/2026", type text}, {"22/04/2026", type text}, {"23/04/2026", type text}, {"24/04/2026", type text}, {"27/04/2026", type text}, {"28/04/2026", type text}, {"29/04/2026", type text}, {"30/04/2026", type text}, {"1/05/2026", type text}, {"4/05/2026", type text}, {"5/05/2026", type text}, {"6/05/2026", type text}, {"7/05/2026", type text}, {"8/05/2026", type text}, {"11/05/2026", type text}, {"12/05/2026", type text}, {"13/05/2026", type text}, {"14/05/2026", type text}, {"15/05/2026", type text}, {"18/05/2026", type text}, {"19/05/2026", type text}, {"20/05/2026", type text}, {"21/05/2026", type text}, {"22/05/2026", type text}, {"25/05/2026", type text}, {"26/05/2026", type text}, {"27/05/2026", type text}, {"28/05/2026", type text}, {"29/05/2026", type text}, {"1/06/2026", type text}, {"2/06/2026", type text}, {"3/06/2026", type text}, {"4/06/2026", type text}, {"5/06/2026", type text}, {"8/06/2026", type text}, {"9/06/2026", type text}, {"10/06/2026", type text}, {"11/06/2026", type text}, {"12/06/2026", type text}, {"15/06/2026", type text}, {"16/06/2026", type text}, {"17/06/2026", type text}, {"18/06/2026", type text}, {"19/06/2026", type text}, {"22/06/2026", type text}, {"23/06/2026", type text}, {"24/06/2026", type text}, {"25/06/2026", type text}, {"26/06/2026", type text}, {"29/06/2026", type text}, {"30/06/2026", type text}, {"1/07/2026", type text}, {"2/07/2026", type text}, {"3/07/2026", type text}, {"6/07/2026", type text}, {"7/07/2026", type text}, {"8/07/2026", type text}, {"9/07/2026", type text}, {"10/07/2026", type text}, {"13/07/2026", type text}, {"14/07/2026", type text}, {"15/07/2026", type text}, {"16/07/2026", type text}, {"17/07/2026", type text}, {"20/07/2026", type text}, {"21/07/2026", type text}, {"22/07/2026", type text}, {"23/07/2026", type text}, {"24/07/2026", type text}, {"27/07/2026", type text}, {"28/07/2026", type text}, {"29/07/2026", type text}, {"30/07/2026", type text}, {"31/07/2026", type text}, {"3/08/2026", type text}, {"4/08/2026", type text}, {"5/08/2026", type text}, {"6/08/2026", type text}, {"7/08/2026", type text}, {"10/08/2026", type text}, {"11/08/2026", type text}, {"12/08/2026", type text}, {"13/08/2026", type text}, {"14/08/2026", type text}, {"17/08/2026", type text}, {"18/08/2026", type text}, {"19/08/2026", type text}, {"20/08/2026", type text}, {"21/08/2026", type text}, {"24/08/2026", type text}, {"25/08/2026", type text}, {"26/08/2026", type text}, {"27/08/2026", type text}, {"28/08/2026", type text}, {"31/08/2026", type text}, {"1/09/2026", type text}, {"2/09/2026", type text}, {"3/09/2026", type text}, {"4/09/2026", type text}, {"7/09/2026", type text}, {"8/09/2026", type text}, {"9/09/2026", type text}, {"10/09/2026", type text}, {"11/09/2026", type text}, {"14/09/2026", type text}, {"15/09/2026", type text}, {"16/09/2026", type text}, {"17/09/2026", type text}, {"18/09/2026", type text}, {"21/09/2026", type text}, {"22/09/2026", type text}, {"23/09/2026", type text}, {"24/09/2026", type text}, {"25/09/2026", type text}, {"28/09/2026", type text}, {"29/09/2026", type text}, {"30/09/2026", type text}, {"1/10/2026", type text}, {"2/10/2026", type text}, {"5/10/2026", type text}, {"6/10/2026", type text}, {"7/10/2026", type text}, {"8/10/2026", type text}, {"9/10/2026", type text}, {"12/10/2026", type text}, {"13/10/2026", type text}, {"14/10/2026", type text}, {"15/10/2026", type text}, {"16/10/2026", type text}, {"19/10/2026", type text}, {"20/10/2026", type text}, {"21/10/2026", type text}, {"22/10/2026", type text}, {"23/10/2026", type text}, {"26/10/2026", type text}, {"27/10/2026", type text}, {"28/10/2026", type text}, {"29/10/2026", type text}, {"30/10/2026", type text}, {"2/11/2026", type text}, {"3/11/2026", type text}, {"4/11/2026", type text}, {"5/11/2026", type text}, {"6/11/2026", type text}, {"9/11/2026", type text}, {"10/11/2026", type text}, {"11/11/2026", type text}, {"12/11/2026", type text}, {"13/11/2026", type text}, {"16/11/2026", type text}, {"17/11/2026", type text}, {"18/11/2026", type text}, {"19/11/2026", type text}, {"20/11/2026", type text}, {"23/11/2026", type text}, {"24/11/2026", type text}, {"25/11/2026", type text}, {"26/11/2026", type text}, {"27/11/2026", type text}, {"30/11/2026", type text}, {"1/12/2026", type text}, {"2/12/2026", type text}, {"3/12/2026", type text}, {"4/12/2026", type text}, {"7/12/2026", type text}, {"8/12/2026", type text}, {"9/12/2026", type text}, {"10/12/2026", type text}, {"11/12/2026", type text}, {"14/12/2026", type text}, {"15/12/2026", type text}, {"16/12/2026", type text}, {"17/12/2026", type text}, {"18/12/2026", type text}, {"21/12/2026", type text}, {"22/12/2026", type text}, {"23/12/2026", type text}, {"24/12/2026", type text}, {"25/12/2026", type text}, {"28/12/2026", type text}, {"29/12/2026", type text}, {"30/12/2026", type text}, {"31/12/2026", type text}}),
+		    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each ([Support Coordinator Careview Name] <> null)),
+		    #"Replaced Value" = Table.ReplaceValue(#"Filtered Rows"," ","",Replacer.ReplaceText,{"Support Coordinator Careview Name"}),
+		    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Replaced Value", {"Support Coordinator Careview Name"}, "Date", "Title"),
+		    #"Renamed Columns" = Table.RenameColumns(#"Unpivoted Other Columns",{{"Support Coordinator Careview Name", "FullNameKey"}}),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Renamed Columns", "SpreadsheetKey", each Text.Combine({[FullNameKey], Text.From([Date], "en-AU")}), type text)
+		in
+		    #"Inserted Merged Column"
+	lineageTag: 9f9232b5-c73d-4809-b670-694f2f0bb7ce
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'CareViewCaseNotesDynamic - Source' =
+		let
+		    Source = #"SharePointFiles - Source",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/CoSCaseNoteReports-Dynamic/"),
+		    #"Filtered Rows2" = Table.SelectRows(#"Filtered Rows", let latest = List.Max(#"Filtered Rows"[Date created]) in each [Date created] = latest),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Rows2", "Transform File", each #"Transform File"([Content])),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File", "Date created"}),
+		    #"Expanded Transform File" = Table.ExpandTableColumn(#"Removed Other Columns", "Transform File", {"Created By", "Client", "Service Contract Reference Number", "Created Date", "Delivered Date", "Case Note Status", "Delivery Status", "Header Reference", "DS Number", "Contact Type", "Hours", "KMs", "Delivery Amount", "Subject", "Line Item Code", "Service Region", "Unit Rate"}, {"Created By", "Client", "Service Contract Reference Number", "Created Date", "Delivered Date", "Case Note Status", "Delivery Status", "Header Reference", "DS Number", "Contact Type", "Hours", "KMs", "Delivery Amount", "Subject", "Line Item Code", "Service Region", "Unit Rate"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Transform File",{{"Created By", type text}, {"Client", type text}, {"Service Contract Reference Number", type text}, {"Created Date", type date}, {"Delivered Date", type date}, {"Case Note Status", type text}, {"Delivery Status", type text}, {"Header Reference", type text}, {"DS Number", type text}, {"Contact Type", type text}, {"Hours", type duration}, {"KMs", Int64.Type}, {"Delivery Amount", type number}, {"Subject", type text}, {"Line Item Code", type text}, {"Service Region", type text}, {"Unit Rate", type number}}),
+		    #"Multiplied Column" = Table.TransformColumns(#"Changed Type", {{"Hours", each _ * 24, type number}}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Multiplied Column",{{"Hours", type number}})
+		in
+		    #"Changed Type1"
+	lineageTag: e28050e4-1ee4-42b2-8dc3-79462c9cd857
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter5 = #"Sample File (5)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (5)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: a262f35b-2a93-44d1-a41f-f7602b278ffd
+	queryGroup: 'Utilities\Transform File from CareViewClientFunding - Source\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'CareViewClientFunding - Source' =
+		let
+		    Source = #"SharePointFiles - Source",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/ClientFundingReports/"),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (6)", each #"Transform File (5)"([Content])),
+		    #"Renamed Columns1" = Table.RenameColumns(#"Invoke Custom Function1", {"Name", "Source.Name"}),
+		    #"Removed Other Columns1" = Table.SelectColumns(#"Renamed Columns1",{"Transform File (6)", "Date created"}),
+		    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File (6)", Table.ColumnNames(#"Transform File (5)"(#"Sample File (5)"))),
+		    #"Duplicated Column" = Table.DuplicateColumn(#"Expanded Table Column1", "Full Name", "FullNameKey"),
+		    #"Replaced Value" = Table.ReplaceValue(#"Duplicated Column"," ","",Replacer.ReplaceText,{"FullNameKey"}),
+		    #"Trimmed Text" = Table.TransformColumns(#"Replaced Value",{{"FullNameKey", Text.Trim, type text}}),
+		    #"Replaced Value1" = Table.ReplaceValue(#"Trimmed Text","Chye Yap","Chye Team Yap",Replacer.ReplaceText,{"Full Name"}),
+		    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1","Chyeteam Yap","Chye Team Yap",Replacer.ReplaceText,{"Full Name"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value2",{{"NDIS Number", type text}, {"Client Status", type text}, {"Service Contract Reference No.", type text}, {"Service Contract Status", type text}, {"Start Date", type date}, {"End Date", type date}, {"NDIS Plan Start Date", type date}, {"NDIS Plan End Date", type date}, {"Total Service Contract Value", Currency.Type}, {"Total Delivered", Currency.Type}, {"Total Remaining", Currency.Type}, {"Service Contract Category", type text}, {"Category Budget Total", Currency.Type}, {"Category Delivered Total", Currency.Type}, {"Category Remaining Total", Currency.Type}, {"Date created", type date}, {"Full Name", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: a13feafb-1cb0-4af4-b035-2513b1c60822
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Sample File (5)' =
+		let
+		    Source = #"SharePointFiles - Source (3)",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/ClientFundingReports/"),
+		    Navigation1 = #"Filtered Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 759ebb6d-32a7-4f53-b76b-f906012f01ad
+	queryGroup: 'Utilities\Transform File from CareViewClientFunding - Source\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform File (5)' =
+		let
+		    Source = (Parameter5 as binary) => let
+		    Source = Excel.Workbook(Parameter5, null, true),
+		    #"Client Funding Report_Sheet" = Source{[Item="Client Funding Report",Kind="Sheet"]}[Data],
+		    #"Filtered Rows" = Table.SelectRows(#"Client Funding Report_Sheet", each ([Column1] <> null and [Column1] <> ". ." and [Column1] <> "Access Support Coordination")),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	lineageTag: cc04941c-a939-406c-b331-85039da1b391
+	queryGroup: 'Utilities\Transform File from CareViewClientFunding - Source\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression 'Transform Sample File (5)' =
+		let
+		    Source = Excel.Workbook(Parameter5, null, true),
+		    #"Client Funding Report_Sheet" = Source{[Item="Client Funding Report",Kind="Sheet"]}[Data],
+		    #"Filtered Rows" = Table.SelectRows(#"Client Funding Report_Sheet", each ([Column1] <> null and [Column1] <> ". ." and [Column1] <> "Access Support Coordination")),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: d098b72e-db65-48f1-a0a1-51400e69b88c
+	queryGroup: 'Utilities\Transform File from CareViewClientFunding - Source'
+
+expression 'SharePointFiles - Source (3)' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData")
+		in
+		    Source
+	lineageTag: 3a27ca1e-a452-4b3a-8295-4b598f28058f
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter4 = #"Sample File (4)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (4)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: fcd68705-3de8-439a-9c1b-ad3d97d4fd7c
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesStatic - Source\Helper Queries'
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Transform Sample File (4)' =
+		let
+		    Source = Excel.Workbook(Parameter4, null, true),
+		    #"CoS Case Note Report_Sheet" = Source{[Item="CoS Case Note Report",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(#"CoS Case Note Report_Sheet", [PromoteAllScalars=true]),
+		    #"Filtered Rows" = Table.SelectRows(#"Promoted Headers", each ([Created By] <> null))
+		in
+		    #"Filtered Rows"
+	lineageTag: 4beeb64d-92b4-4093-896b-0691f01a9553
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesStatic - Source'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Sample File (4)' =
+		let
+		    Source = #"SharePointFiles - Source",
+		    #"Filtered Rows" = Table.SelectRows(Source, each [Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/CareView/CoSCaseNoteReports-Static/"),
+		    #"Sorted Rows" = Table.Sort(#"Filtered Rows",{{"Name", Order.Descending}}),
+		    Navigation1 = #"Sorted Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: 9b21d106-9339-4e7f-bba1-8608b5cefa82
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesStatic - Source\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform File (4)' =
+		let
+		    Source = (Parameter4 as binary) => let
+		    Source = Excel.Workbook(Parameter4, null, true),
+		    #"CoS Case Note Report_Sheet" = Source{[Item="CoS Case Note Report",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(#"CoS Case Note Report_Sheet", [PromoteAllScalars=true]),
+		    #"Filtered Rows" = Table.SelectRows(#"Promoted Headers", each ([Created By] <> null))
+		in
+		    #"Filtered Rows"
+		in
+		    Source
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transform Sample File (4)""}" ]
+	lineageTag: 4d5c6405-c524-40ce-bfda-a779d0165237
+	queryGroup: 'Utilities\Transform File from CareViewCaseNotesStatic - Source\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression 'Postcode Remoteness - Source' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/")),
+		    #"poa_21-mmm_23 csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/" = #"Filtered Rows"{[Name="poa_21-mmm_23.csv",#"Folder Path"="https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/"]}[Content],
+		    #"Imported CSV" = Csv.Document(#"poa_21-mmm_23 csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/",[Delimiter=",", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"PostCode", type text}, {"POA 2021 Area (km2)", type number}, {"MMM 2023", Int64.Type}, {"MMM 2023 Area in POA 2021 (km2)", type number}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Changed Type",{"PostCode", "MMM 2023"}),
+		    #"Grouped Rows" = Table.Group(#"Removed Other Columns", {"PostCode"}, {{"AvgMMM2023", each List.Average([MMM 2023]), type nullable number}}),
+		    #"Rounded Up" = Table.TransformColumns(#"Grouped Rows",{{"AvgMMM2023", Number.RoundDown, Int64.Type}}),
+		    #"Added Conditional Column" = Table.AddColumn(#"Rounded Up", "AvgRemotenessDescription", each if [AvgMMM2023] = 1 then "Metropolitan Area" else if [AvgMMM2023] = 2 then "Regional Centre" else if [AvgMMM2023] = 3 then "Large Rural Town" else if [AvgMMM2023] = 4 then "Medium Rural Town" else if [AvgMMM2023] = 5 then "Small Rural Town" else if [AvgMMM2023] = 6 then "Remote Community" else if [AvgMMM2023] = 7 then "Very Remote Community" else null)
+		in
+		    #"Added Conditional Column"
+	lineageTag: 7137c6f7-f3d0-4a3a-a7a4-3151bebfe551
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'PostCodes - Source' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/")),
+		    #"australian_postcodes csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/" = #"Filtered Rows"{[Name="australian_postcodes.csv",#"Folder Path"="https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/"]}[Content],
+		    #"Imported CSV" = Csv.Document(#"australian_postcodes csv_https://cruxscss sharepoint com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/WHS Reporting/",[Delimiter=",", Columns=41, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"id", Int64.Type}, {"postcode", type text}, {"locality", type text}, {"state", type text}, {"long", type number}, {"lat", type number}, {"dc", type text}, {"type", type text}, {"status", type text}, {"sa3", Int64.Type}, {"sa3name", type text}, {"sa4", Int64.Type}, {"sa4name", type text}, {"region", type text}, {"Lat_precise", type number}, {"Long_precise", type number}, {"SA1_CODE_2021", Int64.Type}, {"SA1_NAME_2021", type text}, {"SA2_CODE_2021", Int64.Type}, {"SA2_NAME_2021", type text}, {"SA3_CODE_2021", type text}, {"SA3_NAME_2021", type text}, {"SA4_CODE_2021", type text}, {"SA4_NAME_2021", type text}, {"RA_2011", Int64.Type}, {"RA_2016", Int64.Type}, {"RA_2021", type text}, {"RA_2021_NAME", type text}, {"MMM_2015", Int64.Type}, {"MMM_2019", Int64.Type}, {"ced", type text}, {"altitude", type number}, {"chargezone", type text}, {"phn_code", type text}, {"phn_name", type text}, {"lgaregion", type text}, {"lgacode", Int64.Type}, {"electorate", type text}, {"electoraterating", type text}, {"sed_code", Int64.Type}, {"sed_name", type text}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Changed Type",{"postcode", "state", "sa3name", "sa4name", "Lat_precise", "Long_precise"}),
+		    #"Grouped Rows" = Table.Group(#"Removed Other Columns", {"postcode"}, {{"State", each List.Max([state]), type nullable text}, {"AvgLat", each List.Average([Lat_precise]), type nullable number}, {"AvgLong", each List.Average([Long_precise]), type nullable number}, {"SA3", each List.Max([sa3name]), type nullable text}, {"SA4", each List.Max([sa4name]), type nullable text}})
+		in
+		    #"Grouped Rows"
+	lineageTag: 6382d1e3-312d-4d8b-ae3e-b086eec9591f
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimLocationRemoteness - Source' =
+		let
+		    Source = Table.NestedJoin(#"Postcode Remoteness - Source", {"PostCode"}, #"PostCodes - Source", {"postcode"}, "PostCodes - Source", JoinKind.LeftOuter),
+		    #"Expanded PostCodes - Source" = Table.ExpandTableColumn(Source, "PostCodes - Source", {"State", "AvgLat", "AvgLong", "SA3", "SA4"}, {"State", "AvgLat", "AvgLong", "SA3", "SA4"})
+		in
+		    #"Expanded PostCodes - Source"
+	lineageTag: 75163c68-cd6a-4595-9bd5-6a1fc2492613
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'BridgeClientFunding - Source' =
+		let
+		    Source = #"CareViewClientFunding - Source",
+		    #"Removed Other Columns" = Table.SelectColumns(Source,{"NDIS Number", "Service Contract Reference No."}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Removed Other Columns",{{"Service Contract Reference No.", "Service Contract Reference Number"}})
+		in
+		    #"Renamed Columns"
+	lineageTag: 229dfbb7-b101-4674-a959-1095a5e97c13
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'BridgeCareViewClients - Source' =
+		let
+		    Source = #"CareViewClients-Source",
+		    #"Removed Other Columns" = Table.SelectColumns(Source,{"NDIS Number"}),
+		    #"Filtered Rows" = Table.SelectRows(#"Removed Other Columns", each ([NDIS Number] <> ""))
+		in
+		    #"Filtered Rows"
+	lineageTag: 1d90b257-a86a-4437-b4e9-9cf1d6308120
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'BridgeCareViewCaseNotes - Source' =
+		let
+		    Source = FactCareViewCaseNotes,
+		    #"Removed Other Columns" = Table.SelectColumns(Source,{"Service Contract Reference Number"})
+		in
+		    #"Removed Other Columns"
+	lineageTag: 7bf81b5f-ae62-4de4-98b7-7622446c6d8f
+	queryGroup: SharePoint
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

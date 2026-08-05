@@ -1,0 +1,506 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "503f7e7b59cf918c8541",
+  "position": {
+    "x": 665.28875379939211,
+    "y": 142.97872340425533,
+    "z": 6000,
+    "height": 309.30091185410333,
+    "width": 590.39513677811556,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Remoteness"
+                    }
+                  },
+                  "Property": "AvgRemotenessDescription"
+                }
+              },
+              "queryRef": "Dim Workforce Remoteness.AvgRemotenessDescription",
+              "nativeQueryRef": "Remoteness description",
+              "active": true,
+              "displayName": "Remoteness description"
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Work Areas"
+                    }
+                  },
+                  "Property": "WorkArea"
+                }
+              },
+              "queryRef": "Dim Workforce Work Areas.WorkArea",
+              "nativeQueryRef": "Work area | Trade | Worker location",
+              "active": true,
+              "displayName": "Work area | Trade | Worker location"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Trades"
+                    }
+                  },
+                  "Property": "Trade"
+                }
+              },
+              "queryRef": "Dim Workforce Trades.Trade",
+              "nativeQueryRef": "Trade | Work area",
+              "active": false,
+              "displayName": "Trade | Work area"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Remoteness"
+                    }
+                  },
+                  "Property": "SA4 Name"
+                }
+              },
+              "queryRef": "Dim Workforce Remoteness.SA4 Name",
+              "nativeQueryRef": "SA4 Name",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Remoteness"
+                    }
+                  },
+                  "Property": "SA3 Name"
+                }
+              },
+              "queryRef": "Dim Workforce Remoteness.SA3 Name",
+              "nativeQueryRef": "SA3 Name",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Workforce"
+                    }
+                  },
+                  "Property": "AvgHoursWorkedNewStarters"
+                }
+              },
+              "queryRef": "Fact Workforce.AvgHoursWorkedNewStarters",
+              "nativeQueryRef": "AvgHoursWorkedNewStarters"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Workforce"
+                  }
+                },
+                "Property": "AvgHoursWorkedNewStarters"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "Dim Workforce Work Areas.WorkArea"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Work Areas"
+                    }
+                  },
+                  "Property": "WorkArea"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Workforce Trades.Trade"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Trades"
+                    }
+                  },
+                  "Property": "Trade"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Workforce Remoteness.SA4 Name"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce Remoteness"
+                    }
+                  },
+                  "Property": "SA4 Name"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Workforce Remoteness.SA3 Name"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "'Community'"
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "identityValues": [
+                    {
+                      "Literal": {
+                        "Value": "'RN'"
+                      }
+                    }
+                  ],
+                  "isToggled": true,
+                  "children": [
+                    {
+                      "identityValues": [
+                        {
+                          "Literal": {
+                            "Value": "'Melbourne - Inner'"
+                          }
+                        }
+                      ],
+                      "isToggled": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "163.00648600997903D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce Work Areas.WorkArea"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "94.12728779574923D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Workforce Remoteness"
+                          }
+                        },
+                        "Property": "AvgRemotenessDescription"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Metropolitan Area'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "67.7383398281839D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Workforce Remoteness"
+                          }
+                        },
+                        "Property": "AvgRemotenessDescription"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Regional Centre'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "86.79067128679247D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Workforce Remoteness"
+                          }
+                        },
+                        "Property": "AvgRemotenessDescription"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Large Rural Town'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "columnFormatting": [
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Workforce.AvgHoursWorkedNewStarters"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Avg. hours worked by new starters'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8fe8130c413202022086",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce Remoteness"
+              }
+            },
+            "Property": "AvgRemotenessDescription"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "d6415650e975435b7094",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce Work Areas"
+              }
+            },
+            "Property": "WorkArea"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ddbe26bb0288ac457170",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce Trades"
+              }
+            },
+            "Property": "Trade"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "66bd0c01532b27a69801",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce Remoteness"
+              }
+            },
+            "Property": "SA4 Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ea15bed949428e9b1840",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workforce Remoteness"
+              }
+            },
+            "Property": "SA3 Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "7c2434b9812947743915",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "AvgHoursWorkedNewStarters"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

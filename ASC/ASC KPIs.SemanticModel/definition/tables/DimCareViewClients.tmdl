@@ -1,0 +1,157 @@
+table DimCareViewClients
+	lineageTag: 443d5cbd-d606-402f-a524-a9048401bfff
+
+	measure ClientProfileExtractDate = "CareView client profile data last loaded: " & FORMAT(MAX(DimCareViewClients[Date created]), "d/m/yyyy")
+		lineageTag: 7ca5ebfb-caf1-4d31-929c-9b6f31ab42ba
+
+	measure ClientStatuses = "Selected client statuses: " & CONCATENATEX(VALUES(DimCareViewClients[Status]), DimCareViewClients[Status], ", ")
+		lineageTag: 3dbaf9ad-ad2b-48f6-8e53-5bed2a50c101
+
+	column 'Full Name'
+		dataType: string
+		lineageTag: af7aa02d-2300-4d6f-8db1-f29ba713a9a1
+		summarizeBy: none
+		sourceColumn: Full Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeFullNameKey
+		dataType: string
+		lineageTag: b0af7361-a3ed-47e6-b8a8-7e0ee7ba4aef
+		summarizeBy: none
+		sourceColumn: EmployeeFullNameKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NDIS Number'
+		dataType: string
+		lineageTag: 070bebf1-93bf-4676-b2e1-e24e678fca5b
+		summarizeBy: none
+		sourceColumn: NDIS Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Plan End Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6e3fa53d-d372-44a2-ac69-9868ec2c40dc
+		summarizeBy: none
+		sourceColumn: Plan End Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Plan Start Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 30478504-07f7-4ce7-b6fc-00ae3bed513c
+		summarizeBy: none
+		sourceColumn: Plan Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Region
+		dataType: string
+		lineageTag: ab7ba8cc-26c6-495b-85ff-006c0cc3517b
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 076e8501-9002-4205-9774-66b79ddd5777
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column PostCode
+		dataType: string
+		lineageTag: 46970459-a8c3-4a64-822e-767bbdcf68b8
+		summarizeBy: none
+		sourceColumn: PostCode
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date created'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 914826c5-b60f-4f56-a1ff-304d8ddca1e9
+		summarizeBy: none
+		sourceColumn: Date created
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Client Id'
+		dataType: string
+		lineageTag: b93c095c-5b80-43b8-911a-2c137514bc7d
+		summarizeBy: none
+		sourceColumn: Client Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientFullNameKey
+		dataType: string
+		isHidden
+		lineageTag: 72955be6-4d3e-42ae-bb13-ecf7ebf78043
+		summarizeBy: none
+		sourceColumn: ClientFullNameKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 2155bcf2-87cb-4e33-8661-cb723caffe8b
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column LeadFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 97d8c954-2ef3-4ef1-a643-76541ad4e511
+		summarizeBy: none
+		sourceColumn: LeadFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCareViewClients = m
+		mode: import
+		queryGroup: SharePoint
+		source =
+				let
+				    Source = #"CareViewClients-Source",
+				    #"Replaced Tom Hobert" = Table.ReplaceValue(Source,"Tom Hobert","Thomas Hobert",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Kelly-anne Hodgins" = Table.ReplaceValue(#"Replaced Tom Hobert","Kelly-anne Hodgins","Kelly-Anne Hodgins",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Carly Cole" = Table.ReplaceValue(#"Replaced Kelly-anne Hodgins","Carly Cole","Carlene Cole",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Jo Pengelly" = Table.ReplaceValue(#"Replaced Carly Cole","Jo Pengelly","Joanne Pengelly",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Kate ( Kathryn ) Barnes" = Table.ReplaceValue(#"Replaced Jo Pengelly","Kate ( Kathryn )  Barnes ","Kathryn Barnes",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Lisa Fallen" = Table.ReplaceValue(#"Replaced Kate ( Kathryn ) Barnes","Lisa Fallen","Lisa-Maree Fallen",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Shannon Vanhout" = Table.ReplaceValue(#"Replaced Lisa Fallen","Shannon Vanhout","Shannon Van Hout",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Sienna  Chen" = Table.ReplaceValue(#"Replaced Shannon Vanhout","Sienna  Chen","Siyu Chen",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Replaced Sienna  Chen"," ","",Replacer.ReplaceText,{"Assigned To"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","","NotAssigned",Replacer.ReplaceValue,{"Assigned To"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Replaced Value1",{{"Plan End Date ", "Plan End Date"}, {"Assigned To", "EmployeeFullNameKey"}}),
+				    #"Added LeadFlag" = Table.AddColumn(#"Renamed Columns", "LeadFlag", each if Text.StartsWith([Full Name], "LEAD") then true else false),
+				    #"Replaced Value2" = Table.ReplaceValue(#"Added LeadFlag","LEAD ","",Replacer.ReplaceText,{"Full Name"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value2",{{"LeadFlag", type logical}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

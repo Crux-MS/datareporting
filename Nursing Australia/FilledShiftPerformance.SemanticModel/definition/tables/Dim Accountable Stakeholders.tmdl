@@ -1,0 +1,57 @@
+table 'Dim Accountable Stakeholders'
+	isHidden
+	lineageTag: 5d120d02-88bd-47f1-946f-936fd46d8d31
+	sourceLineageTag: 3e127738-a009-450a-b84e-7095c5451d08
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: edbd2736-8553-4075-a39f-bc241d4549c9
+		sourceLineageTag: ee73ffb7-2bc4-46af-97d8-b0ec48417392
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column StakeholderID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7a50de84-a9aa-49f1-ae06-4c5d754abf40
+		sourceLineageTag: 2a3f4aa0-896a-4ac5-93ca-3652562b1031
+		dataCategory: Uncategorized
+		summarizeBy: count
+		sourceColumn: StakeholderID
+
+		annotation SummarizationSetBy = User
+
+	column StakeholderName
+		dataType: string
+		isHidden
+		lineageTag: 7f23170f-0c2b-48f8-9ccd-635c0375e55e
+		sourceLineageTag: 1dd732e9-b5be-4795-b14b-f631a194ae78
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: StakeholderName
+
+		annotation SummarizationSetBy = User
+
+	column StakeholderEmail
+		dataType: string
+		isHidden
+		lineageTag: 0ab68325-d0d5-41c6-bee7-90d946df7c44
+		sourceLineageTag: 700c5a32-8fad-4273-aab2-e0069dc78759
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: StakeholderEmail
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Accountable Stakeholders' = entity
+		mode: directQuery
+		source
+			entityName: Dim Accountable Stakeholders
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

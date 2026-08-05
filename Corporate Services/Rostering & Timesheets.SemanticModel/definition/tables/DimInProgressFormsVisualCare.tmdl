@@ -1,0 +1,50 @@
+table DimInProgressFormsVisualCare
+	lineageTag: 5b01e95b-6393-4a25-a1f8-fa0261dff172
+
+	column RosterItemId
+		dataType: int64
+		formatString: 0
+		lineageTag: 9e317cbc-3dc1-453d-a6db-9aa79b307096
+		summarizeBy: none
+		sourceColumn: RosterItemId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: bdc6b396-9d58-4b12-8d6f-cfb8b99f907a
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column CountForms
+		dataType: int64
+		formatString: 0
+		lineageTag: aaad41b9-0f44-4fc4-8e56-31cd6ee4fb83
+		summarizeBy: none
+		sourceColumn: CountForms
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimInProgressFormsVisualCare = m
+		mode: import
+		queryGroup: Forms
+		source = ```
+				let
+				    Source = Table.Combine({#"Form17- Source",
+				 //#"Form23- Source", 
+				#"Form38- Source", #"Form43- Source"}),
+				    #"Expanded FormData" = Table.ExpandRecordColumn(Source, "FormData", {"new", "flag", "notes", "created_at", "updated_at"}, {"new", "flag", "notes", "created_at", "updated_at"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Expanded FormData","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"created_at", "updated_at"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"new", Int64.Type}, {"flag", Int64.Type}, {"notes", type text}, {"created_at", type datetime}, {"updated_at", type datetime}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each ([RosterItemId] <> -1) and ([Status] = "IN PROGRESS")),
+				    #"Grouped Rows" = Table.Group(#"Filtered Rows", {"RosterItemId", "Status"}, {{"CountForms", each Table.RowCount(_), Int64.Type}})
+				in
+				    #"Grouped Rows"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

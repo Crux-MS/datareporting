@@ -1,0 +1,197 @@
+table 'Dim Shift Audit Update Date'
+	lineageTag: 1682ea6b-c73a-400d-8219-a5269e751170
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: d/m/yyyy
+		lineageTag: d62a4ace-f86f-4633-b690-a511d5833e48
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 4b91bc08-4def-4eaa-827f-08db20ba5d3f
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 59b78275-f9c1-4ea7-82b0-515c21533f9c
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: f0d23d25-40cb-4d48-b3b8-4daa70d04318
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: d41bc25a-1341-4e9a-b7b3-cbd32d4d4c76
+		summarizeBy: none
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: string
+		lineageTag: 3094cf12-8efe-443a-b273-88f4caa14287
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: a4cc43df-1721-4f2c-9453-94efb9ab5972
+		summarizeBy: none
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 94f23104-c422-4547-8de6-2bbeb2430aa0
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 32754b8a-9e3f-4ca1-a657-42e0c909e8cc
+		summarizeBy: none
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 575937a0-00b5-4cac-a3a4-481583f88a2d
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 3a2c2892-9be4-4b87-8701-ca9c51db69a0
+		summarizeBy: none
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: ecbddd46-8044-408a-8260-35700943a498
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: 4e49b524-4a80-45dd-98b9-33c1834dde5a
+		summarizeBy: none
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SlicerMMM YYYY'
+		dataType: string
+		lineageTag: 9bff9b95-a1ba-4047-a240-1b3a0ccf7938
+		summarizeBy: none
+		sourceColumn: SlicerMMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinancialYear
+		dataType: int64
+		formatString: 0
+		lineageTag: c13757ab-2649-4838-b83e-90cb58426321
+		summarizeBy: none
+		sourceColumn: FinancialYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column CurrentFYFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7ac18c0e-e288-4332-be17-e302a3fa7ae4
+		summarizeBy: none
+		sourceColumn: CurrentFYFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNameAcronym
+		dataType: string
+		lineageTag: 6409fe53-711a-4c49-8c22-36617e14b89c
+		summarizeBy: none
+		sourceColumn: DayNameAcronym
+
+		annotation SummarizationSetBy = Automatic
+
+	column EndReportingWeek
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: f8c49e9b-0231-4fc5-97b3-83d24eaaaf31
+		summarizeBy: none
+		sourceColumn: EndReportingWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Month'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b1bdb5a3-a2a3-4985-ad05-9f7610dc82e8
+		summarizeBy: none
+		sourceColumn: Start of Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingWeekDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: f02584d4-1456-4cb4-ac47-8b567ffd6855
+		summarizeBy: none
+		sourceColumn: RollingWeekDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Shift Audit Update Date' = m
+		mode: import
+		queryGroup: Shifts
+		source =
+				let
+				    Source = #"ShiftCalendar - Source",
+				    #"Added Conditional Column" = Table.AddColumn(Source, "EndReportingWeek", each if [DayNameAcronym] = "Fri" then [Date] else null),
+				    #"Filled Down" = Table.FillDown(#"Added Conditional Column",{"EndReportingWeek"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filled Down",{{"EndReportingWeek", type datetime}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

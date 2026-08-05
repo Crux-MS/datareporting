@@ -1,0 +1,48 @@
+table FactStateActivePatients
+	lineageTag: 9ba41802-356c-42af-8071-f3c42d7d3c9a
+
+	column patient_state
+		dataType: string
+		isHidden
+		lineageTag: 7e6e3519-78d2-42dc-9dbf-b7130978eaad
+		summarizeBy: none
+		sourceColumn: patient_state
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActiveMonth
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: a0b49806-9644-4789-a5a3-b92949a8f5b3
+		summarizeBy: none
+		sourceColumn: ActiveMonth
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CountPatients
+		dataType: int64
+		formatString: #,0
+		lineageTag: 37a2cc65-6af4-44be-bc89-061d0ada7fff
+		summarizeBy: sum
+		sourceColumn: CountPatients
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactStateActivePatients = m
+		mode: import
+		queryGroup: 'Patients\ActivePatients by STATE'
+		source =
+				let
+				    Source = #"FactActivePatientsAll - Source",
+				    #"Grouped Rows" = Table.Group(Source, {"patient_state", "ActiveMonth"}, {{"CountPatients", each Table.RowCount(_), Int64.Type}})
+				in
+				    #"Grouped Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

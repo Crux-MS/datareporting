@@ -1,0 +1,159 @@
+table DimRosterLocationsVisualCare
+	lineageTag: 0f4ba54f-ee03-4a24-a44c-24ab35ccdf80
+
+	column LocationId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: eb546dd2-2196-4283-b1c1-3b4c1495d339
+		summarizeBy: none
+		sourceColumn: LocationId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Code
+		dataType: string
+		lineageTag: 9946a3df-85e4-44ae-bddb-4704413eeaf9
+		summarizeBy: none
+		sourceColumn: Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Suburb
+		dataType: string
+		lineageTag: b9564a15-3dd8-43d2-a146-bd9715298a48
+		summarizeBy: none
+		sourceColumn: Suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	column Postcode
+		dataType: string
+		lineageTag: 0b1d6622-bc85-4b17-9339-8bacb6c2e37d
+		summarizeBy: none
+		sourceColumn: Postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 6c01cedb-9479-47e8-ae4b-d85c0faea19e
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Longitude
+		dataType: double
+		lineageTag: 1d452247-c426-40e2-ac90-a6460dd83f08
+		summarizeBy: none
+		sourceColumn: Longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Latitude
+		dataType: double
+		lineageTag: e512676d-7610-4f83-8d68-1f016bacc32a
+		summarizeBy: none
+		sourceColumn: Latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Area
+		dataType: string
+		lineageTag: 8d74d34f-0728-44b2-97ac-d845e8047deb
+		summarizeBy: none
+		sourceColumn: Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column FacilityStatus
+		dataType: string
+		lineageTag: ffef2f40-ce6c-4fc4-9ca5-dd83b8a9663c
+		summarizeBy: none
+		sourceColumn: FacilityStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column CaseManager
+		dataType: string
+		lineageTag: ed719d9e-c7cb-416c-96b4-53bf8364b5b7
+		summarizeBy: none
+		sourceColumn: CaseManager
+
+		annotation SummarizationSetBy = Automatic
+
+	column KMExempt
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 81c95b5b-5bc7-404b-b88f-99c37dc8a100
+		summarizeBy: none
+		sourceColumn: KMExempt
+
+		annotation SummarizationSetBy = Automatic
+
+	column StaffRatio
+		dataType: double
+		lineageTag: 770cba3f-3d81-4438-ba34-b6e186621f6b
+		summarizeBy: none
+		sourceColumn: StaffRatio
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ClientRatio
+		dataType: double
+		lineageTag: 0e42e8a7-9669-458f-a561-087f7d2f17a4
+		summarizeBy: none
+		sourceColumn: ClientRatio
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Comments
+		dataType: string
+		lineageTag: c9451a18-7639-4e25-95d1-4d5571d58e6c
+		summarizeBy: none
+		sourceColumn: Comments
+
+		annotation SummarizationSetBy = Automatic
+
+	column NotesRosterCheck
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7684f8dc-50eb-4a7e-bf19-f87d5ceb2dd9
+		summarizeBy: none
+		sourceColumn: NotesRosterCheck
+
+		annotation SummarizationSetBy = Automatic
+
+	column VisibleOnline
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 08c089d1-0c61-4444-bddb-1d4323f42171
+		summarizeBy: none
+		sourceColumn: VisibleOnline
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimRosterLocationsVisualCare = m
+		mode: import
+		queryGroup: Locations
+		source =
+				let
+				    Source = #"Locations - source"
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

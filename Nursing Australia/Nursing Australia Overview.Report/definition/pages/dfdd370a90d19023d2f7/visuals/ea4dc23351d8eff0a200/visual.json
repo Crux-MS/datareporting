@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "ea4dc23351d8eff0a200",
   "position": {
     "x": 47.881773399014776,
@@ -11,6 +11,30 @@
   },
   "visual": {
     "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Shift"
+                    }
+                  },
+                  "Property": "WorkArea"
+                }
+              },
+              "queryRef": "Dim Shift.WorkArea",
+              "nativeQueryRef": "Work area",
+              "active": true,
+              "displayName": "Work area"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
       "data": [
         {
@@ -41,7 +65,17 @@
             }
           }
         }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
       ]
+    },
+    "syncGroup": {
+      "groupName": "WorkArea",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   },

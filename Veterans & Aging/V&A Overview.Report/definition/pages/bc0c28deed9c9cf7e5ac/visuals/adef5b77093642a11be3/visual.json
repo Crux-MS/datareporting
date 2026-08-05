@@ -1,0 +1,227 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "adef5b77093642a11be3",
+  "position": {
+    "x": 13.466334164588527,
+    "y": 132.86783042394015,
+    "z": 0,
+    "height": 128.3790523690773,
+    "width": 1200.299251870324,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountCancelledVisits"
+                }
+              },
+              "queryRef": "FactVisit.CountCancelledVisits",
+              "nativeQueryRef": "CountCancelledVisits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountNewVisits"
+                }
+              },
+              "queryRef": "FactVisit.CountNewVisits",
+              "nativeQueryRef": "CountNewVisits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountOnHoldVisits"
+                }
+              },
+              "queryRef": "FactVisit.CountOnHoldVisits",
+              "nativeQueryRef": "CountOnHoldVisits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountUncompletedVisits"
+                }
+              },
+              "queryRef": "FactVisit.CountUncompletedVisits",
+              "nativeQueryRef": "CountUncompletedVisits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountVisitsNoDVANumber"
+                }
+              },
+              "queryRef": "FactVisit.CountVisitsNoDVANumber",
+              "nativeQueryRef": "CountVisitsNoDVANumber"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "urlIcon": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "70c1679fae265d0031fa",
+        "ordinal": 0,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "CountCancelledVisits"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f2e8b685e6e5372d31f7",
+        "ordinal": 1,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "CountNewVisits"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "aee37b075a8659d6ee49",
+        "ordinal": 2,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "CountOnHoldVisits"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "58e86aed6976f3f990e6",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimServiceTypes"
+              }
+            },
+            "Property": "FundingStream"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimServiceTypes",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "FundingStream"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'VHC'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

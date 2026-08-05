@@ -1,0 +1,66 @@
+table 'Dim Accountable Stakeholders'
+	isHidden
+	lineageTag: 3e127738-a009-450a-b84e-7095c5451d08
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ee73ffb7-2bc4-46af-97d8-b0ec48417392
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2a3f4aa0-896a-4ac5-93ca-3652562b1031
+		summarizeBy: count
+		sourceColumn: StakeholderID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderName
+		dataType: string
+		isHidden
+		lineageTag: 1dd732e9-b5be-4795-b14b-f631a194ae78
+		summarizeBy: none
+		sourceColumn: StakeholderName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderEmail
+		dataType: string
+		isHidden
+		lineageTag: 700c5a32-8fad-4273-aab2-e0069dc78759
+		summarizeBy: none
+		sourceColumn: StakeholderEmail
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Accountable Stakeholders' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Accountable Stakeholder"}),
+				    #"Expanded Accountable Stakeholder" = Table.ExpandTableColumn(#"Removed Other Columns", "Accountable Stakeholder", {"id", "value", "email"}, {"id.1", "value", "email"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Accountable Stakeholder",{{"id.1", "StakeholderID"}, {"value", "StakeholderName"}, {"email", "StakeholderEmail"}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Renamed Columns", each ([StakeholderID] <> null)),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"StakeholderID", Int64.Type}, {"StakeholderEmail", type text}, {"StakeholderName", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+

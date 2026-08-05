@@ -1,0 +1,500 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "0a78909a9da20dbd0a48",
+  "position": {
+    "x": 55.440729483282681,
+    "y": 130.33434650455928,
+    "z": 6000,
+    "height": 565.10638297872345,
+    "width": 1200.2431610942249,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurse"
+                    }
+                  },
+                  "Property": "fullname"
+                }
+              },
+              "queryRef": "DimNurse.fullname",
+              "nativeQueryRef": "Worker",
+              "displayName": "Worker"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurseSuburbGeocode"
+                    }
+                  },
+                  "Property": "state"
+                }
+              },
+              "queryRef": "DimNurseSuburbGeocode.state",
+              "nativeQueryRef": "State",
+              "displayName": "State"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "visit_date"
+                }
+              },
+              "queryRef": "FactVisit.visit_date",
+              "nativeQueryRef": "Visit date",
+              "displayName": "Visit date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimServiceTypes"
+                    }
+                  },
+                  "Property": "service"
+                }
+              },
+              "queryRef": "DimServiceTypes.service",
+              "nativeQueryRef": "Service",
+              "displayName": "Service"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimServiceTypes"
+                    }
+                  },
+                  "Property": "FundingStream"
+                }
+              },
+              "queryRef": "DimServiceTypes.FundingStream",
+              "nativeQueryRef": "Funding stream",
+              "displayName": "Funding stream"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "status"
+                }
+              },
+              "queryRef": "FactVisit.status",
+              "nativeQueryRef": "Visit status",
+              "displayName": "Visit status"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountVisitsWithTravel"
+                }
+              },
+              "queryRef": "FactVisit.CountVisitsWithTravel",
+              "nativeQueryRef": "Visits with travel",
+              "displayName": "Visits with travel"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactVisit"
+                        }
+                      },
+                      "Property": "distance_to_next"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactVisit.distance_to_next)",
+              "nativeQueryRef": "Total distance to next (km)",
+              "displayName": "Total distance to next (km)"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactVisit"
+                        }
+                      },
+                      "Property": "VisitDurationHours"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactVisit.VisitDurationHours)",
+              "nativeQueryRef": "Duration (hours)",
+              "displayName": "Duration (hours)"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactVisit"
+                        }
+                      },
+                      "Property": "co_payment_due"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactVisit.co_payment_due)",
+              "nativeQueryRef": "Co-payment Due",
+              "displayName": "Co-payment Due"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactVisit"
+                        }
+                      },
+                      "Property": "co_payment_received"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactVisit.co_payment_received)",
+              "nativeQueryRef": "Co-payment Received",
+              "displayName": "Co-payment Received"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactVisit"
+                  }
+                },
+                "Property": "visit_date"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "224.12576940710335D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurse.fullname"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "42.48676706351506D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurseSuburbGeocode.state"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "83.19148936170212D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.visit_date"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "49.239177276040685D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.CountVisitsWithTravel"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "84.96499201935612D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Sum(FactVisit.distance_to_next)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "97.73858673639883D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Sum(FactVisit.co_payment_due)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "93.82164545768453D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Sum(FactVisit.co_payment_received)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "207.10722994752808D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimServiceTypes.service"
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "metadata": "FactVisit.status"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "62.92786421499293D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimServiceTypes.FundingStream"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "66.34044538688585D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Sum(FactVisit.VisitDurationHours)"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'All workers'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'with expired drivers licenses'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d07019cd807370711370",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimNurse"
+              }
+            },
+            "Property": "fullname"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimNurse",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "fullname"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'AAAwriteover  .'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+table BridgePatientServicePlanActiveDates
+	lineageTag: 31768661-d075-413f-bb59-0507275c5ec6
+
+	column ServicePlanIndex
+		dataType: double
+		lineageTag: dd532b79-6a68-4b44-a03c-63875fbaf438
+		summarizeBy: none
+		sourceColumn: ServicePlanIndex
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ActiveDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: eadaac90-76d4-4807-a324-2cdb55573d03
+		summarizeBy: none
+		sourceColumn: ActiveDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition BridgePatientServicePlanActiveDates = m
+		mode: import
+		queryGroup: Services
+		source = ```
+				let
+				    Source = DimPatientServicePlans,
+				    #"Filtered Rows" = Table.SelectRows(Source, each ([Period status] = "Active")),
+				    Custom1 = Table.AddColumn(
+				        #"Filtered Rows",
+				        "ActiveDate",
+				        each 
+				            List.Generate(
+				                () => [Service start date],
+				                (d) => d <= [Service end date],
+				                (d) => Date.AddDays(d, 1)
+				            )
+				    ),
+				    #"Removed Other Columns" = Table.SelectColumns(Custom1,{"ServicePlanIndex", "ActiveDate"}),
+				    #"Expanded ActiveDate" = Table.ExpandListColumn(#"Removed Other Columns", "ActiveDate"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded ActiveDate",{{"ActiveDate", type date}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

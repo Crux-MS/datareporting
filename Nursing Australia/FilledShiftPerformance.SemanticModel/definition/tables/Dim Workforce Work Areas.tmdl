@@ -1,0 +1,31 @@
+table 'Dim Workforce Work Areas'
+	lineageTag: cb63aa2d-72e3-4cb0-b385-7d309e826b1b
+	sourceLineageTag: 0e1c903c-298f-42a7-b0a0-b14a180fae3f
+
+	column MemberId
+		dataType: int64
+		formatString: 0
+		lineageTag: 1cf9d061-1b7f-4e7d-b298-20ad1d9d173e
+		sourceLineageTag: c3038977-3057-460f-a266-d94d3ed0ba83
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: MemberId
+
+		annotation SummarizationSetBy = User
+
+	column WorkArea
+		dataType: string
+		lineageTag: c54e909f-1e77-45fb-9481-a2de8cde5e5e
+		sourceLineageTag: 5f30fff6-cebb-447f-9882-9c8c9d8c99f7
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: WorkArea
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Workforce Work Areas' = entity
+		mode: directQuery
+		source
+			entityName: Dim Workforce Work Areas
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

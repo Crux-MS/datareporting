@@ -1,0 +1,64 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		FILTER(
+			KEEPFILTERS(VALUES('DimVisitDate'[VisitDate])),
+			AND(
+				'DimVisitDate'[VisitDate] >= DATE(2024, 12, 4),
+				'DimVisitDate'[VisitDate] < DATE(2025, 12, 4)
+			)
+		)
+
+	VAR __DS0FilterTable2 = 
+		TREATAS({"Completed"}, 'FactVisit'[status])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			'DimVisitDate'[MMM YYYY],
+			'DimVisitDate'[YYYYMM],
+			ROLLUPADDISSUBTOTAL('DimServiceTypes'[funder_code], "IsGrandTotalColumnTotal"),
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			"CountVisits", 'FactVisit'[CountVisits]
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(
+			101,
+			SUMMARIZE(__DS0Core, 'DimVisitDate'[MMM YYYY], 'DimVisitDate'[YYYYMM]),
+			'DimVisitDate'[YYYYMM],
+			0,
+			'DimVisitDate'[MMM YYYY],
+			0
+		)
+
+	VAR __DS0SecondaryBase = 
+		SUMMARIZE(__DS0Core, 'DimServiceTypes'[funder_code], [IsGrandTotalColumnTotal])
+
+	VAR __DS0Secondary = 
+		TOPN(102, __DS0SecondaryBase, [IsGrandTotalColumnTotal], 1, 'DimServiceTypes'[funder_code], 1)
+
+	VAR __DS0BodyLimited = 
+		NATURALLEFTOUTERJOIN(
+			__DS0PrimaryWindowed,
+			SUBSTITUTEWITHINDEX(
+				__DS0Core,
+				"ColumnIndex",
+				__DS0Secondary,
+				[IsGrandTotalColumnTotal],
+				ASC,
+				'DimServiceTypes'[funder_code],
+				ASC
+			)
+		)
+
+EVALUATE
+	__DS0Secondary
+
+ORDER BY
+	[IsGrandTotalColumnTotal], 'DimServiceTypes'[funder_code]
+
+EVALUATE
+	__DS0BodyLimited
+
+ORDER BY
+	'DimVisitDate'[YYYYMM] DESC, 'DimVisitDate'[MMM YYYY] DESC, [ColumnIndex]

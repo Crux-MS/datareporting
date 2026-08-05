@@ -1,0 +1,32 @@
+table BridgeNDISNumber
+	isHidden
+	lineageTag: c9099ff6-8783-418c-8648-6519918aaa22
+
+	column 'NDIS Number'
+		dataType: string
+		isHidden
+		lineageTag: 4696a731-ec72-41dd-a4ec-944dc106a3b8
+		summarizeBy: none
+		sourceColumn: NDIS Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BridgeNDISNumber = m
+		mode: import
+		queryGroup: SharePoint
+		source =
+				let
+				    Source = Table.Combine({#"BridgeCareViewClients - Source", #"BridgeCareViewClients - Source"}),
+				    #"Removed Blank Rows" = Table.SelectRows(Source, each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Blank Rows")
+				in
+				    #"Removed Duplicates"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

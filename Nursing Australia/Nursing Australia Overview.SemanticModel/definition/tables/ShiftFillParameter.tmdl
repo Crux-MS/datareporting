@@ -1,0 +1,58 @@
+table ShiftFillParameter
+	lineageTag: b789383c-1dbc-4981-98d1-db5f5d483a9b
+
+	measure ShiftFillParameterTopNFlag =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(ShiftFillParameter[Parameter Fields]) = "'Fact Shift'[UTFShiftNoLongerRequiredHours]", [UTFShiftNoLongerRequiredHours],
+			    SELECTEDVALUE(ShiftFillParameter[Parameter Fields]) = "'Fact Shift'[UTFShiftStillNeededHours]", [UTFShiftStillNeededHours],
+			    SELECTEDVALUE(ShiftFillParameter[Parameter Fields]) = "'Fact Shift'[FilledShiftHours]", [FilledShiftHours]
+			    )
+		formatString: #,0.00
+		lineageTag: bf41f6a6-9ded-4bd6-9eed-3eb22a21582c
+
+	column Parameter
+		lineageTag: 9f887187-09e2-46ec-bdc4-aa348010b454
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: 69644651-1d95-423f-b652-fa7aab91085b
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: c38d7092-78fe-461e-9844-a5c8575921f0
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ShiftFillParameter = calculated
+		mode: import
+		source =
+				{
+				    ("UTF shifts: not required", NAMEOF('Fact Shift'[UTFShiftNoLongerRequiredHours]), 0),
+				    ("UTF shifts: still needed", NAMEOF('Fact Shift'[UTFShiftStillNeededHours]), 1),
+				    ("Filled shifts", NAMEOF('Fact Shift'[FilledShiftHours]), 2)
+				}
+
+	annotation PBI_Id = ca620c50d64e4b26bc5c210182c220ea
+

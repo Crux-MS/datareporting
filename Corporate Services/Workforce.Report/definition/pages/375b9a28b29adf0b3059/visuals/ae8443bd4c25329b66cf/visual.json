@@ -2,38 +2,33 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "ae8443bd4c25329b66cf",
   "position": {
-    "x": 56.413373860182375,
-    "y": 162.43161094224925,
-    "z": 3000,
-    "height": 523.28267477203644,
-    "width": 1166.2006079027356,
-    "tabOrder": 8000
+    "x": 55.95628415300547,
+    "y": 162.87275565964092,
+    "z": 2000,
+    "height": 522.5917252146761,
+    "width": 489.61748633879785,
+    "tabOrder": 7000
   },
   "visual": {
-    "visualType": "pivotTable",
+    "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Columns": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Paid Date"
+                      "Entity": "Dim Workforce"
                     }
                   },
-                  "Property": "FF (DD MMM YYYY)"
+                  "Property": "Extract Date"
                 }
               },
-              "queryRef": "Dim Paid Date.FF (DD MMM YYYY)",
-              "nativeQueryRef": "FF (DD MMM YYYY)",
-              "active": true
-            }
-          ]
-        },
-        "Rows": {
-          "projections": [
+              "queryRef": "Dim Workforce.Extract Date",
+              "nativeQueryRef": "Extract Date"
+            },
             {
               "field": {
                 "Column": {
@@ -46,26 +41,49 @@
                 }
               },
               "queryRef": "Dim Job Categories.DivisionAcronym",
-              "nativeQueryRef": "DivisionAcronym",
-              "active": true
-            }
-          ]
-        },
-        "Values": {
-          "projections": [
+              "nativeQueryRef": "DivisionAcronym"
+            },
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Pay"
+                      "Entity": "Dim Job Categories"
                     }
                   },
-                  "Property": "FTEPaid"
+                  "Property": "JobTitle"
                 }
               },
-              "queryRef": "Fact Pay.FTEPaid",
-              "nativeQueryRef": "FTEPaid"
+              "queryRef": "Dim Job Categories.JobTitle",
+              "nativeQueryRef": "JobTitle"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce"
+                    }
+                  },
+                  "Property": "Full name"
+                }
+              },
+              "queryRef": "Dim Workforce.Full name",
+              "nativeQueryRef": "Full name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workforce"
+                    }
+                  },
+                  "Property": "EmailExtractKey"
+                }
+              },
+              "queryRef": "Dim Workforce.EmailExtractKey",
+              "nativeQueryRef": "EmailExtractKey"
             }
           ]
         }
@@ -75,16 +93,390 @@
       }
     },
     "objects": {
-      "subTotals": [
+      "columnWidth": [
         {
           "properties": {
-            "columnSubtotals": {
+            "value": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "119D"
                 }
               }
             }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Paid Date"
+                          }
+                        },
+                        "Property": "FF (DD MMM YYYY)"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'18 (27 Aug 2025)'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "116D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Paid Date"
+                          }
+                        },
+                        "Property": "FF (DD MMM YYYY)"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'20 (24 Sep 2025)'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "116D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Paid Date"
+                          }
+                        },
+                        "Property": "FF (DD MMM YYYY)"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'22 (22 Oct 2025)'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "118D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Paid Date"
+                          }
+                        },
+                        "Property": "FF (DD MMM YYYY)"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'24 (19 Nov 2025)'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "108D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Paid Date"
+                          }
+                        },
+                        "Property": "FF (DD MMM YYYY)"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'1 (01 Jan 2026)'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "108D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Paid Date"
+                          }
+                        },
+                        "Property": "FF (DD MMM YYYY)"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'3 (29 Jan 2026)'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "119D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Job Categories.DivisionAcronym"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "108D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Dim Paid Date"
+                          }
+                        },
+                        "Property": "FF (DD MMM YYYY)"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'5 (26 Feb 2026)'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "357D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Job Categories.JobTitle"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "190D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Full name"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "41D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Extract Date.Variation.Date Hierarchy.Year"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "60D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Extract Date.Variation.Date Hierarchy.Quarter"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "81D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Extract Date.Variation.Date Hierarchy.Month"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "37D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Extract Date.Variation.Date Hierarchy.Day"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "203D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.Extract Date"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "430D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workforce.EmailExtractKey"
           }
         }
       ]
@@ -621,6 +1013,59 @@
           "general": [
             {
               "properties": {}
+            }
+          ]
+        }
+      },
+      {
+        "name": "3df79993ad87624872cf",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Job Categories"
+              }
+            },
+            "Property": "DivisionAcronym"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Job Categories",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "DivisionAcronym"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'ASC'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
             }
           ]
         }

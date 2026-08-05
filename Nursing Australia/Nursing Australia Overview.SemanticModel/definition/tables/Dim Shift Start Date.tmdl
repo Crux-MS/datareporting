@@ -3,7 +3,7 @@ table 'Dim Shift Start Date'
 
 	column ShiftStartDate
 		dataType: dateTime
-		formatString: General Date
+		formatString: d/m/yyyy
 		lineageTag: 4e3d9f1e-4b90-421a-8d86-70a6d17689e5
 		summarizeBy: none
 		sourceColumn: ShiftStartDate
@@ -14,6 +14,8 @@ table 'Dim Shift Start Date'
 			defaultHierarchy: LocalDateTable_8fe759ac-2ca4-4df9-9510-6266035f104c.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
 
 	column Year
 		dataType: int64
@@ -88,7 +90,7 @@ table 'Dim Shift Start Date'
 
 	column StartOfYear
 		dataType: dateTime
-		formatString: General Date
+		formatString: d/m/yyyy
 		lineageTag: 8859dd0d-8943-4d4a-bb91-5b8249205a7d
 		summarizeBy: none
 		sourceColumn: StartOfYear
@@ -99,6 +101,8 @@ table 'Dim Shift Start Date'
 			defaultHierarchy: LocalDateTable_9639edc5-36b7-495d-9639-68186d7dd4cc.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
 
 	column WeekOfYear
 		dataType: int64
@@ -111,7 +115,7 @@ table 'Dim Shift Start Date'
 
 	column StartOfWeek
 		dataType: dateTime
-		formatString: General Date
+		formatString: d/m/yyyy
 		lineageTag: 5554261f-e047-4fc5-887d-d6dcd0b64fc3
 		summarizeBy: none
 		sourceColumn: StartOfWeek
@@ -122,6 +126,8 @@ table 'Dim Shift Start Date'
 			defaultHierarchy: LocalDateTable_14ccad3c-0277-4c31-aa27-9fb823701437.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
 
 	column RollingDateDifference
 		dataType: int64
@@ -137,6 +143,9 @@ table 'Dim Shift Start Date'
 		lineageTag: 45995a5b-1a98-4ce0-92b0-834da04d5c4e
 		summarizeBy: none
 		sourceColumn: SlicerMMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
 
 		annotation SummarizationSetBy = Automatic
 
@@ -158,16 +167,53 @@ table 'Dim Shift Start Date'
 
 		annotation SummarizationSetBy = Automatic
 
+	column DayNameAcronym
+		dataType: string
+		lineageTag: 163abd13-6f71-48b8-b630-70b53f20cf22
+		summarizeBy: none
+		sourceColumn: DayNameAcronym
+		sortByColumn: DayOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Month'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 6256fb0f-1133-4d39-8ecd-a6338fc4ca69
+		summarizeBy: none
+		sourceColumn: Start of Month
+
+		variation Variation
+			isDefault
+			relationship: b650f9ee-8a65-42ee-bf95-f09637af1b67
+			defaultHierarchy: LocalDateTable_94572139-cb29-4f93-8fdf-391e2644b6f1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column RollingWeekDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: d5ddc880-ba4c-4547-ae44-b9aa9c46fe02
+		summarizeBy: sum
+		sourceColumn: RollingWeekDifference
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Dim Shift Start Date' = m
 		mode: import
+		queryGroup: Shifts
 		source =
 				let
-				    Source = #"Calendar - Source",
+				    Source = #"ShiftCalendar - Source",
 				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "ShiftStartDate"}})
 				in
 				    #"Renamed Columns"
 
 	annotation PBI_NavigationStepName = Navigation
 
-	annotation PBI_ResultType = Exception
+	annotation PBI_ResultType = Table
 

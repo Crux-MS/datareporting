@@ -1,0 +1,148 @@
+relationship 64c4f874-cea7-5645-2cfa-a5e204e6070e
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Calculations'.ID
+	toColumn: 'Dim Calculations'.ID
+
+relationship 42f4f0a8-1b20-0ed7-2dbd-069397289edf
+	fromColumn: 'Dim Calculation Data Source'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship e62991b7-9cf5-3146-e51f-b4c9fad30438
+	fromColumn: 'Dim Related Calculations'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 1aaa1419-b683-4fce-acd9-be9bc9b21eb6
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Dim Technical Owner'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship c4d29ff9-984d-6151-f6e4-98db848ba715
+	fromColumn: 'Dim Accountable Stakeholders'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship eb7cea6e-3362-513a-7cbf-f917d020e3e4
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Calculations Semantic Model'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 919c620a-4836-9092-4701-3360a3b6e804
+	fromColumn: FactASCEmployees.startDate
+	toColumn: DimCalendar.WorkDate
+
+relationship dfd7b58e-5f44-33f8-e625-d794c4819c13
+	fromColumn: DimASCEmployeePublicHolidays.date
+	toColumn: DimCalendar.WorkDate
+
+relationship b5b1d503-6638-ed47-28dd-9ac8a4d11dd1
+	crossFilteringBehavior: bothDirections
+	fromColumn: DimASCEmployees.FullNameKey
+	toColumn: BridgeEmployeeNames.fullName
+
+relationship 294ab44a-62ba-bb67-b5f3-b04a068e507d
+	fromColumn: FactASCEmployees.id
+	toColumn: DimASCEmployees.id
+
+relationship 77d49d65-e6b7-8564-084e-47352f835985
+	fromColumn: FactASCKeyPayLeave.leaveDate
+	toColumn: DimCalendar.WorkDate
+
+relationship c96040cb-2219-9ab3-28c7-374336c62fff
+	fromColumn: FactASCKeyPayLeave.employeeId
+	toColumn: DimASCEmployees.id
+
+relationship ffa7ed21-f726-42c2-9190-a9118eb06f96
+	fromColumn: FactASCEmployees.endDate
+	toColumn: DimEmploymentEndDate.EmploymentEndDate
+
+relationship AutoDetected_33f41216-3883-44ba-855c-14fbd71a3560
+	fromColumn: FactWorkerDailyStatus.FullNameKey
+	toColumn: BridgeEmployeeNames.fullName
+
+relationship f277da91-798c-611e-ca39-17e95f468a0b
+	fromColumn: FactWorkerDailyStatus.Date
+	toColumn: DimCalendar.WorkDate
+
+relationship AutoDetected_a4cb7b3b-d2ef-45b0-ac6c-afb521f6c5ec
+	fromColumn: DimASCEmployees.State
+	toColumn: BridgeStates.State
+
+relationship AutoDetected_5dfc8a86-f0eb-4ebd-8db6-47a02e72356d
+	isActive: false
+	fromColumn: DimASCEmployeePublicHolidays.State
+	toColumn: BridgeStates.State
+
+relationship AutoDetected_fa699149-96a3-407c-a4ca-aa855863991b
+	isActive: false
+	fromColumn: DimCareViewClients.State
+	toColumn: BridgeStates.State
+
+relationship 4922f8e7-eb2e-8728-2b33-d60ee4dc36c0
+	fromColumn: FactClientFunding.'Date created'
+	toColumn: DimCalendar.WorkDate
+
+relationship e5b51017-7b6f-5191-1514-711c7b9a8730
+	fromColumn: DimCareViewClients.PostCode
+	toColumn: DimClientLocationRemoteness.PostCode
+
+relationship ba7df2c8-04ed-228e-7228-eef797c6fcf7
+	fromColumn: DimASCEmployees.residentialPostCode
+	toColumn: DimWorkerLocationRemoteness.PostCode
+
+relationship 24b9f809-c4c5-8a86-f417-a8b3c8c8e9fe
+	fromColumn: DimCareViewClients.'Plan End Date'
+	toColumn: DimClientServiceEndDate.ServiceEndDate
+
+relationship 18fc4fd1-6985-554d-4f14-2dd0e546ffe5
+	fromColumn: DimCareViewClients.'Plan Start Date'
+	toColumn: DimClientServiceStartDate.ServiceStartDate
+
+relationship 3f0e77d3-101d-25b8-6ee7-2b117c49b0a2
+	isActive: false
+	fromColumn: DimCareViewClients.'Plan End Date'
+	toColumn: DimClientServiceStartDate.ServiceStartDate
+
+relationship 908c77f7-352e-815f-0539-c97092a968cd
+	fromColumn: FactClientFunding.'Date created'
+	toColumn: DimFundingExportDate.Date
+
+relationship 91f7812f-0704-cde0-8b81-d15c260402ca
+	fromColumn: DimCareViewClients.'Date created'
+	toColumn: DimFundingExportDate.Date
+
+relationship 2b84c7e7-97d8-7d15-6c90-8463cf84fc9f
+	fromColumn: FactCareViewCaseNotes.'Delivered Date'
+	toColumn: DimCalendar.WorkDate
+
+relationship AutoDetected_70af0dc9-540a-40bf-918f-189eb6d6bdbe
+	fromColumn: DimASCEmployeePublicHolidays.FullNameKey
+	toColumn: BridgeEmployeeNames.fullName
+
+relationship aba40e79-f0d7-0650-87e0-91aa14ac96c9
+	fromColumn: DimCareViewClients.EmployeeFullNameKey
+	toColumn: BridgeEmployeeNames.fullName
+
+relationship AutoDetected_8a3dae08-b37b-4669-924c-75047c9a1210
+	fromColumn: FactCareViewCaseNotes.'Service Contract Reference Number'
+	toColumn: BridgeServiceContractNumber.'Service Contract Reference Number'
+
+relationship ea4fb538-a8da-be2b-636d-7d2dac19be35
+	crossFilteringBehavior: bothDirections
+	fromColumn: FactClientFunding.'Service Contract Reference No.'
+	toColumn: BridgeServiceContractNumber.'Service Contract Reference Number'
+
+relationship 64de4b4f-ac3c-36aa-b9b2-b09d11ce3b7a
+	crossFilteringBehavior: bothDirections
+	fromColumn: DimCareViewClients.'NDIS Number'
+	toColumn: BridgeNDISNumber.'NDIS Number'
+
+relationship ea46e0f9-8da2-a455-4541-9aa9ca8640bf
+	fromColumn: FactClientFunding.'NDIS Number'
+	toColumn: BridgeNDISNumber.'NDIS Number'
+
+relationship 4a95945a-188d-8082-5dab-0e19b5c48fb7
+	isActive: false
+	fromColumn: FactCareViewCaseNotes.EmployeeFullNameKey
+	toColumn: BridgeEmployeeNames.fullName
+

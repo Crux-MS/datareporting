@@ -7,7 +7,7 @@
     "z": 2250,
     "height": 80,
     "width": 235.4435107376284,
-    "tabOrder": 9002
+    "tabOrder": 6000
   },
   "visual": {
     "visualType": "slicer",
@@ -17,48 +17,74 @@
           "projections": [
             {
               "field": {
-                "HierarchyLevel": {
+                "Column": {
                   "Expression": {
-                    "Hierarchy": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "DimOnboardingRegister"
-                        }
-                      },
-                      "Hierarchy": "Work Location: Country/Region Hierarchy"
+                    "SourceRef": {
+                      "Entity": "DimOnboardingRegister"
                     }
                   },
-                  "Level": "State"
+                  "Property": "State Acronym"
                 }
               },
-              "queryRef": "DimOnboardingRegister.Work Location: Country/Region Hierarchy.Work Location: State",
-              "nativeQueryRef": "Work Location: Country/Region Hierarchy Work Location: State",
+              "queryRef": "DimOnboardingRegister.State Acronym",
+              "nativeQueryRef": "State Acronym",
               "active": true
             },
             {
               "field": {
-                "HierarchyLevel": {
+                "Column": {
                   "Expression": {
-                    "Hierarchy": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "DimOnboardingRegister"
-                        }
-                      },
-                      "Hierarchy": "Work Location: Country/Region Hierarchy"
+                    "SourceRef": {
+                      "Entity": "DimOnboardingRegister"
                     }
                   },
-                  "Level": "City"
+                  "Property": "Work Location"
                 }
               },
-              "queryRef": "DimOnboardingRegister.Work Location: Country/Region Hierarchy.Work Location: City",
-              "nativeQueryRef": "Work Location: Country/Region Hierarchy Work Location: City",
+              "queryRef": "DimOnboardingRegister.Work Location",
+              "nativeQueryRef": "Work Location",
               "active": false
             }
           ]
         }
       }
     },
+    "expansionStates": [
+      {
+        "roles": [
+          "Values"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DimOnboardingRegister.State Acronym"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimOnboardingRegister"
+                    }
+                  },
+                  "Property": "State Acronym"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimOnboardingRegister.Work Location"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
     "objects": {
       "data": [
         {

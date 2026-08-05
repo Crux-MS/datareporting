@@ -1,0 +1,346 @@
+table ParameterMeasures
+	lineageTag: 6a5e55d0-543b-466c-a321-70bb7efbb9c1
+
+	measure ClientsCasCount = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Client Active Cas Count]), 
+			    SUM(FactSMWeeklySnapshot[Client Active Cas Count])
+			)
+			```
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: f3efd85d-4081-4241-b829-f7d01f67ad9b
+
+	measure ClientsSilCount = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Client Active Sil Count]), 
+			    SUM(FactSMWeeklySnapshot[Client Active Sil Count])
+			)
+			```
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: a342af78-4669-4819-9cc4-9f8280c1d870
+
+	measure ClientsTypeUnknownCount = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Client Active Unknown Count]), 
+			    SUM(FactSMWeeklySnapshot[Client Active Unknown Count])
+			)
+			```
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: cf414404-3989-4370-8ef6-e8de25ca30c6
+
+	measure ClientsActiveCount = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [CountMonthlyActiveClients], 
+			    [CountWeeklyActiveClients]
+			)
+			```
+		formatString: #,0
+		displayFolder: Clients
+		lineageTag: b065080a-1350-4e6c-896b-b0aaf955a94f
+
+	measure ClientsRolling12MTurnover = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    MEDIAN(FactSMMonthlySnapshot[Client Rolling 12M Churn Rate]), 
+			    MEDIAN(FactSMWeeklySnapshot[Client Rolling 52W Churn Rate])
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Clients
+		lineageTag: 098c9035-eff3-409d-8e9c-7c6665fc74e7
+
+	measure WorkerCancellationHours = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Cancellation Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Cancellation Hours])
+			)
+			```
+		formatString: #,0.00
+		displayFolder: Workers
+		lineageTag: 58cbea63-a06f-4536-83f4-0cee4e955ea5
+
+	measure EmployeeLeaveHoursPaid = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Payroll Leave Hours]), 
+			    SUM(FactSMWeeklySnapshot[Payroll Leave Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Employees
+		lineageTag: 466c2c97-8798-4d5d-9b34-ad910cc6f103
+
+	measure EmployeeStandardHoursPaid = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Payroll Standard Hours]), 
+			    SUM(FactSMWeeklySnapshot[Payroll Standard Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Employees
+		lineageTag: f8a3d00c-dada-4d6b-b3eb-e83e77d28592
+
+	measure EmployeeLeavePaidRate = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [LeavePaidMonthlyRate], 
+			    [LeavePaidWeeklyRate]
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Employees
+		lineageTag: b2a4005a-558b-410c-b7df-8e7a12cb57bf
+
+	measure EmployeeOvertimePaidRate = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [OvertimePaidMonthlyRate], 
+			    [OvertimePaidWeeklyRate]
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Employees
+		lineageTag: d7035a9c-86d8-458c-ae02-48fc1c684db9
+
+	measure EmployeeOvertimeHoursPaid = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Payroll Overtime Hours]), 
+			    SUM(FactSMWeeklySnapshot[Payroll Overtime Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Employees
+		lineageTag: 24d85e8b-b35d-4f9a-a98d-f190610c2274
+
+	measure EmployeeOtherHoursPaid = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Payroll Other Hours]), 
+			    SUM(FactSMWeeklySnapshot[Payroll Other Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Employees
+		lineageTag: 9cd7806a-d854-45df-b9d3-51bdcd4b2bd1
+
+	measure EmployeeTotalHoursPaid = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [TotalMonthlyHoursPaid], 
+			    [TotalWeeklyHoursPaid]
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Employees
+		lineageTag: 99b2df3d-8890-4046-82d0-6d47a4cc4773
+
+	measure WorkerSilHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Delivered Sil Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Delivered Sil Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 88e401a9-2a31-4661-9b59-22830c0e3cf2
+
+	measure WorkerCasHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Delivered Cas Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Delivered Cas Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 3ac571eb-e6ef-4cf6-8140-2143bc3e82f8
+
+	measure WorkerOtherHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Delivered Other Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Delivered Other Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: df3ef26e-5347-4361-acb1-6b5ae95cef48
+
+	measure WorkerTotalHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [TotalMonthlyHoursDelivered], 
+			    [TotalWeeklyHoursDelivered]
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 267cd1d9-9627-4a72-a2e9-c2a29b95275a
+
+	measure WorkerSilHoursDeliveredRate = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [SILMonthlyHoursDeliveredRate], 
+			    [SILWeeklyHoursDeliveredRate]
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Workers
+		lineageTag: 0e20a0dc-cff8-4d66-9c2c-7cf9b7e9ed49
+
+	measure WorkerCasHoursDeliveredRate = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [CASMonthlyHoursDeliveredRate], 
+			    [CASWeeklyHoursDeliveredRate]
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Workers
+		lineageTag: 80d70807-c757-4488-afa0-3d37bc3a4c79
+
+	measure WorkerOtherHoursDeliveredRate = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    [OtherMonthlyHoursDeliveredRate], 
+			    [OtherWeeklyHoursDeliveredRate]
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Workers
+		lineageTag: 63cfc9a6-4742-4481-a6b1-4b5d5e09ab5b
+
+	measure UnbillableAdminHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Admin Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Admin Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: ee5b8630-b1e9-47cc-a944-5907fbfa5188
+
+	measure UnbillableMeetingHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Meeting Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Meeting Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 3aa73cae-470f-4417-8924-448d3dd18e6f
+
+	measure UnbillableTrainingHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Training Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Training Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: cf15a229-4834-4fc2-a5ff-28bc83cb89ee
+
+	measure UnbillableShadowShiftHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Shadow Shift Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Shadow Shift Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: f999c29e-0fb1-4843-a4bf-9a06592ea524
+
+	measure UnbillableAwakeHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Awake Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Awake Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 3e837976-085f-4234-9059-96d589db8b3d
+
+	measure UnbillableTravelHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Travel Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Travel Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 8cf25dba-3b39-44f6-964e-f858e2dfed39
+
+	measure UnbillablePHNWHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Phnw Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Phnw Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: e68a96f3-272a-40a3-90a6-5441b251ff5e
+
+	measure UnbillableOtherHoursDelivered = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Worker Unbillable Other Hours]), 
+			    SUM(FactSMWeeklySnapshot[Worker Unbillable Other Hours])
+			)
+			```
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 74b01d39-1760-4d47-9c26-e15c8feaea51
+
+	measure EmployeeActiveCount = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    SUM(FactSMMonthlySnapshot[Employee Active Count]), 
+			    SUM(FactSMWeeklySnapshot[Employee Active Count])
+			)
+			```
+		formatString: #,0
+		displayFolder: Employees
+		lineageTag: 94f1bca9-ac13-4617-af2c-1a7ddd4fac9b
+
+	measure EmployeeRolling12MTurnover = ```
+			IF(
+			    SELECTEDVALUE(WeeklyMonthlyParam[WeeklyMonthlySelector Fields]) = "'DimDate'[Start of Month]", 
+			    MEDIAN(FactSMMonthlySnapshot[Employee Rolling 12M Churn Rate]), 
+			    MEDIAN(FactSMWeeklySnapshot[Employee Rolling 52W Churn Rate])
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Employees
+		lineageTag: 3fcad6bf-80aa-471e-a17b-5eccf0bb9cce
+
+	partition ParameterMeasures = m
+		mode: import
+		source =
+				let
+				  Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Removed Columns" = Table.RemoveColumns(Source,{"Column1"})
+				in
+				  #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

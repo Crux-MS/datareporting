@@ -1,0 +1,32 @@
+table RefreshedDate
+	lineageTag: 12a8ea13-5253-4fc1-9ead-aeb5a24089ad
+	sourceLineageTag: aaef7c59-3c67-44a9-a89d-5bc2ef9d9fd4
+
+	measure RefreshedDateTime = EXTERNALMEASURE("RefreshedDateTime", STRING, "DirectQuery to AS - Nursing Australia Overview")
+		lineageTag: 9fa7a1db-e966-4cff-b3cd-ff99edde3b6c
+		sourceLineageTag: 3c4ff40e-a15b-4332-8e3b-517a7b244900
+		dataCategory: Uncategorized
+
+	column Refreshed
+		dataType: dateTime
+		isHidden
+		formatString: General Number
+		lineageTag: 3f943553-0d76-4810-8580-1cbc18beebfa
+		sourceLineageTag: 44325567-56dc-4504-9984-a263d801ff9d
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Refreshed
+
+		variation Variation
+			isDefault
+			relationship: e6cebfc1-7dc7-4d02-8780-382551c94388
+			defaultHierarchy: LocalDateTable_22abea15-3a2c-4fec-b1a5-ddc2355c4b9f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	partition RefreshedDate = entity
+		mode: directQuery
+		source
+			entityName: RefreshedDate
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

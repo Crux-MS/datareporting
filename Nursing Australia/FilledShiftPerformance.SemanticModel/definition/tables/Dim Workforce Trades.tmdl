@@ -1,0 +1,132 @@
+table 'Dim Workforce Trades'
+	lineageTag: d6ab1004-b3c9-4db2-99e8-56835727fea1
+	sourceLineageTag: cce1b214-74f6-4aef-82dd-ce1e5b09aa51
+
+	column MemberId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a3874ff2-ab06-4de3-af69-adf5847974c0
+		sourceLineageTag: 29927f53-8652-4170-a75a-5d67b71ae51e
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: MemberId
+
+		annotation SummarizationSetBy = User
+
+	column SkilledTrade
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 1aa510d7-eea9-4f8b-acc8-50b4357658e6
+		sourceLineageTag: 1af3fab0-4442-4619-a943-9ecc17845b99
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: SkilledTrade
+
+		annotation SummarizationSetBy = User
+
+	column ClassName
+		dataType: string
+		lineageTag: 8e37556f-62a5-4adf-951c-988b4317c659
+		sourceLineageTag: 6493fa6f-87a4-4815-bd75-defc332a9770
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClassName
+
+		annotation SummarizationSetBy = User
+
+	column AnniversaryDate
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 0f4fcc90-6472-426f-8b63-e0a1dd9669ce
+		sourceLineageTag: 0bd97582-9533-4fed-b863-4a5bb9abde67
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AnniversaryDate
+
+		variation Variation
+			isDefault
+			relationship: 567a4a3b-af2d-4ea8-b1b0-5e6f83201623
+			defaultHierarchy: LocalDateTable_ca158bdf-7a17-48eb-9997-d37f2f6f22e2.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column TrainingInstitution
+		dataType: string
+		lineageTag: db767881-8947-4e9b-aeba-d9e88c4d683f
+		sourceLineageTag: 45e73e75-757d-4bb8-888d-e13c81a58581
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: TrainingInstitution
+
+		annotation SummarizationSetBy = User
+
+	column CompletionDate
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 32fca0c6-6feb-415c-9809-4ae00dbe530e
+		sourceLineageTag: 64ee3201-f646-41d4-8adc-2e0c6e5eeb51
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: CompletionDate
+
+		variation Variation
+			isDefault
+			relationship: 3b35fd5a-8437-4e5f-a187-1f0b44f1fc02
+			defaultHierarchy: LocalDateTable_cf180014-24f1-4b5b-991e-2bce3743a02f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column PracCertNbr
+		dataType: string
+		lineageTag: 0b87fadb-f2e4-4947-b999-fbd020c11be4
+		sourceLineageTag: e942d996-4ef9-4164-b621-e0940fc1135a
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: PracCertNbr
+
+		annotation SummarizationSetBy = User
+
+	column PracCertExpiryDate
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 49b8f60c-56e2-4d44-9839-9e1f1c70cc7a
+		sourceLineageTag: aaec1ea6-3fe4-45e4-8a87-1ff3578e96d7
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: PracCertExpiryDate
+
+		variation Variation
+			isDefault
+			relationship: b14c25b7-1c76-4c26-b333-ac176c70cd41
+			defaultHierarchy: LocalDateTable_dd37b291-55d6-4caa-98a8-085c6db976ca.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column EnabledStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 2a4113c9-aeb2-44a9-9564-1980aac1bb3e
+		sourceLineageTag: 6027fbe5-f57e-447f-875c-a21d5d0b7a25
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: EnabledStatus
+
+		annotation SummarizationSetBy = User
+
+	column Trade
+		dataType: string
+		lineageTag: 2eac322a-8730-4fd3-aa03-fe769c1d3238
+		sourceLineageTag: cda65cbb-8b54-486a-9bd3-a8549e3e58ac
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Trade
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Workforce Trades' = entity
+		mode: directQuery
+		source
+			entityName: Dim Workforce Trades
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

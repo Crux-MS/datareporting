@@ -1,0 +1,459 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "976d2af0966eaa43a20e",
+  "position": {
+    "x": 55,
+    "y": 130,
+    "z": 6000,
+    "height": 565,
+    "width": 790,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurse"
+                    }
+                  },
+                  "Property": "fullname"
+                }
+              },
+              "queryRef": "DimNurse.fullname",
+              "nativeQueryRef": "Worker",
+              "displayName": "Worker"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurse"
+                    }
+                  },
+                  "Property": "gender"
+                }
+              },
+              "queryRef": "DimNurse.gender",
+              "nativeQueryRef": "Gender",
+              "displayName": "Gender"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurseSuburbGeocode"
+                    }
+                  },
+                  "Property": "state"
+                }
+              },
+              "queryRef": "DimNurseSuburbGeocode.state",
+              "nativeQueryRef": "State",
+              "displayName": "State"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurse"
+                    }
+                  },
+                  "Property": "nurse_age_band"
+                }
+              },
+              "queryRef": "DimNurse.nurse_age_band",
+              "nativeQueryRef": "Age band",
+              "displayName": "Age band"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactNurse"
+                    }
+                  },
+                  "Property": "employment_start_date"
+                }
+              },
+              "queryRef": "FactNurse.employment_start_date",
+              "nativeQueryRef": "employment_start_date",
+              "displayName": "Start date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactNurse"
+                    }
+                  },
+                  "Property": "termination_date"
+                }
+              },
+              "queryRef": "FactNurse.termination_date",
+              "nativeQueryRef": "Exit date",
+              "displayName": "Exit date"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountCompletedVisits"
+                }
+              },
+              "queryRef": "FactVisit.CountCompletedVisits",
+              "nativeQueryRef": "Visits completed",
+              "displayName": "Visits completed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "LatestCompletedVisitDate"
+                }
+              },
+              "queryRef": "FactNurse.NurseLatestShiftDate",
+              "nativeQueryRef": "Latest shift date",
+              "displayName": "Latest shift date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurse"
+                    }
+                  },
+                  "Property": "active_ind"
+                }
+              },
+              "queryRef": "DimNurse.active_ind",
+              "nativeQueryRef": "Active worker",
+              "displayName": "Active worker"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimNurse"
+                    }
+                  },
+                  "Property": "drivers_licence_current_ind"
+                }
+              },
+              "queryRef": "DimNurse.drivers_licence_current_ind",
+              "nativeQueryRef": "Drivers licence",
+              "displayName": "Drivers licence"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactVisit"
+                  }
+                },
+                "Property": "CountCompletedVisits"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "125.38506666133927D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurse.fullname"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "81.52380228543029D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactNurse.NurseLatestShiftDate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "55.79173001426009D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurse.active_ind"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "82.27678270546696D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactNurse.employment_start_date"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "81.77832683611149D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.CountCompletedVisits"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "75.21675427384872D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurse.nurse_age_band"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "76.70935820336237D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurse.gender"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "42.48676706351506D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurseSuburbGeocode.state"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "60.29242765679581D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimNurse.drivers_licence_current_ind"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "81.11330054463039D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactNurse.termination_date"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'All workers'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'with expired drivers licenses'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d07019cd807370711370",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimNurse"
+              }
+            },
+            "Property": "fullname"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimNurse",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "fullname"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'AAAwriteover  .'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

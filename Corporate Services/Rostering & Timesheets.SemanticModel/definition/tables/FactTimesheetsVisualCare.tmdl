@@ -1,0 +1,738 @@
+table FactTimesheetsVisualCare
+	lineageTag: 294a95dc-b6c5-48bc-b178-54e73f69270a
+
+	measure CountTimesheets = CALCULATE(COUNT('FactTimesheetsVisualCare'[TimeSheetId]), USERELATIONSHIP('FactRostersVisualCare'[TimeSheetId], 'FactTimesheetsVisualCare'[TimeSheetId]), CROSSFILTER('FactRostersVisualCare'[TimeSheetId], 'FactTimesheetsVisualCare'[TimeSheetId], Both))
+		formatString: 0
+		displayFolder: Timesheets
+		lineageTag: cc3ad3dd-84dc-4d4e-afa4-721789b566da
+
+	measure CountTimesheetVariationApproved = CALCULATE([CountTimesheetVariationRequested], 'FactTimesheetsVisualCare'[VariationApproved] = TRUE())
+		formatString: 0
+		displayFolder: Variation
+		lineageTag: 8efe4c4c-3db5-4626-985d-574d737ad703
+
+	measure CountTimesheetVariationRejected = CALCULATE([CountTimesheetVariationRequested], 'FactTimesheetsVisualCare'[VariationApproved] = FALSE())
+		formatString: 0
+		displayFolder: Variation
+		lineageTag: b7609e0e-54d2-4430-8286-a0a67ca620c6
+
+	measure CountTimesheetVariationRequested = CALCULATE([CountTimesheets], 'FactTimesheetsVisualCare'[Variation] = TRUE())
+		formatString: 0
+		displayFolder: Variation
+		lineageTag: e4ffcd24-7248-4c0b-8211-cea596864fc1
+
+	measure CreatedByUserFullName =
+			VAR _carerId = CALCULATE(FORMAT(SELECTEDVALUE('FactTimesheetsVisualCare'[CarerId]), "General Number"), CROSSFILTER('FactRostersVisualCare'[TimeSheetId], 'FactTimesheetsVisualCare'[TimeSheetId], Both))
+			VAR _workerFullName = CALCULATE(SELECTEDVALUE(DimWorkforceVisualCare[FullName]), CROSSFILTER('FactRostersVisualCare'[TimeSheetId], 'FactTimesheetsVisualCare'[TimeSheetId], Both), CROSSFILTER('FactRostersVisualCare'[CarerId], DimWorkforceVisualCare[CarerId], Both))
+			VAR _createdBy = CALCULATE(SELECTEDVALUE('FactTimesheetsVisualCare'[CreatedBy]), CROSSFILTER('FactRostersVisualCare'[TimeSheetId], 'FactTimesheetsVisualCare'[TimeSheetId], Both))
+			VAR _createdByFullName = CALCULATE(SELECTEDVALUE('DimTimesheetCreatedByUserVisualCare'[Full Name]), CROSSFILTER('FactRostersVisualCare'[TimeSheetId], 'FactTimesheetsVisualCare'[TimeSheetId], Both), CROSSFILTER('FactTimesheetsVisualCare'[CreatedBy], 'DimTimesheetCreatedByUserVisualCare'[Username], Both))
+			VAR _logic = IF(_carerId = _createdBy, _workerFullName, _createdByFullName)
+			RETURN _logic
+		displayFolder: Metadata
+		lineageTag: c41ac6fc-7349-47bf-8097-bd818b4a660d
+
+	measure TimesheetHours = CALCULATE(SUM(FactTimesheetsVisualCare[Minutes])/60, USERELATIONSHIP(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId]), CROSSFILTER(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId], Both))
+		formatString: #,0.0
+		displayFolder: Date/Time
+		lineageTag: 14011d5e-756b-4f9f-af9d-cd599cbcee9a
+
+	measure LatestTimesheetCreatedBy = ```
+			VAR _latestCreatedDate = [LatestTimesheetCreated]
+			VAR _logic = CALCULATE(
+			    [CreatedByUserFullName], 
+			    FILTER(FactTimesheetsVisualCare,
+			        FactTimesheetsVisualCare[CreatedTime] = _latestCreatedDate),
+			    CROSSFILTER(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId], Both), 
+			    CROSSFILTER('DimTimesheetCreatedByUserVisualCare'[Username], FactTimesheetsVisualCare[CreatedBy],Both)
+			)
+			RETURN _logic
+			```
+		lineageTag: 1de66df4-03f5-4200-8dfe-1ee8cefd39bd
+
+	measure LatestTimesheetCreated = CALCULATE(MAX(FactTimesheetsVisualCare[CreatedTime]), USERELATIONSHIP(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId]), CROSSFILTER(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId], Both))
+		formatString: Short Date
+		lineageTag: b90292ae-3186-4e98-8b59-b13ebe9463fe
+
+	measure LatestTimesheetAge = DATEDIFF([LatestTimesheetCreated], TODAY(), DAY)
+		formatString: 0
+		lineageTag: 9d91cfa3-b10d-4004-91d0-7fc1b9448562
+
+	measure SelectedTimesheetsPeriod = FORMAT(MIN(FactTimesheetsVisualCare[DateOfService]), "dd MMM YYYY") & " - " & FORMAT(MAX(FactTimesheetsVisualCare[DateOfService]), "dd MMM yyyy")
+		lineageTag: 1a5c3416-8f14-45ae-a1e6-754cd9439f09
+
+	measure TimesheetAppFinish = CALCULATE(SELECTEDVALUE(FactTimesheetsVisualCare[APP_FinishTime]), USERELATIONSHIP(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId]), CROSSFILTER(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId], Both))
+		formatString: General Date
+		displayFolder: App
+		lineageTag: 57285af3-9481-4393-800e-b25ca8ca53bb
+
+	measure TimesheetAppStart = CALCULATE(SELECTEDVALUE(FactTimesheetsVisualCare[APP_StartTime]), USERELATIONSHIP(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId]), CROSSFILTER(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId], Both))
+		formatString: General Date
+		displayFolder: App
+		lineageTag: 69e233a4-8051-47bd-b40b-9154c79b71d9
+
+	measure VariationHours = CALCULATE(SUM(FactTimesheetsVisualCare[VariationQty])/60, USERELATIONSHIP(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId]), CROSSFILTER(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId], Both), FactTimesheetsVisualCare[VariationQty] >0)
+		formatString: 0.00
+		displayFolder: Variation
+		lineageTag: cc2fe12a-b0f5-4635-8a96-430c78a5a739
+
+	measure 'Self Completed Timesheets %' = ```
+			CALCULATE(
+			    DIVIDE(
+			        SUM(FactTimesheetsVisualCare[SelfCompletedTimesheetFlag]), [CountTimesheets]
+			    ), 
+			    CROSSFILTER(FactRostersVisualCare[TimeSheetId], FactTimesheetsVisualCare[TimeSheetId], Both)
+			)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: c4d2a619-655e-4a92-a2a9-adaaab5ea0e5
+
+	column TimeSheetId
+		dataType: int64
+		formatString: 0
+		displayFolder: Timesheets
+		lineageTag: 1919245d-8288-45d7-a4da-2bb91bbb50aa
+		summarizeBy: none
+		sourceColumn: TimeSheetId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f16fc61f-4008-4b00-a54c-36b3806871d5
+		summarizeBy: count
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CarerId
+		dataType: int64
+		formatString: 0
+		lineageTag: f5d25e44-b469-4d15-a5e1-291d450e03bf
+		summarizeBy: count
+		sourceColumn: CarerId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgreementId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0f4dcef2-5b83-4692-8ab8-cf6e11e32506
+		summarizeBy: count
+		sourceColumn: AgreementId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgreementItemId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 11498c3b-add2-4f7d-9a6b-f06df5aaf85b
+		summarizeBy: count
+		sourceColumn: AgreementItemId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 66ea8919-1014-4003-909d-b83227308fda
+		summarizeBy: count
+		sourceColumn: ServiceId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateOfService
+		dataType: dateTime
+		formatString: Short Date
+		displayFolder: Date/Time
+		lineageTag: 0774040d-0b2b-4e0b-8913-c3078a56267c
+		summarizeBy: none
+		sourceColumn: DateOfService
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column StartTime
+		dataType: dateTime
+		formatString: Long Time
+		displayFolder: Date/Time
+		lineageTag: d2670937-9ad2-4f9d-8749-83369eaea418
+		summarizeBy: none
+		sourceColumn: StartTime
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column Minutes
+		dataType: int64
+		formatString: 0
+		displayFolder: Date/Time
+		lineageTag: e1337f93-604d-4499-9f5d-9efb573c7de7
+		summarizeBy: sum
+		sourceColumn: Minutes
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ChargeRate
+		dataType: double
+		lineageTag: 17a07a4b-c911-4835-9749-3b10cc108edd
+		summarizeBy: sum
+		sourceColumn: ChargeRate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PayRate
+		dataType: double
+		lineageTag: 456c6fb2-39e2-4e3e-9886-844ea072a796
+		summarizeBy: sum
+		sourceColumn: PayRate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column FixedFee
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: 7217ab12-0246-4810-81b2-f3c408680c2b
+		summarizeBy: none
+		sourceColumn: FixedFee
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KM
+		dataType: int64
+		formatString: 0
+		displayFolder: Distance
+		lineageTag: abe6face-01bf-4e72-b753-25257341a65c
+		summarizeBy: sum
+		sourceColumn: KM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KMCharge
+		dataType: int64
+		formatString: 0
+		displayFolder: Distance
+		lineageTag: c4895c8a-3d9a-4fd5-86a8-ceb1f02313c9
+		summarizeBy: sum
+		sourceColumn: KMCharge
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KMNoCharge
+		dataType: int64
+		formatString: 0
+		displayFolder: Distance
+		lineageTag: d608e2d9-43e5-4599-b9d5-7cc5e3f6c085
+		summarizeBy: sum
+		sourceColumn: KMNoCharge
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KMTravelTime
+		dataType: int64
+		formatString: 0
+		displayFolder: Date/Time
+		lineageTag: e9a572f6-b715-4bd5-af12-64997391d21a
+		summarizeBy: sum
+		sourceColumn: KMTravelTime
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Variation
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Variation
+		lineageTag: 5160e49a-c7e1-47b0-937c-1bfd6cf8b79c
+		summarizeBy: none
+		sourceColumn: Variation
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column VariationQty
+		dataType: int64
+		formatString: 0
+		displayFolder: Variation
+		lineageTag: b454bc4d-04dd-4d7c-bc44-31fa7a683bba
+		summarizeBy: sum
+		sourceColumn: VariationQty
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column VariationComment
+		dataType: string
+		displayFolder: Variation
+		lineageTag: 93645589-24ab-4352-a6c3-4f0a10755c32
+		summarizeBy: none
+		sourceColumn: VariationComment
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column VariationApproved
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Variation
+		lineageTag: db003751-bc2f-4e04-b88c-03179b51c258
+		summarizeBy: none
+		sourceColumn: VariationApproved
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExtraChargeClient
+		dataType: int64
+		formatString: 0
+		lineageTag: c504c115-117e-44aa-a6a0-1f87397f0d33
+		summarizeBy: sum
+		sourceColumn: ExtraChargeClient
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column BreakStartTime1
+		dataType: dateTime
+		formatString: Long Time
+		displayFolder: Date/Time
+		lineageTag: 7bd46139-f5ea-43d6-8d6e-e47fa3cb816e
+		summarizeBy: none
+		sourceColumn: BreakStartTime1
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column BreakMinutes1
+		dataType: int64
+		formatString: 0
+		displayFolder: Date/Time
+		lineageTag: 77200264-0cea-482c-b233-a43a40edbd15
+		summarizeBy: sum
+		sourceColumn: BreakMinutes1
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column BreakMinutes2
+		dataType: string
+		displayFolder: Date/Time
+		lineageTag: dae91322-fd64-4f0e-9a4b-4e02d35d4910
+		summarizeBy: none
+		sourceColumn: BreakMinutes2
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RecurrenceId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: af2c5594-51fd-4951-b2c3-a6bdfe239db1
+		summarizeBy: count
+		sourceColumn: RecurrenceId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldType
+		dataType: string
+		displayFolder: On hold
+		lineageTag: 065a21aa-32c6-4f9a-8499-db352b4450ac
+		summarizeBy: none
+		sourceColumn: OnHoldType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldNote
+		dataType: string
+		displayFolder: On hold
+		lineageTag: 43bba21c-f557-4d17-8664-e4f1bede6890
+		summarizeBy: none
+		sourceColumn: OnHoldNote
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldCode
+		dataType: string
+		displayFolder: On hold
+		lineageTag: ca8d3fec-764d-418c-a25b-0753574d49b2
+		summarizeBy: none
+		sourceColumn: OnHoldCode
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldChargePer
+		dataType: int64
+		formatString: 0
+		displayFolder: On hold
+		lineageTag: 6abb6eac-c69a-4bdd-8b53-d48d8b0d596d
+		summarizeBy: sum
+		sourceColumn: OnHoldChargePer
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldPayMinutes
+		dataType: int64
+		formatString: 0
+		displayFolder: On hold
+		lineageTag: d52cc7ff-0623-4f85-8737-c9a3edf926e5
+		summarizeBy: sum
+		sourceColumn: OnHoldPayMinutes
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldDateTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: On hold
+		lineageTag: c65de250-7fa0-4f9d-8c71-4c75c4354ef5
+		summarizeBy: none
+		sourceColumn: OnHoldDateTime
+
+		variation Variation
+			isDefault
+			relationship: 0e2d37fc-c89f-4301-857a-7c965d029715
+			defaultHierarchy: LocalDateTable_e7387aec-c42b-4816-b737-a36b30bde474.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RosterItemId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6443be91-774e-4d0e-a9c6-25ba75e29cb6
+		summarizeBy: count
+		sourceColumn: RosterItemId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column APP_IP
+		dataType: string
+		displayFolder: App
+		lineageTag: ed46c134-3aa3-4efd-a47f-d3099243421a
+		summarizeBy: none
+		sourceColumn: APP_IP
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column APP_StartTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: App
+		lineageTag: 42d4d99c-6764-4ff1-b2cc-c514270acc62
+		summarizeBy: none
+		sourceColumn: APP_StartTime
+
+		variation Variation
+			isDefault
+			relationship: b422c472-800c-440c-8eb4-d9c7e6b870ac
+			defaultHierarchy: LocalDateTable_f9afe09e-003b-4b5b-a4f5-3f734676cf48.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column APP_FinishTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: App
+		lineageTag: 56e67576-5a6c-4bc0-aab0-f62c8b433acf
+		summarizeBy: none
+		sourceColumn: APP_FinishTime
+
+		variation Variation
+			isDefault
+			relationship: 31493a75-a285-43d8-9f47-4672c16a0ffd
+			defaultHierarchy: LocalDateTable_26a72d32-a36a-41ff-a74c-01ec515aeb52.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column APP_LastLongtitude
+		dataType: double
+		displayFolder: App
+		lineageTag: 62fdaebf-3f30-4430-bfcc-24b26f612205
+		summarizeBy: sum
+		sourceColumn: APP_LastLongtitude
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column APP_LastLatitude
+		dataType: double
+		displayFolder: App
+		lineageTag: 61fbeed1-55e6-42d5-bb2e-089927217c67
+		summarizeBy: sum
+		sourceColumn: APP_LastLatitude
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column HasExported
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: 960229b9-2290-4b16-9774-3ff21b036654
+		summarizeBy: none
+		sourceColumn: HasExported
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExportInvoiceNumber
+		dataType: string
+		lineageTag: 17b23e94-3096-492e-ac6b-743ecb60063d
+		summarizeBy: none
+		sourceColumn: ExportInvoiceNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DEXCaseId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4c62287e-81db-4c08-9c93-c572821df9ce
+		summarizeBy: count
+		sourceColumn: DEXCaseId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DEXServiceTypeId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4e964b46-1e9b-4c4d-86c1-ab374fd6996e
+		summarizeBy: count
+		sourceColumn: DEXServiceTypeId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DEXSessionId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 03a49056-52fc-4bcc-b142-20d9b14beb9a
+		summarizeBy: count
+		sourceColumn: DEXSessionId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderNumber
+		dataType: string
+		lineageTag: 177c14f1-a2e7-4cf7-b179-e10bbb9d4a0c
+		summarizeBy: none
+		sourceColumn: OrderNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastModified
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: Metadata
+		lineageTag: b90ce8d3-70b7-467f-a47d-14562563378e
+		summarizeBy: none
+		sourceColumn: LastModified
+
+		variation Variation
+			isDefault
+			relationship: 90d3a054-022c-4338-9ef2-9c115de2639f
+			defaultHierarchy: LocalDateTable_4b124567-f382-48e6-9122-9fa828f1fcae.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastModifiedBy
+		dataType: string
+		displayFolder: Metadata
+		lineageTag: e0ff50b4-5e25-4563-9aac-72ff1bbabea0
+		summarizeBy: none
+		sourceColumn: LastModifiedBy
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: Metadata
+		lineageTag: 336981b4-9a4d-4c44-8da1-45ea04c80b07
+		summarizeBy: none
+		sourceColumn: CreatedTime
+
+		variation Variation
+			isDefault
+			relationship: a527567b-15c6-4b8c-9245-82eff5bb1f9b
+			defaultHierarchy: LocalDateTable_c73e2f0e-087c-4ebc-ba22-f1a9caea26e9.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedBy
+		dataType: string
+		displayFolder: Metadata
+		lineageTag: 66fffc68-999c-4a9e-8162-0c01f373f2a5
+		summarizeBy: none
+		sourceColumn: CreatedBy
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		displayFolder: Flags
+		lineageTag: 2b1fe2c1-4175-4cda-aa8b-5004956709ba
+		summarizeBy: none
+		sourceColumn: Status
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Area3Desc
+		dataType: string
+		lineageTag: 6f02d8f6-d146-4864-b01b-393f4f18901b
+		summarizeBy: none
+		sourceColumn: Area3Desc
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column cArea3Desc
+		dataType: string
+		lineageTag: d648883c-614c-43ae-ab12-f08c4a34dcbd
+		summarizeBy: none
+		sourceColumn: cArea3Desc
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SelfCompletedTimesheetFlag
+		dataType: int64
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 788c92d5-a974-4a4f-822d-26778cf6e1e8
+		summarizeBy: count
+		sourceColumn: SelfCompletedTimesheetFlag
+
+		annotation SummarizationSetBy = User
+
+	partition FactTimesheetsVisualCare = m
+		mode: import
+		queryGroup: Timesheets
+		source = ```
+				let
+				    Source = #"Timesheets - Source",
+				    #"Removed Columns" = Table.RemoveColumns(Source,{"Notes"}),
+				    #"Added Custom" = Table.AddColumn(#"Removed Columns", "SelfCompletedTimesheetFlag", each let 
+				createdby = [CreatedBy],
+				carerid = [CarerId],
+				tryConvert = try Number.FromText(Text.Trim(createdby)) otherwise null 
+				in 
+				if tryConvert = null then 0
+				else if tryConvert = carerid then 1
+				else 0),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"SelfCompletedTimesheetFlag", Int64.Type}})
+				in
+				    #"Changed Type"
+				```
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

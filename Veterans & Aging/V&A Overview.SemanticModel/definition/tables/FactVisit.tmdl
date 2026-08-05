@@ -1,0 +1,388 @@
+table FactVisit
+	lineageTag: baa6fd1f-a2c0-4943-b847-9aaa86f193d3
+
+	measure CountVisits =
+			CALCULATE(
+			    COUNT(FactVisit[visit_id]),
+			    CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: eb0719aa-0897-4e91-8770-9c7741104a3d
+
+	measure LatestCompletedVisitDate = CALCULATE(MAX(FactVisit[visit_date]), FactVisit[status] = "Completed")
+		formatString: Short Date
+		displayFolder: Dates/Times
+		lineageTag: 7a9ec646-0601-4077-a31e-6a52e5c00f88
+
+	measure CountCompletedVisits = CALCULATE([CountVisits], FactVisit[status] = "Completed", CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 34a7e31a-f86e-40e5-8309-1fc9a954d5e6
+
+	measure TravelTimeToNextHrs = CALCULATE(DIVIDE(SUM(FactVisit[travel_time_to_next]), 60), CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		displayFolder: Duration
+		lineageTag: ffbd316b-192f-45bd-ac71-8dfc96dfeb5f
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure AvgVisitDuration = CALCULATE(AVERAGE(FactVisit[visit_duration]),CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		displayFolder: Duration
+		lineageTag: 4b9e279a-0d9b-46e7-b982-54328c9d4f7b
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure TotalDistanceToNext =
+			CALCULATE(
+			    SUM(FactVisit[distance_to_next]),
+			    CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		lineageTag: ad373d6f-3d68-44ab-8ff7-84cb32329dc4
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure TotalCopaymentDue =
+			CALCULATE(
+			    SUM(FactVisit[co_payment_due]),
+			    CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Dollars
+		lineageTag: f98d1cd5-688c-4da8-a7d1-bff839f824dc
+
+	measure TotalCopaymentReceived =
+			CALCULATE(
+			    SUM(FactVisit[co_payment_received]),
+			    CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Dollars
+		lineageTag: 01fc5a45-79ad-4139-a506-ffd93dd15b05
+
+	measure EarliestVisitDate = CALCULATE(MIN(FactVisit[visit_date]))
+		formatString: Short Date
+		displayFolder: Dates/Times
+		lineageTag: dc0f3033-5055-4bd2-8e4d-7d68dab569a6
+
+	measure CountVisitsWithTravel = CALCULATE([CountVisits], FactVisit[travel_time_to_next] > 0 || FactVisit[travel_time_to_next] <> BLANK())
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 2baebea8-affa-4cb0-8417-76cf272dffa4
+
+	measure CountVisitPatients =
+			CALCULATE(
+			    DISTINCTCOUNT(FactVisit[patient_id]),
+			    CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: f61d9381-a650-4e40-afbf-eb1e219b02ba
+
+	measure ServicePlanNumber = CALCULATE(SELECTEDVALUE(DimPatientServicePlans[Service Plan Number]), CROSSFILTER(BridgeDVANumber[dva_number], DimPatientServicePlans[DVA file number], Both))
+		formatString: 0
+		lineageTag: 99b248b5-59d0-4f69-90b3-c5368ba0a968
+
+	measure CountCancelledVisits = CALCULATE([CountVisits], FactVisit[status] = "Cancelled", CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 76047d03-2d4a-41e1-bfe9-5e00ee428b2b
+
+	measure CountNewVisits = CALCULATE([CountVisits], FactVisit[status] = "New Visit", CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 7fc40025-8b71-4c88-aceb-a9e1bef780bb
+
+	measure CountOnHoldVisits = CALCULATE([CountVisits], FactVisit[status] = "On Hold", CROSSFILTER(FactPatient[patient_id], DimPatient[patient_id], Both))
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 076c1164-b70b-43ef-b1fd-3ce69f12a894
+
+	measure VisitDVANumber = CALCULATE(MAX(FactPatient[dva_number]))
+		lineageTag: 917d5a3b-4ea6-47d3-b035-c14c0b0d43a6
+
+	measure CountUncompletedVisits = [CountCancelledVisits] + [CountNewVisits] + [CountOnHoldVisits]
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 44da7b04-b48f-4f0a-b9f9-3054c9a177bd
+
+	measure CountVisitsNoDVANumber = CALCULATE([CountVisits], FactPatient[dva_number] = BLANK() || FactPatient[dva_number] = "." || FactPatient[dva_number] = ",")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 86968b66-f0b3-43c3-a786-551addadb3db
+
+	column visit_id
+		dataType: int64
+		formatString: 0
+		lineageTag: ddec7d11-5fc0-4478-bfcf-c8a2bc11fc03
+		summarizeBy: none
+		sourceColumn: visit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column service_type_id
+		dataType: int64
+		formatString: 0
+		lineageTag: acb1a4f2-2339-4f6f-a9df-9e6c5f9d626c
+		summarizeBy: none
+		sourceColumn: service_type_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column nurse_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b6441c79-b475-4255-924a-aa81e000f614
+		summarizeBy: none
+		sourceColumn: nurse_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 4a8fec34-b6a5-4bbe-9ed2-a04e64cb9064
+		summarizeBy: none
+		sourceColumn: patient_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column visit_date
+		dataType: dateTime
+		formatString: Short Date
+		displayFolder: Dates/Times
+		lineageTag: 535bda7e-0997-4924-ae70-440d9d7373ac
+		summarizeBy: none
+		sourceColumn: visit_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column visit_duration
+		dataType: int64
+		formatString: #,0
+		displayFolder: Duration
+		lineageTag: 7555d09f-3f4a-470c-9980-a707dad854f5
+		summarizeBy: sum
+		sourceColumn: visit_duration
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"FactVisit","TableItemName":"visit_duration (bins)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column travel_time_to_next
+		dataType: double
+		formatString: #,0
+		displayFolder: Duration
+		lineageTag: 95bbcb3d-9ad4-43ff-83d8-035e1178ee4c
+		summarizeBy: sum
+		sourceColumn: travel_time_to_next
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column distance_to_next
+		dataType: double
+		formatString: #,0
+		lineageTag: 477f7b92-8965-4633-bea5-b806a058640b
+		summarizeBy: sum
+		sourceColumn: distance_to_next
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column co_payment_due
+		dataType: double
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Dollars
+		lineageTag: 942f040c-d5c0-43be-bf6c-18fb56b26b7f
+		summarizeBy: sum
+		sourceColumn: co_payment_due
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column co_payment_received
+		dataType: double
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Dollars
+		lineageTag: 97f2fe7a-6db9-4231-b4d4-057411446507
+		summarizeBy: sum
+		sourceColumn: co_payment_received
+
+		annotation SummarizationSetBy = Automatic
+
+	column created_by
+		dataType: int64
+		formatString: 0
+		lineageTag: 788268bc-2737-45e4-94e4-ae9c2341337a
+		summarizeBy: sum
+		sourceColumn: created_by
+
+		annotation SummarizationSetBy = Automatic
+
+	column create_timestamp
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: Dates/Times
+		lineageTag: 1bc80df7-ba3f-4cea-8759-532911bd70b2
+		summarizeBy: none
+		sourceColumn: create_timestamp
+
+		variation Variation
+			isDefault
+			relationship: 01a2e99d-ffe9-4953-bb7c-ad00fa5f33d1
+			defaultHierarchy: LocalDateTable_8246da73-b29b-499c-a3af-a180bf1d14f3.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column modified_by
+		dataType: string
+		lineageTag: 6cd25a32-2cb6-4582-b318-49c2de1aeb1f
+		summarizeBy: none
+		sourceColumn: modified_by
+
+		annotation SummarizationSetBy = Automatic
+
+	column modified_timestamp
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: Dates/Times
+		lineageTag: 53164c83-977f-4994-8cb2-99d3a7cc4895
+		summarizeBy: none
+		sourceColumn: modified_timestamp
+
+		variation Variation
+			isDefault
+			relationship: cd5923c7-d8fe-48e5-8273-2b7eaff69950
+			defaultHierarchy: LocalDateTable_87563490-d5a1-4157-bd38-590a449e9988.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: 7a70a13f-4fbf-4369-b936-f561467df773
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'visit_duration (bins)' =
+			IF(
+				ISBLANK('FactVisit'[visit_duration]),
+				BLANK(),
+				INT('FactVisit'[visit_duration] / 10) * 10
+			)
+		formatString: #,0
+		displayFolder: Duration
+		lineageTag: 10628408-497a-46ef-9dd9-c4705bf50d43
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "FactVisit"
+				          }
+				        },
+				        "Property": "visit_duration"
+				      }
+				    }
+				  ],
+				  "binningMetadata": {
+				    "binSize": {
+				      "value": 10.0,
+				      "unit": 0
+				    }
+				  }
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"f","Entity":"FactVisit"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"visit_duration"}}],"BinItem":{"Expression":{"Floor":{"Expression":{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"visit_duration"}},"Size":10.0}}}}
+
+		annotation SummarizationSetBy = Automatic
+
+	column VHCReference =
+			VAR _visitDate = INT(FactVisit[visit_date])
+			VAR _fullPatientID = FactVisit[patient_id]
+			VAR _patientId = RIGHT(_fullPatientID, 4)
+			VAR _patienRawState = CALCULATE(SELECTEDVALUE(DimPatient[patient_state]))
+			VAR _state = CALCULATE(LEFT(MAX(DimPatient[patient_state]),1), DimPatient[patient_id] = _fullPatientID)
+			VAR _serviceType = CALCULATE(MAX(DimServiceTypes[ServiceType]), CROSSFILTER(DimServiceTypes[service_id], FactVisit[service_type_id], Both))
+			RETURN _state & _visitDate & _patientId & _serviceType
+		lineageTag: 552c2836-8801-457c-839f-48bbecaa6148
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedAfterVisitDateFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: 1de92695-f878-481b-8a5d-dc2df5455794
+		summarizeBy: none
+		sourceColumn: ModifiedAfterVisitDateFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column ModifiedDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		displayFolder: Dates/Times
+		lineageTag: 90b8b8be-daa5-46d3-9aae-75603e95232e
+		summarizeBy: none
+		sourceColumn: ModifiedDateKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column VisitModifiedFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
+		lineageTag: ad286673-a804-4437-92ac-9c44f7c020c7
+		summarizeBy: none
+		sourceColumn: VisitModifiedFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column VisitDurationHours
+		dataType: double
+		displayFolder: Duration
+		lineageTag: bfa0b450-b73d-4cd8-a002-728d127ed389
+		summarizeBy: sum
+		sourceColumn: VisitDurationHours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition FactVisit = m
+		mode: import
+		queryGroup: Visits
+		source =
+				let
+				    Source = Table.Combine({#"FactVisitVIC - Source", #"FactVisitNSW - Source", #"FactVisitWA - Source", #"FactVisitSA - Source", #"FactVisitQLD - Source"}),
+				    #"Inserted Date" = Table.AddColumn(Source, "ModifiedDateKey", each DateTime.Date([modified_timestamp]), type date)
+				in
+				    #"Inserted Date"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

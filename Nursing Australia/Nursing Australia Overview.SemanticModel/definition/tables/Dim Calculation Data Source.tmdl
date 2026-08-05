@@ -1,0 +1,45 @@
+table 'Dim Calculation Data Source'
+	isHidden
+	lineageTag: dd6ee150-65bc-4a3c-b5ec-4ddebc68ba39
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 10b0c35d-d424-4165-9c82-eaa9e7fd8945
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Source'
+		dataType: string
+		isHidden
+		lineageTag: 525e9a85-dd8d-4b9d-b9eb-abf8d6a98e2d
+		summarizeBy: none
+		sourceColumn: Data Source
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculation Data Source' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Data Source"}),
+				    #"Expanded Data Source" = Table.ExpandListColumn(#"Removed Other Columns", "Data Source"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Data Source",{{"Data Source", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

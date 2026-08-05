@@ -1,0 +1,246 @@
+table DimPatientReferralDate
+	lineageTag: 61a8c414-429e-45af-8309-ba2d4cb1f91f
+
+	measure 'Patient Referral Year Flag' =
+			VAR _selectedDate = CALCULATE(MAX('DimPatientReferralDate'[PatientReferralDate]))//, CROSSFILTER(DimPatientStartDate[Date], FactPatient[care_start_date], Both))
+			VAR _startDate = EOMONTH(_selectedDate, -12)+1
+			VAR _endDate = EOMONTH(_selectedDate, 0)
+			VAR _selectedStartDate = MAX(DimPatientReferralDate[PatientReferralDate])
+			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
+			    1,
+			    0)
+			RETURN _logic
+		formatString: 0
+		lineageTag: 589a9a28-21e7-4985-b50a-e7d500b0b1db
+
+	column PatientReferralDate
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 34566000-a83d-4347-bbfe-bc375817bbeb
+		summarizeBy: none
+		sourceColumn: PatientReferralDate
+
+		variation Variation
+			isDefault
+			relationship: e73458f1-5044-4695-943e-cffc9fb03e11
+			defaultHierarchy: LocalDateTable_64729848-083f-4b68-aed0-ae721c5e1e28.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: dc1e250a-8e66-4559-9c9d-1c9d3dfbabfb
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 659857bd-b0ed-4659-a98b-5b9c2f5b6a4f
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: f0fe4432-852c-45dc-ab20-8de6fed23cb6
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 37225afa-85f7-485e-a995-4c8273e2fcd4
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 81e269c9-0302-46c6-9193-c47666595724
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 94037cef-8ba1-42c5-858d-741d4c01fd6a
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 7e7f3f81-9621-4b2d-bcc7-6ffd762a7b71
+		summarizeBy: none
+		sourceColumn: DayName
+		sortByColumn: DayOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 864876f6-4aab-4e65-8882-fecf0479e394
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 67733cc2-03c9-4072-adeb-19da7e5b54b1
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		variation Variation
+			isDefault
+			relationship: 6ee81079-3251-4d1d-8700-b562117feb3b
+			defaultHierarchy: LocalDateTable_ffd26e0f-11ae-46fd-b3ee-c490e0daa77d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 97354647-f66a-4ad4-aa27-ba98679ec36f
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: e25bb8f2-3eca-4be6-8fed-c2cf5a2215e4
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 1254e283-3648-43ce-a2db-174be6f2a0fe
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'd MMM'
+		dataType: string
+		lineageTag: cac9ea5b-7c26-4600-9914-5fbca344da30
+		summarizeBy: none
+		sourceColumn: d MMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column MMdd
+		dataType: int64
+		formatString: 0
+		lineageTag: f8485346-51c6-4e3b-81a2-5e49e61c97d3
+		summarizeBy: sum
+		sourceColumn: MMdd
+
+		annotation SummarizationSetBy = Automatic
+
+	column FortnightOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: e44edafb-b27d-4cf3-98bb-dc608d02666b
+		summarizeBy: sum
+		sourceColumn: FortnightOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYFF
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b070e655-e3e3-4ed0-af8c-385094c6f6a9
+		summarizeBy: sum
+		sourceColumn: YYYYFF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'FF (DD MMM YYYY)'
+		dataType: string
+		lineageTag: fa97fec7-68f9-433c-b4d9-b434c55d3136
+		summarizeBy: none
+		sourceColumn: FF (DD MMM YYYY)
+		sortByColumn: YYYYFF
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: bef2d64c-dbfe-4e90-9b73-bb319510b0e1
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		variation Variation
+			isDefault
+			relationship: 1c2a1e1b-2f20-4502-a048-997b8d0a2249
+			defaultHierarchy: LocalDateTable_b045e747-094c-4504-8f01-ba18001cec3f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column SlicerStartOfWeek
+		dataType: string
+		lineageTag: 31890d76-028b-4111-8f6e-292b67f6a6a5
+		summarizeBy: none
+		sourceColumn: SlicerStartOfWeek
+		sortByColumn: StartOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimPatientReferralDate = m
+		mode: import
+		queryGroup: Patients
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "PatientReferralDate"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

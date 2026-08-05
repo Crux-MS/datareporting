@@ -1,0 +1,218 @@
+table DimPatientServicePlans
+	lineageTag: f1875024-bede-4122-b3d5-3f1cd323e062
+
+	measure 'Reason code' = IF(ISINSCOPE(BridgeDVANumber[dva_number]), "", BLANK())
+		lineageTag: f9f66ecc-3545-4ce2-9720-d27d22bfd044
+
+	measure 'Reason description text' = IF(ISINSCOPE(BridgeDVANumber[dva_number]), "", BLANK())
+		lineageTag: 7bd5f36f-5e18-402d-83de-a0ea35aab567
+
+	measure VisitWithinActivePeriod = ```
+			VAR _visitDate = SELECTEDVALUE(DimVisitDate[VisitDate])
+			VAR _dvaNumber = SELECTEDVALUE(DimPatientServicePlans[DVA file number])
+			VAR _servicePlanIndex = CALCULATETABLE(VALUES(DimPatientServicePlans[ServicePlanIndex]), DimPatientServicePlans[DVA file number] = _dvaNumber, DimPatientServicePlans[Period status] = "Active")
+			VAR _maxServicePlanIndex = CALCULATE(MAX(DimPatientServicePlans[ServicePlanIndex]), DimPatientServicePlans[DVA file number] = _dvaNumber, DimPatientServicePlans[Period status] = "Active")
+			VAR _servicePlanDate = CALCULATE(
+			    // MAX(BridgePatientServicePlanActiveDates[ServicePlanIndex]),
+			    SELECTEDVALUE(BridgePatientServicePlanActiveDates[ActiveDate]), 
+			    BridgePatientServicePlanActiveDates[ServicePlanIndex] = _maxServicePlanIndex, BridgePatientServicePlanActiveDates[ActiveDate] = _visitDate)
+			RETURN _servicePlanDate
+			```
+		formatString: General Date
+		lineageTag: 8c2e8aa8-3b7e-490f-82c2-4328c0e498bd
+
+	column 'DVA file number'
+		dataType: string
+		lineageTag: 6c3e9cc3-5a99-43df-ad00-97d1d6e03323
+		summarizeBy: none
+		sourceColumn: DVA file number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Plan Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: ea4e590a-6551-4636-9617-65c4f82c2e04
+		summarizeBy: none
+		sourceColumn: Service Plan Number
+
+		annotation SummarizationSetBy = User
+
+	column 'DVA Card State'
+		dataType: string
+		lineageTag: ab7e7053-f3ad-4d9c-b128-0737a6249bae
+		summarizeBy: none
+		sourceColumn: DVA Card State
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Approved hours'
+		dataType: double
+		lineageTag: 13ce6bf9-04cf-4f0d-bdb8-3d84fb318d90
+		summarizeBy: sum
+		sourceColumn: Approved hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Frequencey
+		dataType: string
+		lineageTag: 49da736f-6d5e-41f7-b4d1-b6ac4564a403
+		summarizeBy: none
+		sourceColumn: Frequencey
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Type'
+		dataType: string
+		lineageTag: f805cca3-2590-4a44-a4ea-47d66ffee24b
+		summarizeBy: none
+		sourceColumn: Service Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service start date'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 2c769738-c58e-490a-95aa-e51dc8463b79
+		summarizeBy: none
+		sourceColumn: Service start date
+
+		variation Variation
+			isDefault
+			relationship: 4e99d973-ba0d-4f00-ae7a-f1dcba209ea3
+			defaultHierarchy: LocalDateTable_480fd4b0-3a73-43eb-97cb-c6cf7c046157.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Period status'
+		dataType: string
+		lineageTag: 7af7056c-1c7d-4c68-bffc-0ab7019438f4
+		summarizeBy: none
+		sourceColumn: Period status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service end date'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: a0d10a31-bda9-4f8f-8105-7b5024eb8216
+		summarizeBy: none
+		sourceColumn: Service end date
+
+		variation Variation
+			isDefault
+			relationship: 1d915701-4674-4357-bc2f-d5389f2751bb
+			defaultHierarchy: LocalDateTable_c156b093-8d54-4eda-9b99-95b4aa389c07.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Region
+		dataType: string
+		lineageTag: 17a4dbcb-8031-40ed-99aa-5c4926153163
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExtractDate
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6666263b-8226-4766-947f-94a4659a7fe9
+		summarizeBy: none
+		sourceColumn: ExtractDate
+
+		variation Variation
+			isDefault
+			relationship: 85e9adaa-a2df-45ef-9e4e-6cdf0e7ab081
+			defaultHierarchy: LocalDateTable_cfcfe657-7b9f-4709-acb7-f6a72f593720.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Information for Service Plans'
+		dataType: string
+		lineageTag: 80fdbc01-5f6c-4578-a66f-402b616008a7
+		summarizeBy: none
+		sourceColumn: Information for Service Plans
+
+		annotation SummarizationSetBy = Automatic
+
+	column LatestVHCExtractFlag
+		dataType: int64
+		formatString: 0
+		lineageTag: e717dd89-89fd-4a0d-bd29-937746ae323b
+		summarizeBy: none
+		sourceColumn: LatestVHCExtractFlag
+
+		annotation SummarizationSetBy = User
+
+	column ServicePeriodCode
+		dataType: int64
+		formatString: 0
+		lineageTag: a50acb7c-b8de-4604-b23b-698805d7092c
+		summarizeBy: count
+		sourceColumn: ServicePeriodCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServicePlanIndex
+		dataType: double
+		lineageTag: d1a3c924-a019-4bf5-8ca3-746ccedb034b
+		summarizeBy: none
+		sourceColumn: ServicePlanIndex
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition DimPatientServicePlans = m
+		mode: import
+		queryGroup: Services
+		source = ```
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/PHPTeam-Finance-VETs/", [ApiVersion = 15]),
+				    #"Filtered Rows" = Table.SelectRows(Source, each Text.Contains([Folder Path], "https://cruxscss.sharepoint.com/sites/PHPTeam-Finance-VETs/Shared Documents/Finance - VETs/VHC Billing/VHC Monthly Billing/Master List of Service IDs/Service Plan Update Records/")),
+				    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Filtered Rows", "ExtractDate", each Text.BeforeDelimiter([Name], " "), type text),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Inserted Text Before Delimiter",{{"ExtractDate", type date}}),
+				    #"Filtered Hidden Files1" = Table.SelectRows(#"Changed Type1", each [Attributes]?[Hidden]? <> true),
+				    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File (2)", each #"Transform File (2)"([Content])),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Invoke Custom Function1",{"Transform File (2)", "ExtractDate"}),
+				    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns", "Transform File (2)", Table.ColumnNames(#"Transform File (2)"(#"Sample File (2)"))),
+				    #"Filtered Rows1" = Table.SelectRows(#"Expanded Table Column1", each ([Service description] <> "" and [Service description] <> "Home and garden maintenance")),
+				    #"Added Custom" = Table.AddColumn(#"Filtered Rows1", "PlanKey", each [DVA file number] & [Service Plan Number]),
+				    #"Added Index" = Table.AddIndexColumn(#"Added Custom", "ServicePlanIndex", 0, 1, Int64.Type),
+				    #"Grouped Rows" = Table.Group(#"Added Index", {"DVA file number"}, {{"AllExtracts", each _, type table [DVA file number=text, Client family name=text, #"Client given name(s)"=text, Client title=text, DOB=text, Age=text, Address=text, Contact number=text, Mobile number=text, Service Plan Number=text, Priority=text, Managing Assessment Agency name=text, VHC Service provider display name=text, Region=text, Client Contact=text, Relationship to client=text, Client Contact Phone Number=text, Client Contact Mobile Number=text, Service description=text, Approved hours=text, Frequencey=text, Service instruction=text, Service start date=text, Service end date=text, Period Approved hours=text, #"Period Co-payment"=text, Period start date=text, Period end date=text, Period status=text, Important Client Information=text, Information for Service Plans=text, ExtractDate=nullable date, PlanKey=text, ServicePlanIndex=number]}}),
+				    #"Add index to each dva file number" = #"Table.TransformColumns"(
+				        #"Grouped Rows",
+				        {
+				            "AllExtracts", 
+				            each Table.AddIndexColumn(
+				                Table.Sort(_, {{"ExtractDate", Order.Descending}}), 
+				                "LatestVHCExtractFlag", 0, 1, Int64.Type), 
+				                type table [DVA file number=text, Client family name=text, #"Client given name(s)"=text, Client title=text, DOB=text, Age=text, Address=text, Contact number=text, Mobile number=text, Service Plan Number=text, Priority=text, Managing Assessment Agency name=text, VHC Service provider display name=text, Region=text, Client Contact=text, Relationship to client=text, Client Contact Phone Number=text, Client Contact Mobile Number=text, Service description=text, Approved hours=text, Frequencey=text, Service instruction=text, Service start date=text, Service end date=text, Period Approved hours=text, #"Period Co-payment"=text, Period start date=text, Period end date=text, Period status=text, Important Client Information=text, Information for Service Plans=text, ExtractDate=nullable date, PlanKey=text, ServicePlanIndex=number]}),
+				    #"Expanded AllExtracts" = Table.ExpandTableColumn(#"Add index to each dva file number", "AllExtracts", {"Client family name", "Client given name(s)", "Client title", "DOB", "Age", "Address", "Contact number", "Mobile number", "Service Plan Number", "Priority", "Managing Assessment Agency name", "VHC Service provider display name", "Region", "Client Contact", "Relationship to client", "Client Contact Phone Number", "Client Contact Mobile Number", "Service description", "Approved hours", "Frequencey", "Service instruction", "Service start date", "Service end date", "Period Approved hours", "Period Co-payment", "Period start date", "Period end date", "Period status", "Important Client Information", "Information for Service Plans", "ExtractDate", "PlanKey", "LatestVHCExtractFlag", "ServicePlanIndex"}, {"Client family name", "Client given name(s)", "Client title", "DOB", "Age", "Address", "Contact number", "Mobile number", "Service Plan Number", "Priority", "Managing Assessment Agency name", "VHC Service provider display name", "Region", "Client Contact", "Relationship to client", "Client Contact Phone Number", "Client Contact Mobile Number", "Service description", "Approved hours", "Frequencey", "Service instruction", "Service start date", "Service end date", "Period Approved hours", "Period Co-payment", "Period start date", "Period end date", "Period status", "Important Client Information", "Information for Service Plans", "ExtractDate", "PlanKey", "LatestVHCExtractFlag", "ServicePlanIndex"}),
+				    #"Added Service Type" = Table.AddColumn(#"Expanded AllExtracts", "Service Type", each if Text.Contains([Service description], "Domestic") then "DA" else if Text.Contains([Service description], "Personal") then "PC" else if Text.Contains([Service description], "Respite") then "RI" else null),
+				    #"Added Conditional Column" = Table.AddColumn(#"Added Service Type", "ServicePeriodCode", each if [Frequencey] = "Weekly" then 1 else if [Frequencey] = "Fortnightly" then 2 else if [Frequencey] = "Monthly" then 3 else 0),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Added Conditional Column",{"DVA file number", "Service Plan Number", "Region", "Approved hours", "Frequencey", "Service start date", "Service end date", "Period status", "Information for Service Plans", "ExtractDate", "LatestVHCExtractFlag", "ServicePlanIndex", "Service Type", "ServicePeriodCode"}),
+				    #"Merged Queries" = Table.NestedJoin(#"Removed Other Columns1", {"Region"}, State, {"Region"}, "State", JoinKind.LeftOuter),
+				    #"Expanded State1" = Table.ExpandTableColumn(#"Merged Queries", "State", {"DVA State"}, {"DVA Card State"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded State1",{{"DVA file number", type text}, {"Service Plan Number", Int64.Type}, {"Approved hours", type number}, {"Frequencey", type text}, {"Service Type", type text}, {"Service start date", type date}, {"Period status", type text}, {"Service end date", type date}, {"Region", type text}, {"Information for Service Plans", type text}, {"LatestVHCExtractFlag", Int64.Type}, {"ServicePeriodCode", Int64.Type}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

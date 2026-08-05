@@ -1,0 +1,105 @@
+table DimTimesheetModifiedByUserVisualCare
+	lineageTag: 6999d284-bdc8-4e20-9344-3a8944f126c7
+
+	column UserId
+		dataType: int64
+		formatString: 0
+		lineageTag: 862a5f58-feb4-4778-8d95-3e508989ad35
+		summarizeBy: count
+		sourceColumn: UserId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Username
+		dataType: string
+		lineageTag: 9eed3518-2dac-4245-98e0-b8edccb7a4a0
+		summarizeBy: none
+		sourceColumn: Username
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstName
+		dataType: string
+		lineageTag: 42cc7875-8c4e-4be4-afa4-9f23e4ae37af
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		lineageTag: 57fb033b-e547-4a6c-9f5b-7dc00a10d0a2
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: c1b082f0-3710-4f4f-ac61-e067686e42e1
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column Area
+		dataType: string
+		lineageTag: 95a7cf03-b5ac-4899-b8e8-6b58af85a2fe
+		summarizeBy: none
+		sourceColumn: Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column SecurityGroup
+		dataType: int64
+		formatString: 0
+		lineageTag: 71190c8b-b1c8-4e72-a3e9-8d6e30602f7b
+		summarizeBy: sum
+		sourceColumn: SecurityGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	column _CreateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7a2f11e7-f8ed-44cd-b5fc-650ae15a6092
+		summarizeBy: none
+		sourceColumn: _CreateTime
+
+		variation Variation
+			isDefault
+			relationship: 9349d89d-3ed8-4b8c-9ae7-a391d0b357e6
+			defaultHierarchy: LocalDateTable_ba26a4c4-d28c-45e5-aa5c-83dec636ddfb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column StopLogin
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a7e74f25-6688-4547-98a1-d472482e9f7a
+		summarizeBy: none
+		sourceColumn: StopLogin
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Full Name'
+		dataType: string
+		lineageTag: b1001c8d-0db6-4fd1-8126-59c5ea393b67
+		summarizeBy: none
+		sourceColumn: Full Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimTimesheetModifiedByUserVisualCare = m
+		mode: import
+		queryGroup: Users
+		source =
+				let
+				    Source = #"Users - source"
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

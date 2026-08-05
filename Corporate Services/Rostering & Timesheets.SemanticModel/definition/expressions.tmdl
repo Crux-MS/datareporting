@@ -1,0 +1,370 @@
+expression 'Data Dictionary - Source' =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [Implementation="2.0", ViewMode="All"]),
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866" = Source{[Id="4a4da78a-6855-44b7-bef3-4064d5ddb866"]}[Items]
+		in
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866"
+	lineageTag: 462cf545-2f07-4c54-a8c9-9cb4583c6f35
+	queryGroup: 'Utilities\Data Dictionary'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression VisualCareUser = "06565c52-b36a-4d8a-8622-b2ea31373630" meta [IsParameterQuery=true, List={"06565c52-b36a-4d8a-8622-b2ea31373630"}, DefaultValue="06565c52-b36a-4d8a-8622-b2ea31373630", Type="Any", IsParameterQueryRequired=true]
+	lineageTag: 90e6647b-c6ed-4324-a7c5-96c2ccb167fb
+	queryGroup: Utilities\Parameters
+
+	annotation PBI_ResultType = Text
+
+expression VisualCareKey = "44234a579e9872286876c59943d98263e4f40c5fa354784ca1b977e085552f51" meta [IsParameterQuery=true, List={"44234a579e9872286876c59943d98263e4f40c5fa354784ca1b977e085552f51"}, DefaultValue="44234a579e9872286876c59943d98263e4f40c5fa354784ca1b977e085552f51", Type="Any", IsParameterQueryRequired=true]
+	lineageTag: 60f4ae18-4bd6-44d3-a558-5885bccbbb03
+	queryGroup: Utilities\Parameters
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression VisualCareSecret = " f32e2aef9a6d2f08330f163d04ffdaf090f441cde571e7beb1ebe443d2753c33" meta [IsParameterQuery=true, List={" f32e2aef9a6d2f08330f163d04ffdaf090f441cde571e7beb1ebe443d2753c33"}, DefaultValue=" f32e2aef9a6d2f08330f163d04ffdaf090f441cde571e7beb1ebe443d2753c33", Type="Any", IsParameterQueryRequired=true]
+	lineageTag: d75ac778-a6e7-4aa0-b4c3-7cfea2a31b03
+	queryGroup: Utilities\Parameters
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Current workers - source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/workers", [Query=[includeSkills="FALSE", CarerId="1", includeNonCurrent="TRUE", includeDeleted="TRUE"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"CarerId", "CarerCode", "FirstName", "LastName", "PreferredName", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "DateOfBirth", "StartDate", "EndDate", "AccountingCode", "WorkerNumber", "Description", "Sex", "Ethnicity", "Marital", "Smoker", "PetFriendly", "WorkWithChildren", "Languages", "Area", "Division", "Groups", "CaseManager", "BudgetHours", "Rating", "WorkerType", "Role", "AwardCode", "AwardSector", "PayPoint", "PayrateLevel", "InIsolation", "IsolationStartDate", "IsolationEndDate", "CovidVaccine1", "CovidVaccine2", "WebEnabled", "CarerStatus", "ResignReason", "NDISClearance", "ScreenCheckAppNo", "ScreenCheckNo", "Current", "Status", "CreatedBy", "CreatedTime", "LastModifiedTime", "RoleDescription", "AwardDesc", "Skills", "PreferedWorker", "NonPreferedWorker"}, {"CarerId", "CarerCode", "FirstName", "LastName", "PreferredName", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "DateOfBirth", "StartDate", "EndDate", "AccountingCode", "WorkerNumber", "Description", "Sex", "Ethnicity", "Marital", "Smoker", "PetFriendly", "WorkWithChildren", "Languages", "Area", "Division", "Groups", "CaseManager", "BudgetHours", "Rating", "WorkerType", "Role", "AwardCode", "AwardSector", "PayPoint", "PayrateLevel", "InIsolation", "IsolationStartDate", "IsolationEndDate", "CovidVaccine1", "CovidVaccine2", "WebEnabled", "CarerStatus", "ResignReason", "NDISClearance", "ScreenCheckAppNo", "ScreenCheckNo", "Current", "Status", "CreatedBy", "CreatedTime", "LastModifiedTime", "RoleDescription", "AwardDesc", "Skills", "PreferedWorker", "NonPreferedWorker"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00",null,Replacer.ReplaceValue,{"DateOfBirth", "StartDate", "EndDate", "IsolationStartDate", "IsolationEndDate"}),
+		    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"CreatedTime", "LastModifiedTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value2",{{"CarerId", Int64.Type}, {"CarerCode", type text}, {"FirstName", type text}, {"LastName", type text}, {"PreferredName", type text}, {"Address1", type text}, {"Address2", type text}, {"Suburb", type text}, {"State", type text}, {"PostCode", type text}, {"Longitude", type number}, {"Latitude", type number}, {"Email", type text}, {"Phone1", type text}, {"Phone2", type text}, {"DateOfBirth", type date}, {"StartDate", type date}, {"EndDate", type date}, {"AccountingCode", type text}, {"WorkerNumber", type text}, {"Description", type text}, {"Sex", type text}, {"Ethnicity", type text}, {"Marital", type text}, {"Smoker", type logical}, {"PetFriendly", type logical}, {"WorkWithChildren", type logical}, {"Languages", type text}, {"Area", type text}, {"Division", type text}, {"Groups", type text}, {"CaseManager", type text}, {"BudgetHours", type number}, {"Rating", type number}, {"WorkerType", type text}, {"Role", type text}, {"AwardCode", type text}, {"AwardSector", type text}, {"PayPoint", Int64.Type}, {"PayrateLevel", Int64.Type}, {"InIsolation", type logical}, {"IsolationStartDate", type date}, {"IsolationEndDate", type date}, {"CovidVaccine1", type logical}, {"CovidVaccine2", type logical}, {"WebEnabled", type logical}, {"CarerStatus", type text}, {"ResignReason", type text}, {"NDISClearance", type logical}, {"Current", type logical}, {"CreatedTime", type datetime}, {"LastModifiedTime", type datetime}, {"RoleDescription", type text}, {"AwardDesc", type text}, {"Status", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 1a0052a6-0bba-4a65-ba76-8e6c8cf50f2a
+	queryGroup: Workers
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Timesheets - Source' =
+		let
+		    Source = List.Numbers(0,300000/20000,20000),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "API Index"}}),
+		    #"Added Custom" = Table.AddColumn(#"Renamed Columns", "Custom", each Json.Document(Web.Contents("https://publicapi.visualcare.com.au/timesheets",[Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000",page=Number.ToText([API Index]), includeNotes="true"], Headers=[User=#"VisualCareUser", Key=#"VisualCareKey", Secret=#"VisualCareSecret"]]))),
+		    #"Expanded Custom" = Table.ExpandListColumn(#"Added Custom", "Custom"),
+		    #"Filtered Rows1" = Table.SelectRows(#"Expanded Custom", each ([Custom] <> null)),
+		    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows1",{"API Index"}),
+		    #"Expanded Custom1" = Table.ExpandRecordColumn(#"Removed Columns", "Custom", {"TimeSheetId", "ClientId", "CarerId", "AgreementId", "AgreementItemId", "ServiceId", "DateOfService", "StartTime", "Minutes", "ChargeRate", "PayRate", "FixedFee", "KM", "KMCharge", "KMNoCharge", "KMTravelTime", "Variation", "VariationQty", "VariationComment", "VariationApproved", "ExtraChargeClient", "BreakStartTime1", "BreakMinutes1", "BreakMinutes2", "RecurrenceId", "OnHoldType", "OnHoldNote", "OnHoldCode", "OnHoldChargePer", "OnHoldPayMinutes", "OnHoldDateTime", "RosterItemId", "APP_IP", "APP_StartTime", "APP_FinishTime", "APP_LastLongtitude", "APP_LastLatitude", "HasExported", "ExportInvoiceNumber", "DEXCaseId", "DEXServiceTypeId", "DEXSessionId", "OrderNumber", "LastModified", "LastModifiedBy", "CreatedTime", "CreatedBy", "Status", "Area3Desc", "cArea3Desc", "Notes"}, {"TimeSheetId", "ClientId", "CarerId", "AgreementId", "AgreementItemId", "ServiceId", "DateOfService", "StartTime", "Minutes", "ChargeRate", "PayRate", "FixedFee", "KM", "KMCharge", "KMNoCharge", "KMTravelTime", "Variation", "VariationQty", "VariationComment", "VariationApproved", "ExtraChargeClient", "BreakStartTime1", "BreakMinutes1", "BreakMinutes2", "RecurrenceId", "OnHoldType", "OnHoldNote", "OnHoldCode", "OnHoldChargePer", "OnHoldPayMinutes", "OnHoldDateTime", "RosterItemId", "APP_IP", "APP_StartTime", "APP_FinishTime", "APP_LastLongtitude", "APP_LastLatitude", "HasExported", "ExportInvoiceNumber", "DEXCaseId", "DEXServiceTypeId", "DEXSessionId", "OrderNumber", "LastModified", "LastModifiedBy", "CreatedTime", "CreatedBy", "Status", "Area3Desc", "cArea3Desc", "Notes"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Custom1","0000-00-00 00:00:00","",Replacer.ReplaceText,{"APP_StartTime", "APP_FinishTime", "LastModified", "CreatedTime", "OnHoldDateTime"}),
+		    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","",null,Replacer.ReplaceValue,{"VariationComment", "OnHoldType", "OnHoldNote", "OnHoldCode", "OnHoldDateTime", "APP_StartTime", "ExportInvoiceNumber", "LastModified", "OrderNumber", "LastModifiedBy", "Status", "Area3Desc", "cArea3Desc"}),
+		    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1","0.0",null,Replacer.ReplaceValue,{"APP_LastLongtitude", "APP_LastLatitude"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value2",{{"TimeSheetId", Int64.Type}, {"ClientId", Int64.Type}, {"CarerId", Int64.Type}, {"AgreementId", Int64.Type}, {"AgreementItemId", Int64.Type}, {"ServiceId", Int64.Type}, {"DateOfService", type date}, {"StartTime", type time}, {"Minutes", Int64.Type}, {"ChargeRate", type number}, {"PayRate", type number}, {"KM", Int64.Type}, {"KMCharge", Int64.Type}, {"KMNoCharge", Int64.Type}, {"KMTravelTime", Int64.Type}, {"Variation", type logical}, {"VariationQty", Int64.Type}, {"VariationComment", type text}, {"VariationApproved", type logical}, {"ExtraChargeClient", Int64.Type}, {"BreakStartTime1", type time}, {"BreakMinutes1", Int64.Type}, {"RecurrenceId", Int64.Type}, {"OnHoldType", type text}, {"OnHoldNote", type text}, {"OnHoldCode", type text}, {"OnHoldChargePer", Int64.Type}, {"OnHoldPayMinutes", Int64.Type}, {"OnHoldDateTime", type datetime}, {"RosterItemId", Int64.Type}, {"APP_IP", type text}, {"APP_StartTime", type datetime}, {"APP_FinishTime", type datetime}, {"APP_LastLongtitude", type number}, {"APP_LastLatitude", type number}, {"HasExported", type logical}, {"ExportInvoiceNumber", type text}, {"DEXCaseId", Int64.Type}, {"DEXServiceTypeId", Int64.Type}, {"DEXSessionId", Int64.Type}, {"LastModified", type datetime}, {"LastModifiedBy", type text}, {"CreatedTime", type datetime}, {"CreatedBy", type text}, {"Status", type text}, {"Area3Desc", type text}, {"cArea3Desc", type text}, {"FixedFee", type logical}, {"OrderNumber", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 9abc2129-e063-402f-a295-562d87b7c1f1
+	queryGroup: Timesheets
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'L42D Date' =
+		let
+		    Source = Date.ToText(Date.AddDays(Date.From(DateTime.LocalNow()),-42),[Format="YYYY-MM-DD"])
+		in
+		    Source
+	lineageTag: 36699b41-8fcb-4681-8644-434e228b39c1
+	queryGroup: Utilities\Parameters
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'N28D Date' =
+		let
+		    Source = Date.ToText(Date.AddDays(Date.From(DateTime.LocalNow()),28),[Format="YYYY-MM-DD"])
+		in
+		    Source
+	lineageTag: b13ba911-d8c0-48bb-9223-d0b9e0aa9360
+	queryGroup: Utilities\Parameters
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Users - source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/users", [Headers=[User=#"VisualCareUser", Key=#"VisualCareKey", Secret=#"VisualCareSecret"]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"UserId", "Username", "FirstName", "LastName", "Email", "Area", "SecurityGroup", "_CreateTime", "StopLogin"}, {"UserId", "Username", "FirstName", "LastName", "Email", "Area", "SecurityGroup", "_CreateTime", "StopLogin"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"_CreateTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"UserId", Int64.Type}, {"Username", type text}, {"FirstName", type text}, {"LastName", type text}, {"Email", type text}, {"Area", type text}, {"SecurityGroup", Int64.Type}, {"_CreateTime", type datetime}, {"StopLogin", type logical}}),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Changed Type", "Full Name", each Text.Combine({[FirstName], [LastName]}, " "), type text)
+		in
+		    #"Inserted Merged Column"
+	lineageTag: de36d2d6-ca6b-45b9-9492-6357df20075a
+	queryGroup: Users
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Rosters - Source' =
+		let
+		    Source = List.Numbers(0,300000/20000,20000),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "API Index"}}),
+		    #"Added Custom" = Table.AddColumn(#"Renamed Columns", "Custom", each Json.Document(Web.Contents("https://publicapi.visualcare.com.au/rosters", [Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000",includeNotes="true",page=Number.ToText([API Index])],Headers=[User=#"VisualCareUser", Key=#"VisualCareKey", Secret=#"VisualCareSecret"]]))),
+		    #"Expanded Custom" = Table.ExpandListColumn(#"Added Custom", "Custom"),
+		    #"Filtered Rows1" = Table.SelectRows(#"Expanded Custom", each ([Custom] <> null)),
+		    #"Expanded Custom1" = Table.ExpandRecordColumn(#"Filtered Rows1", "Custom", {"RosterItemId", "ClientId", "CarerId", "RosterMasterId", "LocationId", "CategoryId", "ServiceId", "DateOfService", "StartTime", "Minutes", "ChargeRate", "PayRate", "BreakStartTime1", "BreakMinutes1", "RecurrenceId", "RecurrenceStart", "RecurrenceEnd", "RecurrenceType", "OccurenceDays", "OccurenceCount", "OccurencePeriodic", "OccurenceInterval", "OnHoldType", "OnHoldNote", "OnHoldCode", "OnHoldChargePer", "OnHoldPayMinutes", "OnHoldDateTime", "TimeSheetId", "AgreementId", "AgreementItemId", "DEXCaseId", "DEXServiceTypeId", "APP_StartTime", "APP_FinishTime", "APP_LastLongtitude", "APP_LastLatitude", "LastModified", "LastModifiedBy", "LastModifiedType", "CreatedTime", "CreatedBy", "Notes"}, {"RosterItemId", "ClientId", "CarerId", "RosterMasterId", "LocationId", "CategoryId", "ServiceId", "DateOfService", "StartTime", "Minutes", "ChargeRate", "PayRate", "BreakStartTime1", "BreakMinutes1", "RecurrenceId", "RecurrenceStart", "RecurrenceEnd", "RecurrenceType", "OccurenceDays", "OccurenceCount", "OccurencePeriodic", "OccurenceInterval", "OnHoldType", "OnHoldNote", "OnHoldCode", "OnHoldChargePer", "OnHoldPayMinutes", "OnHoldDateTime", "TimeSheetId", "AgreementId", "AgreementItemId", "DEXCaseId", "DEXServiceTypeId", "APP_StartTime", "APP_FinishTime", "APP_LastLongtitude", "APP_LastLatitude", "LastModified", "LastModifiedBy", "LastModifiedType", "CreatedTime", "CreatedBy", "Notes"}),
+		    #"Removed Columns" = Table.RemoveColumns(#"Expanded Custom1",{"API Index"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Removed Columns","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"OnHoldDateTime", "APP_StartTime", "APP_FinishTime", "LastModified"}),
+		    #"Trimmed Text" = Table.TransformColumns(#"Replaced Value",{{"RecurrenceEnd", Text.Trim, type text}, {"RecurrenceStart", Text.Trim, type text}}),
+		    #"Replaced Value3" = Table.ReplaceValue(#"Trimmed Text","0000-00-00",null,Replacer.ReplaceValue,{"RecurrenceEnd", "RecurrenceStart"}),
+		    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value3","00:00:00",null,Replacer.ReplaceValue,{"BreakStartTime1"}),
+		    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1","",null,Replacer.ReplaceValue,{"LastModifiedBy", "LastModifiedType", "APP_LastLongtitude", "APP_LastLatitude", "APP_StartTime", "APP_FinishTime", "OnHoldType", "OnHoldNote", "OnHoldCode"}),
+		    #"Added RosterNoteId" = Table.AddColumn(#"Replaced Value2", "RosterNoteId", each Text.From([RosterItemId]) & Text.PadStart(Text.From([RosterMasterId]), 7, "0")),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added RosterNoteId",{{"RosterItemId", Int64.Type}, {"ClientId", Int64.Type}, {"CarerId", Int64.Type}, {"RosterMasterId", Int64.Type}, {"LocationId", Int64.Type}, {"CategoryId", Int64.Type}, {"ServiceId", Int64.Type}, {"DateOfService", type date}, {"StartTime", type time}, {"Minutes", Int64.Type}, {"ChargeRate", type number}, {"PayRate", type number}, {"BreakStartTime1", type time}, {"BreakMinutes1", Int64.Type}, {"RecurrenceId", Int64.Type}, {"RecurrenceStart", type date}, {"RecurrenceEnd", type date}, {"RecurrenceType", type text}, {"OccurenceDays", type text}, {"OccurenceCount", Int64.Type}, {"OccurencePeriodic", type text}, {"OccurenceInterval", Int64.Type}, {"OnHoldType", type any}, {"OnHoldNote", type any}, {"OnHoldCode", type any}, {"OnHoldChargePer", Int64.Type}, {"OnHoldPayMinutes", Int64.Type}, {"OnHoldDateTime", type datetime}, {"TimeSheetId", Int64.Type}, {"AgreementId", Int64.Type}, {"AgreementItemId", Int64.Type}, {"DEXCaseId", Int64.Type}, {"DEXServiceTypeId", Int64.Type}, {"APP_StartTime", type datetime}, {"APP_FinishTime", type datetime}, {"APP_LastLongtitude", type number}, {"APP_LastLatitude", type number}, {"LastModified", type datetime}, {"LastModifiedBy", type text}, {"LastModifiedType", type text}, {"CreatedTime", type datetime}, {"CreatedBy", type text}, {"RosterNoteId", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 4f0712de-b8a5-432d-a985-8e085ca6c4ed
+	queryGroup: Rosters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Calendar - Source' =
+		let
+		    Source = List.Dates(Date.From(#"L2Y Date"), 4400, #duration(1, 0, 0, 0)),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Changed Type with Locale" = Table.TransformColumnTypes(#"Converted to Table", {{"Column1", type date}}, "en-AU"),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type with Locale",{{"Column1", "Date"}}),
+		    #"Inserted Year" = Table.AddColumn(#"Renamed Columns", "Year", each Date.Year([Date]), Int64.Type),
+		    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "MonthName", each Date.MonthName([Date]), type text),
+		    #"Inserted MMM YYYY" = Table.AddColumn(#"Inserted Month Name", "MMM YYYY", each Text.Combine({Date.ToText([Date], "MMM"), " ", Date.ToText([Date], "yyyy")}), type text),
+		    #"Inserted Month Number" = Table.AddColumn(#"Inserted MMM YYYY", "MonthNumber", each Date.Month([Date]), Int64.Type),
+		    #"Inserted YYYYMM" = Table.AddColumn(#"Inserted Month Number", "YYYYMM", each if [MonthNumber] <=9 then Text.From([Year]) & "0" & Text.From([MonthNumber]) else Text.From([Year]) & Text.From([MonthNumber])),
+		    #"Inserted Day Number" = Table.AddColumn(#"Inserted YYYYMM", "DayNumber", each Date.Day([Date]), Int64.Type),
+		    #"Inserted Day Name" = Table.AddColumn(#"Inserted Day Number", "DayName", each Date.DayOfWeekName([Date]), type text),
+		    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "DayOfWeek", each Date.DayOfWeek([Date]), Int64.Type),
+		    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Day of Week", "Start of Week", each Date.StartOfWeek([Date]), type date),
+		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted Start of Week", "StartOfYear", each Date.StartOfYear([Date]), type date),
+		    #"Inserted Week of Year" = Table.AddColumn(#"Inserted Start of Year", "WeekOfYear", each Date.WeekOfYear([Date]), Int64.Type),
+		    #"Added Rolling Date Difference" = Table.AddColumn(#"Inserted Week of Year", "RollingDateDifference", each Duration.Days([Date] - Date.From(DateTime.LocalNow()))),
+		    #"Added Slicer MMM YYYY" = Table.AddColumn(#"Added Rolling Date Difference", "Slicer MMM YYYY", each let
+		    currentMonthYear = List.First(
+		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[MMM YYYY]
+		    )
+		in
+		    if [MMM YYYY] = currentMonthYear then "Current Month" else [MMM YYYY]),
+		    #"Added d MMM" = Table.AddColumn(#"Added Slicer MMM YYYY", "d MMM", each Date.ToText([Date], "d MMM")),
+		    #"Added MMdd" = Table.AddColumn(#"Added d MMM", "MMdd", each Date.ToText([Date], "MMdd")),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Added MMdd",{{"YYYYMM", Int64.Type}, {"RollingDateDifference", Int64.Type}, {"Slicer MMM YYYY", type text}, {"d MMM", type text}, {"MMdd", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: b0a8ac08-ba66-44e5-8668-6bd7388e64d5
+	queryGroup: Calendar
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Services - source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/services", [Query=[includeDeleted="TRUE"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"ServiceId", "ServiceCode", "Description", "Unit", "Category", "ExpenseCategory", "Type", "ShiftType",  "IsSleepover", "IsNormalTime", "LinkedNormalTime", "ChargeRate", "ChargeRate2", "ChargeRate3", "CHSPRate", "AccountingCode", "GST", "NDISSupportNumber", "NDISGSTCode", "NDISRegGrpNumber", "NDISKmCode", "NDISCentreCapitalCosts", "HACCItemNumber", "_LastModTime", "_LastModUser", "_CreateTime", "_CreateUser", "Active", "Status"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"_LastModTime", "_CreateTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"ServiceId", Int64.Type}, {"ServiceCode", type text}, {"Description", type text}, {"Unit", type text}, {"Category", Int64.Type}, {"ExpenseCategory", Int64.Type}, {"Type", type text}, {"ShiftType", type text}, {"IsSleepover", type logical}, {"IsNormalTime", type logical}, {"LinkedNormalTime", Int64.Type}, {"ChargeRate", type number}, {"ChargeRate2", type number}, {"ChargeRate3", type number}, {"CHSPRate", type number}, {"AccountingCode", type text}, {"GST", type number}, {"NDISSupportNumber", type text}, {"NDISGSTCode", type text}, {"NDISRegGrpNumber", type number}, {"NDISKmCode", Int64.Type}, {"NDISCentreCapitalCosts", Int64.Type}, {"HACCItemNumber", type number}, {"_LastModTime", type datetime}, {"_LastModUser", type text}, {"_CreateTime", type datetime}, {"_CreateUser", type text}, {"Active", type logical}, {"Status", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 3332f1c7-9cda-4a2b-8552-ca63714d0477
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Locations - source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/locations", [Query=[includeDeleted="TRUE"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"LocationId", "Code", "Suburb", "Postcode", "State", "Longitude", "Latitude", "Area", "FacilityStatus", "CaseManager", "KMExempt", "StaffRatio", "ClientRatio", "Comments", "NotesRosterCheck", "VisibleOnline"}, {"LocationId", "Code", "Suburb", "Postcode", "State", "Longitude", "Latitude", "Area", "FacilityStatus", "CaseManager", "KMExempt", "StaffRatio", "ClientRatio", "Comments", "NotesRosterCheck", "VisibleOnline"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","",null,Replacer.ReplaceValue,{"Area"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"LocationId", Int64.Type}, {"Code", type text}, {"Suburb", type text}, {"Postcode", type text}, {"State", type text}, {"Longitude", type number}, {"Latitude", type number}, {"Area", type text}, {"FacilityStatus", type text}, {"CaseManager", type text}, {"KMExempt", type logical}, {"StaffRatio", type number}, {"ClientRatio", type number}, {"Comments", type text}, {"NotesRosterCheck", type logical}, {"VisibleOnline", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: d0c53d1b-745c-4c9f-9915-4e28a4c1ea83
+	queryGroup: Locations
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Form17- Source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/Forms", [Query=[limit="13000",fromDate=#"L42D Date",toDate=#"N28D Date",templateId="17"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDate", "FormDate", "ReviewDate", "CompletedDate", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}, {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"FormId", Int64.Type}, {"FormName", type text}, {"TemplateId", Int64.Type}, {"AssignedTo", type text}, {"CreatedBy", type text}, {"CreatedDateTime", type datetime}, {"FormDateTime", type datetime}, {"ReviewDateTime", type datetime}, {"CompletedDateTime", type datetime}, {"Status", type text}, {"ClientId", Int64.Type}, {"LeadId", Int64.Type}, {"CarerId", Int64.Type}, {"LocationId", Int64.Type}, {"vis_sw_mob", Int64.Type}, {"vis_cl_mob", Int64.Type}, {"RosterItemId", Int64.Type}, {"TimeSheetId", Int64.Type}, {"SubmissionId", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: a8acd147-0a4b-44ca-87b1-983d9d0be1e3
+	queryGroup: Forms
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Form38- Source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/Forms", [Query=[limit="13000",fromDate=#"L42D Date",toDate=#"N28D Date",templateId="38"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDate", "FormDate", "ReviewDate", "CompletedDate", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}, {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"FormId", Int64.Type}, {"FormName", type text}, {"TemplateId", Int64.Type}, {"AssignedTo", type text}, {"CreatedBy", type text}, {"CreatedDateTime", type datetime}, {"FormDateTime", type datetime}, {"ReviewDateTime", type datetime}, {"CompletedDateTime", type datetime}, {"Status", type text}, {"ClientId", Int64.Type}, {"LeadId", Int64.Type}, {"CarerId", Int64.Type}, {"LocationId", Int64.Type}, {"vis_sw_mob", Int64.Type}, {"vis_cl_mob", Int64.Type}, {"RosterItemId", Int64.Type}, {"TimeSheetId", Int64.Type}, {"SubmissionId", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: f45a62d9-e497-4fd4-a18f-f799b2acb88c
+	queryGroup: Forms
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Form43- Source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/Forms", [Query=[limit="13000",fromDate=#"L42D Date",toDate=#"N28D Date",templateId="43"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDate", "FormDate", "ReviewDate", "CompletedDate", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}, {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"FormId", Int64.Type}, {"FormName", type text}, {"TemplateId", Int64.Type}, {"AssignedTo", type text}, {"CreatedBy", type text}, {"CreatedDateTime", type datetime}, {"FormDateTime", type datetime}, {"ReviewDateTime", type datetime}, {"CompletedDateTime", type datetime}, {"Status", type text}, {"ClientId", Int64.Type}, {"LeadId", Int64.Type}, {"CarerId", Int64.Type}, {"LocationId", Int64.Type}, {"vis_sw_mob", Int64.Type}, {"vis_cl_mob", Int64.Type}, {"RosterItemId", Int64.Type}, {"TimeSheetId", Int64.Type}, {"SubmissionId", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: cf7a14df-9177-4f0a-84e3-a42aa6f9fdcc
+	queryGroup: Forms
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Client Notes - Source' =
+		let
+		    Source = List.Numbers(0,100000/20000,20000),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "API Index"}}),
+		    #"Added Custom" = Table.AddColumn(#"Renamed Columns", "Custom", each Json.Document(Web.Contents("https://publicapi.visualcare.com.au/notes-client",[Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000",page=Number.ToText([API Index]), includeNotes="true"], Headers=[User=#"VisualCareUser", Key=#"VisualCareKey", Secret=#"VisualCareSecret"]]))),
+		    #"Expanded Custom" = Table.ExpandListColumn(#"Added Custom", "Custom"),
+		    #"Filtered Rows1" = Table.SelectRows(#"Expanded Custom", each ([Custom] <> null)),
+		    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows1",{"API Index"}),
+		    #"Expanded Custom1" = Table.ExpandRecordColumn(#"Removed Columns", "Custom", {"NoteId", "CategoryId", "NoteType", "Note", "Reason", "Comment", "Action", "Outcome", "Response", "Location", "Occurrence", "Performance", "Timestamp", "NoteDate", "NotifiedDate", "AlertDate", "CloseDate", "TaskClosedDate", "AssignedTo", "AssignedToSecond", "Closed", "TaskClosed", "RequiresFollowUp", "VisibleClientApp", "VisibleWorkerApp", "CreatedBy", "_ReferringId_1", "_ReferringId_2", "_ReferringId_3"}, {"NoteId", "CategoryId", "NoteType", "Note", "Reason", "Comment", "Action", "Outcome", "Response", "Location", "Occurrence", "Performance", "Timestamp", "NoteDate", "NotifiedDate", "AlertDate", "CloseDate", "TaskClosedDate", "AssignedTo", "AssignedToSecond", "Closed", "TaskClosed", "RequiresFollowUp", "VisibleClientApp", "VisibleWorkerApp", "CreatedBy", "_ReferringId_1", "_ReferringId_2", "_ReferringId_3"})
+		in
+		    #"Expanded Custom1"
+	lineageTag: dcd545f2-f4bd-4078-99e7-e93ef818971f
+	queryGroup: Clients
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Client Groups - Source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/groups",[Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000", includeNotes="true"], Headers=[User=#"VisualCareUser", Key=#"VisualCareKey", Secret=#"VisualCareSecret"]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"GroupId", "GroupCode", "GroupDesc"}, {"GroupId", "GroupCode", "GroupDesc"})
+		in
+		    #"Expanded Column1"
+	lineageTag: fe370297-d7ff-409c-a9dc-13dbd64b99b1
+	queryGroup: Clients
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Clients - Source' =
+		let
+		    //Source = List.Numbers(0,300000/20000,20000),
+		    //#"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    //#"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "API Index"}}),
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/clients", [Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000", includeNotes="false"], Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    Custom1 = Table.SelectRows(#"Converted to Table", each ([Column1] <> null)),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(Custom1, "Column1", {"ClientId", "ClientCode", "FirstName", "MiddleName", "LastName", "PreferredName", "Gender", "FundingType", "ClientType", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "PhoneSMS", "Fax", "ContactPref", "DateOfBirth", "PayerId", "Area", "Division", "Group", "CaseManager", "CaseManager2", "MaritalStatus", "Aboriginal", "TorresStraitIslander", "LGBQTI", "LanguageEnglish", "LanguageOther", "InterpreterRequired", "ClientNo", "AccountingCode", "MedicareNo", "AmbulanceNo", "Weight", "Height", "DVA", "TSI", "ATSI", "CALD", "CHSP", "SATSS", "HCPLevel", "LiveAlone", "SingleWorker", "CompanionCard", "PrivateHealth", "LegalOrders", "LivingArrangement", "EmploymentType", "Referral", "Referer", "RefererCode", "MACCode", "MyAgedCareReference", "NotesAccess", "NotesRisk", "NotesAlert", "NotesGeneral", "NotesRoster", "NotesClientProfile", "NotesShiftAlert", "CurrentStatus", "ServiceStatus", "ServiceStart", "ServiceEnd", "ServiceReview", "ServiceReview2", "EnquiryDate", "LastServiceReview", "ReasonServiceEnded", "NIDISNo", "NDISNumber", "NDISNote", "PensionNo", "CareRecipientId", "IsDex", "DexClientId", "Slk", "Status", "LocationId", "Current", "CreatedBy", "CreatedTime", "LastModifiedTime", "PreferedWorker", "NonPreferedWorker"}, {"ClientId", "ClientCode", "FirstName", "MiddleName", "LastName", "PreferredName", "Gender", "FundingType", "ClientType", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "PhoneSMS", "Fax", "ContactPref", "DateOfBirth", "PayerId", "Area", "Division", "Group", "CaseManager", "CaseManager2", "MaritalStatus", "Aboriginal", "TorresStraitIslander", "LGBQTI", "LanguageEnglish", "LanguageOther", "InterpreterRequired", "ClientNo", "AccountingCode", "MedicareNo", "AmbulanceNo", "Weight", "Height", "DVA", "TSI", "ATSI", "CALD", "CHSP", "SATSS", "HCPLevel", "LiveAlone", "SingleWorker", "CompanionCard", "PrivateHealth", "LegalOrders", "LivingArrangement", "EmploymentType", "Referral", "Referer", "RefererCode", "MACCode", "MyAgedCareReference", "NotesAccess", "NotesRisk", "NotesAlert", "NotesGeneral", "NotesRoster", "NotesClientProfile", "NotesShiftAlert", "CurrentStatus", "ServiceStatus", "ServiceStart", "ServiceEnd", "ServiceReview", "ServiceReview2", "EnquiryDate", "LastServiceReview", "ReasonServiceEnded", "NIDISNo", "NDISNumber", "NDISNote", "PensionNo", "CareRecipientId", "IsDex", "DexClientId", "Slk", "Status", "LocationId", "Current", "CreatedBy", "CreatedTime", "LastModifiedTime", "PreferedWorker", "NonPreferedWorker"})
+		in
+		    #"Expanded Column1"
+	lineageTag: c0b297bb-0cc6-404b-bd0b-def12bf29c83
+	queryGroup: Clients
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Form23- Source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/Forms", [Query=[limit="13000",fromDate=#"L42D Date",toDate=#"N28D Date",templateId="23"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDate", "FormDate", "ReviewDate", "CompletedDate", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}, {"FormId", "FormName", "TemplateId", "AssignedTo", "CreatedBy", "CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime", "Status", "ClientId", "LeadId", "CarerId", "LocationId", "vis_sw_mob", "vis_cl_mob", "RosterItemId", "TimeSheetId", "SubmissionId", "FormData"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column1","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"CreatedDateTime", "FormDateTime", "ReviewDateTime", "CompletedDateTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"FormId", Int64.Type}, {"TemplateId", Int64.Type}, {"FormName", type text}, {"AssignedTo", type text}, {"CreatedBy", type text}, {"CreatedDateTime", type datetime}, {"FormDateTime", type datetime}, {"ReviewDateTime", type datetime}, {"CompletedDateTime", type datetime}, {"Status", type text}, {"ClientId", Int64.Type}, {"LeadId", Int64.Type}, {"CarerId", Int64.Type}, {"LocationId", Int64.Type}, {"vis_sw_mob", Int64.Type}, {"vis_cl_mob", Int64.Type}, {"RosterItemId", Int64.Type}, {"TimeSheetId", Int64.Type}, {"SubmissionId", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: a9b577c6-e5b1-45bb-950e-0948106664a7
+	queryGroup: Forms
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Worker Leave - source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/leave", [Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"LeaveId", "CarerId", "TimeFrom", "TimeTo", "EntireDay", "Type", "Note", "Remark", "Timestamp", "Status", "StatusTime", "StatusBy", "_CreateUser", "_CreateTime"}, {"LeaveId", "CarerId", "TimeFrom", "TimeTo", "EntireDay", "Type", "Note", "Remark", "Timestamp", "Status", "StatusTime", "StatusBy", "_CreateUser", "_CreateTime"}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Expanded Column1",{"LeaveId", "CarerId", "TimeFrom", "TimeTo", "EntireDay", "Type", "Note", "Remark", "Timestamp", "Status", "StatusTime", "StatusBy"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Removed Other Columns","0000-00-00 00:00:00",null,Replacer.ReplaceValue,{"TimeFrom", "TimeTo", "Timestamp", "StatusTime"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"LeaveId", Int64.Type}, {"CarerId", Int64.Type}, {"TimeFrom", type datetime}, {"TimeTo", type datetime}, {"EntireDay", type logical}, {"Type", type text}, {"Note", type text}, {"Remark", type text}, {"Timestamp", type datetime}, {"Status", type text}, {"StatusTime", type datetime}, {"StatusBy", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: d7951101-274b-4d6e-9b11-994ead6a1a86
+	queryGroup: Workers
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'L2Y Date' =
+		let
+		    Source = Date.ToText(Date.AddDays(Date.From(Date.StartOfYear(DateTime.LocalNow())),-2190),[Format="YYYY-MM-DD"])
+		in
+		    Source
+	lineageTag: 6e190414-eeed-4465-997b-cfa89887c4fc
+	queryGroup: Utilities\Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'Client Compliance - Source' =
+		let
+		    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/compliance-clients",[Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000", includeNotes="true"], Headers=[User=#"VisualCareUser", Key=#"VisualCareKey", Secret=#"VisualCareSecret"]])),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Expanded Column" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"FirstName", "LastName", "ClientId", "Area", "Area2", "Phone1", "Phone2", "Email", "LinkId", "ComplianceId", "Required", "StartDate", "AlertDate", "ExpiryDate", "Note", "Completed", "Status", "Description", "ExpiryDays", "WarningDays", "Mandatory", "NoStartDate", "NoExpiryDate"}, {"FirstName", "LastName", "ClientId", "Area", "Area2", "Phone1", "Phone2", "Email", "LinkId", "ComplianceId", "Required", "StartDate", "AlertDate", "ExpiryDate", "Note", "Completed", "Status", "Description", "ExpiryDays", "WarningDays", "Mandatory", "NoStartDate", "NoExpiryDate"}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Expanded Column","0000-00-00","",Replacer.ReplaceText,{"StartDate", "AlertDate", "ExpiryDate"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"StartDate", type date}, {"AlertDate", type date}, {"ExpiryDate", type date}, {"Note", type text}, {"Completed", type logical}, {"ExpiryDays", Int64.Type}, {"WarningDays", type text}, {"Mandatory", type text}, {"NoStartDate", type text}, {"NoExpiryDate", type text}, {"FirstName", type text}, {"LastName", type text}, {"ClientId", Int64.Type}, {"Area", type text}, {"Area2", type text}, {"Phone1", type text}, {"Phone2", type text}, {"Email", type text}, {"LinkId", Int64.Type}, {"ComplianceId", Int64.Type}, {"Required", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: 4065b83c-0f5c-4b14-8027-a105e782b400
+	queryGroup: Clients
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

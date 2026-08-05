@@ -1,0 +1,131 @@
+table 'Dim Shift Allocation'
+	lineageTag: d7843641-868b-4ac7-b1f3-655a71981f71
+	sourceLineageTag: d38ee1f0-94ef-4a53-ab37-970cc2791323
+
+	column ShiftID
+		dataType: int64
+		formatString: 0
+		lineageTag: 50578304-346c-45ec-8dd1-526d18dabadc
+		sourceLineageTag: 3bf1d3c2-2f93-445d-81f0-70d9096ea205
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ShiftID
+
+		annotation SummarizationSetBy = User
+
+	column MemberID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d0cf9ef9-8ca9-4109-8593-3f4f15dd40af
+		sourceLineageTag: 3f88f92a-21c1-4841-8289-f5262d972f97
+		dataCategory: Uncategorized
+		summarizeBy: count
+		sourceColumn: MemberID
+
+		annotation SummarizationSetBy = User
+
+	column MemberInteractionID
+		dataType: int64
+		formatString: 0
+		lineageTag: 615a5ca8-fa25-48b5-bf4c-6aff38e14e8e
+		sourceLineageTag: b19d3093-f6ae-4a32-aa7b-933485318a3b
+		dataCategory: Uncategorized
+		summarizeBy: count
+		sourceColumn: MemberInteractionID
+
+		annotation SummarizationSetBy = User
+
+	column AgencyID
+		dataType: int64
+		formatString: 0
+		lineageTag: d35acbfc-edf8-4d94-833c-948f4ac5f4f8
+		sourceLineageTag: 885c0a29-33d6-449c-a2f0-d6aa7a0ba6c8
+		dataCategory: Uncategorized
+		summarizeBy: count
+		sourceColumn: AgencyID
+
+		annotation SummarizationSetBy = User
+
+	column InteractionType
+		dataType: string
+		lineageTag: 5352208a-cf5c-4343-ba67-f5ba4029ccba
+		sourceLineageTag: 75324d52-382e-40e5-ab7a-d2cb9996ba85
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: InteractionType
+
+		annotation SummarizationSetBy = User
+
+	column InteractionMethod
+		dataType: string
+		lineageTag: 376a8cb3-80ba-4ef6-a07f-350f0a5f9854
+		sourceLineageTag: 8966dba8-f93d-43c1-8a9a-f78d76bcc2ae
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: InteractionMethod
+
+		annotation SummarizationSetBy = User
+
+	column interactionInstigator
+		dataType: string
+		lineageTag: e78db4ea-26d4-4a5f-83f4-210b49e4c16c
+		sourceLineageTag: 41a4ef41-919f-4f35-82f2-5a21ece52a7c
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: interactionInstigator
+
+		annotation SummarizationSetBy = User
+
+	column UserName
+		dataType: string
+		lineageTag: 6baafebc-6aed-4d69-a42e-c1794627a70e
+		sourceLineageTag: 0faa60d9-8c32-45e2-8d5a-446c23d19ef4
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: UserName
+
+		annotation SummarizationSetBy = User
+
+	column Time
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 5e074e4f-225b-4f04-a99e-dadf36728fda
+		sourceLineageTag: f9c2f2e0-6169-4439-9f8f-5f86941808ec
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Time
+
+		variation Variation
+			isDefault
+			relationship: c9c64bec-b9d9-49f5-9b93-24f0e3e3863f
+			defaultHierarchy: LocalDateTable_55dbae95-400f-4da6-9e38-3f74214aeedb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column User
+		dataType: string
+		lineageTag: 9f5893b2-2d82-4e0e-acc1-1ccfac05dd58
+		sourceLineageTag: 6eee3bb5-ac32-4e53-a8f5-717184a73439
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: User
+
+		annotation SummarizationSetBy = User
+
+	column UserEmail
+		dataType: string
+		lineageTag: f3562f1c-4122-4fc0-b748-b8402f6cc172
+		sourceLineageTag: 2d2c7d20-cca2-4d58-8e42-5453f8e8ed4f
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: UserEmail
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Shift Allocation' = entity
+		mode: directQuery
+		source
+			entityName: Dim Shift Allocation
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

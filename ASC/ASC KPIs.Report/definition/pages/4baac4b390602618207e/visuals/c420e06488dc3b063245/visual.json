@@ -1,0 +1,1350 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "c420e06488dc3b063245",
+  "position": {
+    "x": 55.440729483282681,
+    "y": 137.14285714285714,
+    "z": 1000,
+    "height": 491.1854103343465,
+    "width": 1200.2431610942249,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCareViewClients"
+                    }
+                  },
+                  "Property": "Full Name"
+                }
+              },
+              "queryRef": "DimCareViewClients.Full Name",
+              "nativeQueryRef": "Full Name",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "Date created"
+                }
+              },
+              "queryRef": "FactClientFunding.Date created",
+              "nativeQueryRef": "Date created",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "Service Contract Reference No."
+                }
+              },
+              "queryRef": "FactClientFunding.Service Contract Reference No.",
+              "nativeQueryRef": "Service Contract Reference No.",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactClientFunding"
+                        }
+                      },
+                      "Property": "Service Contract Reference No."
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "Min(FactClientFunding.Service Contract Reference No.)",
+              "nativeQueryRef": "Count Active Service Plans",
+              "displayName": "Count Active Service Plans"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayClientStatus"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayClientStatus",
+              "nativeQueryRef": "Client Status",
+              "displayName": "Client Status"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayServiceContractStatus"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayServiceContractStatus",
+              "nativeQueryRef": "Service Contract Status",
+              "displayName": "Service Contract Status"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayNDISPlanStartDate"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayNDISPlanStartDate",
+              "nativeQueryRef": "NDIS Plan Start Date",
+              "displayName": "NDIS Plan Start Date"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayNDISPlanEndDate"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayNDISPlanEndDate",
+              "nativeQueryRef": "NDIS Plan End Date",
+              "displayName": "NDIS Plan End Date"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayTotalContractValue"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayTotalContractValue",
+              "nativeQueryRef": "Current Contract Value",
+              "displayName": "Current Contract Value"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayFundsRemainingRate"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayFundsRemainingRate",
+              "nativeQueryRef": "Funds Remaining1",
+              "displayName": "Funds Remaining"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayTimeRemainingRate"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayTimeRemainingRate",
+              "nativeQueryRef": "Time Remaining",
+              "displayName": "Time Remaining"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayRiskCategory"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayRiskCategory",
+              "nativeQueryRef": "Risk Category",
+              "displayName": "Risk Category"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "DisplayRiskVarianceRate"
+                }
+              },
+              "queryRef": "FactClientFunding.DisplayRiskVarianceRate",
+              "nativeQueryRef": "Risk Variance",
+              "displayName": "Risk Variance"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "Date created"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DimCareViewClients.Full Name"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCareViewClients"
+                    }
+                  },
+                  "Property": "Full Name"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "FactClientFunding.Date created"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "Date created"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "FactClientFunding.Service Contract Reference No."
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactClientFunding"
+                    }
+                  },
+                  "Property": "Service Contract Reference No."
+                }
+              }
+            ],
+            "isPinned": true
+          }
+        ],
+        "root": {
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "'LEAD Roger Pearson'"
+                  }
+                }
+              ],
+              "isToggled": true
+            }
+          ]
+        }
+      }
+    ],
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'fitToContent'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "FactASCEmployees"
+                            }
+                          },
+                          "Property": "BillableHoursRate"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#F8F6F0'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#da9b66'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'noColor'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "FactCareViewCaseNotes.BillableHoursRate"
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "FactClientFunding.DisplayRiskCategory"
+          }
+        },
+        {
+          "properties": {
+            "icon": {
+              "kind": "Icon",
+              "layout": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Before'"
+                  }
+                }
+              },
+              "verticalAlignment": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Top'"
+                  }
+                }
+              },
+              "value": {
+                "expr": {
+                  "Conditional": {
+                    "Cases": [
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Entity": "FactClientFunding"
+                                  }
+                                },
+                                "Property": "DisplayRiskCategory"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "'Very High Overspend'"
+                              }
+                            }
+                          },
+                          "Annotations": {
+                            "PowerBI.SQExprEvaluationKind": 1,
+                            "PowerBI.SQExprTextOperatorOption": 2
+                          }
+                        },
+                        "Value": {
+                          "Literal": {
+                            "Value": "'ColoredArrowUpRed'"
+                          }
+                        }
+                      },
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Entity": "FactClientFunding"
+                                  }
+                                },
+                                "Property": "DisplayRiskCategory"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "'High Overspend'"
+                              }
+                            }
+                          },
+                          "Annotations": {
+                            "PowerBI.SQExprEvaluationKind": 1,
+                            "PowerBI.SQExprTextOperatorOption": 2
+                          }
+                        },
+                        "Value": {
+                          "Literal": {
+                            "Value": "'ColoredArrowUpRight'"
+                          }
+                        }
+                      },
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Entity": "FactClientFunding"
+                                  }
+                                },
+                                "Property": "DisplayRiskCategory"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "'High Underspend'"
+                              }
+                            }
+                          },
+                          "Annotations": {
+                            "PowerBI.SQExprEvaluationKind": 1,
+                            "PowerBI.SQExprTextOperatorOption": 2
+                          }
+                        },
+                        "Value": {
+                          "Literal": {
+                            "Value": "'ColoredArrowDownRight'"
+                          }
+                        }
+                      },
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 0,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Entity": "FactClientFunding"
+                                  }
+                                },
+                                "Property": "DisplayRiskCategory"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "'Very High Underspend'"
+                              }
+                            }
+                          },
+                          "Annotations": {
+                            "PowerBI.SQExprEvaluationKind": 1,
+                            "PowerBI.SQExprTextOperatorOption": 2
+                          }
+                        },
+                        "Value": {
+                          "Literal": {
+                            "Value": "'ColoredArrowDown'"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 0
+                }
+              }
+            ],
+            "metadata": "FactClientFunding.DisplayRiskCategory"
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "88.15829316388968D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactClientFunding.DisplayTotalContractValue"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "80.09975366379302D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactClientFunding.DisplayServiceContractStatus"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "86.49184666372136D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Min(FactClientFunding.Service Contract Reference No.)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "83.29913206520095D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactClientFunding.DisplayNDISPlanStartDate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "89.32763903774739D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactClientFunding.DisplayNDISPlanEndDate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "84.53277694898543D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactClientFunding.DisplayFundsRemainingRate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "81.09115866344618D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactClientFunding.DisplayTimeRemainingRate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "71.6495910968721D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactClientFunding.DisplayRiskVarianceRate"
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Service Plan Utilisation'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'by Worker & Client Region (CareView)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "1bb5719a89b0d611a845",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCareViewClients"
+              }
+            },
+            "Property": "Full Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "afab96cfb335b3dab246",
+        "ordinal": 1,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "NDIS Plan Start Date"
+              }
+            },
+            "Function": 3
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "bfbd4f2038fe9925233d",
+        "ordinal": 2,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "RiskRateVariance"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "7f58e332ed636c10993a",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "Service Contract Reference No."
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "f312dcb687db20fbc5b4",
+        "ordinal": 4,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "NDIS Plan End Date"
+              }
+            },
+            "Function": 3
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "61c849a4b088a3045ced",
+        "ordinal": 5,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "FundsRemainingRate"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "daaddbdb4d9186f0e9e6",
+        "ordinal": 6,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "TimeRemainingRate"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "86a66746d91518d079e5",
+        "ordinal": 7,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "Service Contract Reference No."
+              }
+            },
+            "Function": 5
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "8642b5f1b768442d3882",
+        "ordinal": 8,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "NDIS Plan End Date"
+              }
+            },
+            "Function": 4
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "949b9f852906183bbd00",
+        "ordinal": 9,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "PlanDurationRemainingRate"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "e9dda9561abc8c1fd095",
+        "ordinal": 10,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "MaxRiskCategory"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "592281d76462902d778e",
+        "ordinal": 11,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "Total Service Contract Value"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "ae131960a1e6a6765ce2",
+        "ordinal": 12,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "Client Status"
+              }
+            },
+            "Function": 3
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "5ae83e874eda97150cae",
+        "ordinal": 13,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "Service Contract Status"
+              }
+            },
+            "Function": 3
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "7c9ec644a70b0c863d83",
+        "ordinal": 14,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "Date created"
+          }
+        },
+        "type": "TopN"
+      },
+      {
+        "name": "f3b4e357e9056281dc35",
+        "ordinal": 15,
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactClientFunding"
+                  }
+                },
+                "Property": "Service Contract Reference No."
+              }
+            },
+            "Function": 2
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "399bb43280248728e1fd",
+        "ordinal": 16,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayClientStatus"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1f1e8265629183d4ae54",
+        "ordinal": 17,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayServiceContractStatus"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0c5ee6c005387773f770",
+        "ordinal": 18,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayNDISPlanStartDate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d9af832fd2864f4f0c1f",
+        "ordinal": 19,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayNDISPlanEndDate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e9e58e551353b80add37",
+        "ordinal": 20,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayTotalContractValue"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "dd78abc585909226fb04",
+        "ordinal": 21,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayFundsRemainingRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4db5b159dc2beba5f86c",
+        "ordinal": 22,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayTimeRemainingRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "c7c1bbd705e6dda3963c",
+        "ordinal": 23,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayRiskCategory"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "24cf88262eb1ddefe803",
+        "ordinal": 24,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "DisplayRiskVarianceRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3a86a810b0f56038aceb",
+        "ordinal": 25,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCareViewClients"
+              }
+            },
+            "Property": "NDIS Number"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {}
+            }
+          ]
+        }
+      },
+      {
+        "name": "67f8878ab84ae88d93b2",
+        "ordinal": 26,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactClientFunding"
+              }
+            },
+            "Property": "NDIS Number"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "FactClientFunding",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "f"
+                              }
+                            },
+                            "Property": "NDIS Number"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "''"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "2acb10c0e4de0fc09e19",
+        "ordinal": 27,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCareViewClients"
+              }
+            },
+            "Property": "NDIS Number"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "9e55cb3e49031153e523",
+        "ordinal": 28,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCareViewClients"
+              }
+            },
+            "Property": "Date created"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "9316a1f311bcb02b0bd3",
+        "ordinal": 29,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCareViewClients"
+              }
+            },
+            "Property": "LeadFlag"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

@@ -1,0 +1,1505 @@
+expression 'Data Dictionary - Source' =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [Implementation="2.0", ViewMode="All"]),
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866" = Source{[Id="4a4da78a-6855-44b7-bef3-4064d5ddb866"]}[Items]
+		in
+		    #"4a4da78a-6855-44b7-bef3-4064d5ddb866"
+	lineageTag: 462cf545-2f07-4c54-a8c9-9cb4583c6f35
+	queryGroup: 'Utilities\Data Dictionary'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Source - WA' =
+		let
+		    Source = Odbc.DataSource(#"Saturn WA Connection string", [HierarchicalNavigation=true]),
+		    DBA_Schema = Source{[Name="DBA",Kind="Schema"]}[Data]
+		in
+		    DBA_Schema
+	lineageTag: 8b9e80df-e3de-4ccb-ad48-ecb8554b7204
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Calendar - Source' = ```
+		let
+		    Source = List.Dates(#date(2019, 1, 1), 5000, #duration(1, 0, 0, 0)),
+		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"Column1", type date}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "Date"}}),
+		    #"Inserted Year" = Table.AddColumn(#"Renamed Columns", "Year", each Date.Year([Date]), Int64.Type),
+		    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "MonthName", each Date.MonthName([Date]), type text),
+		    #"Inserted MMM YYYY" = Table.AddColumn(#"Inserted Month Name", "MMM YYYY", each Text.Combine({Date.ToText([Date], "MMM"), " ", Date.ToText([Date], "yyyy")}), type text),
+		    #"Inserted Month Number" = Table.AddColumn(#"Inserted MMM YYYY", "MonthNumber", each Date.Month([Date]), Int64.Type),
+		    #"Inserted YYYYMM" = Table.AddColumn(#"Inserted Month Number", "YYYYMM", each if [MonthNumber] <=9 then Text.From([Year]) & "0" & Text.From([MonthNumber]) else Text.From([Year]) & Text.From([MonthNumber])),
+		    #"Inserted Day Number" = Table.AddColumn(#"Inserted YYYYMM", "DayNumber", each Date.Day([Date]), Int64.Type),
+		    #"Inserted Day Name" = Table.AddColumn(#"Inserted Day Number", "DayName", each Date.DayOfWeekName([Date]), type text),
+		    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "DayOfWeek", each Date.DayOfWeek([Date]), Int64.Type),
+		    #"Inserted Week of Year" = Table.AddColumn(#"Inserted Day of Week", "WeekOfYear", each Date.WeekOfYear([Date]), Int64.Type),
+		    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Week of Year", "StartOfWeek", each Date.StartOfWeek([Date]), type date),
+		    #"Inserted Start of Year" = Table.AddColumn(#"Inserted Start of Week", "StartOfYear", each Date.StartOfYear([Date]), type date),
+		    #"Added Rolling Date Difference" = Table.AddColumn(#"Inserted Start of Year", "RollingDateDifference", each Duration.Days([Date] - Date.From(DateTime.LocalNow()))),
+		    #"Added Slicer MMM YYYY" = Table.AddColumn(#"Added Rolling Date Difference", "Slicer MMM YYYY", each let
+		    currentMonthYear = List.First(
+		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[MMM YYYY]
+		    )
+		in
+		    if [MMM YYYY] = currentMonthYear then "Current Month" else [MMM YYYY]),
+		    #"Added SlicerStartOfWeek" = Table.AddColumn(#"Added Slicer MMM YYYY", "SlicerStartOfWeek", each let
+		    currentWeek = List.First(
+		        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[StartOfWeek]
+		    )
+		in
+		    if [StartOfWeek] = currentWeek then "Current Week" else [StartOfWeek]),
+		    #"Added d MMM" = Table.AddColumn(#"Added SlicerStartOfWeek", "d MMM", each Date.ToText([Date], "d MMM")),
+		    #"Added MMdd" = Table.AddColumn(#"Added d MMM", "MMdd", each Date.ToText([Date], "MMdd")),
+		    #"Added FortnightOfYear" = Table.AddColumn(#"Added MMdd", "FortnightOfYear", each Number.RoundUp(Date.DayOfYear([Date])/14)),
+		    #"Added YYYYFF" = Table.AddColumn(#"Added FortnightOfYear", "YYYYFF", each if [FortnightOfYear] <= 9 then Text.From([Year]) & "0" & Text.From([FortnightOfYear]) else Text.From([Year]) & Text.From([FortnightOfYear])),
+		    #"Added FF (DD MMM YYYY)" = Table.AddColumn(#"Added YYYYFF", "FF (DD MMM YYYY)", each 
+		let 
+		   DaysSinceStart = Duration.Days([Date] - [StartOfYear]),
+		   FortnightStartDate = Date.AddDays([StartOfYear], ([FortnightOfYear] - 1) * 14),
+		   AdjustedStartDate = if FortnightStartDate > [Date] then Date.AddDays(FortnightStartDate, -14) else FortnightStartDate,
+		   MonthAbbrev = Date.ToText(AdjustedStartDate, "dd MMM yyyy"),
+		   FFLabel = Text.From([FortnightOfYear]) & " (" & MonthAbbrev & ")"
+		in
+		  FFLabel),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Added FF (DD MMM YYYY)",{{"YYYYMM", Int64.Type}, {"RollingDateDifference", Int64.Type}, {"Slicer MMM YYYY", type text}, {"d MMM", type text}, {"MMdd", Int64.Type}, {"FortnightOfYear", Int64.Type}, {"YYYYFF", Int64.Type}, {"FF (DD MMM YYYY)", type text}, {"SlicerStartOfWeek", type text}})
+		in
+		    #"Changed Type1"
+		```
+	lineageTag: be12d0df-49ce-490b-997e-0139ac796f56
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Sample File' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData", [ApiVersion = 15]),
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Folder Path] = "https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData/Shared Documents/PROD - Reporting Data/V&A Reporting/ServiceTypes/")),
+		    Navigation1 = #"Filtered Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: fc469b9f-eda2-4b32-b7b8-dab859301d58
+	queryGroup: 'Utilities\Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File' =
+		let
+		    Source = Csv.Document(Parameter,[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 07bd0d65-1c22-4b8f-b01b-7c9844368120
+	queryGroup: 'Utilities\Transform File from Query1'
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'Transform File' =
+		let
+		    Source = (Parameter as binary) => let
+		    Source = Csv.Document(Parameter,[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+		in
+		    Source
+	lineageTag: d906634f-cf5d-4390-a9b6-ad31bc032b8d
+	queryGroup: 'Utilities\Transform File from Query1\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 'RefNurseCompetencyWA - Source' =
+		let
+		    Source = #"Source - WA",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"52" = ref_type_Table{[ref_type_id=52]}[ref_values]
+		in
+		    #"52"
+	lineageTag: 6d1f637e-331a-4d62-827e-91bb0bb20705
+	queryGroup: Nurses\DimNurseCompetency\RefNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter = #"Sample File" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: ac8a5ea1-55ff-4a16-8d32-b95aea335c6a
+	queryGroup: 'Utilities\Transform File from Query1\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression Parameter1 = #"Sample File (2)" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File (2)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 2f80b7cd-513e-4c15-94fa-d0a52fac4b2b
+	queryGroup: 'Utilities\Transform File from Service Plan Update Records (3)\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Sample File (2)' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/PHPTeam-Finance-VETs/", [ApiVersion = 15]),
+		    #"Filtered Rows2" = Table.SelectRows(Source, each Text.Contains([Folder Path], "https://cruxscss.sharepoint.com/sites/PHPTeam-Finance-VETs/Shared Documents/Finance - VETs/VHC Billing/VHC Monthly Billing/Master List of Service IDs/Service Plan Update Records/")),
+		    Navigation1 = #"Filtered Rows2"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: adf3d1d8-1ed2-45d2-a61b-c19c95c63e5b
+	queryGroup: 'Utilities\Transform File from Service Plan Update Records (3)\Helper Queries'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform Sample File (2)' =
+		let
+		    Source = Csv.Document(Parameter1,[Delimiter=",", Columns=31, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+		    #"Removed Duplicates" = Table.Distinct(#"Promoted Headers", {"Service Plan Number"})
+		in
+		    #"Removed Duplicates"
+	lineageTag: 7a38fd86-98e4-443c-a2a7-866f99a4eebb
+	queryGroup: 'Utilities\Transform File from Service Plan Update Records (3)'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Transform File (2)' =
+		let
+		    Source = (Parameter1 as binary) => let
+		        Source = Csv.Document(Parameter1,[Delimiter=",", Columns=31, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		        #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+		        #"Removed Duplicates" = Table.Distinct(#"Promoted Headers", {"Service Plan Number"})
+		    in
+		        #"Removed Duplicates"
+		in
+		    Source
+	lineageTag: 682319e6-e6f4-4151-98d8-122e7180268a
+	queryGroup: 'Utilities\Transform File from Service Plan Update Records (3)\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Saturn WA Connection string' = "Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare WA;DBN=Saturn - Clincare WA;LINKS=TCPIP(HOST=10.6.0.4;PORT=2641);" meta [IsParameterQuery=true, List={"Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare WA;DBN=Saturn - Clincare WA;LINKS=TCPIP(HOST=10.6.0.4;PORT=2641);"}, DefaultValue="Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare WA;DBN=Saturn - Clincare WA;LINKS=TCPIP(HOST=10.6.0.4;PORT=2641);", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 42028620-0b79-4b9c-a4bd-2973fd225d5f
+	queryGroup: Utilities\ConnectionStrings
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'Source - QLD' =
+		let
+		    Source = Odbc.DataSource(#"Saturn QLD Connection string", [HierarchicalNavigation=true]),
+		    DBA_Schema = Source{[Name="DBA",Kind="Schema"]}[Data]
+		in
+		    DBA_Schema
+	lineageTag: 7c3c6813-6388-400d-b4c4-c47ae74e8e05
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression State = ```
+		let
+		    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("jZHNCsIwEIRfJeSkUBB/7zV6KGhBK+ZQeogQsFAS2KSKb2+TkNaWRr0MC/NlNrub5zgmFxzhNKOucLrBRZTjTNb6zkF8+k3R6Nr6SVWxJwNgISCVYAPQuXxwUCHM9kGUK42OXIMMcY6QwLUUM/eISKZ0A5wOu1ZXXW+0hVLdmOCjiIv4A9kz/zU0yeJp42axl+WQI7IWGl4jkLHNNvyQ14S0uugvLIyYJXwn/Nl+9Wl9GnuZB4amdugh51J6dxsiXUiwj3k/NIs3", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Region = _t, #"DVA State" = _t, #"Actual State" = _t, PrefixNo = _t])
+		in
+		    Source
+		
+		// Note. the values in PrefixNo are completely arbitrary. 
+		//They are filed here so that any new primary keys for each juro can have a consistent prefix. 
+		```
+	lineageTag: a6a460b2-f0c0-4507-9a8f-c6ef180f68fb
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Saturn QLD Connection string' = "Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare QLD;DBN=Saturn - Clincare QLD;LINKS=TCPIP(HOST=10.6.0.4;PORT=2638);" meta [IsParameterQuery=true, List={"Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare QLD;DBN=Saturn - Clincare QLD;LINKS=TCPIP(HOST=10.6.0.4;PORT=2638);"}, DefaultValue="Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare QLD;DBN=Saturn - Clincare QLD;LINKS=TCPIP(HOST=10.6.0.4;PORT=2638);", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: d3e5646f-9021-49e6-bfc4-addd3e3b6bba
+	queryGroup: Utilities\ConnectionStrings
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'Saturn NSW/ACT Connection string' = "Driver={Adaptive Server Anywhere 9.0};ENG=Saturn NSW ACT;DBN=Saturn NSW ACT;LINKS=TCPIP(HOST=10.6.0.4;PORT=2639);" meta [IsParameterQuery=true, List={"Driver={Adaptive Server Anywhere 9.0};ENG=Saturn NSW ACT;DBN=Saturn NSW ACT;LINKS=TCPIP(HOST=10.6.0.4;PORT=2639);"}, DefaultValue="Driver={Adaptive Server Anywhere 9.0};ENG=Saturn NSW ACT;DBN=Saturn NSW ACT;LINKS=TCPIP(HOST=10.6.0.4;PORT=2639);", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: db331c37-68fd-47e7-84f9-6e148645a476
+	queryGroup: Utilities\ConnectionStrings
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'Saturn SA Connection string' = "Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare SA;DBN=Saturn - Clincare SA;LINKS=TCPIP(HOST=10.6.0.4;PORT=2640);" meta [IsParameterQuery=true, List={"Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare SA;DBN=Saturn - Clincare SA;LINKS=TCPIP(HOST=10.6.0.4;PORT=2640);"}, DefaultValue="Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare SA;DBN=Saturn - Clincare SA;LINKS=TCPIP(HOST=10.6.0.4;PORT=2640);", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 404e7f6e-6948-43e9-bff6-a5c34667fa0b
+	queryGroup: Utilities\ConnectionStrings
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'BridgeDVANumberWA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "select distinct(p.dva_number)#(lf)from dba.patient p where p.dva_number IS NOT NULL")
+		in
+		    Source
+	lineageTag: ea419ee6-9822-4590-8c97-69aa5a7b7e07
+	queryGroup: Patients\BridgeDVA
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactNurseWA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),suburb_geocode_id#(lf),years_of_nursing#(lf),commenced AS employment_start_date#(lf),induction_date#(lf),termination_date#(lf),date_of_birth#(lf),DATEDIFF(year, date_of_birth, GETDATE()) AS nurse_age#(lf),drivers_licence_expiry#(lf),car_registration_expiry#(lf),car_insurance_expiry#(lf),employee_super_top_up#(lf),employee_super_dollar_amt#(lf),additional_weekly_tax#(lf),additional_weekly_tax_perc#(lf),reward_hours#(lf),defer_pay_amount#(lf),defer_pay_perc#(lf),defer_pay_balance#(lf),defer_pay_taxable_gross#(lf),repay_pay_amount#(lf)from dba.nurse n#(lf)where test_nurse_ind <> 1"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "1" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added Prefix",{{"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 1c677eef-1a56-4c86-b2ea-9860bd4c133e
+	queryGroup: Nurses\FactNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactNurseNSW - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),suburb_geocode_id#(lf),years_of_nursing#(lf),commenced AS employment_start_date#(lf),induction_date#(lf),termination_date#(lf),date_of_birth#(lf),DATEDIFF(year, date_of_birth, GETDATE()) AS nurse_age#(lf),drivers_licence_expiry#(lf),car_registration_expiry#(lf),car_insurance_expiry#(lf),employee_super_top_up#(lf),employee_super_dollar_amt#(lf),additional_weekly_tax#(lf),additional_weekly_tax_perc#(lf),reward_hours#(lf),defer_pay_amount#(lf),defer_pay_perc#(lf),defer_pay_balance#(lf),defer_pay_taxable_gross#(lf),repay_pay_amount#(lf)from dba.nurse n#(lf)where test_nurse_ind <> 1"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "5" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added Prefix",{{"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: cfe9edf0-b406-4082-85ac-c1b6f9224d0d
+	queryGroup: Nurses\FactNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Source - NSW/ACT' =
+		let
+		    Source = Odbc.DataSource(#"Saturn NSW/ACT Connection string", [HierarchicalNavigation=true]),
+		    DBA_Schema = Source{[Name="DBA",Kind="Schema"]}[Data]
+		in
+		    DBA_Schema
+	lineageTag: ac5e6e73-a93f-4b57-8a71-1f9426f8bb47
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseWA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "select #(lf)CAST(nurse_id AS VARCHAR(6))#(lf),firstname#(lf),surname#(lf),COALESCE(firstname, '') + ' ' + COALESCE(surname, '') AS fullname#(lf),suburb AS nurse_suburb#(lf),state AS nurse_state#(lf),postcode AS nurse_postcode#(lf),country#(lf),CASE#(lf)WHEN gender_id = 2 THEN 'Female'#(lf)WHEN gender_id = 3 THEN 'Male'#(lf)WHEN gender_id = 1 THEN 'Not Specified'#(lf)END AS gender#(lf),CASE #(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) < 21 THEN 'Under 21'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 21 AND DATEDIFF(year, date_of_birth, GETDATE()) <35 THEN '21-34'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >=35 AND DATEDIFF(year, date_of_birth, GETDATE()) <50 THEN '35-49'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 50 THEN '50+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS nurse_age_band#(lf),CAST(drivers_licence_ind AS BIT)#(lf),CAST(#(lf)CASE #(lf)WHEN drivers_licence_expiry < GETDATE() THEN 0#(lf)WHEN drivers_licence_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS drivers_licence_current_ind#(lf),CAST(CASE #(lf)WHEN car_registration_expiry < GETDATE() THEN 0#(lf)WHEN car_registration_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_registration_current_ind#(lf),CAST(CASE #(lf)WHEN car_insurance_expiry < GETDATE() THEN 0#(lf)WHEN car_insurance_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_insurance_current_ind#(lf),CAST(own_vehicle_ind AS BIT)#(lf),CAST(induction_ind AS BIT)#(lf),CAST(sub_contractor_ind AS BIT)#(lf),CAST(smoker_ind AS BIT)#(lf),CAST(manual_handling_ind AS BIT)#(lf),CAST(CASE WHEN active_ind = 'Y' THEN 1 WHEN active_ind = 'N' then 0 END AS BIT) AS active_ind#(lf)from dba.nurse#(lf)where test_nurse_ind <> 1"),
+		    #"Added Conditional Column" = Table.AddColumn(Source, "nurse_age_band_sorting", each if [nurse_age_band] = "Under 21" then 0 else if [nurse_age_band] = "21-34" then 1 else if [nurse_age_band] = "35-49" then 2 else if [nurse_age_band] = "50+" then 4 else 5),
+		    #"Added prefix" = Table.ReplaceValue(#"Added Conditional Column", each [nurse_id], each if Text.Length([nurse_id]) < 12 then "1" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix",{{"nurse_id", Int64.Type}, {"nurse_age_band_sorting", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 656b6744-56ee-4648-b05b-74b4d5b48689
+	queryGroup: Nurses\DimNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseNSW - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "select #(lf)CAST(nurse_id AS VARCHAR(6))#(lf),firstname#(lf),surname#(lf),COALESCE(firstname, '') + ' ' + COALESCE(surname, '') AS fullname#(lf),suburb AS nurse_suburb#(lf),state AS nurse_state#(lf),postcode AS nurse_postcode#(lf),country#(lf),CASE#(lf)WHEN gender_id = 2 THEN 'Female'#(lf)WHEN gender_id = 3 THEN 'Male'#(lf)WHEN gender_id = 1 THEN 'Not Specified'#(lf)END AS gender#(lf),CASE #(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) < 21 THEN 'Under 21'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 21 AND DATEDIFF(year, date_of_birth, GETDATE()) <35 THEN '21-34'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >=35 AND DATEDIFF(year, date_of_birth, GETDATE()) <50 THEN '35-49'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 50 THEN '50+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS nurse_age_band#(lf),CAST(drivers_licence_ind AS BIT)#(lf),CAST(#(lf)CASE #(lf)WHEN drivers_licence_expiry < GETDATE() THEN 0#(lf)WHEN drivers_licence_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS drivers_licence_current_ind#(lf),CAST(CASE #(lf)WHEN car_registration_expiry < GETDATE() THEN 0#(lf)WHEN car_registration_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_registration_current_ind#(lf),CAST(CASE #(lf)WHEN car_insurance_expiry < GETDATE() THEN 0#(lf)WHEN car_insurance_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_insurance_current_ind#(lf),CAST(own_vehicle_ind AS BIT)#(lf),CAST(induction_ind AS BIT)#(lf),CAST(sub_contractor_ind AS BIT)#(lf),CAST(smoker_ind AS BIT)#(lf),CAST(manual_handling_ind AS BIT)#(lf),CAST(CASE WHEN active_ind = 'Y' THEN 1 WHEN active_ind = 'N' then 0 END AS BIT) AS active_ind#(lf)from dba.nurse#(lf)where test_nurse_ind <> 1"),
+		    #"Added Conditional Column" = Table.AddColumn(Source, "nurse_age_band_sorting", each if [nurse_age_band] = "Under 21" then 0 else if [nurse_age_band] = "21-34" then 1 else if [nurse_age_band] = "35-49" then 2 else if [nurse_age_band] = "50+" then 4 else 5),
+		    #"Added prefix" = Table.ReplaceValue(#"Added Conditional Column", each [nurse_id], each if Text.Length([nurse_id]) < 12 then "5" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix",{{"nurse_id", Int64.Type}, {"nurse_age_band_sorting", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: ed9bab5d-e239-43b9-b025-e804d6474350
+	queryGroup: Nurses\DimNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseCompetencyWA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),nc.competency_id#(lf)from dba.nurse n#(lf)left join dba.nurse_competency nc on n.nurse_id = nc.nurse_id#(lf)where n.test_nurse_ind <> 1 and nc.nurse_competency_id is not null"),
+		    #"Add prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "1" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Merged Queries" = Table.NestedJoin(#"Add prefix", {"competency_id"}, #"RefNurseCompetencyWA - Source", {"ref_id"}, "Source (2)", JoinKind.LeftOuter),
+		    #"Expanded Source (2)" = Table.ExpandTableColumn(#"Merged Queries", "Source (2)", {"value", "description", "int_value"}, {"value", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Source (2)",{{"competency_id", type text}}),
+		    Custom1 = Table.ReplaceValue(#"Changed Type", each [competency_id], each if Text.Length([competency_id]) < 12 then "1" & Text.PadStart([competency_id], 12, "0") else [competencyh_id], Replacer.ReplaceText,{"competency_id"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(Custom1,{{"competency_id", Int64.Type}, {"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 1208fa0a-a848-418a-930e-6b08e4c8b8be
+	queryGroup: Nurses\DimNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseCompetencyNSW - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),nc.competency_id#(lf)from dba.nurse n#(lf)left join dba.nurse_competency nc on n.nurse_id = nc.nurse_id#(lf)where n.test_nurse_ind <> 1 and nc.nurse_competency_id is not null"),
+		    #"Add prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "5" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Merged Queries" = Table.NestedJoin(#"Add prefix", {"competency_id"}, #"RefNurseCompetencyNSW - Source", {"ref_id"}, "Source (2)", JoinKind.LeftOuter),
+		    #"Expanded Source (2)" = Table.ExpandTableColumn(#"Merged Queries", "Source (2)", {"value", "description", "int_value"}, {"value", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Source (2)",{{"competency_id", type text}}),
+		    Custom1 = Table.ReplaceValue(#"Changed Type", each [competency_id], each if Text.Length([competency_id]) < 12 then "5" & Text.PadStart([competency_id], 12, "0") else [competencyh_id], Replacer.ReplaceText,{"competency_id"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(Custom1,{{"competency_id", Int64.Type}, {"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 34857975-db4c-4917-9115-eb924ef1ea15
+	queryGroup: Nurses\DimNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactPatientWA-Source =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),CAST(pr.referrer_id AS VARCHAR(6))#(lf),p.state AS patient_state#(lf),p.suburb_geocode_id#(lf),p.dva_number#(lf),p.date_of_birth#(lf),DATEDIFF(year, p.date_of_birth, GETDATE()) AS patient_age#(lf),pr.referral_date#(lf),pr.care_start_date#(lf),pr.care_end_date#(lf),pr.cancelled_date#(lf),pr.discharge_date#(lf),p.current_co_payment#(lf),CASE#(lf)WHEN pr.referrer_type_id = 496 THEN 'Private'#(lf)WHEN pr.referrer_type_id = 497 THEN 'Public'#(lf)WHEN pr.referrer_type_id = 498 THEN 'GP'#(lf)WHEN pr.referrer_type_id = 499 THEN 'Brokerage'#(lf)ELSE NULL#(lf)END AS referrer_type#(lf),pr.note AS referrer_note#(lf)from dba.patient p#(lf)left join dba.patient_referrer pr on p.patient_id = pr.patient_id"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "1" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [referrer_id], each if Text.Length([referrer_id]) < 12 then "1" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"patient_id", Int64.Type}, {"referrer_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 2add96ec-7a37-4833-825e-dcc085f0d426
+	queryGroup: Patients\FactPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactPatientNSW - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),CAST(pr.referrer_id AS VARCHAR(6))#(lf),p.suburb_geocode_id#(lf),p.dva_number#(lf),p.date_of_birth#(lf),DATEDIFF(year, p.date_of_birth, GETDATE()) AS patient_age#(lf),pr.referral_date#(lf),pr.care_start_date#(lf),pr.care_end_date#(lf),pr.cancelled_date#(lf),pr.discharge_date#(lf),p.current_co_payment#(lf),CASE#(lf)WHEN pr.referrer_type_id = 496 THEN 'Private'#(lf)WHEN pr.referrer_type_id = 497 THEN 'Public'#(lf)WHEN pr.referrer_type_id = 498 THEN 'GP'#(lf)WHEN pr.referrer_type_id = 499 THEN 'Brokerage'#(lf)ELSE NULL#(lf)END AS referrer_type#(lf),pr.note AS referrer_note#(lf)from dba.patient p#(lf)left join dba.patient_referrer pr on p.patient_id = pr.patient_id"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "5" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [referrer_id], each if Text.Length([referrer_id]) < 12 then "5" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"patient_id", Int64.Type}, {"referrer_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 47ed0d61-184d-496b-a1ab-85a555f66c7e
+	queryGroup: Patients\FactPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimPatientWA - Source' = ```
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),p.firstname#(lf),p.surname#(lf),COALESCE(p.firstname, '') + ' ' + COALESCE(p.surname, '') AS fullname#(lf),CASE#(lf)WHEN p.gender_id = 2 then 'Female'#(lf)WHEN p.gender_id = 3 then 'Male'#(lf)WHEN p.gender_id = 1 then 'Not Specified'#(lf)end as gender#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 'Under 60'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN '61-70'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN '71-79'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN '80-89'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN '90-99'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN '100+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS patient_age_band#(lf),p.suburb AS patient_suburb#(lf),p.state AS patient_state#(lf),p.postcode AS patient_postcode#(lf),CASE #(lf)WHEN p.active_ind = 0 THEN 'Inactive'#(lf)WHEN p.active_ind = 1 THEN 'Active'#(lf)WHEN p.active_ind = 2 THEN 'Archived'#(lf)END AS active_ind#(lf),CAST(p.dva_ind as bit)#(lf),CAST(p.living_alone_ind as bit)#(lf),CAST(p.high_dependant_ind as bit)#(lf),CAST(p.lifter_ind as bit)#(lf),CAST(p.consent_to_care_ind as bit)#(lf),CAST(p.extreme_weather_risk_ind as bit)#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 0#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN 1#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN 2#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN 3#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN 4#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN 5#(lf)ELSE 6#(lf)END AS patient_age_band_sorting#(lf)from dba.patient p"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "1" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added FirstNameOnly Column" = Table.AddColumn(#"Added prefix", "FirstNameOnly", each if Text.Contains([firstname], "VHC") then Text.BeforeDelimiter([firstname], " VHC") 
+		        else if Text.Contains([firstname], "TCP") then Text.BeforeDelimiter([firstname], " TCP") 
+		        else if Text.Contains([firstname], "HCP") then Text.BeforeDelimiter([firstname], " HCP")
+		        else if Text.Contains([firstname], "PRIV") then Text.BeforeDelimiter([firstname], " PRIV")
+		        else [firstname]),
+		    #"Added SurnameOnly Column" = Table.AddColumn(#"Added FirstNameOnly Column", "SurnameOnly", each if Text.Contains([surname], "(") and Text.Contains([surname], ")") then Text.BeforeDelimiter([surname], " (") else [surname]),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Added SurnameOnly Column", "FullNamesOnly", each Text.Combine({[FirstNameOnly], [SurnameOnly]}, " "), type text),
+		    #"Trimmed Text" = Table.TransformColumns(#"Inserted Merged Column",{{"FirstNameOnly", Text.Trim, type text}, {"SurnameOnly", Text.Trim, type text}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Trimmed Text",{{"patient_id", Int64.Type}, {"extreme_weather_risk_ind", type logical}, {"consent_to_care_ind", type logical}, {"lifter_ind", type logical}, {"high_dependant_ind", type logical}, {"living_alone_ind", type logical}, {"dva_ind", type logical}, {"active_ind", type text}, {"FirstNameOnly", type text}, {"SurnameOnly", type text}})
+		in
+		    #"Changed Type"
+		```
+	lineageTag: 639ffd5c-e67e-4c8e-bae3-70a52b744221
+	queryGroup: Patients\DimPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimPatientNSW - Source' = ```
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),p.firstname#(lf),p.surname#(lf),COALESCE(p.firstname, '') + ' ' + COALESCE(p.surname, '') AS fullname#(lf),CASE#(lf)WHEN p.gender_id = 2 then 'Female'#(lf)WHEN p.gender_id = 3 then 'Male'#(lf)WHEN p.gender_id = 1 then 'Not Specified'#(lf)end as gender#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 'Under 60'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN '61-70'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN '71-79'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN '80-89'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN '90-99'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN '100+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS patient_age_band#(lf),p.suburb AS patient_suburb#(lf),p.state AS patient_state#(lf),p.postcode AS patient_postcode#(lf),CASE #(lf)WHEN p.active_ind = 0 THEN 'Inactive'#(lf)WHEN p.active_ind = 1 THEN 'Active'#(lf)WHEN p.active_ind = 2 THEN 'Archived'#(lf)END AS active_ind#(lf),CAST(p.dva_ind as bit)#(lf),CAST(p.living_alone_ind as bit)#(lf),CAST(p.high_dependant_ind as bit)#(lf),CAST(p.lifter_ind as bit)#(lf),CAST(p.consent_to_care_ind as bit)#(lf),CAST(p.extreme_weather_risk_ind as bit)#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 0#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN 1#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN 2#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN 3#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN 4#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN 5#(lf)ELSE 6#(lf)END AS patient_age_band_sorting#(lf)from dba.patient p"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "5" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added FirstNameOnly Column" = Table.AddColumn(#"Added prefix", "FirstNameOnly", each if Text.Contains([firstname], "VHC") then Text.BeforeDelimiter([firstname], " VHC") 
+		        else if Text.Contains([firstname], "TCP") then Text.BeforeDelimiter([firstname], " TCP") 
+		        else if Text.Contains([firstname], "HCP") then Text.BeforeDelimiter([firstname], " HCP")
+		        else if Text.Contains([firstname], "PRIV") then Text.BeforeDelimiter([firstname], " PRIV")
+		        else [firstname]),
+		    #"Added SurnameOnly Column" = Table.AddColumn(#"Added FirstNameOnly Column", "SurnameOnly", each if Text.Contains([surname], "(") and Text.Contains([surname], ")") then Text.BeforeDelimiter([surname], " (") else [surname]),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Added SurnameOnly Column", "FullNamesOnly", each Text.Combine({[FirstNameOnly], [SurnameOnly]}, " "), type text),
+		    #"Trimmed Text" = Table.TransformColumns(#"Inserted Merged Column",{{"FirstNameOnly", Text.Trim, type text}, {"SurnameOnly", Text.Trim, type text}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Trimmed Text",{{"patient_id", Int64.Type}, {"extreme_weather_risk_ind", type logical}, {"consent_to_care_ind", type logical}, {"lifter_ind", type logical}, {"high_dependant_ind", type logical}, {"living_alone_ind", type logical}, {"dva_ind", type logical}, {"active_ind", type text}, {"FirstNameOnly", type text}, {"SurnameOnly", type text}})
+		in
+		    #"Changed Type"
+		```
+	lineageTag: 3b2f80b6-8589-4bba-9283-0518cb754a58
+	queryGroup: Patients\DimPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimReferrerWA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "Select #(lf)CAST(referrer_id AS VARCHAR(6))#(lf),name AS referrer_name#(lf),invoice_suburb AS referrer_suburb#(lf),UPPER(invoice_state) AS referrer_state#(lf),invoice_postcode AS referrer_postcode#(lf)FROM dba.referrer #(lf)"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [referrer_id], each if Text.Length([referrer_id]) < 12 then "1" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Added referrer group" = Table.AddColumn(#"Added prefix", "ReferrerGroup", each if Text.Contains([referrer_name], "Hospital") then "Hospital" else if Text.Contains([referrer_name], "Ashford") then "Hospital" else if Text.Contains([referrer_name], "Remedy") then "Remedy" else if Text.Contains([referrer_name], "Veterans Affairs") then "DVA" else if Text.Contains([referrer_name], "Veterans Home") then "VHC" else if Text.Contains([referrer_name], "NDIS") then "NDIS" else if Text.Contains([referrer_name], "Medical Centre") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Andrew") then "Hospital" else if Text.Contains([referrer_name], "Self") then "Private" else if Text.Contains([referrer_name], "MEDICAL CENTRE") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "DVA") then "DVA" else if Text.Contains([referrer_name], "Surgery") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Louis") then "St Louis" else "Dr & Medical Centre"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added referrer group",{{"referrer_id", Int64.Type}, {"ReferrerGroup", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: cf3e9a4e-d2d8-479e-beb6-cf017b5d2f80
+	queryGroup: Patients\Referrers
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimReferrerNSW - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "Select #(lf)CAST(referrer_id AS VARCHAR(6))#(lf),name AS referrer_name#(lf),invoice_suburb AS referrer_suburb#(lf),UPPER(invoice_state) AS referrer_state#(lf),invoice_postcode AS referrer_postcode#(lf)FROM dba.referrer #(lf)"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [referrer_id], each if Text.Length([referrer_id]) < 12 then "5" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Added referrer group" = Table.AddColumn(#"Added prefix", "ReferrerGroup", each if Text.Contains([referrer_name], "Hospital") then "Hospital" else if Text.Contains([referrer_name], "Ashford") then "Hospital" else if Text.Contains([referrer_name], "Remedy") then "Remedy" else if Text.Contains([referrer_name], "Veterans Affairs") then "DVA" else if Text.Contains([referrer_name], "Veterans Home") then "VHC" else if Text.Contains([referrer_name], "NDIS") then "NDIS" else if Text.Contains([referrer_name], "Medical Centre") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Andrew") then "Hospital" else if Text.Contains([referrer_name], "Self") then "Private" else if Text.Contains([referrer_name], "MEDICAL CENTRE") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "DVA") then "DVA" else if Text.Contains([referrer_name], "Surgery") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Louis") then "St Louis" else "Dr & Medical Centre"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added referrer group",{{"referrer_id", Int64.Type}, {"ReferrerGroup", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: de759814-9160-4132-9b92-5689848bc0d0
+	queryGroup: Patients\Referrers
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'BridgeDVANumberNSW - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "select distinct(p.dva_number)#(lf)from dba.patient p where p.dva_number IS NOT NULL")
+		in
+		    Source
+	lineageTag: b0017ea2-e908-4cf8-8860-864bf26fd3cb
+	queryGroup: Patients\BridgeDVA
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Source - Vic' =
+		let
+		    Source = Odbc.DataSource(#"Saturn VIC Connection string", [HierarchicalNavigation=true]),
+		    DBA_Schema = Source{[Name="DBA",Kind="Schema"]}[Data]
+		in
+		    DBA_Schema
+	lineageTag: 0cfd8a9b-64ad-4a00-8ecf-87b3e7debe0c
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Source - SA' =
+		let
+		    Source = Odbc.DataSource(#"Saturn SA Connection string", [HierarchicalNavigation=true]),
+		    DBA_Schema = Source{[Name="DBA",Kind="Schema"]}[Data]
+		in
+		    DBA_Schema
+	lineageTag: a67a48bf-53d4-44d5-8b0b-c8ce189e85d9
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactPatientVIC-Source =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),CAST(pr.referrer_id AS VARCHAR(6))#(lf),p.suburb_geocode_id#(lf),p.dva_number#(lf),p.date_of_birth#(lf),DATEDIFF(year, p.date_of_birth, GETDATE()) AS patient_age#(lf),pr.referral_date#(lf),pr.care_start_date#(lf),pr.care_end_date#(lf),pr.cancelled_date#(lf),pr.discharge_date#(lf),p.current_co_payment#(lf),CASE#(lf)WHEN pr.referrer_type_id = 496 THEN 'Private'#(lf)WHEN pr.referrer_type_id = 497 THEN 'Public'#(lf)WHEN pr.referrer_type_id = 498 THEN 'GP'#(lf)WHEN pr.referrer_type_id = 499 THEN 'Brokerage'#(lf)ELSE NULL#(lf)END AS referrer_type#(lf),pr.note AS referrer_note#(lf)from dba.patient p#(lf)left join dba.patient_referrer pr on p.patient_id = pr.patient_id"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "2" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [referrer_id], each if Text.Length([referrer_id]) < 12 then "2" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"patient_id", Int64.Type}, {"referrer_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 331e6605-ac99-4f93-96bc-b52892eaf593
+	queryGroup: Patients\FactPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactNurseVIC - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),suburb_geocode_id#(lf),years_of_nursing#(lf),commenced AS employment_start_date#(lf),induction_date#(lf),termination_date#(lf),date_of_birth#(lf),DATEDIFF(year, date_of_birth, GETDATE()) AS nurse_age#(lf),drivers_licence_expiry#(lf),car_registration_expiry#(lf),car_insurance_expiry#(lf),employee_super_top_up#(lf),employee_super_dollar_amt#(lf),additional_weekly_tax#(lf),additional_weekly_tax_perc#(lf),reward_hours#(lf),defer_pay_amount#(lf),defer_pay_perc#(lf),defer_pay_balance#(lf),defer_pay_taxable_gross#(lf),repay_pay_amount#(lf)from dba.nurse n#(lf)where test_nurse_ind <> 1"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "2" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added Prefix",{{"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 193f9b3f-9215-45c2-a4d7-a5ed9f8b3867
+	queryGroup: Nurses\FactNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseVIC - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "select #(lf)CAST(nurse_id AS VARCHAR(6))#(lf),firstname#(lf),surname#(lf),COALESCE(firstname, '') + ' ' + COALESCE(surname, '') AS fullname#(lf),suburb AS nurse_suburb#(lf),state AS nurse_state#(lf),postcode AS nurse_postcode#(lf),country#(lf),CASE#(lf)WHEN gender_id = 2 THEN 'Female'#(lf)WHEN gender_id = 3 THEN 'Male'#(lf)WHEN gender_id = 1 THEN 'Not Specified'#(lf)END AS gender#(lf),CASE #(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) < 21 THEN 'Under 21'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 21 AND DATEDIFF(year, date_of_birth, GETDATE()) <35 THEN '21-34'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >=35 AND DATEDIFF(year, date_of_birth, GETDATE()) <50 THEN '35-49'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 50 THEN '50+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS nurse_age_band#(lf),CAST(drivers_licence_ind AS BIT)#(lf),CAST(#(lf)CASE #(lf)WHEN drivers_licence_expiry < GETDATE() THEN 0#(lf)WHEN drivers_licence_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS drivers_licence_current_ind#(lf),CAST(CASE #(lf)WHEN car_registration_expiry < GETDATE() THEN 0#(lf)WHEN car_registration_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_registration_current_ind#(lf),CAST(CASE #(lf)WHEN car_insurance_expiry < GETDATE() THEN 0#(lf)WHEN car_insurance_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_insurance_current_ind#(lf),CAST(own_vehicle_ind AS BIT)#(lf),CAST(induction_ind AS BIT)#(lf),CAST(sub_contractor_ind AS BIT)#(lf),CAST(smoker_ind AS BIT)#(lf),CAST(manual_handling_ind AS BIT)#(lf),CAST(CASE WHEN active_ind = 'Y' THEN 1 WHEN active_ind = 'N' then 0 END AS BIT) AS active_ind#(lf)from dba.nurse#(lf)where test_nurse_ind <> 1"),
+		    #"Added Conditional Column" = Table.AddColumn(Source, "nurse_age_band_sorting", each if [nurse_age_band] = "Under 21" then 0 else if [nurse_age_band] = "21-34" then 1 else if [nurse_age_band] = "35-49" then 2 else if [nurse_age_band] = "50+" then 4 else 5),
+		    #"Added prefix" = Table.ReplaceValue(#"Added Conditional Column", each [nurse_id], each if Text.Length([nurse_id]) < 12 then "2" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix",{{"nurse_id", Int64.Type}, {"nurse_age_band_sorting", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 601b582d-acad-43f2-8a39-8cec8a102fa4
+	queryGroup: Nurses\DimNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseCompetencyVIC - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),nc.competency_id#(lf)from dba.nurse n#(lf)left join dba.nurse_competency nc on n.nurse_id = nc.nurse_id#(lf)where n.test_nurse_ind <> 1 and nc.nurse_competency_id is not null"),
+		    #"Add prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "2" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Merged Queries" = Table.NestedJoin(#"Add prefix", {"competency_id"}, #"RefNurseCompetencyVIC - Source", {"ref_id"}, "Source (2)", JoinKind.LeftOuter),
+		    #"Expanded Source (2)" = Table.ExpandTableColumn(#"Merged Queries", "Source (2)", {"value", "description", "int_value"}, {"value", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Source (2)",{{"competency_id", type text}}),
+		    Custom1 = Table.ReplaceValue(#"Changed Type", each [competency_id], each if Text.Length([competency_id]) < 12 then "2" & Text.PadStart([competency_id], 12, "0") else [competencyh_id], Replacer.ReplaceText,{"competency_id"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(Custom1,{{"competency_id", Int64.Type}, {"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: f97f3b16-0c1e-49f4-8454-11c435d32086
+	queryGroup: Nurses\DimNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimPatientVIC - Source' = ```
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),p.firstname#(lf),p.surname#(lf),COALESCE(p.firstname, '') + ' ' + COALESCE(p.surname, '') AS fullname#(lf),CASE#(lf)WHEN p.gender_id = 2 then 'Female'#(lf)WHEN p.gender_id = 3 then 'Male'#(lf)WHEN p.gender_id = 1 then 'Not Specified'#(lf)end as gender#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 'Under 60'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN '61-70'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN '71-79'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN '80-89'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN '90-99'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN '100+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS patient_age_band#(lf),p.suburb AS patient_suburb#(lf),p.state AS patient_state#(lf),p.postcode AS patient_postcode#(lf),CASE #(lf)WHEN p.active_ind = 0 THEN 'Inactive'#(lf)WHEN p.active_ind = 1 THEN 'Active'#(lf)WHEN p.active_ind = 2 THEN 'Archived'#(lf)END AS active_ind#(lf),CAST(p.dva_ind as bit)#(lf),CAST(p.living_alone_ind as bit)#(lf),CAST(p.high_dependant_ind as bit)#(lf),CAST(p.lifter_ind as bit)#(lf),CAST(p.consent_to_care_ind as bit)#(lf),CAST(p.extreme_weather_risk_ind as bit)#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 0#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN 1#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN 2#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN 3#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN 4#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN 5#(lf)ELSE 6#(lf)END AS patient_age_band_sorting#(lf)from dba.patient p"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "2" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added FirstNameOnly Column" = Table.AddColumn(#"Added prefix", "FirstNameOnly", each if Text.Contains([firstname], "VHC") then Text.BeforeDelimiter([firstname], " VHC") 
+		        else if Text.Contains([firstname], "TCP") then Text.BeforeDelimiter([firstname], " TCP") 
+		        else if Text.Contains([firstname], "HCP") then Text.BeforeDelimiter([firstname], " HCP")
+		        else if Text.Contains([firstname], "PRIV") then Text.BeforeDelimiter([firstname], " PRIV")
+		        else [firstname]),
+		    #"Added SurnameOnly Column" = Table.AddColumn(#"Added FirstNameOnly Column", "SurnameOnly", each if Text.Contains([surname], "(") and Text.Contains([surname], ")") then Text.BeforeDelimiter([surname], " (") else [surname]),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Added SurnameOnly Column", "FullNamesOnly", each Text.Combine({[FirstNameOnly], [SurnameOnly]}, " "), type text),
+		    #"Trimmed Text" = Table.TransformColumns(#"Inserted Merged Column",{{"FirstNameOnly", Text.Trim, type text}, {"SurnameOnly", Text.Trim, type text}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Trimmed Text",{{"patient_id", Int64.Type}, {"extreme_weather_risk_ind", type logical}, {"consent_to_care_ind", type logical}, {"lifter_ind", type logical}, {"high_dependant_ind", type logical}, {"living_alone_ind", type logical}, {"dva_ind", type logical}, {"active_ind", type text}, {"FirstNameOnly", type text}, {"SurnameOnly", type text}})
+		in
+		    #"Changed Type"
+		```
+	lineageTag: a60fcb80-7ca8-4641-a485-46e8df7f3659
+	queryGroup: Patients\DimPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'BridgeDVANumberVIC - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "select distinct(p.dva_number)#(lf)from dba.patient p where p.dva_number IS NOT NULL")
+		in
+		    Source
+	lineageTag: f4bbf6b0-a4f1-4bfd-a9a8-aca83c188508
+	queryGroup: Patients\BridgeDVA
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimReferrerVIC - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "Select #(lf)CAST(referrer_id AS VARCHAR(6))#(lf),name AS referrer_name#(lf),invoice_suburb AS referrer_suburb#(lf),UPPER(invoice_state) AS referrer_state#(lf),invoice_postcode AS referrer_postcode#(lf)FROM dba.referrer #(lf)"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [referrer_id], each if Text.Length([referrer_id]) < 12 then "2" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Added referrer group" = Table.AddColumn(#"Added prefix", "ReferrerGroup", each if Text.Contains([referrer_name], "Hospital") then "Hospital" else if Text.Contains([referrer_name], "Ashford") then "Hospital" else if Text.Contains([referrer_name], "Remedy") then "Remedy" else if Text.Contains([referrer_name], "Veterans Affairs") then "DVA" else if Text.Contains([referrer_name], "Veterans Home") then "VHC" else if Text.Contains([referrer_name], "NDIS") then "NDIS" else if Text.Contains([referrer_name], "Medical Centre") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Andrew") then "Hospital" else if Text.Contains([referrer_name], "Self") then "Private" else if Text.Contains([referrer_name], "MEDICAL CENTRE") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "DVA") then "DVA" else if Text.Contains([referrer_name], "Surgery") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Louis") then "St Louis" else "Dr & Medical Centre"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added referrer group",{{"referrer_id", Int64.Type}, {"ReferrerGroup", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 23666a1c-7c34-4819-98df-f3abe834bff1
+	queryGroup: Patients\Referrers
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimServiceTypesNSW - Source' =
+		let
+		    Source = #"Source - NSW/ACT",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"20" = ref_type_Table{[ref_type_id=20]}[ref_values],
+		    #"Renamed Columns" = Table.RenameColumns(#"20",{{"ref_id", "service_id"}, {"value", "service"}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"service_id", "service", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"service_id", type text}}),
+		    #"Inserted Prefix" = Table.ReplaceValue(#"Changed Type", each [service_id], each if Text.Length([service_id]) < 12 then "5" & Text.PadStart([service_id], 12, "0") else [service_id], Replacer.ReplaceText,{"service_id"}),
+		    #"Duplicated Column" = Table.DuplicateColumn(#"Inserted Prefix", "service", "FundingStream"),
+		    #"Extracted Text After Delimiter" = Table.TransformColumns(#"Duplicated Column", {{"FundingStream", each Text.AfterDelimiter(_, " - "), type text}}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Extracted Text After Delimiter",
+		        each [FundingStream],
+		        each if [FundingStream] = "" then "DVA"
+		        else if Text.Start([service], 3) = "Cas" then "DVA"
+		        else if Text.Start([service], 3) = "NDI" then "NDIS"
+		        else if Text.Start([service], 3) = "STR" then "STRC"
+		        else if Text.Start([service], 3) = "PRI" then "PRIV"
+		        else Text.Start([service], 3),Replacer.ReplaceValue,{"FundingStream"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Replaced Value",{{"FundingStream", type text},{"service_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 8b3964e6-8d27-471f-9cab-edf92fae2f83
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimServiceTypesVIC - Source' =
+		let
+		    Source = #"Source - NSW/ACT",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"20" = ref_type_Table{[ref_type_id=20]}[ref_values],
+		    #"Renamed Columns" = Table.RenameColumns(#"20",{{"ref_id", "service_id"}, {"value", "service"}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"service_id", "service", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"service_id", type text}}),
+		    #"Inserted Prefix" = Table.ReplaceValue(#"Changed Type", each [service_id], each if Text.Length([service_id]) < 12 then "2" & Text.PadStart([service_id], 12, "0") else [service_id], Replacer.ReplaceText,{"service_id"}),
+		    #"Duplicated Column" = Table.DuplicateColumn(#"Inserted Prefix", "service", "FundingStream"),
+		    #"Extracted Text After Delimiter" = Table.TransformColumns(#"Duplicated Column", {{"FundingStream", each Text.AfterDelimiter(_, " - "), type text}}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Extracted Text After Delimiter",
+		        each [FundingStream],
+		        each if [FundingStream] = "" then "DVA"
+		        else if Text.Start([service], 3) = "Cas" then "DVA"
+		        else if Text.Start([service], 3) = "NDI" then "NDIS"
+		        else if Text.Start([service], 3) = "STR" then "STRC"
+		        else if Text.Start([service], 3) = "PRI" then "PRIV"
+		        else Text.Start([service], 3),Replacer.ReplaceValue,{"FundingStream"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Replaced Value",{{"FundingStream", type text},{"service_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 21a9dfa4-ebe0-4b19-8ab7-5e65c12ad31d
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimServiceTypesWA - Source' =
+		let
+		    Source = #"Source - WA",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"20" = ref_type_Table{[ref_type_id=20]}[ref_values],
+		    #"Renamed Columns" = Table.RenameColumns(#"20",{{"ref_id", "service_id"}, {"value", "service"}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"service_id", "service", "description", "int_value"}),
+		    #"Changed Type2" = Table.TransformColumnTypes(#"Removed Other Columns",{{"service_id", type text}}),
+		    #"Inserted Prefix" = Table.ReplaceValue(#"Changed Type2", each [service_id], each if Text.Length([service_id]) < 12 then "1" & Text.PadStart([service_id], 12, "0") else [service_id], Replacer.ReplaceText,{"service_id"}),
+		    #"Duplicated Column" = Table.DuplicateColumn(#"Inserted Prefix", "service", "FundingStream"),
+		    #"Extracted Text After Delimiter" = Table.TransformColumns(#"Duplicated Column", {{"FundingStream", each Text.AfterDelimiter(_, " - "), type text}}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Extracted Text After Delimiter",
+		        each [FundingStream],
+		        each if [FundingStream] = "" then "DVA"
+		        else if Text.Start([service], 3) = "Cas" then "DVA"
+		        else if Text.Start([service], 3) = "NDI" then "NDIS"
+		        else if Text.Start([service], 3) = "STR" then "STRC"
+		        else if Text.Start([service], 3) = "PRI" then "PRIV"
+		        else Text.Start([service], 3),Replacer.ReplaceValue,{"FundingStream"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Replaced Value",{{"FundingStream", type text},{"service_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 9c999fc8-9912-41c7-af24-98b959364ad3
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'RefNurseCompetencyNSW - Source' =
+		let
+		    Source = #"Source - NSW/ACT",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"52" = ref_type_Table{[ref_type_id=52]}[ref_values]
+		in
+		    #"52"
+	lineageTag: 0cfa5105-a8dd-40af-82b5-9010ef9d1a17
+	queryGroup: Nurses\DimNurseCompetency\RefNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'RefNurseCompetencyVIC - Source' =
+		let
+		    Source = #"Source - Vic",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"52" = ref_type_Table{[ref_type_id=52]}[ref_values]
+		in
+		    #"52"
+	lineageTag: 915bb703-6dc0-4dc4-9fb0-e6a5ba55dd47
+	queryGroup: Nurses\DimNurseCompetency\RefNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactVisitWA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "Select #(lf)CAST(v.visit_id AS VARCHAR(6))#(lf),CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.nurse_id AS VARCHAR(6))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf),CASE#(lf)WHEN v.status = 0 THEN 'New Visit'#(lf)WHEN v.status = 1 THEN 'On Hold'#(lf)WHEN v.status = 2 THEN 'Completed'#(lf)WHEN v.status = 3 THEN 'Cancelled'#(lf)END AS status#(lf),v.visit_date#(lf),v.visit_duration#(lf),v.travel_time_to_next#(lf),v.distance_to_next#(lf),v.co_payment AS co_payment_due#(lf),v.co_payment_received#(lf),v.create_user_id AS created_by#(lf),v.create_timestamp#(lf),v.last_update_user_id AS modified_by#(lf),v.last_update_timestamp AS modified_timestamp#(lf)#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "1" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Added Prefix1" = Table.ReplaceValue(#"Added Prefix", each [visit_id], each if Text.Length([visit_id]) < 12 then "1" & Text.PadStart([visit_id], 12, "0") else [visit_id], Replacer.ReplaceText,{"visit_id"}),
+		    #"Added Prefix2" = Table.ReplaceValue(#"Added Prefix1", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "1" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Added Prefix3" = Table.ReplaceValue(#"Added Prefix2", each [patient_id], each if Text.Length([patient_id]) < 12 then "1" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    AddedVisitModifiedFlag = Table.AddColumn(#"Added Prefix3", "VisitModifiedFlag", each if [modified_timestamp] > DateTime.From([create_timestamp]) then true else false),
+		    #"Added ModifiedAfterVisitDateFlag" = Table.AddColumn(AddedVisitModifiedFlag, "ModifiedAfterVisitDateFlag", each if [modified_timestamp] > DateTime.From([visit_date]) then true else false),
+		    #"Added VisitDurationHours" = Table.AddColumn(#"Added ModifiedAfterVisitDateFlag", "VisitDurationHours", each [visit_duration] / 60, type number),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added VisitDurationHours",{{"visit_id", Int64.Type}, {"service_type_id", Int64.Type}, {"nurse_id", Int64.Type}, {"patient_id", Int64.Type}, {"ModifiedAfterVisitDateFlag", type logical}, {"VisitModifiedFlag", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: 3590e493-c4ee-430b-a57e-d8adcaa820a0
+	queryGroup: Visits
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactVisitNSW - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "Select #(lf)CAST(v.visit_id AS VARCHAR(6))#(lf),CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.nurse_id AS VARCHAR(6))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf),CASE#(lf)WHEN v.status = 0 THEN 'New Visit'#(lf)WHEN v.status = 1 THEN 'On Hold'#(lf)WHEN v.status = 2 THEN 'Completed'#(lf)WHEN v.status = 3 THEN 'Cancelled'#(lf)END AS status#(lf),v.visit_date#(lf),v.visit_duration#(lf),v.travel_time_to_next#(lf),v.distance_to_next#(lf),v.co_payment AS co_payment_due#(lf),v.co_payment_received#(lf),v.create_user_id AS created_by#(lf),v.create_timestamp#(lf),v.last_update_user_id AS modified_by#(lf),v.last_update_timestamp AS modified_timestamp#(lf)#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "5" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Added Prefix1" = Table.ReplaceValue(#"Added Prefix", each [visit_id], each if Text.Length([visit_id]) < 12 then "5" & Text.PadStart([visit_id], 12, "0") else [visit_id], Replacer.ReplaceText,{"visit_id"}),
+		    #"Added Prefix2" = Table.ReplaceValue(#"Added Prefix1", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "5" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Added Prefix3" = Table.ReplaceValue(#"Added Prefix2", each [patient_id], each if Text.Length([patient_id]) < 12 then "5" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added VisitModifiedFlag" = Table.AddColumn(#"Added Prefix3", "VisitModifiedFlag", each if [modified_timestamp] > DateTime.From([create_timestamp]) then true else false),
+		    #"Added ModifiedAfterVisitDateFlag" = Table.AddColumn(#"Added VisitModifiedFlag", "ModifiedAfterVisitDateFlag", each if [modified_timestamp] > DateTime.From([visit_date]) then true else false),
+		    #"Added VisitDurationHours" = Table.AddColumn(#"Added ModifiedAfterVisitDateFlag", "VisitDurationHours", each [visit_duration] / 60, type number),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added VisitDurationHours",{{"visit_id", Int64.Type}, {"service_type_id", Int64.Type}, {"nurse_id", Int64.Type}, {"patient_id", Int64.Type}, {"ModifiedAfterVisitDateFlag", type logical}, {"VisitModifiedFlag", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: 38e2553d-a2be-4b8f-a21d-e3b541cbdaab
+	queryGroup: Visits
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactVisitVIC - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "Select #(lf)CAST(v.visit_id AS VARCHAR(6))#(lf),CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.nurse_id AS VARCHAR(6))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf),CASE#(lf)WHEN v.status = 0 THEN 'New Visit'#(lf)WHEN v.status = 1 THEN 'On Hold'#(lf)WHEN v.status = 2 THEN 'Completed'#(lf)WHEN v.status = 3 THEN 'Cancelled'#(lf)END AS status#(lf),v.visit_date#(lf),v.visit_duration#(lf),v.travel_time_to_next#(lf),v.distance_to_next#(lf),v.co_payment AS co_payment_due#(lf),v.co_payment_received#(lf),v.create_user_id AS created_by#(lf),v.create_timestamp#(lf),v.last_update_user_id AS modified_by#(lf),v.last_update_timestamp AS modified_timestamp#(lf)#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "2" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Added Prefix1" = Table.ReplaceValue(#"Added Prefix", each [visit_id], each if Text.Length([visit_id]) < 12 then "2" & Text.PadStart([visit_id], 12, "0") else [visit_id], Replacer.ReplaceText,{"visit_id"}),
+		    #"Added Prefix2" = Table.ReplaceValue(#"Added Prefix1", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "2" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Added Prefix3" = Table.ReplaceValue(#"Added Prefix2", each [patient_id], each if Text.Length([patient_id]) < 12 then "2" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added VisitModifiedFlag" = Table.AddColumn(#"Added Prefix3", "VisitModifiedFlag", each if [modified_timestamp] > DateTime.From([create_timestamp]) then true else false),
+		    #"Added ModifiedAfterVisitDateFlag" = Table.AddColumn(#"Added VisitModifiedFlag", "ModifiedAfterVisitDateFlag", each if [modified_timestamp] > DateTime.From([visit_date]) then true else false),
+		    #"Added VisitDurationHours" = Table.AddColumn(#"Added ModifiedAfterVisitDateFlag", "VisitDurationHours", each [visit_duration] / 60, type number),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added VisitDurationHours",{{"visit_id", Int64.Type}, {"service_type_id", Int64.Type}, {"nurse_id", Int64.Type}, {"patient_id", Int64.Type}, {"ModifiedAfterVisitDateFlag", type logical}, {"VisitModifiedFlag", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: 64eadfd3-8994-4d4c-bead-6929ceaf48eb
+	queryGroup: Visits
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseSA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "select #(lf)CAST(nurse_id AS VARCHAR(6))#(lf),firstname#(lf),surname#(lf),COALESCE(firstname, '') + ' ' + COALESCE(surname, '') AS fullname#(lf),suburb AS nurse_suburb#(lf),state AS nurse_state#(lf),postcode AS nurse_postcode#(lf),country#(lf),CASE#(lf)WHEN gender_id = 2 THEN 'Female'#(lf)WHEN gender_id = 3 THEN 'Male'#(lf)WHEN gender_id = 1 THEN 'Not Specified'#(lf)END AS gender#(lf),CASE #(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) < 21 THEN 'Under 21'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 21 AND DATEDIFF(year, date_of_birth, GETDATE()) <35 THEN '21-34'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >=35 AND DATEDIFF(year, date_of_birth, GETDATE()) <50 THEN '35-49'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 50 THEN '50+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS nurse_age_band#(lf),CAST(drivers_licence_ind AS BIT)#(lf),CAST(#(lf)CASE #(lf)WHEN drivers_licence_expiry < GETDATE() THEN 0#(lf)WHEN drivers_licence_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS drivers_licence_current_ind#(lf),CAST(CASE #(lf)WHEN car_registration_expiry < GETDATE() THEN 0#(lf)WHEN car_registration_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_registration_current_ind#(lf),CAST(CASE #(lf)WHEN car_insurance_expiry < GETDATE() THEN 0#(lf)WHEN car_insurance_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_insurance_current_ind#(lf),CAST(own_vehicle_ind AS BIT)#(lf),CAST(induction_ind AS BIT)#(lf),CAST(sub_contractor_ind AS BIT)#(lf),CAST(smoker_ind AS BIT)#(lf),CAST(manual_handling_ind AS BIT)#(lf),CAST(CASE WHEN active_ind = 'Y' THEN 1 WHEN active_ind = 'N' then 0 END AS BIT) AS active_ind#(lf)from dba.nurse#(lf)where test_nurse_ind <> 1"),
+		    #"Added Conditional Column" = Table.AddColumn(Source, "nurse_age_band_sorting", each if [nurse_age_band] = "Under 21" then 0 else if [nurse_age_band] = "21-34" then 1 else if [nurse_age_band] = "35-49" then 2 else if [nurse_age_band] = "50+" then 4 else 5),
+		    #"Added prefix" = Table.ReplaceValue(#"Added Conditional Column", each [nurse_id], each if Text.Length([nurse_id]) < 12 then "3" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix",{{"nurse_id", Int64.Type}, {"nurse_age_band_sorting", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 112ec867-d782-428f-8cb4-b4c5c6901ceb
+	queryGroup: Nurses\DimNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactNurseSA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),suburb_geocode_id#(lf),years_of_nursing#(lf),commenced AS employment_start_date#(lf),induction_date#(lf),termination_date#(lf),date_of_birth#(lf),DATEDIFF(year, date_of_birth, GETDATE()) AS nurse_age#(lf),drivers_licence_expiry#(lf),car_registration_expiry#(lf),car_insurance_expiry#(lf),employee_super_top_up#(lf),employee_super_dollar_amt#(lf),additional_weekly_tax#(lf),additional_weekly_tax_perc#(lf),reward_hours#(lf),defer_pay_amount#(lf),defer_pay_perc#(lf),defer_pay_balance#(lf),defer_pay_taxable_gross#(lf),repay_pay_amount#(lf)from dba.nurse n#(lf)where test_nurse_ind <> 1"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "3" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added Prefix",{{"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 9d95a6b7-a87c-46c4-b6b2-e0d8efc92eaa
+	queryGroup: Nurses\FactNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'RefNurseCompetencySA - Source' =
+		let
+		    Source = #"Source - SA",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"52" = ref_type_Table{[ref_type_id=52]}[ref_values]
+		in
+		    #"52"
+	lineageTag: c5f1f1d2-c0d1-40ee-bf22-fa98bcba8f15
+	queryGroup: Nurses\DimNurseCompetency\RefNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseCompetencySA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),nc.competency_id#(lf)from dba.nurse n#(lf)left join dba.nurse_competency nc on n.nurse_id = nc.nurse_id#(lf)where n.test_nurse_ind <> 1 and nc.nurse_competency_id is not null"),
+		    #"Add prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "3" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Merged Queries" = Table.NestedJoin(#"Add prefix", {"competency_id"}, #"RefNurseCompetencySA - Source", {"ref_id"}, "Source (2)", JoinKind.LeftOuter),
+		    #"Expanded Source (2)" = Table.ExpandTableColumn(#"Merged Queries", "Source (2)", {"value", "description", "int_value"}, {"value", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Source (2)",{{"competency_id", type text}}),
+		    Custom1 = Table.ReplaceValue(#"Changed Type", each [competency_id], each if Text.Length([competency_id]) < 12 then "3" & Text.PadStart([competency_id], 12, "0") else [competencyh_id], Replacer.ReplaceText,{"competency_id"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(Custom1,{{"competency_id", Int64.Type}, {"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 5f9bfa89-ba1a-40e1-9063-559a1d07d280
+	queryGroup: Nurses\DimNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactPatientSA-Source =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),CAST(pr.referrer_id AS VARCHAR(6))#(lf),p.suburb_geocode_id#(lf),p.dva_number#(lf),p.date_of_birth#(lf),DATEDIFF(year, p.date_of_birth, GETDATE()) AS patient_age#(lf),pr.referral_date#(lf),pr.care_start_date#(lf),pr.care_end_date#(lf),pr.cancelled_date#(lf),pr.discharge_date#(lf),p.current_co_payment#(lf),CASE#(lf)WHEN pr.referrer_type_id = 496 THEN 'Private'#(lf)WHEN pr.referrer_type_id = 497 THEN 'Public'#(lf)WHEN pr.referrer_type_id = 498 THEN 'GP'#(lf)WHEN pr.referrer_type_id = 499 THEN 'Brokerage'#(lf)ELSE NULL#(lf)END AS referrer_type#(lf),pr.note AS referrer_note#(lf)from dba.patient p#(lf)left join dba.patient_referrer pr on p.patient_id = pr.patient_id"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "3" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [referrer_id], each if Text.Length([referrer_id]) < 12 then "3" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"patient_id", Int64.Type}, {"referrer_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 59b20cf8-9c24-4334-bca2-6c2959604dbe
+	queryGroup: Patients\FactPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimPatientSA - Source' = ```
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),p.firstname#(lf),p.surname#(lf),COALESCE(p.firstname, '') + ' ' + COALESCE(p.surname, '') AS fullname#(lf),CASE#(lf)WHEN p.gender_id = 2 then 'Female'#(lf)WHEN p.gender_id = 3 then 'Male'#(lf)WHEN p.gender_id = 1 then 'Not Specified'#(lf)end as gender#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 'Under 60'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN '61-70'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN '71-79'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN '80-89'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN '90-99'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN '100+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS patient_age_band#(lf),p.suburb AS patient_suburb#(lf),p.state AS patient_state#(lf),p.postcode AS patient_postcode#(lf),CASE #(lf)WHEN p.active_ind = 0 THEN 'Inactive'#(lf)WHEN p.active_ind = 1 THEN 'Active'#(lf)WHEN p.active_ind = 2 THEN 'Archived'#(lf)END AS active_ind#(lf),CAST(p.dva_ind as bit)#(lf),CAST(p.living_alone_ind as bit)#(lf),CAST(p.high_dependant_ind as bit)#(lf),CAST(p.lifter_ind as bit)#(lf),CAST(p.consent_to_care_ind as bit)#(lf),CAST(p.extreme_weather_risk_ind as bit)#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 0#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN 1#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN 2#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN 3#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN 4#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN 5#(lf)ELSE 6#(lf)END AS patient_age_band_sorting#(lf)from dba.patient p"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "3" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added FirstNameOnly Column" = Table.AddColumn(#"Added prefix", "FirstNameOnly", each if Text.Contains([firstname], "VHC") then Text.BeforeDelimiter([firstname], " VHC") 
+		        else if Text.Contains([firstname], "TCP") then Text.BeforeDelimiter([firstname], " TCP") 
+		        else if Text.Contains([firstname], "HCP") then Text.BeforeDelimiter([firstname], " HCP")
+		        else if Text.Contains([firstname], "PRIV") then Text.BeforeDelimiter([firstname], " PRIV")
+		        else [firstname]),
+		    #"Added SurnameOnly Column" = Table.AddColumn(#"Added FirstNameOnly Column", "SurnameOnly", each if Text.Contains([surname], "(") and Text.Contains([surname], ")") then Text.BeforeDelimiter([surname], " (") else [surname]),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Added SurnameOnly Column", "FullNamesOnly", each Text.Combine({[FirstNameOnly], [SurnameOnly]}, " "), type text),
+		    #"Trimmed Text" = Table.TransformColumns(#"Inserted Merged Column",{{"FirstNameOnly", Text.Trim, type text}, {"SurnameOnly", Text.Trim, type text}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Trimmed Text",{{"patient_id", Int64.Type}, {"extreme_weather_risk_ind", type logical}, {"consent_to_care_ind", type logical}, {"lifter_ind", type logical}, {"high_dependant_ind", type logical}, {"living_alone_ind", type logical}, {"dva_ind", type logical}, {"active_ind", type text}, {"FirstNameOnly", type text}, {"SurnameOnly", type text}})
+		in
+		    #"Changed Type"
+		```
+	lineageTag: 28fa1dcd-6e64-4b9f-8f4c-d7fac2f013ea
+	queryGroup: Patients\DimPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'BridgeDVANumberSA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "select distinct(p.dva_number)#(lf)from dba.patient p where p.dva_number IS NOT NULL")
+		in
+		    Source
+	lineageTag: 20f15a9f-2bfa-4fa5-840e-6bf218a7944c
+	queryGroup: Patients\BridgeDVA
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimReferrerSA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "Select #(lf)CAST(referrer_id AS VARCHAR(6))#(lf),name AS referrer_name#(lf),invoice_suburb AS referrer_suburb#(lf),UPPER(invoice_state) AS referrer_state#(lf),invoice_postcode AS referrer_postcode#(lf)FROM dba.referrer #(lf)"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [referrer_id], each if Text.Length([referrer_id]) < 12 then "3" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Added referrer group" = Table.AddColumn(#"Added prefix", "ReferrerGroup", each if Text.Contains([referrer_name], "Hospital") then "Hospital" else if Text.Contains([referrer_name], "Ashford") then "Hospital" else if Text.Contains([referrer_name], "Remedy") then "Remedy" else if Text.Contains([referrer_name], "Veterans Affairs") then "DVA" else if Text.Contains([referrer_name], "Veterans Home") then "VHC" else if Text.Contains([referrer_name], "NDIS") then "NDIS" else if Text.Contains([referrer_name], "Medical Centre") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Andrew") then "Hospital" else if Text.Contains([referrer_name], "Self") then "Private" else if Text.Contains([referrer_name], "MEDICAL CENTRE") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "DVA") then "DVA" else if Text.Contains([referrer_name], "Surgery") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Louis") then "St Louis" else "Dr & Medical Centre"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added referrer group",{{"referrer_id", Int64.Type}, {"ReferrerGroup", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 1d8f69b7-a10b-4990-8252-1d3454eceec1
+	queryGroup: Patients\Referrers
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimServiceTypesSA - Source' =
+		let
+		    Source = #"Source - SA",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"20" = ref_type_Table{[ref_type_id=20]}[ref_values],
+		    #"Renamed Columns" = Table.RenameColumns(#"20",{{"ref_id", "service_id"}, {"value", "service"}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"service_id", "service", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"service_id", type text}}),
+		    #"Inserted Prefix" = Table.ReplaceValue(#"Changed Type", each [service_id], each if Text.Length([service_id]) < 12 then "3" & Text.PadStart([service_id], 12, "0") else [service_id], Replacer.ReplaceText,{"service_id"}),
+		    #"Duplicated Column" = Table.DuplicateColumn(#"Inserted Prefix", "service", "FundingStream"),
+		    #"Extracted Text After Delimiter" = Table.TransformColumns(#"Duplicated Column", {{"FundingStream", each Text.AfterDelimiter(_, " - "), type text}}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Extracted Text After Delimiter",
+		        each [FundingStream],
+		        each if [FundingStream] = "" then "DVA"
+		        else if Text.Start([service], 3) = "Cas" then "DVA"
+		        else if Text.Start([service], 3) = "NDI" then "NDIS"
+		        else if Text.Start([service], 3) = "STR" then "STRC"
+		        else if Text.Start([service], 3) = "PRI" then "PRIV"
+		        else Text.Start([service], 3),Replacer.ReplaceValue,{"FundingStream"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Replaced Value",{{"FundingStream", type text},{"service_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 26b05f8a-1856-4518-b92e-fa1967c5fea7
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactVisitSA - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "Select #(lf)CAST(v.visit_id AS VARCHAR(12))#(lf),CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.nurse_id AS VARCHAR(6))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf),CASE#(lf)WHEN v.status = 0 THEN 'New Visit'#(lf)WHEN v.status = 1 THEN 'On Hold'#(lf)WHEN v.status = 2 THEN 'Completed'#(lf)WHEN v.status = 3 THEN 'Cancelled'#(lf)END AS status#(lf),v.visit_date#(lf),v.visit_duration#(lf),v.travel_time_to_next#(lf),v.distance_to_next#(lf),v.co_payment AS co_payment_due#(lf),v.co_payment_received#(lf),v.create_user_id AS created_by#(lf),v.create_timestamp#(lf),v.last_update_user_id AS modified_by#(lf),v.last_update_timestamp AS modified_timestamp#(lf)#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "3" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Added Prefix1" = Table.ReplaceValue(#"Added Prefix", each [visit_id], each if Text.Length([visit_id]) < 10 then "3" & Text.PadStart([visit_id], 12, "0") else [visit_id], Replacer.ReplaceText,{"visit_id"}),
+		    #"Added Prefix2" = Table.ReplaceValue(#"Added Prefix1", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "3" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Added Prefix3" = Table.ReplaceValue(#"Added Prefix2", each [patient_id], each if Text.Length([patient_id]) < 12 then "3" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added VisitModifiedFlag" = Table.AddColumn(#"Added Prefix3", "VisitModifiedFlag", each if [modified_timestamp] > DateTime.From([create_timestamp]) then true else false),
+		    #"Added ModifiedAfterVisitDateFlag" = Table.AddColumn(#"Added VisitModifiedFlag", "ModifiedAfterVisitDateFlag", each if [modified_timestamp] > DateTime.From([visit_date]) then true else false),
+		    #"Added VisitDurationHours" = Table.AddColumn(#"Added ModifiedAfterVisitDateFlag", "VisitDurationHours", each [visit_duration] / 60, type number),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added VisitDurationHours",{{"visit_id", Int64.Type}, {"service_type_id", Int64.Type}, {"nurse_id", Int64.Type}, {"patient_id", Int64.Type}, {"ModifiedAfterVisitDateFlag", type logical}, {"VisitModifiedFlag", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: 45b95162-fbef-4b70-a450-401315a1cfa7
+	queryGroup: Visits
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactNurseQLD - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),suburb_geocode_id#(lf),years_of_nursing#(lf),commenced AS employment_start_date#(lf),induction_date#(lf),termination_date#(lf),date_of_birth#(lf),DATEDIFF(year, date_of_birth, GETDATE()) AS nurse_age#(lf),drivers_licence_expiry#(lf),car_registration_expiry#(lf),car_insurance_expiry#(lf),employee_super_top_up#(lf),employee_super_dollar_amt#(lf),additional_weekly_tax#(lf),additional_weekly_tax_perc#(lf),reward_hours#(lf),defer_pay_amount#(lf),defer_pay_perc#(lf),defer_pay_balance#(lf),defer_pay_taxable_gross#(lf),repay_pay_amount#(lf)from dba.nurse n#(lf)where test_nurse_ind <> 1"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "4" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added Prefix",{{"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 7e4b722e-f6b6-4cdd-b097-57736337a060
+	queryGroup: Nurses\FactNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseQLD - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "select #(lf)CAST(nurse_id AS VARCHAR(6))#(lf),firstname#(lf),surname#(lf),COALESCE(firstname, '') + ' ' + COALESCE(surname, '') AS fullname#(lf),suburb AS nurse_suburb#(lf),state AS nurse_state#(lf),postcode AS nurse_postcode#(lf),country#(lf),CASE#(lf)WHEN gender_id = 2 THEN 'Female'#(lf)WHEN gender_id = 3 THEN 'Male'#(lf)WHEN gender_id = 1 THEN 'Not Specified'#(lf)END AS gender#(lf),CASE #(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) < 21 THEN 'Under 21'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 21 AND DATEDIFF(year, date_of_birth, GETDATE()) <35 THEN '21-34'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >=35 AND DATEDIFF(year, date_of_birth, GETDATE()) <50 THEN '35-49'#(lf)WHEN DATEDIFF(year, date_of_birth, GETDATE()) >= 50 THEN '50+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS nurse_age_band#(lf),CAST(drivers_licence_ind AS BIT)#(lf),CAST(#(lf)CASE #(lf)WHEN drivers_licence_expiry < GETDATE() THEN 0#(lf)WHEN drivers_licence_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS drivers_licence_current_ind#(lf),CAST(CASE #(lf)WHEN car_registration_expiry < GETDATE() THEN 0#(lf)WHEN car_registration_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_registration_current_ind#(lf),CAST(CASE #(lf)WHEN car_insurance_expiry < GETDATE() THEN 0#(lf)WHEN car_insurance_expiry IS NULL THEN 0#(lf)ELSE 1#(lf)END AS BIT) AS car_insurance_current_ind#(lf),CAST(own_vehicle_ind AS BIT)#(lf),CAST(induction_ind AS BIT)#(lf),CAST(sub_contractor_ind AS BIT)#(lf),CAST(smoker_ind AS BIT)#(lf),CAST(manual_handling_ind AS BIT)#(lf),CAST(CASE WHEN active_ind = 'Y' THEN 1 WHEN active_ind = 'N' then 0 END AS BIT) AS active_ind#(lf)from dba.nurse#(lf)where test_nurse_ind <> 1"),
+		    #"Added Conditional Column" = Table.AddColumn(Source, "nurse_age_band_sorting", each if [nurse_age_band] = "Under 21" then 0 else if [nurse_age_band] = "21-34" then 1 else if [nurse_age_band] = "35-49" then 2 else if [nurse_age_band] = "50+" then 4 else 5),
+		    #"Added prefix" = Table.ReplaceValue(#"Added Conditional Column", each [nurse_id], each if Text.Length([nurse_id]) < 12 then "4" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix",{{"nurse_id", Int64.Type}, {"nurse_age_band_sorting", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: df4babf8-8a46-4a7c-96a6-9da3ab10586f
+	queryGroup: Nurses\DimNurse
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'RefNurseCompetencyQLD - Source' =
+		let
+		    Source = #"Source - QLD",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"52" = ref_type_Table{[ref_type_id=52]}[ref_values]
+		in
+		    #"52"
+	lineageTag: 4c0352db-917c-46ca-8ddc-53bd0abe2771
+	queryGroup: Nurses\DimNurseCompetency\RefNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimNurseCompetencyQLD - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "select #(lf)CAST(n.nurse_id AS VARCHAR(6))#(lf),nc.competency_id#(lf)from dba.nurse n#(lf)left join dba.nurse_competency nc on n.nurse_id = nc.nurse_id#(lf)where n.test_nurse_ind <> 1 and nc.nurse_competency_id is not null"),
+		    #"Add prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "4" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Merged Queries" = Table.NestedJoin(#"Add prefix", {"competency_id"}, #"RefNurseCompetencyQLD - Source", {"ref_id"}, "Source (2)", JoinKind.LeftOuter),
+		    #"Expanded Source (2)" = Table.ExpandTableColumn(#"Merged Queries", "Source (2)", {"value", "description", "int_value"}, {"value", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Source (2)",{{"competency_id", type text}}),
+		    Custom1 = Table.ReplaceValue(#"Changed Type", each [competency_id], each if Text.Length([competency_id]) < 12 then "4" & Text.PadStart([competency_id], 12, "0") else [competencyh_id], Replacer.ReplaceText,{"competency_id"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(Custom1,{{"competency_id", Int64.Type}, {"nurse_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: cf98b513-b970-4ceb-8404-af99961afe33
+	queryGroup: Nurses\DimNurseCompetency
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactPatientQLD-Source =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),CAST(pr.referrer_id AS VARCHAR(6))#(lf),p.suburb_geocode_id#(lf),p.dva_number#(lf),p.date_of_birth#(lf),DATEDIFF(year, p.date_of_birth, GETDATE()) AS patient_age#(lf),pr.referral_date#(lf),pr.care_start_date#(lf),pr.care_end_date#(lf),pr.cancelled_date#(lf),pr.discharge_date#(lf),p.current_co_payment#(lf),CASE#(lf)WHEN pr.referrer_type_id = 496 THEN 'Private'#(lf)WHEN pr.referrer_type_id = 497 THEN 'Public'#(lf)WHEN pr.referrer_type_id = 498 THEN 'GP'#(lf)WHEN pr.referrer_type_id = 499 THEN 'Brokerage'#(lf)ELSE NULL#(lf)END AS referrer_type#(lf),pr.note AS referrer_note#(lf)from dba.patient p#(lf)left join dba.patient_referrer pr on p.patient_id = pr.patient_id"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "4" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [referrer_id], each if Text.Length([referrer_id]) < 12 then "4" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"patient_id", Int64.Type}, {"referrer_id", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: ca578d69-cfff-4e10-950b-e1a11b7e723d
+	queryGroup: Patients\FactPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimPatientQLD - Source' = ```
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "select #(lf)CAST(p.patient_id AS VARCHAR(6))#(lf),p.firstname#(lf),p.surname#(lf),COALESCE(p.firstname, '') + ' ' + COALESCE(p.surname, '') AS fullname#(lf),CASE#(lf)WHEN p.gender_id = 2 then 'Female'#(lf)WHEN p.gender_id = 3 then 'Male'#(lf)WHEN p.gender_id = 1 then 'Not Specified'#(lf)end as gender#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 'Under 60'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN '61-70'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN '71-79'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN '80-89'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN '90-99'#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN '100+'#(lf)ELSE 'DOB Not Specified'#(lf)END AS patient_age_band#(lf),p.suburb AS patient_suburb#(lf),p.state AS patient_state#(lf),p.postcode AS patient_postcode#(lf),CASE #(lf)WHEN p.active_ind = 0 THEN 'Inactive'#(lf)WHEN p.active_ind = 1 THEN 'Active'#(lf)WHEN p.active_ind = 2 THEN 'Archived'#(lf)END AS active_ind#(lf),CAST(p.dva_ind as bit)#(lf),CAST(p.living_alone_ind as bit)#(lf),CAST(p.high_dependant_ind as bit)#(lf),CAST(p.lifter_ind as bit)#(lf),CAST(p.consent_to_care_ind as bit)#(lf),CAST(p.extreme_weather_risk_ind as bit)#(lf),CASE #(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) < 60 THEN 0#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 61 AND DATEDIFF(year, date_of_birth, GETDATE()) <75 THEN 1#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=70 AND DATEDIFF(year, date_of_birth, GETDATE()) <80 THEN 2#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=80 AND DATEDIFF(year, date_of_birth, GETDATE()) <90 THEN 3#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >=90 AND DATEDIFF(year, date_of_birth, GETDATE()) <100 THEN 4#(lf)WHEN DATEDIFF(year, p.date_of_birth, GETDATE()) >= 100 THEN 5#(lf)ELSE 6#(lf)END AS patient_age_band_sorting#(lf)from dba.patient p"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "4" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added FirstNameOnly Column" = Table.AddColumn(#"Added prefix", "FirstNameOnly", each if Text.Contains([firstname], "VHC") then Text.BeforeDelimiter([firstname], " VHC") 
+		        else if Text.Contains([firstname], "TCP") then Text.BeforeDelimiter([firstname], " TCP") 
+		        else if Text.Contains([firstname], "HCP") then Text.BeforeDelimiter([firstname], " HCP")
+		        else if Text.Contains([firstname], "PRIV") then Text.BeforeDelimiter([firstname], " PRIV")
+		        else [firstname]),
+		    #"Added SurnameOnly Column" = Table.AddColumn(#"Added FirstNameOnly Column", "SurnameOnly", each if Text.Contains([surname], "(") and Text.Contains([surname], ")") then Text.BeforeDelimiter([surname], " (") else [surname]),
+		    #"Inserted Merged Column" = Table.AddColumn(#"Added SurnameOnly Column", "FullNamesOnly", each Text.Combine({[FirstNameOnly], [SurnameOnly]}, " "), type text),
+		    #"Trimmed Text" = Table.TransformColumns(#"Inserted Merged Column",{{"FirstNameOnly", Text.Trim, type text}, {"SurnameOnly", Text.Trim, type text}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Trimmed Text",{{"patient_id", Int64.Type}, {"extreme_weather_risk_ind", type logical}, {"consent_to_care_ind", type logical}, {"lifter_ind", type logical}, {"high_dependant_ind", type logical}, {"living_alone_ind", type logical}, {"dva_ind", type logical}, {"active_ind", type text}, {"FirstNameOnly", type text}, {"SurnameOnly", type text}})
+		in
+		    #"Changed Type"
+		```
+	lineageTag: 12f1e88c-fba8-4569-bdd4-ebcac751b7ec
+	queryGroup: Patients\DimPatient
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'BridgeDVANumberQLD - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "select distinct(p.dva_number)#(lf)from dba.patient p where p.dva_number IS NOT NULL")
+		in
+		    Source
+	lineageTag: 6906e64a-9ebf-4d43-9b2d-273196c4d3d5
+	queryGroup: Patients\BridgeDVA
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimReferrerQLD - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "Select #(lf)CAST(referrer_id AS VARCHAR(6))#(lf),name AS referrer_name#(lf),invoice_suburb AS referrer_suburb#(lf),UPPER(invoice_state) AS referrer_state#(lf),invoice_postcode AS referrer_postcode#(lf)FROM dba.referrer #(lf)"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [referrer_id], each if Text.Length([referrer_id]) < 12 then "4" & Text.PadStart([referrer_id], 12, "0") else [referrer_id], Replacer.ReplaceText,{"referrer_id"}),
+		    #"Added referrer group" = Table.AddColumn(#"Added prefix", "ReferrerGroup", each if Text.Contains([referrer_name], "Hospital") then "Hospital" else if Text.Contains([referrer_name], "Ashford") then "Hospital" else if Text.Contains([referrer_name], "Remedy") then "Remedy" else if Text.Contains([referrer_name], "Veterans Affairs") then "DVA" else if Text.Contains([referrer_name], "Veterans Home") then "VHC" else if Text.Contains([referrer_name], "NDIS") then "NDIS" else if Text.Contains([referrer_name], "Medical Centre") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Andrew") then "Hospital" else if Text.Contains([referrer_name], "Self") then "Private" else if Text.Contains([referrer_name], "MEDICAL CENTRE") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "DVA") then "DVA" else if Text.Contains([referrer_name], "Surgery") then "Dr & Medical Centre" else if Text.Contains([referrer_name], "St Louis") then "St Louis" else "Dr & Medical Centre"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added referrer group",{{"referrer_id", Int64.Type}, {"ReferrerGroup", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 910fc481-3f3e-4e62-b3bb-a7edcaa46334
+	queryGroup: Patients\Referrers
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'DimServiceTypesQLD - Source' =
+		let
+		    Source = #"Source - QLD",
+		    ref_type_Table = Source{[Name="ref_type",Kind="Table"]}[Data],
+		    #"20" = ref_type_Table{[ref_type_id=20]}[ref_values],
+		    #"Renamed Columns" = Table.RenameColumns(#"20",{{"ref_id", "service_id"}, {"value", "service"}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"service_id", "service", "description", "int_value"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"service_id", type text}}),
+		    #"Inserted Prefix" = Table.ReplaceValue(#"Changed Type", each [service_id], each if Text.Length([service_id]) < 12 then "4" & Text.PadStart([service_id], 12, "0") else [service_id], Replacer.ReplaceText,{"service_id"}),
+		    #"Duplicated Column" = Table.DuplicateColumn(#"Inserted Prefix", "service", "FundingStream"),
+		    #"Extracted Text After Delimiter" = Table.TransformColumns(#"Duplicated Column", {{"FundingStream", each Text.AfterDelimiter(_, " - "), type text}}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Extracted Text After Delimiter",
+		        each [FundingStream],
+		        each if [FundingStream] = "" then "DVA"
+		        else if Text.Start([service], 3) = "Cas" then "DVA"
+		        else if Text.Start([service], 3) = "NDI" then "NDIS"
+		        else if Text.Start([service], 3) = "STR" then "STRC"
+		        else if Text.Start([service], 3) = "PRI" then "PRIV"
+		        else Text.Start([service], 3),Replacer.ReplaceValue,{"FundingStream"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Replaced Value",{{"FundingStream", type text},{"service_id", Int64.Type}})
+		in
+		    #"Changed Type1"
+	lineageTag: 8d56da13-1021-45f5-97f2-f47ce5bc1f28
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactVisitQLD - Source' =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "Select #(lf)CAST(v.visit_id AS VARCHAR(12))#(lf),CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.nurse_id AS VARCHAR(6))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf),CASE#(lf)WHEN v.status = 0 THEN 'New Visit'#(lf)WHEN v.status = 1 THEN 'On Hold'#(lf)WHEN v.status = 2 THEN 'Completed'#(lf)WHEN v.status = 3 THEN 'Cancelled'#(lf)END AS status#(lf),v.visit_date#(lf),v.visit_duration#(lf),v.travel_time_to_next#(lf),v.distance_to_next#(lf),v.co_payment AS co_payment_due#(lf),v.co_payment_received#(lf),v.create_user_id AS created_by#(lf),v.create_timestamp#(lf),v.last_update_user_id AS modified_by#(lf),v.last_update_timestamp AS modified_timestamp#(lf)#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added Prefix" = Table.ReplaceValue(Source, each [nurse_id], each if Text.Length([nurse_id]) < 12 then "4" & Text.PadStart([nurse_id], 12, "0") else [nurse_id], Replacer.ReplaceText,{"nurse_id"}),
+		    #"Added Prefix1" = Table.ReplaceValue(#"Added Prefix", each [visit_id], each if Text.Length([visit_id]) < 10 then "4" & Text.PadStart([visit_id], 12, "0") else [visit_id], Replacer.ReplaceText,{"visit_id"}),
+		    #"Added Prefix2" = Table.ReplaceValue(#"Added Prefix1", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "4" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Added Prefix3" = Table.ReplaceValue(#"Added Prefix2", each [patient_id], each if Text.Length([patient_id]) < 12 then "4" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added VisitModifiedFlag" = Table.AddColumn(#"Added Prefix3", "VisitModifiedFlag", each if [modified_timestamp] > DateTime.From([create_timestamp]) then true else false),
+		    AddedModifiedAfterVisitDateFlag = Table.AddColumn(#"Added VisitModifiedFlag", "ModifiedAfterVisitDateFlag", each if [modified_timestamp] > DateTime.From([visit_date]) then true else false),
+		    #"Added VisitDurationHours" = Table.AddColumn(AddedModifiedAfterVisitDateFlag, "VisitDurationHours", each [visit_duration] / 60, type number),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added VisitDurationHours",{{"visit_id", Int64.Type}, {"service_type_id", Int64.Type}, {"nurse_id", Int64.Type}, {"patient_id", Int64.Type}, {"ModifiedAfterVisitDateFlag", type logical}, {"VisitModifiedFlag", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: f3140e81-ebab-448b-b719-1f84dbe5b89d
+	queryGroup: Visits
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Saturn VIC Connection string' = "Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare VIC;DBN=Saturn - Clincare VIC;LINKS=TCPIP(HOST=10.6.0.4;PORT=2637);" meta [IsParameterQuery=true, List={"Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare VIC;DBN=Saturn - Clincare VIC;LINKS=TCPIP(HOST=10.6.0.4;PORT=2637);"}, DefaultValue="Driver={Adaptive Server Anywhere 9.0};ENG=Saturn - Clincare VIC;DBN=Saturn - Clincare VIC;LINKS=TCPIP(HOST=10.6.0.4;PORT=2637);", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: cf0fcb1d-6e66-4c26-baa8-2dd19e09f3a1
+	queryGroup: Utilities\ConnectionStrings
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression FactActivePatientWA-Source = ```
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "select 
+		CAST(p.patient_id AS VARCHAR(6))
+		,p.state AS patient_state
+		,MIN(pr.care_start_date) AS care_start_month
+		,p.discharge_date AS discharge_month
+		from dba.patient p
+		left join dba.patient_referrer pr on p.patient_id = pr.patient_id 
+		WHERE pr.care_start_date is not null --and p.active_ind = 1
+		GROUP BY p.patient_id, p.state, p.discharge_date"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "1" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Calculated Start of care_start_month Month" = Table.TransformColumns(#"Added prefix",{{"care_start_month", Date.StartOfMonth, type date}}),
+		    #"Calculated Start of discharge_month" = Table.ReplaceValue(#"Calculated Start of care_start_month Month", each [discharge_month],
+		        each if [discharge_month] = null and [care_start_month] < Date.FromText("01/01/2020") then Date.EndOfYear([care_start_month])
+		        else if [discharge_month] = null then Date.StartOfMonth(Date.From(DateTime.LocalNow()))
+		        else Date.StartOfMonth([discharge_month]),Replacer.ReplaceValue,{"discharge_month"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Calculated Start of discharge_month",{{"discharge_month", type date}}),
+		    Custom1 = Table.AddColumn(
+		        #"Changed Type",
+		        "ActiveMonth",
+		        each 
+		            List.Generate(
+		                () => [care_start_month],
+		                (m) => m <= [discharge_month],
+		                (m) => Date.AddMonths(m, 1)
+		            )
+		    ),
+		    #"Uppercased Text" = Table.TransformColumns(Custom1,{{"patient_state", Text.Upper, type text}}),
+		    #"Trimmed Text" = Table.TransformColumns(#"Uppercased Text",{{"patient_state", Text.Trim, type text}})
+		in
+		    #"Trimmed Text"
+		```
+	lineageTag: 8d436490-42c0-47bb-a5b6-9b5e405115d6
+	queryGroup: 'Patients\ActivePatients by STATE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientServicesWA-Source =
+		let
+		    Source = Odbc.Query(#"Saturn WA Connection string", "Select distinct#(lf)CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "1" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "1" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"service_type_id", Int64.Type}}),
+		    #"Merged Queries1" = Table.NestedJoin(#"Changed Type", {"service_type_id"}, #"DimServiceTypesWA - Source", {"service_id"}, "DimServiceTypesWA - Source", JoinKind.LeftOuter),
+		    #"Removed Columns" = Table.RemoveColumns(#"Merged Queries1",{"service_type_id"}),
+		    #"Expanded DimServiceTypesWA - Source" = Table.ExpandTableColumn(#"Removed Columns", "DimServiceTypesWA - Source", {"FundingStream"}, {"FundingStream"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Expanded DimServiceTypesWA - Source", {"FundingStream", "patient_id"})
+		in
+		    #"Removed Duplicates"
+	lineageTag: 675f3688-c859-4e21-80c9-0be8334e0093
+	queryGroup: 'Patients\ActivePatients by SERVICE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientSA-Source = ```
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "select 
+		CAST(p.patient_id AS VARCHAR(6))
+		,p.state AS patient_state
+		,MIN(pr.care_start_date) AS care_start_month
+		,p.discharge_date AS discharge_month
+		from dba.patient p
+		left join dba.patient_referrer pr on p.patient_id = pr.patient_id 
+		WHERE pr.care_start_date is not null --and p.active_ind = 1
+		GROUP BY p.patient_id, p.state, p.discharge_date"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "3" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Calculated Start of care_start_month Month" = Table.TransformColumns(#"Added prefix",{{"care_start_month", Date.StartOfMonth, type date}}),
+		    #"Calculated Start of care_end_month" = Table.ReplaceValue(#"Calculated Start of care_start_month Month", each [discharge_month],
+		        each if [discharge_month] = null and [care_start_month] < Date.FromText("01/01/2020") then Date.EndOfYear([care_start_month])
+		        else if [discharge_month] = null then Date.StartOfMonth(Date.From(DateTime.LocalNow()))
+		        else Date.StartOfMonth([discharge_month]),Replacer.ReplaceValue,{"discharge_month"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Calculated Start of care_end_month",{{"discharge_month", type date}}),
+		    Custom1 = Table.AddColumn(
+		        #"Changed Type",
+		        "ActiveMonth",
+		        each 
+		            List.Generate(
+		                () => [care_start_month],
+		                (m) => m <= [discharge_month],
+		                (m) => Date.AddMonths(m, 1)
+		            )
+		    ),
+		    #"Uppercased Text" = Table.TransformColumns(Custom1,{{"patient_state", Text.Upper, type text}}),
+		    #"Trimmed Text" = Table.TransformColumns(#"Uppercased Text",{{"patient_state", Text.Trim, type text}}),
+		    #"Filtered Rows" = Table.SelectRows(#"Trimmed Text", each [care_start_month] > #date(2010, 1, 1))
+		in
+		    #"Filtered Rows"
+		```
+	lineageTag: cecf81d5-b29f-40ce-9c4b-132dc1257efc
+	queryGroup: 'Patients\ActivePatients by STATE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientQLD-Source = ```
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "select 
+		CAST(p.patient_id AS VARCHAR(6))
+		,p.state AS patient_state
+		,MIN(pr.care_start_date) AS care_start_month
+		,p.discharge_date AS discharge_month
+		from dba.patient p
+		left join dba.patient_referrer pr on p.patient_id = pr.patient_id 
+		WHERE pr.care_start_date is not null --and p.active_ind = 1
+		GROUP BY p.patient_id, p.state, p.discharge_date"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "4" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Calculated Start of care_start_month Month" = Table.TransformColumns(#"Added prefix",{{"care_start_month", Date.StartOfMonth, type date}}),
+		    #"Calculated Start of care_end_month" = Table.ReplaceValue(#"Calculated Start of care_start_month Month", each [discharge_month],
+		        each if [discharge_month] = null and [care_start_month] < Date.FromText("01/01/2020") then Date.EndOfYear([care_start_month])
+		        else if [discharge_month] = null then Date.StartOfMonth(Date.From(DateTime.LocalNow()))
+		        else Date.StartOfMonth([discharge_month]),Replacer.ReplaceValue,{"discharge_month"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Calculated Start of care_end_month",{{"discharge_month", type date}}),
+		    Custom1 = Table.AddColumn(
+		        #"Changed Type",
+		        "ActiveMonth",
+		        each 
+		            List.Generate(
+		                () => [care_start_month],
+		                (m) => m <= [discharge_month],
+		                (m) => Date.AddMonths(m, 1)
+		            )
+		    ),
+		    #"Uppercased Text" = Table.TransformColumns(Custom1,{{"patient_state", Text.Upper, type text}}),
+		    #"Filtered Rows" = Table.SelectRows(#"Uppercased Text", each [care_start_month] > #date(2010, 1, 1))
+		in
+		    #"Filtered Rows"
+		```
+	lineageTag: 9bb50a18-5767-4467-a67e-61efb1ae1aa5
+	queryGroup: 'Patients\ActivePatients by STATE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientNSW-Source = ```
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "select 
+		CAST(p.patient_id AS VARCHAR(6))
+		,p.state AS patient_state
+		,MIN(pr.care_start_date) AS care_start_month
+		,p.discharge_date AS discharge_month
+		from dba.patient p
+		left join dba.patient_referrer pr on p.patient_id = pr.patient_id 
+		WHERE pr.care_start_date is not null --and p.active_ind = 1
+		GROUP BY p.patient_id, p.state, p.discharge_date"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "5" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Calculated Start of care_start_month Month" = Table.TransformColumns(#"Added prefix",{{"care_start_month", Date.StartOfMonth, type date}}),
+		    #"Calculated Start of care_end_month" = Table.ReplaceValue(#"Calculated Start of care_start_month Month", each [discharge_month],
+		        each if [discharge_month] = null and [care_start_month] < Date.FromText("01/01/2020") then Date.EndOfYear([care_start_month])
+		        else if [discharge_month] = null then Date.StartOfMonth(Date.From(DateTime.LocalNow()))
+		        else Date.StartOfMonth([discharge_month]),Replacer.ReplaceValue,{"discharge_month"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Calculated Start of care_end_month",{{"discharge_month", type date}}),
+		    Custom1 = Table.AddColumn(
+		        #"Changed Type",
+		        "ActiveMonth",
+		        each 
+		            List.Generate(
+		                () => [care_start_month],
+		                (m) => m <= [discharge_month],
+		                (m) => Date.AddMonths(m, 1)
+		            )
+		    ),
+		    #"Uppercased Text" = Table.TransformColumns(Custom1,{{"patient_state", Text.Upper, type text}})
+		in
+		    #"Uppercased Text"
+		```
+	lineageTag: 3c3fc302-1d73-40ca-a80e-9d3e6c78fc9e
+	queryGroup: 'Patients\ActivePatients by STATE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientVIC-Source = ```
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "select 
+		CAST(p.patient_id AS VARCHAR(6))
+		,p.state AS patient_state
+		,MIN(pr.care_start_date) AS care_start_month
+		,p.discharge_date AS discharge_month
+		from dba.patient p
+		left join dba.patient_referrer pr on p.patient_id = pr.patient_id 
+		WHERE pr.care_start_date is not null --and p.active_ind = 1
+		GROUP BY p.patient_id, p.state, p.discharge_date"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "2" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Calculated Start of care_start_month Month" = Table.TransformColumns(#"Added prefix",{{"care_start_month", Date.StartOfMonth, type date}}),
+		    #"Calculated Start of care_end_month" = Table.ReplaceValue(#"Calculated Start of care_start_month Month", each [discharge_month],
+		        each if [discharge_month] = null and [care_start_month] < Date.FromText("01/01/2020") then Date.EndOfYear([care_start_month])
+		        else if [discharge_month] = null then Date.StartOfMonth(Date.From(DateTime.LocalNow()))
+		        else Date.StartOfMonth([discharge_month]),Replacer.ReplaceValue,{"discharge_month"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Calculated Start of care_end_month",{{"discharge_month", type date}}),
+		    Custom1 = Table.AddColumn(
+		        #"Changed Type",
+		        "ActiveMonth",
+		        each 
+		            List.Generate(
+		                () => [care_start_month],
+		                (m) => m <= [discharge_month],
+		                (m) => Date.AddMonths(m, 1)
+		            )
+		    ),
+		    #"Uppercased Text" = Table.TransformColumns(Custom1,{{"patient_state", Text.Upper, type text}}),
+		    #"Trimmed Text" = Table.TransformColumns(#"Uppercased Text",{{"patient_state", Text.Trim, type text}}),
+		    #"Filtered Rows" = Table.SelectRows(#"Trimmed Text", each ([care_start_month] <> #date(1900, 1, 1)))
+		in
+		    #"Filtered Rows"
+		```
+	lineageTag: 9cb1541d-9c2f-4cda-bea9-f43b1cc7a8c9
+	queryGroup: 'Patients\ActivePatients by STATE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientServicesSA-Source =
+		let
+		    Source = Odbc.Query(#"Saturn SA Connection string", "Select distinct#(lf)CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "3" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "3" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"service_type_id", Int64.Type}}),
+		    #"Merged Queries1" = Table.NestedJoin(#"Changed Type", {"service_type_id"}, #"DimServiceTypesSA - Source", {"service_id"}, "DimServiceTypesSA - Source", JoinKind.LeftOuter),
+		    #"Removed Columns" = Table.RemoveColumns(#"Merged Queries1",{"service_type_id"}),
+		    #"Expanded DimServiceTypesSA - Source" = Table.ExpandTableColumn(#"Removed Columns", "DimServiceTypesSA - Source", {"FundingStream"}, {"FundingStream"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Expanded DimServiceTypesSA - Source", {"patient_id", "FundingStream"})
+		in
+		    #"Removed Duplicates"
+	lineageTag: 4263ca85-1aa1-4815-92d7-30fba97bee86
+	queryGroup: 'Patients\ActivePatients by SERVICE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientServicesQLD-Source =
+		let
+		    Source = Odbc.Query(#"Saturn QLD Connection string", "Select distinct#(lf)CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "4" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "4" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"service_type_id", Int64.Type}}),
+		    #"Merged Queries1" = Table.NestedJoin(#"Changed Type", {"service_type_id"}, #"DimServiceTypesQLD - Source", {"service_id"}, "DimServiceTypesQLD - Source", JoinKind.LeftOuter),
+		    #"Removed Columns" = Table.RemoveColumns(#"Merged Queries1",{"service_type_id"}),
+		    #"Expanded DimServiceTypesQLD - Source" = Table.ExpandTableColumn(#"Removed Columns", "DimServiceTypesQLD - Source", {"FundingStream"}, {"FundingStream"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Expanded DimServiceTypesQLD - Source", {"FundingStream", "patient_id"})
+		in
+		    #"Removed Duplicates"
+	lineageTag: ebf439ce-a784-42c6-8d8b-6a1d6ed3a8dd
+	queryGroup: 'Patients\ActivePatients by SERVICE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientServicesNSW-Source =
+		let
+		    Source = Odbc.Query(#"Saturn NSW/ACT Connection string", "Select distinct#(lf)CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "5" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "5" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"service_type_id", Int64.Type}}),
+		    #"Merged Queries1" = Table.NestedJoin(#"Changed Type", {"service_type_id"}, #"DimServiceTypesNSW - Source", {"service_id"}, "DimServiceTypesNSW - Source", JoinKind.LeftOuter),
+		    #"Removed Columns" = Table.RemoveColumns(#"Merged Queries1",{"service_type_id"}),
+		    #"Expanded DimServiceTypesNSW - Source" = Table.ExpandTableColumn(#"Removed Columns", "DimServiceTypesNSW - Source", {"FundingStream"}, {"FundingStream"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Expanded DimServiceTypesNSW - Source", {"FundingStream", "patient_id"})
+		in
+		    #"Removed Duplicates"
+	lineageTag: 3dbf106f-1547-4ebc-94c5-7bdf08cbfce2
+	queryGroup: 'Patients\ActivePatients by SERVICE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression FactActivePatientServicesVIC-Source =
+		let
+		    Source = Odbc.Query(#"Saturn VIC Connection string", "Select distinct#(lf)CAST(v.service_type_id AS VARCHAR(12))#(lf),CAST(v.patient_id AS VARCHAR(6))#(lf)FROM dba.visit v#(lf)WHERE v.visit_date >= '2023-01-01'"),
+		    #"Added prefix" = Table.ReplaceValue(Source, each [patient_id], each if Text.Length([patient_id]) < 12 then "2" & Text.PadStart([patient_id], 12, "0") else [patient_id], Replacer.ReplaceText,{"patient_id"}),
+		    #"Added prefix1" = Table.ReplaceValue(#"Added prefix", each [service_type_id], each if Text.Length([service_type_id]) < 12 then "2" & Text.PadStart([service_type_id], 12, "0") else [service_type_id], Replacer.ReplaceText,{"service_type_id"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Added prefix1",{{"service_type_id", Int64.Type}}),
+		    #"Merged Queries1" = Table.NestedJoin(#"Changed Type", {"service_type_id"}, #"DimServiceTypesVIC - Source", {"service_id"}, "DimServiceTypesVIC - Source", JoinKind.LeftOuter),
+		    #"Removed Columns" = Table.RemoveColumns(#"Merged Queries1",{"service_type_id"}),
+		    #"Expanded DimServiceTypesVIC - Source" = Table.ExpandTableColumn(#"Removed Columns", "DimServiceTypesVIC - Source", {"FundingStream"}, {"FundingStream"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Expanded DimServiceTypesVIC - Source", {"FundingStream", "patient_id"})
+		in
+		    #"Removed Duplicates"
+	lineageTag: 70efa958-4bcc-4ae4-b543-5a77d668d868
+	queryGroup: 'Patients\ActivePatients by SERVICE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactActivePatientsAll - Source' =
+		let
+		    Source = Table.Combine({#"FactActivePatientWA-Source", #"FactActivePatientSA-Source", #"FactActivePatientQLD-Source", #"FactActivePatientNSW-Source", #"FactActivePatientVIC-Source"}),
+		    #"Expanded ActiveMonth" = Table.ExpandListColumn(Source, "ActiveMonth"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded ActiveMonth",{{"ActiveMonth", type date}}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Changed Type",{"patient_id", "patient_state", "ActiveMonth"}),
+		    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns", {"patient_id", "ActiveMonth"}),
+		    #"Filtered Rows" = Table.SelectRows(#"Removed Duplicates", each ([ActiveMonth] <> null))
+		in
+		    #"Filtered Rows"
+	lineageTag: 0c8e9a21-599d-409a-9e3c-b75339659ef1
+	queryGroup: 'Patients\ActivePatients by STATE'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression DimServiceCodeExclusions-Source =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/PHPTeam-Finance-ManagementAccountingTeam", [ApiVersion = 15]),
+		    #"e6f0a1c1-c76f-48dd-b94a-070a34ad55f4" = Source{[Id="e6f0a1c1-c76f-48dd-b94a-070a34ad55f4"]}[Items],
+		    #"Removed Other Columns" = Table.SelectColumns(#"e6f0a1c1-c76f-48dd-b94a-070a34ad55f4",{"ServiceCode", "Claimable", "SaturnServiceIds"}),
+		    #"Parsed JSON" = Table.TransformColumns(#"Removed Other Columns",{{"SaturnServiceIds", Json.Document}}),
+		    #"Expanded SaturnServiceIds" = Table.ExpandListColumn(#"Parsed JSON", "SaturnServiceIds"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded SaturnServiceIds",{{"ServiceCode", type text}, {"Claimable", type logical}, {"SaturnServiceIds", Int64.Type}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"ServiceCode", "ServiceType"}})
+		in
+		    #"Renamed Columns"
+	lineageTag: f91d8bfa-34a7-4a36-ad93-a505c9a5d697
+	queryGroup: Services
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression DimVHCUnclaimedVisits-Source =
+		let
+		    Source = SharePoint.Tables("https://cruxscss.sharepoint.com/sites/PHPTeam-Finance-ManagementAccountingTeam", [ApiVersion = 15]),
+		    #"8980a3ae-d386-4c22-ac8e-9bbc55f2479c" = Source{[Id="8980a3ae-d386-4c22-ac8e-9bbc55f2479c"]}[Items],
+		    #"Removed Other Columns" = Table.SelectColumns(#"8980a3ae-d386-4c22-ac8e-9bbc55f2479c",{"Title", "DeliveryDate", "ProviderReference", "BillableCode?", "UpdatedVisitDuration", "RemittanceDatePaid", "Variance", "DeliveryDate0", "DVANumber", "Modified", "Created", "FieldValuesAsText"}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Removed Other Columns",{{"ProviderReference", "FinanceTeamComments"}, {"DVANumber", "VisitId"}, {"Title", "DVANumber"}, {"DeliveryDate", "ClaimedDate"}, {"DeliveryDate0", "DeliveryDate"}, {"RemittanceDatePaid", "RemittancePaidDate"}}),
+		    #"Adjust DateTime Zones" = Table.TransformColumns(#"Renamed Columns", {{"ClaimedDate", each if _ = null then null else Date.From(_ + #duration(0, 10, 0, 0)), type date}, {"DeliveryDate", each if _ = null then null else Date.From(_ + #duration(0, 10, 0, 0)), type date}, {"RemittancePaidDate", each if _ = null then null else Date.From(_ + #duration(0, 10, 0, 0)), type date}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Adjust DateTime Zones",{{"Created", type datetime}, {"Modified", type datetime}, {"VisitId", Int64.Type}, {"Variance", Currency.Type}, {"RemittancePaidDate", type date}, {"UpdatedVisitDuration", Int64.Type}, {"BillableCode?", type logical}, {"FinanceTeamComments", type text}, {"DVANumber", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: a9f478f8-9215-44c1-8c55-eb2032333934
+	queryGroup: Claims
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,323 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "68357c1650ee674a7754",
+  "position": {
+    "x": 64.949258391881344,
+    "y": 166.86963309914131,
+    "z": 4000,
+    "height": 515.59718969555036,
+    "width": 1193.0679156908666,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRosterDateOfService"
+                    }
+                  },
+                  "Property": "Start of Week"
+                }
+              },
+              "queryRef": "DimRosterDateOfService.Start of Week",
+              "nativeQueryRef": "Start of Week",
+              "active": true
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimWorkforceVisualCare"
+                    }
+                  },
+                  "Property": "FullName"
+                }
+              },
+              "queryRef": "DimWorkforceVisualCare.FullName",
+              "nativeQueryRef": "Worker",
+              "active": true,
+              "displayName": "Worker"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactRostersVisualCare"
+                    }
+                  },
+                  "Property": "DisplayAvgRosteredHoursAllTime"
+                }
+              },
+              "queryRef": "FactRostersVisualCare.DisplayAvgRosteredHoursAllTime",
+              "nativeQueryRef": "Avg. Rostered Hours",
+              "displayName": "Avg. Rostered Hours"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactRostersVisualCare"
+                    }
+                  },
+                  "Property": "DisplayHoursPaid"
+                }
+              },
+              "queryRef": "FactRostersVisualCare.DisplayHoursPaid",
+              "nativeQueryRef": "Hours paid (work + leave)",
+              "displayName": "Hours paid (work + leave)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactRostersVisualCare"
+                    }
+                  },
+                  "Property": "DisplayAvgVsRosteredHoursWeeklyDifference"
+                }
+              },
+              "queryRef": "FactRostersVisualCare.DisplayDifference",
+              "nativeQueryRef": "Difference",
+              "displayName": "Difference"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactRostersVisualCare"
+                  }
+                },
+                "Property": "DisplayAvgVsRosteredHoursWeeklyDifference"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DimWorkforceVisualCare.FullName"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimWorkforceVisualCare"
+                    }
+                  },
+                  "Property": "FullName"
+                }
+              }
+            ],
+            "isPinned": true
+          }
+        ],
+        "root": {
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "'Q-SEW-BNE'"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "columnSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "valuesOnRow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Casual hours paid vs average rostered hours'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "422b95ef40379442043e",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimWorkforceVisualCare"
+              }
+            },
+            "Property": "FullName"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "e86e9810a397a55771eb",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimRosterDateOfService"
+              }
+            },
+            "Property": "Start of Week"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c56aefe95875466989e7",
+        "ordinal": 2,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactRostersVisualCare"
+              }
+            },
+            "Property": "DisplayAvgVsRosteredHoursWeeklyDifference"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e61aaac88e89363d34c1",
+        "ordinal": 3,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactRostersVisualCare"
+              }
+            },
+            "Property": "DisplayHoursPaid"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "9fce30623a4b3302ea40",
+        "ordinal": 4,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactRostersVisualCare"
+              }
+            },
+            "Property": "DisplayAvgRosteredHoursAllTime"
+          }
+        },
+        "type": "Advanced"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

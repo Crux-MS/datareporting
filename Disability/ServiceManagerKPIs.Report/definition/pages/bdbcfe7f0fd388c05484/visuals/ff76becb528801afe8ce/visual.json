@@ -1,0 +1,439 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "ff76becb528801afe8ce",
+  "position": {
+    "x": 54.468085106382979,
+    "y": 428.936170212766,
+    "z": 6000,
+    "height": 276.23100303951367,
+    "width": 574.83282674772045,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimActiveSMs"
+                    }
+                  },
+                  "Property": "Service Manager Name"
+                }
+              },
+              "queryRef": "DimActiveSMs.Service Manager Name",
+              "nativeQueryRef": "Service Manager Name",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactSMCurrentSnapshot"
+                        }
+                      },
+                      "Property": "Employee Casual Count"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactSMCurrentSnapshot.Employee Casual Count)",
+              "nativeQueryRef": "Casual1",
+              "displayName": "Casual"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactSMCurrentSnapshot"
+                        }
+                      },
+                      "Property": "Employee Part Time Count"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactSMCurrentSnapshot.Employee Part Time Count)",
+              "nativeQueryRef": "Part-time1",
+              "displayName": "Part-time"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactSMCurrentSnapshot"
+                        }
+                      },
+                      "Property": "Employee Full Time Count"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactSMCurrentSnapshot.Employee Full Time Count)",
+              "nativeQueryRef": "Full-time1",
+              "displayName": "Full-time"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactSMCurrentSnapshot"
+                        }
+                      },
+                      "Property": "Employee Status Unknown Count"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(FactSMCurrentSnapshot.Employee Status Unknown Count)",
+              "nativeQueryRef": "Unknown1",
+              "displayName": "Unknown"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactSMCurrentSnapshot"
+                    }
+                  },
+                  "Property": "CountCurrentlyActiveEmployees"
+                }
+              },
+              "queryRef": "FactSMCurrentSnapshot.CountCurrentlyActiveEmployees",
+              "nativeQueryRef": "Total count",
+              "displayName": "Total count"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactSMCurrentSnapshot"
+                    }
+                  },
+                  "Property": "CurrentCasualEmployeesRate"
+                }
+              },
+              "queryRef": "FactSMCurrentSnapshot.CurrentCasualEmployeesRate",
+              "nativeQueryRef": "Casual",
+              "displayName": "Casual"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactSMCurrentSnapshot"
+                    }
+                  },
+                  "Property": "CurrentPartTimeEmployeesRate"
+                }
+              },
+              "queryRef": "FactSMCurrentSnapshot.CurrentPartTimeEmployeesRate",
+              "nativeQueryRef": "Part-time",
+              "displayName": "Part-time"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactSMCurrentSnapshot"
+                    }
+                  },
+                  "Property": "CurrentFullTimeEmployeesRate"
+                }
+              },
+              "queryRef": "FactSMCurrentSnapshot.CurrentFullTimeEmployeesRate",
+              "nativeQueryRef": "Full-time",
+              "displayName": "Full-time"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactSMCurrentSnapshot"
+                    }
+                  },
+                  "Property": "CurrentTypeUnknownEmployeesRate"
+                }
+              },
+              "queryRef": "FactSMCurrentSnapshot.CurrentTypeUnknownEmployeesRate",
+              "nativeQueryRef": "Unknown",
+              "displayName": "Unknown"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactSMCurrentSnapshot"
+                  }
+                },
+                "Property": "CurrentCasualEmployeesRate"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "totals": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "0L"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            },
+            "enableBackground": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "backgroundTransparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "30D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "legend": [
+        {
+          "properties": {
+            "showTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Employment Type'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 7,
+                      "Percent": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactSMCurrentSnapshot.CurrentCasualEmployeesRate"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 4,
+                      "Percent": 0.2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactSMCurrentSnapshot.CurrentPartTimeEmployeesRate"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 9,
+                      "Percent": 0.2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactSMCurrentSnapshot.CurrentFullTimeEmployeesRate"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": -0.1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactSMCurrentSnapshot.CurrentTypeUnknownEmployeesRate"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Employee type distribution'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactSMCurrentSnapshot"
+                    }
+                  },
+                  "Property": "CountActiveEmployeesText"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

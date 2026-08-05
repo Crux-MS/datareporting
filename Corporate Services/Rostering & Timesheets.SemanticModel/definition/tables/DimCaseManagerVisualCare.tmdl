@@ -1,0 +1,115 @@
+table DimCaseManagerVisualCare
+	lineageTag: 198052f6-2424-4c20-af6a-f0258206ff37
+
+	column UserId
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c11ad99-f0a5-40cc-b23e-c8ca5d3d1073
+		summarizeBy: count
+		sourceColumn: UserId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Username
+		dataType: string
+		lineageTag: a6e74dfa-793b-46ef-a8bc-714f0a6e9a32
+		summarizeBy: none
+		sourceColumn: Username
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstName
+		dataType: string
+		lineageTag: ef33c538-d408-47bc-98a2-24c060e166c2
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		lineageTag: 078c0312-e931-4be3-9bd0-c9fc96537996
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: 141a53de-9be2-4e59-ad09-38b0b0c06313
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column Area
+		dataType: string
+		lineageTag: 01a83cc1-28b8-4379-a74c-31636dd3fdc5
+		summarizeBy: none
+		sourceColumn: Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column SecurityGroup
+		dataType: int64
+		formatString: 0
+		lineageTag: 98af949f-42cd-403c-a9b8-ac6c154bb8e9
+		summarizeBy: sum
+		sourceColumn: SecurityGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	column _CreateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a998a4ae-4a70-4057-8b6e-b50c3767ccbd
+		summarizeBy: none
+		sourceColumn: _CreateTime
+
+		variation Variation
+			isDefault
+			relationship: d9682f7d-098b-4ea9-9bfe-39da88e3cebc
+			defaultHierarchy: LocalDateTable_24e26665-3434-4e25-b581-f14d7a598c6c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column StopLogin
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 87d853cb-d087-479c-b9a6-5f2f64d09366
+		summarizeBy: none
+		sourceColumn: StopLogin
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Full Name'
+		dataType: string
+		lineageTag: 777d7fe6-db58-4eb2-98d7-91f88ec1318b
+		summarizeBy: none
+		sourceColumn: Full Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsCaseManagerFlag =
+			VAR _selectedCaseManager = CALCULATE(MAX(DimWorkforceVisualCare[CaseManager]), CROSSFILTER(DimCaseManagerVisualCare[Username], DimWorkforceVisualCare[CaseManager], Both))
+			VAR _logic = IF(_selectedCaseManager = BLANK(), 0, 1)
+			RETURN _logic
+		formatString: 0
+		lineageTag: 627c8c0d-be03-46c6-b97a-35b61bb656d7
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCaseManagerVisualCare = m
+		mode: import
+		queryGroup: Workers
+		source =
+				let
+				    Source = #"Users - source"
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

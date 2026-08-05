@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "639f7c0a5d309c7936d5",
+  "position": {
+    "x": 367.65957446808511,
+    "y": 25.288753799392097,
+    "z": 3000,
+    "height": 92.401215805471125,
+    "width": 644.86322188449856,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "UTFShiftNoLongerRequiredHours"
+                }
+              },
+              "queryRef": "Fact Shift.UTFShiftNoLongerRequiredHours",
+              "nativeQueryRef": "H-Unable to Fill - No Longer Required (hours)",
+              "displayName": "H-Unable to Fill - No Longer Required (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "UTFShiftStillNeededHours"
+                }
+              },
+              "queryRef": "Fact Shift.UTFShiftStillNeededHours",
+              "nativeQueryRef": "G-Unable to Fill - Still Needed (hours)",
+              "displayName": "G-Unable to Fill - Still Needed (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "FilledShiftHours"
+                }
+              },
+              "queryRef": "Fact Shift.FilledShiftHours",
+              "nativeQueryRef": "Filled shifts (hours)",
+              "displayName": "Filled shifts (hours)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact Shift"
+                  }
+                },
+                "Property": "UTFShiftNoLongerRequiredHours"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "layout": [
+        {
+          "properties": {
+            "columnCount": {
+              "expr": {
+                "Literal": {
+                  "Value": "3L"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

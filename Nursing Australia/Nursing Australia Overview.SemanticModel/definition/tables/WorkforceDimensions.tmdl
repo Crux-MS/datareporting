@@ -1,0 +1,53 @@
+table WorkforceDimensions
+	lineageTag: 4e51731c-af94-47b9-8edc-fe71406b6925
+
+	measure DisplayParameterTitle = "by " & MAX(WorkforceDimensions[Workforce Dimensions])
+		lineageTag: 1ebfc417-2cbf-4e46-950d-899706033e65
+
+	column 'Workforce Dimensions'
+		lineageTag: 0eb7f4ac-49d8-4e48-9836-74800b13638e
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: 78d2b9f6-6cf4-4776-b04c-cf9d44788287
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 4e80e055-55e6-4f2a-b730-7e933099f9e5
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition WorkforceDimensions = calculated
+		mode: import
+		source =
+				{
+				    ("Remoteness", NAMEOF('Dim Workforce Remoteness'[AvgRemotenessDescription]), 0),
+				    ("Gender", NAMEOF('Dim Workforce'[Gender]), 1),
+				    ("Skilled/Unskilled", NAMEOF('Dim Workforce Trades'[SkilledTrade]), 2),
+				    ("Age", NAMEOF('Fact Workforce'[AgeBand]), 3)
+				}
+
+	annotation PBI_Id = c358932bca9b4eb4931723553dd2c0cb
+

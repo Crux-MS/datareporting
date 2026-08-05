@@ -1,0 +1,465 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "f68fe6105616e30d95d9",
+  "position": {
+    "x": 55.660847880299251,
+    "y": 149.02743142144638,
+    "z": 4000,
+    "height": 250.47381546134662,
+    "width": 680.498753117207,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "State"
+                }
+              },
+              "queryRef": "DimClientLocationRemoteness.State",
+              "nativeQueryRef": "State | Region | Locality | Postcode | Client",
+              "active": true,
+              "displayName": "State | Region | Locality | Postcode | Client"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "SA4"
+                }
+              },
+              "queryRef": "DimClientLocationRemoteness.SA4",
+              "nativeQueryRef": "SA4",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "SA3"
+                }
+              },
+              "queryRef": "DimClientLocationRemoteness.SA3",
+              "nativeQueryRef": "SA3",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "PostCode"
+                }
+              },
+              "queryRef": "DimClientLocationRemoteness.PostCode",
+              "nativeQueryRef": "PostCode",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCareViewClients"
+                    }
+                  },
+                  "Property": "Full Name"
+                }
+              },
+              "queryRef": "DimCareViewClients.Full Name",
+              "nativeQueryRef": "Full Name",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountActiveClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountActiveClients",
+              "nativeQueryRef": "CountActiveClients",
+              "displayName": "Active"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountNewClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountNewClients",
+              "nativeQueryRef": "New",
+              "displayName": "New"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountClientExits"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountClientExits",
+              "nativeQueryRef": "Exits",
+              "displayName": "Exits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountPendingClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountPendingClients",
+              "nativeQueryRef": "Pending",
+              "displayName": "Pending"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountInactiveClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountInactiveClients",
+              "nativeQueryRef": "Inactive",
+              "displayName": "Inactive"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountDeceasedClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountDeceasedClients",
+              "nativeQueryRef": "Deceased",
+              "displayName": "Deceased"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactCareViewCaseNotes"
+                  }
+                },
+                "Property": "CountActiveClients"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DimClientLocationRemoteness.State"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "State"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimClientLocationRemoteness.SA4"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "SA4"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimClientLocationRemoteness.SA3"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "SA3"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimClientLocationRemoteness.PostCode"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimClientLocationRemoteness"
+                    }
+                  },
+                  "Property": "PostCode"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimCareViewClients.Full Name"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCareViewClients"
+                    }
+                  },
+                  "Property": "Full Name"
+                }
+              }
+            ],
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "310.75865286285773D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimClientLocationRemoteness.State"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "64D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactCareViewCaseNotes.CountPendingClients"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "48.97755884262696D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactCareViewCaseNotes.CountNewClients"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "45.151340139155536D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactCareViewCaseNotes.CountClientExits"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "78D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactCareViewCaseNotes.CountDeceasedClients"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "63D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactCareViewCaseNotes.CountInactiveClients"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "53D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactCareViewCaseNotes.CountActiveClients"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Client Counts'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "SelectedClientStartDates"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

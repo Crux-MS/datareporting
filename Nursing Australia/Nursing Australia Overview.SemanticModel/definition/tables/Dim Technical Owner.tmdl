@@ -1,0 +1,67 @@
+table 'Dim Technical Owner'
+	isHidden
+	lineageTag: 57885a83-292b-48d7-9e60-b4e129d069c4
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ed8a2deb-7ca2-48b1-bf5f-121e2681a047
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TechnicalOwnerID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e17d161b-579b-46a0-83ff-ed6ec2450e49
+		summarizeBy: count
+		sourceColumn: TechnicalOwnerID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TechnicalOwnerName
+		dataType: string
+		isHidden
+		lineageTag: 728d8a76-c814-4959-a291-0a87f443aa2a
+		summarizeBy: none
+		sourceColumn: TechnicalOwnerName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TechnicalOwnerEmail
+		dataType: string
+		isHidden
+		lineageTag: 653f3425-2f9d-4373-91e7-8432b679e9b1
+		summarizeBy: none
+		sourceColumn: TechnicalOwnerEmail
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Technical Owner' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Technical Owner"}),
+				    #"Expanded Technical Owner" = Table.ExpandListColumn(#"Removed Other Columns", "Technical Owner"),
+				    #"Expanded Technical Owner1" = Table.ExpandRecordColumn(#"Expanded Technical Owner", "Technical Owner", {"id", "title", "email"}, {"id.1", "title", "email"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Technical Owner1", each ([id.1] = "6")),
+				    #"Renamed Columns" = Table.RenameColumns(#"Filtered Rows",{{"id.1", "TechnicalOwnerID"}, {"title", "TechnicalOwnerName"}, {"email", "TechnicalOwnerEmail"}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"TechnicalOwnerName", type text}, {"TechnicalOwnerEmail", type text}, {"TechnicalOwnerID", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+

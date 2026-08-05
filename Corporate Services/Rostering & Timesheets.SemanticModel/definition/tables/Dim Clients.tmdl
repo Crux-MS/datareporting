@@ -1,0 +1,93 @@
+table 'Dim Clients'
+	lineageTag: b4934369-4ff7-42ac-af39-47f30641944c
+
+	column ClientId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 70e72c80-ee31-466d-969a-46cfd26dc73f
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientCode
+		dataType: string
+		lineageTag: 1d5413a7-4cc9-4aaf-9200-4e280f3e6c31
+		summarizeBy: none
+		sourceColumn: ClientCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: 307e4a2f-1e89-4946-8c2e-2ae75acfaeb1
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column FundingType
+		dataType: string
+		lineageTag: 5e8c876b-c8fc-4d24-9d5d-a3b5f8731d2d
+		summarizeBy: none
+		sourceColumn: FundingType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Area
+		dataType: string
+		lineageTag: e37bef50-39b1-4b5f-b1bb-8298be3b8fe7
+		summarizeBy: none
+		sourceColumn: Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: 554956e9-1616-4b25-92a0-4126cc63b18c
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Full Name'
+		dataType: string
+		lineageTag: 4f11c0d3-e6ca-47fa-84f8-04a69ed9a7ed
+		summarizeBy: none
+		sourceColumn: Full Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientType
+		dataType: string
+		lineageTag: 8c2c80c3-95eb-41f7-bce2-6d35967999de
+		summarizeBy: none
+		sourceColumn: ClientType
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Clients' = m
+		mode: import
+		queryGroup: Clients
+		source =
+				let
+				    //Source = List.Numbers(0,300000/20000,20000),
+				    //#"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+				    //#"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "API Index"}}),
+				    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/clients", [Query=[fromDate=#"L42D Date",toDate=#"N28D Date",limit="20000", includeNotes="false"], Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+				    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+				    Custom1 = Table.SelectRows(#"Converted to Table", each ([Column1] <> null)),
+				    #"Expanded Column1" = Table.ExpandRecordColumn(Custom1, "Column1", {"ClientId", "ClientCode", "FirstName", "MiddleName", "LastName", "PreferredName", "Gender", "FundingType", "ClientType", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "PhoneSMS", "Fax", "ContactPref", "DateOfBirth", "PayerId", "Area", "Division", "Group", "CaseManager", "CaseManager2", "MaritalStatus", "Aboriginal", "TorresStraitIslander", "LGBQTI", "LanguageEnglish", "LanguageOther", "InterpreterRequired", "ClientNo", "AccountingCode", "MedicareNo", "AmbulanceNo", "Weight", "Height", "DVA", "TSI", "ATSI", "CALD", "CHSP", "SATSS", "HCPLevel", "LiveAlone", "SingleWorker", "CompanionCard", "PrivateHealth", "LegalOrders", "LivingArrangement", "EmploymentType", "Referral", "Referer", "RefererCode", "MACCode", "MyAgedCareReference", "NotesAccess", "NotesRisk", "NotesAlert", "NotesGeneral", "NotesRoster", "NotesClientProfile", "NotesShiftAlert", "CurrentStatus", "ServiceStatus", "ServiceStart", "ServiceEnd", "ServiceReview", "ServiceReview2", "EnquiryDate", "LastServiceReview", "ReasonServiceEnded", "NIDISNo", "NDISNumber", "NDISNote", "PensionNo", "CareRecipientId", "IsDex", "DexClientId", "Slk", "Status", "LocationId", "Current", "CreatedBy", "CreatedTime", "LastModifiedTime", "PreferedWorker", "NonPreferedWorker"}, {"ClientId", "ClientCode", "FirstName", "MiddleName", "LastName", "PreferredName", "Gender", "FundingType", "ClientType", "Address1", "Address2", "Suburb", "State", "PostCode", "Longitude", "Latitude", "Email", "Phone1", "Phone2", "PhoneSMS", "Fax", "ContactPref", "DateOfBirth", "PayerId", "Area", "Division", "Group", "CaseManager", "CaseManager2", "MaritalStatus", "Aboriginal", "TorresStraitIslander", "LGBQTI", "LanguageEnglish", "LanguageOther", "InterpreterRequired", "ClientNo", "AccountingCode", "MedicareNo", "AmbulanceNo", "Weight", "Height", "DVA", "TSI", "ATSI", "CALD", "CHSP", "SATSS", "HCPLevel", "LiveAlone", "SingleWorker", "CompanionCard", "PrivateHealth", "LegalOrders", "LivingArrangement", "EmploymentType", "Referral", "Referer", "RefererCode", "MACCode", "MyAgedCareReference", "NotesAccess", "NotesRisk", "NotesAlert", "NotesGeneral", "NotesRoster", "NotesClientProfile", "NotesShiftAlert", "CurrentStatus", "ServiceStatus", "ServiceStart", "ServiceEnd", "ServiceReview", "ServiceReview2", "EnquiryDate", "LastServiceReview", "ReasonServiceEnded", "NIDISNo", "NDISNumber", "NDISNote", "PensionNo", "CareRecipientId", "IsDex", "DexClientId", "Slk", "Status", "LocationId", "Current", "CreatedBy", "CreatedTime", "LastModifiedTime", "PreferedWorker", "NonPreferedWorker"}),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Expanded Column1",{"ClientId", "ClientCode", "FirstName", "LastName", "Gender", "FundingType", "ClientType", "Area", "Division"}),
+				    #"Merged Columns" = Table.CombineColumns(#"Removed Other Columns",{"FirstName", "LastName"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Full Name"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Merged Columns",{{"Gender", type text}, {"ClientId", Int64.Type}, {"ClientCode", type text}, {"FundingType", type text}, {"Area", type text}, {"Division", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

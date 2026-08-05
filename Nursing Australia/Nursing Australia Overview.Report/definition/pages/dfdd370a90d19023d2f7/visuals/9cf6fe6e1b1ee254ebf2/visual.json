@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "9cf6fe6e1b1ee254ebf2",
   "position": {
-    "x": 55.440729483282681,
-    "y": 150,
-    "z": 5000,
-    "height": 225,
-    "width": 1200,
+    "x": 55.822494261667948,
+    "y": 136.12853863810253,
+    "z": 3000,
+    "height": 282.05049732211171,
+    "width": 1198.7146136189749,
     "tabOrder": 5000
   },
   "visual": {
@@ -57,12 +57,57 @@
                       "Entity": "Fact Shift"
                     }
                   },
-                  "Property": "UnfilledShiftHours"
+                  "Property": "UTFShiftStillNeededHours"
                 }
               },
               "queryRef": "Fact Shift.Unfilled Shift Duration",
-              "nativeQueryRef": "Unfilled shift (hours)",
-              "displayName": "Unfilled shift (hours)"
+              "nativeQueryRef": "UTF shift still required (hours)",
+              "displayName": "UTF shift still required (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "AvailableOpportunityHours"
+                }
+              },
+              "queryRef": "Fact Shift.OpportunityHours",
+              "nativeQueryRef": "Available shifts (hours)",
+              "displayName": "Available shifts (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "AvailableOpportunityFilledRate"
+                }
+              },
+              "queryRef": "Fact Shift.FilledNeededRate",
+              "nativeQueryRef": "Available shifts fill rate",
+              "displayName": "Available shifts fill rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "UTFShiftNoLongerRequiredHours"
+                }
+              },
+              "queryRef": "Fact Shift.UnfilledShiftNoLongerRequiredHours",
+              "nativeQueryRef": "Unavailable shifts (hours)",
+              "displayName": "Unavailable shifts (hours)"
             },
             {
               "field": {
@@ -76,8 +121,8 @@
                 }
               },
               "queryRef": "Fact Shift.Controllable Orders",
-              "nativeQueryRef": "Controllable orders (hours)",
-              "displayName": "Controllable orders (hours)"
+              "nativeQueryRef": "Available + unavailable shifts (hours)",
+              "displayName": "Available + unavailable shifts (hours)"
             },
             {
               "field": {
@@ -91,8 +136,8 @@
                 }
               },
               "queryRef": "Fact Shift.Controllable Fill Rate",
-              "nativeQueryRef": "Controllable fill rate",
-              "displayName": "Controllable fill rate"
+              "nativeQueryRef": "Available + unavailable shifts fill rate",
+              "displayName": "Available + unavailable shifts fill rate"
             },
             {
               "field": {
@@ -132,12 +177,27 @@
                       "Entity": "Fact Shift"
                     }
                   },
+                  "Property": "NonBillableDurationHours"
+                }
+              },
+              "queryRef": "Fact Shift.NonBillableDurationHours",
+              "nativeQueryRef": "Non-billable shifts (hours)",
+              "displayName": "Non-billable shifts (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
                   "Property": "TotalOrdersHours"
                 }
               },
               "queryRef": "Fact Shift.Total Orders",
-              "nativeQueryRef": "Total orders (hours)",
-              "displayName": "Total orders (hours)"
+              "nativeQueryRef": "Total shifts (hours)1",
+              "displayName": "Total shifts (hours)"
             }
           ]
         }
@@ -192,7 +252,7 @@
                           "nullColoringStrategy": {
                             "strategy": {
                               "Literal": {
-                                "Value": "'asZero'"
+                                "Value": "'noColor'"
                               }
                             }
                           }
@@ -229,7 +289,7 @@
                               "Entity": "Fact Shift"
                             }
                           },
-                          "Property": "UnfilledShiftHours"
+                          "Property": "UTFShiftStillNeededHours"
                         }
                       },
                       "FillRule": {
@@ -237,21 +297,21 @@
                           "min": {
                             "color": {
                               "Literal": {
-                                "Value": "'#fbcea5'"
+                                "Value": "'#f9bba7'"
                               }
                             }
                           },
                           "max": {
                             "color": {
                               "Literal": {
-                                "Value": "'#F5841F'"
+                                "Value": "'#F15623'"
                               }
                             }
                           },
                           "nullColoringStrategy": {
                             "strategy": {
                               "Literal": {
-                                "Value": "'asZero'"
+                                "Value": "'noColor'"
                               }
                             }
                           }
@@ -310,7 +370,7 @@
                           "nullColoringStrategy": {
                             "strategy": {
                               "Literal": {
-                                "Value": "'asZero'"
+                                "Value": "'noColor'"
                               }
                             }
                           }
@@ -369,7 +429,7 @@
                           "nullColoringStrategy": {
                             "strategy": {
                               "Literal": {
-                                "Value": "'asZero'"
+                                "Value": "'noColor'"
                               }
                             }
                           }
@@ -393,53 +453,7 @@
           }
         },
         {
-          "properties": {
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "FillRule": {
-                      "Input": {
-                        "Measure": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Shift"
-                            }
-                          },
-                          "Property": "ShiftCancelledByClientHours"
-                        }
-                      },
-                      "FillRule": {
-                        "linearGradient2": {
-                          "min": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#fbcea5'"
-                              }
-                            }
-                          },
-                          "max": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#F5841F'"
-                              }
-                            }
-                          },
-                          "nullColoringStrategy": {
-                            "strategy": {
-                              "Literal": {
-                                "Value": "'asZero'"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
+          "properties": {},
           "selector": {
             "data": [
               {
@@ -452,53 +466,7 @@
           }
         },
         {
-          "properties": {
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "FillRule": {
-                      "Input": {
-                        "Measure": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Shift"
-                            }
-                          },
-                          "Property": "ShiftCancelledByClientRate"
-                        }
-                      },
-                      "FillRule": {
-                        "linearGradient2": {
-                          "min": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#fbcea5'"
-                              }
-                            }
-                          },
-                          "max": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#F5841F'"
-                              }
-                            }
-                          },
-                          "nullColoringStrategy": {
-                            "strategy": {
-                              "Literal": {
-                                "Value": "'asZero'"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
+          "properties": {},
           "selector": {
             "data": [
               {
@@ -508,6 +476,32 @@
               }
             ],
             "metadata": "Fact Shift.Cancelled by Client Rate"
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Fact Shift.Total Orders"
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Fact Shift.UnfilledShiftNoLongerRequiredHours"
           }
         },
         {
@@ -524,7 +518,7 @@
                               "Entity": "Fact Shift"
                             }
                           },
-                          "Property": "TotalOrdersHours"
+                          "Property": "AvailableOpportunityFilledRate"
                         }
                       },
                       "FillRule": {
@@ -532,21 +526,21 @@
                           "min": {
                             "color": {
                               "Literal": {
-                                "Value": "'#f9bba7'"
+                                "Value": "'#fdefbf'"
                               }
                             }
                           },
                           "max": {
                             "color": {
                               "Literal": {
-                                "Value": "'#F15623'"
+                                "Value": "'#FBD760'"
                               }
                             }
                           },
                           "nullColoringStrategy": {
                             "strategy": {
                               "Literal": {
-                                "Value": "'asZero'"
+                                "Value": "'noColor'"
                               }
                             }
                           }
@@ -566,6 +560,220 @@
                 }
               }
             ],
+            "metadata": "Fact Shift.FilledNeededRate"
+          }
+        },
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Fact Shift"
+                            }
+                          },
+                          "Property": "AvailableOpportunityHours"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#fdefbf'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#FBD760'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'noColor'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Fact Shift.OpportunityHours"
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnFormatting": [
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.Filled Shift Duration"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.Unfilled Shift Duration"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.OpportunityHours"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.FilledNeededRate"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.UnfilledShiftNoLongerRequiredHours"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.Controllable Orders"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.Controllable Fill Rate"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.Cancelled by Client Shift Duration"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.Cancelled by Client Rate"
+          }
+        },
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
             "metadata": "Fact Shift.Total Orders"
           }
         }
@@ -605,7 +813,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Current financial year'"
+                  "Value": "'by shift start date'"
                 }
               }
             }
@@ -618,7 +826,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "81eec2288e084b6aeb4d",
+        "name": "6a6d3150db156d6d95d8",
         "field": {
           "Column": {
             "Expression": {
@@ -626,101 +834,164 @@
                 "Entity": "Dim Shift Start Date"
               }
             },
-            "Property": "CurrentFYFlag"
+            "Property": "MMM YYYY"
           }
         },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Shift Start Date",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "d"
-                          }
-                        },
-                        "Property": "CurrentFYFlag"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "true"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User",
-        "isLockedInViewMode": true
+        "type": "Categorical"
       },
       {
-        "name": "cbd1473589fc042f0a34",
+        "name": "51cbd3af78084b1ab86c",
         "field": {
-          "Column": {
+          "Measure": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Shift Start Date"
+                "Entity": "Fact Shift"
               }
             },
-            "Property": "RollingDateDifference"
+            "Property": "FilledShiftHours"
           }
         },
-        "type": "Advanced",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Shift Start Date",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 4,
-                  "Left": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
-                        }
-                      },
-                      "Property": "RollingDateDifference"
-                    }
-                  },
-                  "Right": {
-                    "Literal": {
-                      "Value": "0L"
-                    }
-                  }
-                }
+        "type": "Advanced"
+      },
+      {
+        "name": "3d154fc52ea60037610c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
               }
-            }
-          ]
+            },
+            "Property": "UTFShiftStillNeededHours"
+          }
         },
-        "howCreated": "User",
-        "isLockedInViewMode": true
+        "type": "Advanced"
+      },
+      {
+        "name": "c0c3221170e0e41c6aad",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "AvailableOpportunityHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e5c36339723202e05d55",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "AvailableOpportunityFilledRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "65ce3ced45ce4037c090",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "UTFShiftNoLongerRequiredHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4bb09e61a258778cd19a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "ControllableOrdersHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "87a4d7de344baa497b79",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "Controllable Fill Rate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b99a7c55b743aa28dae4",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "ShiftCancelledByClientHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a2fa93010e605056b623",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "ShiftCancelledByClientRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "c32f452e72d5102c4652",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "NonBillableDurationHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0f922e45a2ed279bcb33",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Shift"
+              }
+            },
+            "Property": "TotalOrdersHours"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

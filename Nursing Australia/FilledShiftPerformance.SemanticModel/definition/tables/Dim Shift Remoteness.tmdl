@@ -1,0 +1,83 @@
+table 'Dim Shift Remoteness'
+	lineageTag: 675a534b-e159-435e-a7ae-b081fb8311f0
+	sourceLineageTag: 707a0c73-3ede-473f-bebe-16eaa65755a8
+
+	column PostCode
+		dataType: string
+		isHidden
+		lineageTag: 298b250f-1a92-40c6-80a6-99078fe33858
+		sourceLineageTag: 2059285c-ccc3-4995-8007-dacdb38ed61b
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: PostCode
+
+		annotation SummarizationSetBy = User
+
+	column AvgMMM2023
+		dataType: int64
+		formatString: 0
+		lineageTag: 1c11693c-6c05-48f9-88d9-3158621d8f7b
+		sourceLineageTag: 8cab66e9-4a34-4d2f-9493-b427e3f8632a
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: AvgMMM2023
+
+		annotation SummarizationSetBy = User
+
+	column AvgRemotenessDescription
+		dataType: string
+		lineageTag: 21ed80af-b3c5-40ce-b229-d1f262617219
+		sourceLineageTag: fbf394ce-eab6-4f2e-9ff4-8b21cd4260d4
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AvgRemotenessDescription
+		sortByColumn: AvgMMM2023
+
+		annotation SummarizationSetBy = User
+
+	column AvgLatPrecise
+		dataType: double
+		lineageTag: 025df7c8-eb7c-4445-8802-f75ef01e53d9
+		sourceLineageTag: 3b3da31a-30d2-424a-9e98-752a2d03d9ad
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: AvgLatPrecise
+
+		annotation SummarizationSetBy = User
+
+	column AvgLongPrecise
+		dataType: double
+		lineageTag: a28d341e-93ca-4d7b-921a-28e93dec8742
+		sourceLineageTag: 98642a4b-4105-4794-8155-f749588f0302
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: AvgLongPrecise
+
+		annotation SummarizationSetBy = User
+
+	column 'SA3 Name'
+		dataType: string
+		lineageTag: df863013-d21c-4d25-bde7-54623832095d
+		sourceLineageTag: 86b9318e-d411-4fc0-8251-81004ea3830f
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: SA3 Name
+
+		annotation SummarizationSetBy = User
+
+	column 'SA4 Name'
+		dataType: string
+		lineageTag: b8e3e49f-480a-44cd-8ad8-a09a7127d01e
+		sourceLineageTag: bf37764d-a38b-45af-b8ae-a6a8329f163f
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: SA4 Name
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Shift Remoteness' = entity
+		mode: directQuery
+		source
+			entityName: Dim Shift Remoteness
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

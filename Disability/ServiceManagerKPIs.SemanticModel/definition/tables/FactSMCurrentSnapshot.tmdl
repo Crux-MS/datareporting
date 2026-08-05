@@ -1,0 +1,454 @@
+table FactSMCurrentSnapshot
+	lineageTag: 9f93c810-b4a9-427c-b44e-aa653877edbc
+
+	measure CountPaypointEmployees = SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]) & " currently active employees at " & FORMAT(MAX(RefreshedDate[Refreshed]), "D/M/YYYY")
+		displayFolder: Paypoints
+		lineageTag: 5454bc45-a0e4-4af9-8aba-a84e0e21db22
+
+	measure CountClientsMissingStartDate = SUM(FactSMCurrentSnapshot[Client_Active_Missing_Start_Count]) + SUM(FactSMCurrentSnapshot[Client_Inactive_Missing_Start_Count]) + SUM(FactSMCurrentSnapshot[Client_Status_Unknown_Missing_Start_Count])
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: f44ded06-4b2f-425b-9f90-abb53b6ec2cb
+
+	measure CountEmployeesMissingStartDate = SUM(FactSMCurrentSnapshot[Employee Active Missing Start Count]) + SUM(FactSMCurrentSnapshot[Employee Inactive Missing Start Count]) + SUM(FactSMCurrentSnapshot[Employee Status Unknown Missing Start Count])
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: bb687ff1-8166-4f77-b01e-16c88fc9becd
+
+	measure CountClientsMissingEndDate = SUM(FactSMCurrentSnapshot[Client_Active_Missing_End_Count]) + SUM(FactSMCurrentSnapshot[Client_Inactive_Missing_End_Count]) + SUM(FactSMCurrentSnapshot[Client_Status_Unknown_Missing_End_Count])
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: ff5874b7-c01c-4617-b20a-2f6784477145
+
+	measure ActiveClientsMissingEndRate = DIVIDE(SUM(FactSMCurrentSnapshot[Client_Active_Missing_End_Count]), SUM(FactSMCurrentSnapshot[Client_Active_Count]))
+		displayFolder: Clients
+		lineageTag: fc0a774a-3e8e-4b52-931c-2fc12a1b54f5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure SACSLevel8Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_8_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Paypoints
+		lineageTag: afec2b61-b822-423a-a368-90fe4105275e
+
+	measure SACSLevel7Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_7_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		displayFolder: Paypoints
+		lineageTag: 80efbe4b-d598-460d-aa13-cb24840844a9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure SACSLevel1Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_1_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Paypoints
+		lineageTag: 80e8790c-74c8-4714-9b99-1eca4c3d9504
+
+	measure SACSLevel2Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_2_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Paypoints
+		lineageTag: 525c6391-567c-4ff7-b347-b7231e1097cc
+
+	measure SACSLevel3Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_3_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Paypoints
+		lineageTag: b1831a6c-997c-46c6-b58a-38f85df74b3e
+
+	measure SACSLevel4Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_4_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.000%;-0.000%;0.000%
+		displayFolder: Paypoints
+		lineageTag: c32eb8e2-4faf-4d28-abd7-fd9283cd8453
+
+	measure SACSLevel5Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_5_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Paypoints
+		lineageTag: 517aaf81-40d1-4fc7-a8cc-506b5779bd59
+
+	measure SACSLevel6Rate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_SACS_Level_6_Count]), SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Paypoints
+		lineageTag: 5356a011-1490-44fd-b83d-4392c9f4a4b3
+
+	measure CountAllSACSAgreementEmployees = ```
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_1_Count]) + 
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_2_Count]) + 
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_3_Count]) + 
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_4_Count]) + 
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_5_Count]) + 
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_6_Count]) + 
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_7_Count]) + 
+			SUM(FactSMCurrentSnapshot[Employee_SACS_Level_8_Count])
+			```
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: f7e8f4d5-d375-4564-919b-204084622db5
+
+	measure OtherEmployementAgreementRate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]) - [CountAllSACSAgreementEmployees], SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Paypoints
+		lineageTag: 5c959240-c877-4aad-91fc-00b03485d763
+
+	measure OtherPayAgreements = SUM(FactSMCurrentSnapshot[Employee_Paypoint_All_Count]) - [CountAllSACSAgreementEmployees]
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: 942b8af0-4fd5-45fe-9b41-a21a959117cf
+
+	measure CountCurrentlyActiveEmployees = SUM(FactSMCurrentSnapshot[Employee Casual Count]) + SUM(FactSMCurrentSnapshot[Employee Full Time Count]) + SUM(FactSMCurrentSnapshot[Employee Part Time Count]) + SUM(FactSMCurrentSnapshot[Employee Status Unknown Count])
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 66ceed0a-9988-4175-8876-797a13d2c882
+
+	measure CurrentPartTimeEmployeesRate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee Part Time Count]), [CountCurrentlyActiveEmployees])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: 46ffa32c-a00a-41aa-8230-a0f17cf5511d
+
+	measure CurrentFullTimeEmployeesRate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee Full Time Count]), [CountCurrentlyActiveEmployees])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: 9ebaf9db-b56a-42bb-816a-374d2c949bf9
+
+	measure CurrentCasualEmployeesRate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee Casual Count]), [CountCurrentlyActiveEmployees])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: 1b3f1edb-d449-4799-8e3c-511301858209
+
+	measure CurrentTypeUnknownEmployeesRate = DIVIDE(SUM(FactSMCurrentSnapshot[Employee Status Unknown Count]), [CountCurrentlyActiveEmployees])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: 45031773-c8d4-431a-a1a2-a03e37669b0c
+
+	measure CountActiveEmployeesText = [CountCurrentlyActiveEmployees] & " currently active employees at " & FORMAT(MAX(RefreshedDate[Refreshed]), "D/M/YYYY")
+		displayFolder: Employees
+		lineageTag: ced8ab51-ee21-4558-8c73-68f6f9683a54
+
+	column 'Id Service Manager'
+		dataType: string
+		lineageTag: 6a499db8-a7c3-4f09-8d0b-58d0868d7187
+		summarizeBy: none
+		sourceColumn: Id Service Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Paypoint All Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: 0e418ca1-b170-4b14-a2a1-b795d5e5bb8c
+		summarizeBy: sum
+		sourceColumn: Employee Paypoint All Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 1 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: 9eb8db92-5357-47ab-abc2-790ce2df7250
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 1 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 2 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: 63c4788b-75fc-4c42-a6e2-e12ea9fb23cf
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 2 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 3 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: 72f2a2fe-7568-4338-a45c-c4dd888e27db
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 3 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 4 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: e6cdc759-500c-4acb-abbe-c869c53ccfac
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 4 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 5 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: e7a1350c-4036-4b87-a554-8396f835eaf6
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 5 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 6 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: c7aa1457-7dd6-49da-8dfb-ecb68100ccd0
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 6 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 7 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: 5398cfae-ae21-4c60-ba06-9b09a9ba0232
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 7 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Sacs Level 8 Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Paypoints
+		lineageTag: c17467d4-994e-49ce-9d5c-ea269e7d3a1e
+		summarizeBy: sum
+		sourceColumn: Employee Sacs Level 8 Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Casual Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: dff48099-5f55-4cbb-be49-b69eb679af80
+		summarizeBy: sum
+		sourceColumn: Employee Casual Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Part Time Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: f2825caa-e260-4425-b9b0-b7183e3daf1d
+		summarizeBy: sum
+		sourceColumn: Employee Part Time Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Full Time Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 58f67b6c-17a8-4932-9105-1819efde93b0
+		summarizeBy: sum
+		sourceColumn: Employee Full Time Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Employment Type Unknown Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 0895fccf-5da4-488f-901e-7c6a35ebb007
+		summarizeBy: sum
+		sourceColumn: Employee Employment Type Unknown Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Active Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 7e907b33-e72c-4d52-b5f3-dab12246f61b
+		summarizeBy: sum
+		sourceColumn: Employee Active Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Inactive Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: a622003c-5f32-4dc0-8fca-ed57e2728d21
+		summarizeBy: sum
+		sourceColumn: Employee Inactive Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Status Unknown Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 7011c865-25d1-4220-afd0-a444b8d4567e
+		summarizeBy: sum
+		sourceColumn: Employee Status Unknown Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Active Missing Start Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: e811a024-bb7b-4986-802a-94491e505ffc
+		summarizeBy: sum
+		sourceColumn: Employee Active Missing Start Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Active Missing End Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: e25db1ef-5720-467c-9508-036e62d6c8db
+		summarizeBy: sum
+		sourceColumn: Employee Active Missing End Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Inactive Missing Start Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 5a439347-2720-4de6-bbb3-ee2efb02bd98
+		summarizeBy: sum
+		sourceColumn: Employee Inactive Missing Start Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Inactive Missing End Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 40454574-676b-4583-9fcd-7cf3615cef08
+		summarizeBy: sum
+		sourceColumn: Employee Inactive Missing End Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Status Unknown Missing Start Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: ce5b1fd4-05ec-4e22-897e-e385ddbc1c91
+		summarizeBy: sum
+		sourceColumn: Employee Status Unknown Missing Start Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Status Unknown Missing End Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 252bf5de-7e89-4049-86a1-a64b492eccbe
+		summarizeBy: sum
+		sourceColumn: Employee Status Unknown Missing End Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Active Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 363cd9dd-7d20-4892-8888-d759b4b7b5f8
+		summarizeBy: sum
+		sourceColumn: Client Active Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Inactive Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 48d639e7-bc84-4ba2-b0f4-ccd34d4eb356
+		summarizeBy: sum
+		sourceColumn: Client Inactive Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Status Unknown Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 32cf7374-7f3f-414f-819e-804add4e5db3
+		summarizeBy: sum
+		sourceColumn: Client Status Unknown Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Active Missing Start Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: a62311c8-6113-4b90-95e1-630ba19803a3
+		summarizeBy: sum
+		sourceColumn: Client Active Missing Start Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Active Missing End Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 876fc9e7-088d-475a-82ef-6e932a142895
+		summarizeBy: sum
+		sourceColumn: Client Active Missing End Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Inactive Missing Start Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: f0149aae-39d8-4e7e-8d08-6bc4247b90be
+		summarizeBy: sum
+		sourceColumn: Client Inactive Missing Start Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Inactive Missing End Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 9aa433ab-fa01-404f-b168-58f58b4dac78
+		summarizeBy: sum
+		sourceColumn: Client Inactive Missing End Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Status Unknown Missing Start Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 18f11d78-3326-4b0f-8e82-cfe51024726a
+		summarizeBy: sum
+		sourceColumn: Client Status Unknown Missing Start Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Status Unknown Missing End Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 8b5ffbe4-49af-4177-9d8e-fbc3bbee4c7b
+		summarizeBy: sum
+		sourceColumn: Client Status Unknown Missing End Count
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactSMCurrentSnapshot = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Fact_service_manager_kpi_current = Source{[Schema="Fact",Item="service_manager_kpi_current"]}[Data],
+				    RenameColumns = fnCleanColumnNames(Fact_service_manager_kpi_current)
+				in
+				    RenameColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

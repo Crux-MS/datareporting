@@ -1,0 +1,48 @@
+table Divisions
+	lineageTag: dc156f98-84c4-4b24-a468-5ca2d92fc08a
+
+	column Divisions
+		lineageTag: fdbef691-e720-4d41-9eff-0777ea64c8a6
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Divisions Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Divisions Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Divisions Fields'
+		isHidden
+		lineageTag: c30e8c63-2f2a-49ac-b47a-76b0a63d170b
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Divisions Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Divisions Order'
+		isHidden
+		formatString: 0
+		lineageTag: a4c854eb-ffc6-4e7f-b442-5703ba9b34f4
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Divisions = calculated
+		mode: import
+		source =
+				{
+				    ("Clients", NAMEOF('Dim Clients'[Division]), 0),
+				    ("Workers", NAMEOF('DimWorkforceVisualCare'[Division]), 1)
+				}
+
+	annotation PBI_Id = 06b6579d648345cb9527e93bd2787ab8
+

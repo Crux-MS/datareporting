@@ -1,0 +1,50 @@
+table FactServicesActivePatients
+	lineageTag: 72fa8ac9-304e-4bb0-90c8-7b87e7d5f586
+
+	column ActiveMonth
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: e4facf6d-bad1-48e1-a682-9c55c7651b2f
+		summarizeBy: none
+		sourceColumn: ActiveMonth
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FundingStream
+		dataType: string
+		lineageTag: 8a00445e-e40f-431e-b5ba-da59b4f0442e
+		summarizeBy: none
+		sourceColumn: FundingStream
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActivePatients
+		dataType: int64
+		formatString: 0
+		lineageTag: d499aed0-95c7-46af-8402-7fd41fca993a
+		summarizeBy: sum
+		sourceColumn: ActivePatients
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactServicesActivePatients = m
+		mode: import
+		queryGroup: 'Patients\ActivePatients by SERVICE'
+		source =
+				let
+				    Source = Table.Combine({#"FactActivePatientServicesWA-Source", #"FactActivePatientServicesSA-Source", #"FactActivePatientServicesQLD-Source", #"FactActivePatientServicesNSW-Source", #"FactActivePatientServicesVIC-Source"}),
+				    #"Removed Duplicates" = Table.Distinct(Source),
+				    #"Merged Queries" = Table.NestedJoin(#"Removed Duplicates", {"patient_id"}, #"FactActivePatientsAll - Source", {"patient_id"}, "ActiveMonths", JoinKind.LeftOuter),
+				    #"Expanded ActiveMonths" = Table.ExpandTableColumn(#"Merged Queries", "ActiveMonths", {"ActiveMonth"}, {"ActiveMonth"}),
+				    #"Removed Duplicates1" = Table.Distinct(#"Expanded ActiveMonths"),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Duplicates1", each ([ActiveMonth] <> null)),
+				    #"Grouped Rows" = Table.Group(#"Filtered Rows", {"FundingStream", "ActiveMonth"}, {{"ActivePatients", each Table.RowCount(_), Int64.Type}})
+				in
+				    #"Grouped Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

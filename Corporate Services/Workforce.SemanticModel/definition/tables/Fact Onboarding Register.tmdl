@@ -8,7 +8,7 @@ table 'Fact Onboarding Register'
 			VAR _avgDaysOnboardingQtr = CALCULATE(
 			    AVERAGE('Fact Onboarding Register'[Days Onboarding]), 
 			    FILTER(
-			        ALL('Fact Onboarding Register'), 
+			        ALLEXCEPT('Fact Onboarding Register', DimOnboardingRegister[Division], DimOnboardingRegister[State Acronym]), 
 			        'Fact Onboarding Register'[Date Offered] >= _sameMthEndPrevQtr && 'Fact Onboarding Register'[Date Offered] <= _currentMonthEnd
 			    )
 			)
@@ -23,7 +23,7 @@ table 'Fact Onboarding Register'
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure CountWorkersOnboarded = COUNT('Fact Onboarding Register'[ID])
+	measure CountWorkersOnboarded = CALCULATE(COUNT('Fact Onboarding Register'[ID]), ALL('Dim Extract Date'))
 		formatString: 0
 		lineageTag: 9dfe9cfc-7963-4c10-9df5-81881296967c
 
@@ -47,6 +47,48 @@ table 'Fact Onboarding Register'
 	measure CountApplicantsOffboarded = CALCULATE([CountWorkersOnboarded], 'Fact Onboarding Register'[Offboarded Date] <> BLANK())
 		formatString: 0
 		lineageTag: 724d5216-b60f-4c87-83f0-2c5a5dc391fb
+
+	measure CountApplicantsReadyForPE = CALCULATE([CountWorkersOnboarded], 'Fact Onboarding Register'[Ready for PE] <> BLANK())
+		formatString: 0
+		lineageTag: 0e77178f-7a12-418e-8fb0-9716f5d77e0a
+
+	measure CountApplicantsReadyToGo = CALCULATE([CountWorkersOnboarded], 'Fact Onboarding Register'[RTG for Shifts (HR Ops)] <> BLANK())
+		formatString: 0
+		lineageTag: 63e04740-992c-4526-977f-fbb1ba0ddfd9
+
+	measure Rolling3MonthPEProcessing = ```
+			VAR _extractDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _currentMonthEnd = CALCULATE(MAX('Dim Date Offered'[Date]), 'Fact Workforce'[Extract Date] = _extractDate)
+			VAR _sameMthEndPrevQtr = EOMONTH(_currentMonthEnd, -3)
+			VAR _avgDaysOnboardingQtr = CALCULATE(
+			    AVERAGE('Fact Onboarding Register'[Days in PE]), 
+			    FILTER(
+			        ALLEXCEPT('Fact Onboarding Register', DimOnboardingRegister[Division], DimOnboardingRegister[State Acronym]), 
+			        'Fact Onboarding Register'[Date Offered] >= _sameMthEndPrevQtr && 'Fact Onboarding Register'[Date Offered] <= _currentMonthEnd
+			    )
+			)
+			RETURN _avgDaysOnboardingQtr
+			```
+		lineageTag: ec77f8ae-53c1-40b5-abe7-a935bb1504e8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Rolling3MonthTotalProcessing = ```
+			VAR _extractDate = MAX('Dim Extract Date'[Extract Date])
+			VAR _currentMonthEnd = CALCULATE(MAX('Dim Date Offered'[Date]), 'Fact Workforce'[Extract Date] = _extractDate)
+			VAR _sameMthEndPrevQtr = EOMONTH(_currentMonthEnd, -3)
+			VAR _avgDaysOnboardingQtr = CALCULATE(
+			    AVERAGE('Fact Onboarding Register'[Total Days (Onboarding + PE)]), 
+			    FILTER(
+			        ALLEXCEPT('Fact Onboarding Register', DimOnboardingRegister[Division], DimOnboardingRegister[State Acronym]), 
+			        'Fact Onboarding Register'[Date Offered] >= _sameMthEndPrevQtr && 'Fact Onboarding Register'[Date Offered] <= _currentMonthEnd
+			    )
+			)
+			RETURN _avgDaysOnboardingQtr
+			```
+		lineageTag: 226f9569-16c7-404a-8796-fdfd887adc30
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column ID
 		dataType: int64
@@ -256,16 +298,132 @@ table 'Fact Onboarding Register'
 
 		annotation SummarizationSetBy = Automatic
 
+	column 'Days in PE'
+		dataType: int64
+		formatString: 0
+		lineageTag: 47da91c2-9ac4-4c84-a510-363b843b4e3a
+		summarizeBy: sum
+		sourceColumn: Days in PE
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Booked for PE'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f78490bf-ce40-4ffb-80db-fa39dbc719a1
+		summarizeBy: none
+		sourceColumn: Date Booked for PE
+
+		variation Variation
+			isDefault
+			relationship: 9af7eb43-e221-4e74-9e31-e05bf7323672
+			defaultHierarchy: LocalDateTable_ee3eba0c-225a-4ffe-ac81-855eb259e3b9.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'RTG for Shifts (HR Ops)'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9eec2de4-25dd-41f8-966f-05d410d8d414
+		summarizeBy: none
+		sourceColumn: RTG for Shifts (HR Ops)
+
+		variation Variation
+			isDefault
+			relationship: ac3d9a72-88df-4adb-b96c-845f84d0a392
+			defaultHierarchy: LocalDateTable_dab69a29-35c4-4bf3-ad4d-e089f59a58a5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Total Days (Onboarding + PE)'
+		dataType: int64
+		formatString: 0
+		lineageTag: dea5c102-7c64-4357-af2e-cbd514a1493a
+		summarizeBy: sum
+		sourceColumn: Total Days (Onboarding + PE)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fixed Term End Date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 449d2d30-df6b-4b3c-a525-277c8389d7f7
+		summarizeBy: none
+		sourceColumn: Fixed Term End Date
+
+		variation Variation
+			isDefault
+			relationship: c97abc04-0307-46ff-92d8-0516fcf7c500
+			defaultHierarchy: LocalDateTable_ca9c53fc-5ae6-4268-8b45-b71dd3cbb6cb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Teams Invite Sent'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1e8a6c57-a10b-476a-afa3-41335336a486
+		summarizeBy: none
+		sourceColumn: Date Teams Invite Sent
+
+		variation Variation
+			isDefault
+			relationship: f8b73bcd-b93d-4473-9c29-fad5314a9b18
+			defaultHierarchy: LocalDateTable_416d2f67-087b-4b1e-b500-1b7576ae3aef.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date PE Completed'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b7993e10-3847-4eef-9d3c-8867269c46c9
+		summarizeBy: none
+		sourceColumn: Date PE Completed
+
+		variation Variation
+			isDefault
+			relationship: 19429e55-d38d-41ca-b002-4ba6c1b95946
+			defaultHierarchy: LocalDateTable_e35b2071-79f5-4534-aafc-af8edfcb234c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Initial Invite Sent'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cd8346c4-6c82-4546-bafe-39fe1fb6b9ed
+		summarizeBy: none
+		sourceColumn: Date Initial Invite Sent
+
+		variation Variation
+			isDefault
+			relationship: c8d8fb54-42c8-405b-8917-5f5477ef33e8
+			defaultHierarchy: LocalDateTable_91a81a31-8c50-4eb1-b4f8-66101b48e51e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Confirmation Sent'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: de4a35c3-c7f6-4ffc-b611-03e0fc4d8170
+		summarizeBy: none
+		sourceColumn: Date Confirmation Sent
+
+		variation Variation
+			isDefault
+			relationship: be2525fc-906d-4db4-96d2-fc1948f6ffaa
+			defaultHierarchy: LocalDateTable_56a5c65a-c524-4a0a-97aa-64fdfc7de321.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Fact Onboarding Register' = m
 		mode: import
 		queryGroup: Onboarding
 		source =
 				let
 				    Source = #"Onboarding Register - Source",
-				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Days Onboarding", "Date Offered", "1st Contact/2nd Emails", "5 Day Contact", "8 Day Contact", "14 Day Contact", "Ready for PE", "Withdrawal Date", "Offboarded Date", "Modified", "Created"}),
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Date Offered", "Days Onboarding", "Ready for PE", "Days in PE", "Date Booked for PE", "RTG for Shifts (HR Ops)", "Total Days (Onboarding + PE)", "1st Contact/2nd Emails", "5 Day Contact", "8 Day Contact", "14 Day Contact", "Withdrawal Date", "Offboarded Date", "Fixed Term End Date", "Date Teams Invite Sent", "Date PE Completed", "Date Initial Invite Sent", "Date Confirmation Sent", "ID", "Modified", "Created"}),
 				    #"Inserted Date" = Table.AddColumn(#"Removed Other Columns", "CreatedDateKey", each DateTime.Date([Created]), type date),
 				    #"Inserted Date1" = Table.AddColumn(#"Inserted Date", "OfferedDateKey", each DateTime.Date([Date Offered]), type date),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Date1",{{"Days Onboarding", Int64.Type}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Inserted Date1",{{"Days Onboarding", Int64.Type}, {"Total Days (Onboarding + PE)", Int64.Type}, {"Days in PE", Int64.Type}}),
 				    #"Added Conditional Column" = Table.AddColumn(#"Changed Type", "ApplicantWithdrawnFlag", each if [Withdrawal Date] <> null then true else false),
 				    Custom1 = Table.AddColumn(#"Added Conditional Column", "ApplicantOffboardedFlag", each if [Offboarded Date] <> null then true else false)
 				in

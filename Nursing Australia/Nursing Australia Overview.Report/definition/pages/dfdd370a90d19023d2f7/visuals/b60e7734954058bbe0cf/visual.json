@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "b60e7734954058bbe0cf",
   "position": {
-    "x": 426.50246305418722,
-    "y": 27.487684729064039,
-    "z": 4000,
-    "height": 99.3103448275862,
-    "width": 602.95566502463055,
+    "x": 386.03491271820445,
+    "y": 26.932668329177055,
+    "z": 2000,
+    "height": 99.6508728179551,
+    "width": 643.69077306733163,
     "tabOrder": 4000
   },
   "visual": {
@@ -15,36 +15,6 @@
       "queryState": {
         "Data": {
           "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Fact Workforce"
-                    }
-                  },
-                  "Property": "Count Active Workers"
-                }
-              },
-              "queryRef": "Fact Workforce.Count Active Workers",
-              "nativeQueryRef": "Active workers",
-              "displayName": "Active workers"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Fact Workforce"
-                    }
-                  },
-                  "Property": "Count Active People on Visa"
-                }
-              },
-              "queryRef": "Fact Workforce.Count Active People on Visa",
-              "nativeQueryRef": "Active workers on visa",
-              "displayName": "Active workers on visa"
-            },
             {
               "field": {
                 "Measure": {
@@ -59,6 +29,36 @@
               "queryRef": "Fact Client.Count Active Clients",
               "nativeQueryRef": "Active Clients",
               "displayName": "Active Clients"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "AverageDurationHours"
+                }
+              },
+              "queryRef": "Fact Shift.AverageDurationHours",
+              "nativeQueryRef": "Average shift duration (hours)",
+              "displayName": "Average shift duration (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Shift"
+                    }
+                  },
+                  "Property": "AvailableOpportunityFilledRate"
+                }
+              },
+              "queryRef": "Fact Shift.AvailableOpportunityFilledRate",
+              "nativeQueryRef": "Available shifts fill rate",
+              "displayName": "Available shifts fill rate"
             }
           ]
         }
@@ -70,10 +70,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Workforce"
+                    "Entity": "Fact Client"
                   }
                 },
-                "Property": "Count Active Workers"
+                "Property": "Count Active Clients"
               }
             },
             "direction": "Descending"
@@ -116,6 +116,22 @@
             }
           }
         }
+      ],
+      "value": [
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact Shift.AverageDurationHours"
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
@@ -123,24 +139,8 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "83399e003ea6c1d9cb32",
-        "ordinal": 0,
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Fact Workforce"
-              }
-            },
-            "Property": "Active member flag"
-          }
-        },
-        "type": "Categorical",
-        "howCreated": "User"
-      },
-      {
         "name": "a0e7769309880d63bbd4",
-        "ordinal": 1,
+        "ordinal": 0,
         "field": {
           "Measure": {
             "Expression": {
@@ -156,7 +156,7 @@
       },
       {
         "name": "ffeb956ea0b4b7445702",
-        "ordinal": 2,
+        "ordinal": 1,
         "field": {
           "Aggregation": {
             "Expression": {
@@ -177,7 +177,7 @@
       },
       {
         "name": "c1997b41847a4a274897",
-        "ordinal": 3,
+        "ordinal": 2,
         "field": {
           "Measure": {
             "Expression": {
@@ -193,7 +193,7 @@
       },
       {
         "name": "d6dc32c63b148a80897e",
-        "ordinal": 4,
+        "ordinal": 3,
         "field": {
           "Measure": {
             "Expression": {
@@ -208,6 +208,22 @@
       },
       {
         "name": "88fdbfdd3615c5129420",
+        "ordinal": 4,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Workforce"
+              }
+            },
+            "Property": "CountActiveWorkersOnVisa"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "8238586ff15ad4d329d5",
         "ordinal": 5,
         "field": {
           "Measure": {
@@ -216,10 +232,11 @@
                 "Entity": "Fact Workforce"
               }
             },
-            "Property": "Count Active People on Visa"
+            "Property": "CountActiveWorkers"
           }
         },
-        "type": "Advanced"
+        "type": "Advanced",
+        "howCreated": "User"
       }
     ],
     "filterSortOrder": "Custom"

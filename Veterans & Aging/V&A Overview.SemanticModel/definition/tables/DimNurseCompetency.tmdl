@@ -1,0 +1,59 @@
+table DimNurseCompetency
+	lineageTag: 5300340a-f586-4ebc-a58d-98da3d45d6a4
+
+	column nurse_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 440f54d2-a713-4a47-a6c6-71887da8734d
+		summarizeBy: none
+		sourceColumn: nurse_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column competency_id
+		dataType: int64
+		formatString: 0
+		lineageTag: ed493183-0307-4624-b3d7-e87ba7276d26
+		summarizeBy: sum
+		sourceColumn: competency_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column value
+		dataType: string
+		lineageTag: a26b40e5-2112-4134-b565-01741c980415
+		summarizeBy: none
+		sourceColumn: value
+
+		annotation SummarizationSetBy = Automatic
+
+	column description
+		dataType: string
+		lineageTag: 95d41321-3881-4a4b-9f68-49e2a5041a3c
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = Automatic
+
+	column int_value
+		dataType: int64
+		formatString: 0
+		lineageTag: bc6499ed-3e20-4c3e-a6d2-409ca92ac5c7
+		summarizeBy: sum
+		sourceColumn: int_value
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimNurseCompetency = m
+		mode: import
+		queryGroup: Nurses\DimNurseCompetency
+		source =
+				let
+				    Source = Table.Combine({#"DimNurseCompetencyVIC - Source", #"DimNurseCompetencyNSW - Source", #"DimNurseCompetencyWA - Source", #"DimNurseCompetencySA - Source", #"DimNurseCompetencyQLD - Source"})
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

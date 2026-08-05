@@ -1,0 +1,94 @@
+table 'Fact Calculations'
+	isHidden
+	lineageTag: 14f21807-e05a-47b7-b90b-43132f94bb2b
+
+	measure 'Data Sources' = CONCATENATEX(VALUES('Dim Calculation Data Source'[Data Source]), 'Dim Calculation Data Source'[Data Source], ", ")
+		isHidden
+		lineageTag: 8e1f88aa-4097-4bc6-8b87-3a569179d46f
+
+		changedProperty = IsHidden
+
+	measure 'Accountable Stakeholders' = CONCATENATEX(VALUES('Dim Accountable Stakeholders'[StakeholderName]), 'Dim Accountable Stakeholders'[StakeholderName], ", ")
+		isHidden
+		lineageTag: de926bdb-e6ad-40f7-8b97-84073e584619
+
+		changedProperty = IsHidden
+
+	measure 'Source Calculations list' = CONCATENATEX(VALUES('Dim Related Calculations'[RelatedCalculation]), 'Dim Related Calculations'[RelatedCalculation], ", ")
+		isHidden
+		lineageTag: dbcae9a2-335f-4244-8e1c-c8b6cb1920a2
+
+		changedProperty = IsHidden
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 99193149-d101-4137-8bd0-418428317688
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Created
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 42a8d2b8-874c-4067-93af-5c21d4686191
+		summarizeBy: none
+		sourceColumn: Created
+
+		variation Variation
+			isDefault
+			relationship: 4cf5bcca-ad3b-43c1-946d-293db7cdbbba
+			defaultHierarchy: LocalDateTable_fe4483d1-c55f-4695-b1f7-963afd8c9f57.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Modified
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: bd185cdc-91d9-48b4-80fe-0cfc44976d40
+		summarizeBy: none
+		sourceColumn: Modified
+
+		variation Variation
+			isDefault
+			relationship: fc3154cb-1294-4076-be2e-5c2eca4e1b84
+			defaultHierarchy: LocalDateTable_06b434bb-48d2-4790-81cf-74e8a834f86b.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Version
+		dataType: double
+		isHidden
+		lineageTag: 95ad2808-ba04-4ba3-bc73-62be48fb29df
+		summarizeBy: sum
+		sourceColumn: Version
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Fact Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Created", "Modified", "Version"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"Version", type number}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+

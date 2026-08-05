@@ -1,0 +1,58 @@
+table 'Dim Technical Owner'
+	isHidden
+	lineageTag: 98e88e75-a372-441f-a506-77ebc1d1cb7d
+	sourceLineageTag: 57885a83-292b-48d7-9e60-b4e129d069c4
+
+	column ID
+		dataType: int64
+		isHidden
+		isNullable: false
+		formatString: 0
+		lineageTag: c20d6496-3971-43ed-a5d1-7d215aa34dd0
+		sourceLineageTag: ed8a2deb-7ca2-48b1-bf5f-121e2681a047
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column TechnicalOwnerID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 019c177e-fae1-44db-aa9d-723be7052ff4
+		sourceLineageTag: e17d161b-579b-46a0-83ff-ed6ec2450e49
+		dataCategory: Uncategorized
+		summarizeBy: count
+		sourceColumn: TechnicalOwnerID
+
+		annotation SummarizationSetBy = User
+
+	column TechnicalOwnerName
+		dataType: string
+		isHidden
+		lineageTag: 48525f01-5faf-48c5-8ee3-1c8833f2d19f
+		sourceLineageTag: 728d8a76-c814-4959-a291-0a87f443aa2a
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: TechnicalOwnerName
+
+		annotation SummarizationSetBy = User
+
+	column TechnicalOwnerEmail
+		dataType: string
+		isHidden
+		lineageTag: 538d8d65-28d6-490f-a8aa-506a67f5ef9e
+		sourceLineageTag: 653f3425-2f9d-4373-91e7-8432b679e9b1
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: TechnicalOwnerEmail
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Technical Owner' = entity
+		mode: directQuery
+		source
+			entityName: Dim Technical Owner
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

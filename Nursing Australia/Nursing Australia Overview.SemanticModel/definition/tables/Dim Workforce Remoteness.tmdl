@@ -1,0 +1,83 @@
+table 'Dim Workforce Remoteness'
+	lineageTag: 15490017-b25f-403a-9ad6-c7e07ae30be5
+
+	column PostCode
+		dataType: string
+		isHidden
+		lineageTag: 65774b05-5861-492e-a0a6-e4905adb23e0
+		summarizeBy: none
+		sourceColumn: PostCode
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgMMM2023
+		dataType: int64
+		formatString: 0
+		lineageTag: cf6afdf9-4fb5-4c26-a155-591695d6ff39
+		summarizeBy: none
+		sourceColumn: AvgMMM2023
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgRemotenessDescription
+		dataType: string
+		lineageTag: d24a542b-d4e8-4420-b366-6c72af7d9231
+		summarizeBy: none
+		sourceColumn: AvgRemotenessDescription
+		sortByColumn: AvgMMM2023
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column AvgLatPrecise
+		dataType: double
+		lineageTag: 538998ad-7134-4e05-92d0-0d80254c2db5
+		summarizeBy: none
+		sourceColumn: AvgLatPrecise
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column AvgLongPrecise
+		dataType: double
+		lineageTag: 3a50cbc7-fac7-4785-94a2-c8364c207aa1
+		summarizeBy: none
+		sourceColumn: AvgLongPrecise
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'SA3 Name'
+		dataType: string
+		lineageTag: d1fe2854-97ad-450a-8b13-330161926df0
+		summarizeBy: none
+		sourceColumn: SA3 Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SA4 Name'
+		dataType: string
+		lineageTag: 769ecdf5-d26e-4862-b213-d29d3f992a2c
+		summarizeBy: none
+		sourceColumn: SA4 Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Workforce Remoteness' = m
+		mode: import
+		queryGroup: Workers
+		source =
+				let
+				    Source = PostCodeRemoteness
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

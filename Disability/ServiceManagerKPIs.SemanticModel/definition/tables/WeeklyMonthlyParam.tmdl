@@ -1,0 +1,48 @@
+table WeeklyMonthlyParam
+	lineageTag: 98a6f983-8fc3-4b07-9b24-a05c1b36fe46
+
+	column WeeklyMonthlySelector
+		lineageTag: defd35a7-e3a7-497f-8a22-3d9294cb9596
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'WeeklyMonthlySelector Order'
+
+		relatedColumnDetails
+			groupByColumn: 'WeeklyMonthlySelector Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WeeklyMonthlySelector Fields'
+		isHidden
+		lineageTag: 56aa8865-6391-4dbd-b3fa-c56ace582e8b
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'WeeklyMonthlySelector Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WeeklyMonthlySelector Order'
+		isHidden
+		formatString: 0
+		lineageTag: 25f7b636-9e17-4a7f-8384-8e8a1585ad24
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition WeeklyMonthlyParam = calculated
+		mode: import
+		source =
+				{
+				    ("Months", NAMEOF('DimDate'[Start of Month]), 0),
+				    ("Weeks", NAMEOF('DimDate'[Start of Week (Monday)]), 1)
+				}
+
+	annotation PBI_Id = 0e6366b787164e7faf1f63dd9aca37ef
+

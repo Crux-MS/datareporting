@@ -1,0 +1,108 @@
+table FactClientNDISServicePlan
+	lineageTag: 9a66512a-218d-4883-adfc-febe59d97d2f
+
+	measure DaysTilExpiry = DATEDIFF(TODAY(), SELECTEDVALUE(FactClientNDISServicePlan[ExpiryDate]),DAY)
+		formatString: 0
+		lineageTag: 276ff2b7-bfa9-47a5-ad66-df2ef905a986
+
+	column ClientId
+		dataType: int64
+		formatString: 0
+		lineageTag: fa6b9205-1736-4fb7-a5e4-a39d2258e098
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ComplianceId
+		dataType: int64
+		formatString: 0
+		lineageTag: 910af93e-653d-4230-b290-c7bc2974436a
+		summarizeBy: count
+		sourceColumn: ComplianceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Required
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 900acb51-9d31-489a-87c6-acf3018335a7
+		summarizeBy: none
+		sourceColumn: Required
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartDate
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6190657d-1349-457e-8d09-2ccee26f3d07
+		summarizeBy: none
+		sourceColumn: StartDate
+
+		variation Variation
+			isDefault
+			relationship: 9522a902-6167-4e24-90ce-fa203360bfde
+			defaultHierarchy: LocalDateTable_cca9bfeb-01be-4364-8413-55adb0f0a5f0.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column AlertDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2bbe9ce6-204c-4ce8-b919-1eb4fbfb7c3a
+		summarizeBy: none
+		sourceColumn: AlertDate
+
+		variation Variation
+			isDefault
+			relationship: 24bb12c3-2111-4054-af9e-5a99dba2934e
+			defaultHierarchy: LocalDateTable_18e04574-7ed7-4614-a9cd-d98f4a0213df.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ExpiryDate
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 24ad86ff-ad4a-4057-bb8a-b5987b87f58e
+		summarizeBy: none
+		sourceColumn: ExpiryDate
+
+		variation Variation
+			isDefault
+			relationship: a90dc4a7-cecf-41bf-a23a-ad1a19574a35
+			defaultHierarchy: LocalDateTable_1455916e-af61-4c07-b7c1-a1134f0866fd.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Completed
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0278dad7-a87e-4dee-b0e5-8be7d24298ed
+		summarizeBy: none
+		sourceColumn: Completed
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactClientNDISServicePlan = m
+		mode: import
+		queryGroup: Clients
+		source =
+				let
+				    Source = #"Client Compliance - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ClientId", "ComplianceId", "Required", "StartDate", "AlertDate", "ExpiryDate", "Completed"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Other Columns", each ([ComplianceId] = 9))
+				in
+				    #"Filtered Rows"
+
+	changedProperty = Name
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

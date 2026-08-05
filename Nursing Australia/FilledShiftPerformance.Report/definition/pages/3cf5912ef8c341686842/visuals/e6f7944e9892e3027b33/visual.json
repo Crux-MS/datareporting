@@ -1,0 +1,246 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "e6f7944e9892e3027b33",
+  "position": {
+    "x": 55,
+    "y": 150,
+    "z": 4000,
+    "height": 540,
+    "width": 1200,
+    "tabOrder": 8001
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Calculations"
+                    }
+                  },
+                  "Property": "Metric Name"
+                }
+              },
+              "queryRef": "Dim Calculations.Metric Name",
+              "nativeQueryRef": "Calculation Name",
+              "displayName": "Calculation Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Calculations"
+                    }
+                  },
+                  "Property": "Description"
+                }
+              },
+              "queryRef": "Dim Calculations.Description",
+              "nativeQueryRef": "Description"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Calculations"
+                    }
+                  },
+                  "Property": "Technical Definition"
+                }
+              },
+              "queryRef": "Dim Calculations.Technical Definition",
+              "nativeQueryRef": "Technical Definition"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Technical Owner"
+                    }
+                  },
+                  "Property": "TechnicalOwnerName"
+                }
+              },
+              "queryRef": "Dim Author.AuthorName",
+              "nativeQueryRef": "Technical Owner",
+              "displayName": "Technical Owner"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Dim Calculations"
+                  }
+                },
+                "Property": "Description"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "410.8608278407259D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Calculations.Description"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "116.52193512038018D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Author.AuthorName"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "209.83634670418147D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Calculations.Metric Name"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "71a5de26dbeefe23b5c1",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Calculations"
+              }
+            },
+            "Property": "Home Table"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "6db9ef210acad18f432d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Calculations"
+              }
+            },
+            "Property": "Type of Calculation"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "dc1980f2a5178050a2df",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Calculation Semantic Model"
+              }
+            },
+            "Property": "Semantic Model"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Calculation Semantic Model",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Semantic Model"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Nursing Australia Overview Model'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
+}

@@ -1,0 +1,129 @@
+table DimASCEmployees
+	lineageTag: f67c65c4-6ade-4093-a00b-eff74dd98e35
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: 7597fc25-54e3-44f3-bdeb-815b15eebf26
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column fullName
+		dataType: string
+		lineageTag: 325a2ec6-86ba-4522-a5cb-4dfce8022208
+		summarizeBy: none
+		sourceColumn: fullName
+
+		annotation SummarizationSetBy = Automatic
+
+	column jobTitle
+		dataType: string
+		lineageTag: 28f26f91-54a1-4aca-abe7-4c58ff4c8fb7
+		summarizeBy: none
+		sourceColumn: jobTitle
+
+		annotation SummarizationSetBy = Automatic
+
+	column residentialPostCode
+		dataType: string
+		lineageTag: 3423e19a-0c80-4026-bba3-cb1873c0b13c
+		summarizeBy: none
+		sourceColumn: residentialPostCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column residentialCountry
+		dataType: string
+		lineageTag: 167bd9d5-29e5-4d83-b676-ffe35ac98ca0
+		summarizeBy: none
+		sourceColumn: residentialCountry
+
+		annotation SummarizationSetBy = Automatic
+
+	column paySchedule
+		dataType: string
+		lineageTag: eeee7f5b-0ec5-46f3-811f-44a12cf602c5
+		summarizeBy: none
+		sourceColumn: paySchedule
+
+		annotation SummarizationSetBy = Automatic
+
+	column primaryPayCategory
+		dataType: string
+		lineageTag: e449a494-1d42-46fd-a124-0e76893348b2
+		summarizeBy: none
+		sourceColumn: primaryPayCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: a996bc8f-1656-4029-987e-ec35861df801
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: b3ea5132-e96c-4a4c-871b-cb2f80a9bcad
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: 03ae1ec6-7965-4234-9b66-cbb231f069b6
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Area
+		dataType: string
+		lineageTag: 4617af15-d2af-456a-ad22-b3c994708bc5
+		summarizeBy: none
+		sourceColumn: Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullNameKey
+		dataType: string
+		lineageTag: eb4c48cf-0cfa-4ea6-b517-d82ed483ead9
+		summarizeBy: none
+		sourceColumn: FullNameKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column IncludedWorkersFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 395aabe6-684a-4937-8678-1a6f214b12a6
+		summarizeBy: none
+		sourceColumn: IncludedWorkersFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimASCEmployees = m
+		mode: import
+		queryGroup: 'KeyPay API'
+		source =
+				let
+				    Source = #"ASCKeyPayEmployees-Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"id", "fullName", "jobTitle", "residentialPostCode", "residentialCountry", "paySchedule", "primaryPayCategory", "Division", "State", "Region", "Area"}),
+				    #"Added Custom" = Table.AddColumn(#"Removed Other Columns", "FullNameKey",each Text.Replace([fullName], " ", ""), type text),
+				    #"Filtered Rows" = Table.SelectRows(#"Added Custom", each [id] <> 12274696),
+				    #"Added Conditional Column" = Table.AddColumn(#"Filtered Rows", "IncludedWorkersFlag", each if Text.Contains([jobTitle], "Coordinator") then false else if Text.Contains([jobTitle], "Team Leader") then false else if [fullName] = "Bernadette Spink" then false else true),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Conditional Column",{{"IncludedWorkersFlag", type logical}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

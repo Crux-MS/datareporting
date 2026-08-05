@@ -1,0 +1,24 @@
+table DimFundingStreams
+	lineageTag: b901dec6-619c-4318-84f0-2392b7eab773
+
+	column FundingStream
+		dataType: string
+		lineageTag: bfff58c2-0527-4a26-aa62-74486066cbf9
+		summarizeBy: none
+		sourceColumn: FundingStream
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimFundingStreams = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WcglzVIrViVbycA4A034unsFgRkCQZxiYERwS5AxmhECVhHkA+bEA", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [FundingStream = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"FundingStream", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

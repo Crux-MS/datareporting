@@ -1,30 +1,30 @@
 table 'Fact Shift'
 	lineageTag: dc261a27-91c1-4de0-b35f-9edf5809287a
 
-	measure ShiftDurationHours = SUM('Fact Shift'[ShiftDurationMins])/60
+	measure FullShiftDurationHours = CALCULATE(SUM('Fact Shift'[TotalShiftDurationMins])/60, CROSSFILTER('Dim Shift Allocation'[ShiftID], 'Fact Shift'[ShiftId], Both))
+		displayFolder: Duration
 		lineageTag: 0b99c30a-7a2e-496e-a9a9-c034a20deecb
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure FilledShiftHours = CALCULATE([ShiftDurationHours], 'Fact Shift'[Outcome] = "D-Confirmed Member and Client")
+	measure FilledShiftHours = CALCULATE([ShiftDurationHoursWorked], 'Fact Shift'[Outcome] = "D-Confirmed Member and Client", 'Dim Client'[BillableClientFlag] = TRUE())
+		formatString: #,0.00
 		displayFolder: KPIs
 		lineageTag: 573a028e-c9ca-4a35-94e8-eb698263bde0
 
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
-	measure ShiftCancelledByClientHours = CALCULATE([ShiftDurationHours], 'Fact Shift'[Outcome] = "F-Cancelled by Client")
+	measure ShiftCancelledByClientHours = CALCULATE([ShiftDurationHoursWorked], 'Fact Shift'[Outcome] = "F-Cancelled by Client", 'Dim Client'[BillableClientFlag] = TRUE())
 		displayFolder: KPIs
 		lineageTag: d63b5eb3-a076-42a8-b31b-c5a2d9919624
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure UnfilledShiftHours = CALCULATE([ShiftDurationHours], 'Fact Shift'[Outcome] = "G-Unable to Fill - Still Needed" || 'Fact Shift'[Outcome] = "H-Unable to Fill - No Longer Required")
+	measure UTFShiftStillNeededHours = CALCULATE([ShiftDurationHoursWorked], 'Fact Shift'[Outcome] = "G-Unable to Fill - Still Needed", 'Dim Client'[BillableClientFlag] = TRUE())
 		displayFolder: KPIs
 		lineageTag: 73551b33-e6d5-4638-8478-dfa2edb03fed
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure ControllableOrdersHours = [FilledShiftHours] + [UnfilledShiftHours]
+	measure ControllableOrdersHours = [AvailableOpportunityHours] + [UTFShiftNoLongerRequiredHours]
 		displayFolder: KPIs
 		lineageTag: 05a9e7b9-6549-4ea0-9e4a-82da8a682437
 
@@ -52,12 +52,123 @@ table 'Fact Shift'
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	measure UTFShiftNoLongerRequiredHours = CALCULATE([ShiftDurationHoursWorked], 'Fact Shift'[Outcome] = "H-Unable to Fill - No Longer Required", 'Dim Client'[BillableClientFlag] = TRUE())
+		displayFolder: KPIs
+		lineageTag: bb1027f3-cc2a-46e8-a1b1-aef037e54f15
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AvailableOpportunityFilledRate = DIVIDE(COALESCE([FilledShiftHours], 0), [AvailableOpportunityHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: KPIs
+		lineageTag: f3a607c4-ec0b-4ea5-a056-7de8e8bc12eb
+
+	measure AvailableOpportunityHours = [FilledShiftHours] + [UTFShiftStillNeededHours]
+		displayFolder: KPIs
+		lineageTag: 433765f6-2925-42d1-abcd-94bb933cf4c9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AverageDurationHours = CALCULATE(AVERAGE('Fact Shift'[ShiftWorkedDurationMins])/60, CROSSFILTER('Dim Workforce'[MemberId], 'Fact Shift'[MemberID], Both), 'Dim Client'[BillableClientFlag] = TRUE())
+		displayFolder: Duration
+		lineageTag: f5c2156c-7ffd-4d50-9c2c-bee0103dc3cc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure NonBillableDurationHours = CALCULATE('Fact Shift'[ShiftDurationHoursWorked], 'Dim Client'[BillableClientFlag] = FALSE())
+		displayFolder: Duration
+		lineageTag: 41ca1131-1083-4201-b033-d86b5d289870
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ShiftsFilledVsPaidHours = [FilledShiftHours] - [Total hours paid]
+		displayFolder: KPIs
+		lineageTag: 24a0a41f-124e-408e-8347-e8b381fb6b6b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure NewShiftHours = CALCULATE([ShiftDurationHoursWorked], 'Fact Shift'[Outcome] = "A-Unfilled", 'Dim Client'[BillableClientFlag] = TRUE())
+		displayFolder: KPIs
+		lineageTag: 9edde52a-07be-4916-bd49-660d415cd6dd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure BreakDurationHours = CALCULATE((SUM('Fact Shift'[MealBreakTime])/60), CROSSFILTER('Dim Shift Allocation'[ShiftID], 'Fact Shift'[ShiftId], Both))
+		displayFolder: Duration
+		lineageTag: 70a6e6ec-4d95-408a-934e-f10d862bcf4a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure FilledShiftBreakHours = CALCULATE([BreakDurationHours], 'Fact Shift'[Outcome] = "D-Confirmed Member and Client", 'Dim Client'[BillableClientFlag] = TRUE())
+		displayFolder: KPIs
+		lineageTag: 4b0f40cb-d0d5-4b4c-9786-c5da2df776b4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ShiftDurationHoursWorked = [FullShiftDurationHours] - [BreakDurationHours]
+		displayFolder: Duration
+		lineageTag: c7d6ef1e-3439-4953-b7de-0cc9e5736ac8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Legend = "Legend"
+		lineageTag: e040fdcc-ac8f-4e41-b67a-1b77f931c2e7
+
+	measure IncludedShiftDateRangePage = "Filtered date range: " & FORMAT(MIN('Fact Shift'[StartDateTime]), "DD/MM/YYYY hh:mm") & " - " & FORMAT(MAX('Fact Shift'[StartDateTime]), "DD/MM/YYYY hh:mm")
+		displayFolder: DateTime
+		lineageTag: 46528729-4beb-456e-990d-204addf11e15
+
+	measure TotalPeriodTarget = ```
+			[TotalDailyTarget] * IF(
+			    DATEDIFF(MIN('Dim Shift Start Date'[ShiftStartDate]), MAX('Dim Shift Start Date'[ShiftStartDate]),DAY) = 0, 
+			    1, 
+			    DATEDIFF(MIN('Dim Shift Start Date'[ShiftStartDate]), MAX('Dim Shift Start Date'[ShiftStartDate]),DAY)
+			)
+			```
+		formatString: #,0
+		displayFolder: KPIs
+		lineageTag: c7be7290-30f4-4987-889b-a4923bc8482f
+
+	measure TotalDailyTarget = 550
+		formatString: 0
+		displayFolder: KPIs
+		lineageTag: 8ac72565-98aa-45bf-9712-49bf29f4da95
+
+	measure RemainderPeriodTarget = [TotalPeriodTarget] - [FilledShiftHours]
+		displayFolder: KPIs
+		lineageTag: 7923c894-50be-47cb-8888-fe510bc6e8ba
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ShiftTargetRemainderIndicatorArrows = ```
+			
+			VAR _remainderTarget = [RemainderPeriodTarget]
+			VAR UpArrow = UNICHAR(9650)
+			VAR DownArrow = UNICHAR(9660)
+			VAR Result = SWITCH(TRUE, 
+			     _remainderTarget = 0, "",
+			     _remainderTarget < 0, UpArrow, 
+			    DownArrow
+			)
+			
+			RETURN Result  
+			```
+		displayFolder: KPIs
+		lineageTag: ab72eacf-4574-44f5-b840-12e811ee5d62
+
+	measure MaxDate = FORMAT(MAX('Fact Shift'[StartDateTime]), "DD/MM/YYYY")
+		displayFolder: DateTime
+		lineageTag: 03c952e1-51dc-49c1-a411-b7c7ce5ae58f
+
+	measure SelectedDateRange = FORMAT(MIN('Fact Shift'[StartDateTime]), "DD/MM/YYYY") & " - " & FORMAT(MAX('Fact Shift'[StartDateTime]), "DD/MM/YYYY")
+		displayFolder: DateTime
+		lineageTag: 8fd2342b-00a6-46cf-adbe-31104c44b483
+
 	column ShiftId
 		dataType: int64
-		isHidden
 		formatString: 0
 		lineageTag: bd27a3fd-3259-4061-88c4-cf975251fe33
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: ShiftId
 
 		changedProperty = IsHidden
@@ -90,10 +201,13 @@ table 'Fact Shift'
 
 	column MemberID
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: 2649ba08-35a1-4d86-86d0-aa1a5b1d8509
 		summarizeBy: none
 		sourceColumn: MemberID
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
@@ -137,20 +251,22 @@ table 'Fact Shift'
 	column StartDateTime
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 07bd7ddf-9ee6-4a65-9f51-64ec5d97b5df
 		summarizeBy: none
 		sourceColumn: StartDateTime
 
 		variation Variation
 			isDefault
-			relationship: 6efbf5b9-8d61-459b-af7a-829edd0190cd
-			defaultHierarchy: LocalDateTable_7c61d204-22af-4ed6-a356-be5799d29086.'Date Hierarchy'
+			relationship: 78448d39-8ac7-48b3-b65b-c6de2ac92418
+			defaultHierarchy: LocalDateTable_46179633-0ad1-477f-9920-5043f86a27a5.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 
 	column FinishDateTime
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 974da8ac-3230-43f4-91db-47a2752cf44d
 		summarizeBy: none
 		sourceColumn: FinishDateTime
@@ -164,8 +280,8 @@ table 'Fact Shift'
 
 	column StartDate
 		dataType: dateTime
-		isHidden
-		formatString: General Date
+		formatString: Long Date
+		displayFolder: DateTime
 		lineageTag: 5ca52d40-ef7f-4f1f-909d-185007d1974e
 		summarizeBy: none
 		sourceColumn: StartDate
@@ -174,9 +290,12 @@ table 'Fact Shift'
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column FinishDate
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 0efbfe03-adc8-410d-810b-4e7b6e33e3ae
 		summarizeBy: none
 		sourceColumn: FinishDate
@@ -185,15 +304,6 @@ table 'Fact Shift'
 			isDefault
 			relationship: 753a5e6c-728d-4343-9fdf-1f84f853a692
 			defaultHierarchy: LocalDateTable_51b42e2b-b068-4fec-9d2c-cfbfdd4bf318.'Date Hierarchy'
-
-		annotation SummarizationSetBy = Automatic
-
-	column ShiftDurationMins
-		dataType: int64
-		formatString: 0
-		lineageTag: d5b7f19d-2bb8-4aba-ac9d-4c06a10afb67
-		summarizeBy: sum
-		sourceColumn: ShiftDurationMins
 
 		annotation SummarizationSetBy = Automatic
 
@@ -262,6 +372,7 @@ table 'Fact Shift'
 	column PaidMealBreakStatus
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
 		lineageTag: 50e88608-747f-42d2-8eab-7b540eaa5c43
 		summarizeBy: none
 		sourceColumn: PaidMealBreakStatus
@@ -279,6 +390,7 @@ table 'Fact Shift'
 	column ShiftCreated
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 0af27322-256c-4136-bf9d-2b8d934c7b81
 		summarizeBy: none
 		sourceColumn: ShiftCreated
@@ -293,6 +405,7 @@ table 'Fact Shift'
 	column ShiftConfirmed
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: fd967840-2709-4750-90f5-976403309323
 		summarizeBy: none
 		sourceColumn: ShiftConfirmed
@@ -307,6 +420,7 @@ table 'Fact Shift'
 	column ShiftLastUpdated
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 68fef919-f81e-4cf9-a120-a6d4abedb717
 		summarizeBy: none
 		sourceColumn: ShiftLastUpdated
@@ -321,6 +435,7 @@ table 'Fact Shift'
 	column EducationShiftFlag
 		dataType: int64
 		formatString: 0
+		displayFolder: Flags
 		lineageTag: ce0eb2de-cac3-4cde-835b-01eb406264f4
 		summarizeBy: none
 		sourceColumn: EducationShiftFlag
@@ -338,6 +453,7 @@ table 'Fact Shift'
 	column ExtractDate
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: e21a0e47-0f68-42c4-a679-aacc3aa6ac0a
 		summarizeBy: none
 		sourceColumn: ExtractDate
@@ -349,13 +465,51 @@ table 'Fact Shift'
 
 		annotation SummarizationSetBy = Automatic
 
+	column ShiftStartSlot
+		dataType: string
+		lineageTag: 7e74d800-7754-44e1-8595-5ac40c6f185b
+		summarizeBy: none
+		sourceColumn: ShiftStartSlot
+
+		annotation SummarizationSetBy = Automatic
+
+	column MealBreakTime
+		dataType: int64
+		formatString: 0
+		displayFolder: Duration
+		lineageTag: a00b4405-46ca-40ec-851e-e2c8e2cb70f0
+		summarizeBy: sum
+		sourceColumn: MealBreakTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column TotalShiftDurationMins
+		dataType: int64
+		formatString: 0
+		lineageTag: 921a6141-0062-4a0e-a19b-63c85bb5976c
+		summarizeBy: sum
+		sourceColumn: TotalShiftDurationMins
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftWorkedDurationMins
+		dataType: int64
+		formatString: 0
+		lineageTag: 4ddaf68f-e4b8-4c99-9d97-de7400291462
+		summarizeBy: sum
+		sourceColumn: ShiftWorkedDurationMins
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Fact Shift' = m
 		mode: import
+		queryGroup: Shifts
 		source =
 				let
-				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)s.ShiftId#(lf)#(tab),s.AgencyID#(lf)#(tab),s.ClientId#(lf)#(tab),s.MemberID#(lf)#(tab),s.InvoiceID#(lf)#(tab),s.PayslipID#(lf)#(tab),s.CampusId#(lf)#(tab),s.StartDate#(tab)#(tab)#(tab)#(tab)#(tab)AS [StartDateTime]#(lf)#(tab),s.FinishDate#(tab)#(tab)#(tab)#(tab)#(tab)AS [FinishDateTime]#(lf)#(tab),CAST(s.StartDate AS DATE)#(tab)#(tab)#(tab)AS [StartDate]#(lf)#(tab),CAST(s.FinishDate AS DATE)#(tab)#(tab)#(tab)AS [FinishDate]#(lf)#(tab),DATEDIFF(MINUTE, s.StartDate, s.FinishDate)#(tab)AS [ShiftDurationMins]#(lf)#(tab),s.PayHrsPaid1#(lf)#(tab),s.PayRate1#(lf)#(tab),s.PayAmount1#(lf)#(tab),s.PayHrsPaid2#(lf)#(tab),s.PayRate2#(lf)#(tab),s.PayAmount2#(lf)#(tab),s.PaidMealBreakStatus#(lf)#(tab),s.OrderedBy#(lf)#(tab),dbo.FirstUpdateForShift(s.ShiftId) AS ShiftCreated#(lf)#(tab),s.ConfirmedDate#(tab)#(tab)#(tab)#(tab)#(tab)AS ShiftConfirmed#(lf)#(tab),dbo.LastUpdateForShift(s.ShiftId)#(tab)AS ShiftLastUpdated#(lf)#(tab),dbo.isEducationShift(s.ShiftID)#(tab)AS [EducationShiftFlag]#(lf)#(tab),o.description#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Outcome]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ExtractDate]#(lf)FROM dbo.Shift s#(lf)LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Outcome'#(lf)) o on s.OutcomeType = o.value #(lf)where --s.AgencyID = 4 #(lf)#(tab)(s.MemberID <> 1 OR s.MemberID IS NULL) and#(lf)#(tab)s.StartDate >= DATEADD(year,-3,GETDATE())#(lf)#(tab)and s.ShiftID NOT IN (6495638, 6495680, 6496332)"])
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)s.ShiftId#(lf)#(tab),s.AgencyID#(lf)#(tab),s.ClientId#(lf)#(tab),s.MemberID#(lf)#(tab),s.InvoiceID#(lf)#(tab),s.PayslipID#(lf)#(tab),s.CampusId#(lf)#(tab),s.StartDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [StartDateTime]#(lf)#(tab),s.FinishDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [FinishDateTime]#(lf)#(tab),CAST(s.StartDate AS DATE)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [StartDate]#(lf)#(tab),CAST(s.FinishDate AS DATE)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [FinishDate]#(lf)#(tab),DATEDIFF(MINUTE, s.StartDate, s.FinishDate)#(tab)AS [TotalShiftDurationMins]#(lf)#(tab),DATEDIFF(MINUTE, s.StartDate, s.FinishDate) - s.MealBreakTime#(tab)AS [ShiftWorkedDurationMins]#(lf)#(tab),s.PayHrsPaid1#(lf)#(tab),s.PayRate1#(lf)#(tab),s.PayAmount1#(lf)#(tab),s.PayHrsPaid2#(lf)#(tab),s.PayRate2#(lf)#(tab),s.PayAmount2#(lf)#(tab),s.PaidMealBreakStatus#(lf)    ,s.MealBreakTime#(lf)#(tab),s.OrderedBy#(lf)#(tab),dbo.FirstUpdateForShift(s.ShiftId)#(tab)#(tab)#(tab)#(tab)AS ShiftCreated#(lf)#(tab),s.ConfirmedDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS ShiftConfirmed#(lf)#(tab)--,dbo.TimeConfirmedClient(s.ShiftID)#(tab)#(tab)#(tab)#(tab)AS TimeConfirmedClient#(lf)#(tab)--,dbo.AllocatorConfirmedClient(s.ShiftId)#(tab)#(tab)AS AllocatorConfirmedClient#(lf)#(tab)--,dbo.TimeConfirmedMember(s.ShiftID)#(tab)#(tab)#(tab)#(tab)AS TimeConfirmedMember#(lf)#(tab)--,dbo.AllocatorConfirmedMember(s.ShiftId)#(tab)#(tab)AS AllocatorConfirmedMember#(lf)#(tab)--,dbo.TimeConfirmedMemberAndClient(s.ShiftID)#(tab)AS TimeConfirmedMemberAndClient#(lf)#(tab)--,dbo.AllocatorConfirmedMemberAndClient(s.ShiftId)#(tab)AS AllocatorConfirmedMemberAndClient#(lf)#(tab),dbo.LastUpdateForShift(s.ShiftId)#(tab)#(tab)#(tab)#(tab)AS ShiftLastUpdated#(lf)#(tab),dbo.isEducationShift(s.ShiftID)#(tab)#(tab)#(tab)#(tab)AS [EducationShiftFlag]#(lf)#(tab),o.description#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Outcome]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ExtractDate]#(lf)#(tab),dbo.ShiftSlot(s.StartDate)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ShiftStartSlot]#(lf)FROM dbo.Shift s#(lf)LEFT JOIN (#(lf)#(tab)select *#(lf)#(tab)from dbo.decode #(lf)#(tab)where category = 'Outcome'#(lf)) o on s.OutcomeType = o.value#(lf)where s.AgencyID = 4 AND#(lf)#(tab)(s.MemberID <> 1 OR s.MemberID IS NULL) and#(lf)#(tab)s.StartDate >= DATEADD(year,-3,GETDATE())"]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"StartDate", type date}})
 				in
-				    Source
+				    #"Changed Type"
 
 	annotation PBI_NavigationStepName = Navigation
 

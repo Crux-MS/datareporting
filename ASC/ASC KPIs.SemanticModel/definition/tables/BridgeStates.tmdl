@@ -1,0 +1,30 @@
+table BridgeStates
+	isHidden
+	lineageTag: 9d38a363-51c5-4d5a-8f76-62733174cda4
+
+	column State
+		dataType: string
+		isHidden
+		lineageTag: 368e5f5b-06eb-4e14-8da8-dec92fd0a94e
+		summarizeBy: none
+		sourceColumn: State
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BridgeStates = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WcnQOUYrViVbyCw6H0BBuoI8LmA52BFMhjsFgOszTGUyHA4VjAQ==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [State = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"State", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

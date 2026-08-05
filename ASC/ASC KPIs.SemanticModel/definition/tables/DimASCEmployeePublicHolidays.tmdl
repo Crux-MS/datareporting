@@ -1,0 +1,65 @@
+table DimASCEmployeePublicHolidays
+	lineageTag: 8c006e18-8fef-4c20-aa88-66631641e244
+
+	column date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1c7f3c98-391b-4254-a2c5-c7e264eeff64
+		summarizeBy: none
+		sourceColumn: date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column State
+		dataType: string
+		lineageTag: 09006170-42fa-41b4-a056-62767a3ac355
+		summarizeBy: none
+		sourceColumn: State
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PublicHolidayFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c33fbe16-bd56-44b7-a0d9-8932906f0b59
+		summarizeBy: none
+		sourceColumn: PublicHolidayFlag
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullNameKey
+		dataType: string
+		lineageTag: 52d3ebe0-39c7-47a3-9139-b48593a7b71a
+		summarizeBy: none
+		sourceColumn: FullNameKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimASCEmployeePublicHolidays = m
+		mode: import
+		queryGroup: 'KeyPay API'
+		source =
+				let
+				    Source = Table.NestedJoin(#"ASCEmployeePublicHolidays-Source", {"State"}, #"DimASCEmployees", {"State"}, "DimASCKeyPayEmployees", JoinKind.LeftOuter),
+				    #"Expanded DimASCKeyPayEmployees" = Table.ExpandTableColumn(Source, "DimASCKeyPayEmployees", {"FullNameKey"}, {"FullNameKey"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded DimASCKeyPayEmployees", each ([FullNameKey] <> null)),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"date", type date}, {"PublicHolidayFlag", type logical}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

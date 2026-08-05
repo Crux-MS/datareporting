@@ -1,0 +1,99 @@
+table FactASCKeyPayLeave
+	lineageTag: dc8df02f-b469-4ff1-9d8e-435e2daeeef3
+
+	column leaveDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 96dfcc3d-9778-4687-b6bc-003260ee287e
+		summarizeBy: none
+		sourceColumn: leaveDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column totalHours
+		dataType: double
+		lineageTag: 6d3adde3-8c04-4bee-8cba-7df0bd2fddb2
+		summarizeBy: sum
+		sourceColumn: totalHours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column leaveCategory
+		dataType: string
+		lineageTag: 67004422-d0e5-4ed7-9ead-a0344d27d1e8
+		summarizeBy: none
+		sourceColumn: leaveCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column employeeId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3ccfb96e-7517-4dfb-a114-1118a10a5578
+		summarizeBy: none
+		sourceColumn: employeeId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: 5a98feb6-d758-4232-adeb-485ae291e88d
+		summarizeBy: sum
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column fromDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 967cda92-0c10-4c4d-a1f2-a0636e89916c
+		summarizeBy: none
+		sourceColumn: fromDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column toDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 830f20e8-5e2e-4469-886b-00851b7a3727
+		summarizeBy: none
+		sourceColumn: toDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column DailyHours
+		dataType: double
+		lineageTag: 544ce08f-0819-44a7-b464-9958050bb90e
+		summarizeBy: sum
+		sourceColumn: DailyHours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition FactASCKeyPayLeave = m
+		mode: import
+		queryGroup: 'KeyPay API'
+		source =
+				let
+				    Source = #"ASCKeyPayLeave-Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"leaveDate", "totalHours", "id", "employeeId", "leaveCategory", "fromDate", "toDate", "DailyHours"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"id", Int64.Type}, {"employeeId", Int64.Type}, {"leaveCategory", type text}, {"totalHours", type number}, {"leaveDate", type date}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

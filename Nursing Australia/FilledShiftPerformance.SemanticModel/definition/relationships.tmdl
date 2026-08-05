@@ -1,0 +1,257 @@
+relationship e6cebfc1-7dc7-4d02-8780-382551c94388
+	fromColumn: RefreshedDate.Refreshed
+	toColumn: LocalDateTable_22abea15-3a2c-4fec-b1a5-ddc2355c4b9f.Date
+
+relationship 295b5b64-172a-4dc0-be90-8871391748a2
+	fromColumn: 'Fact Workforce'.FirstShiftDate
+	toColumn: LocalDateTable_133f9679-f7b0-4b5a-8dde-90a61d702c01.Date
+
+relationship b8b0fc3e-6034-4922-8157-1e70da57605d
+	fromColumn: 'Fact Workforce'.LastShiftDate
+	toColumn: LocalDateTable_07d60e86-76aa-4422-9ddf-83e2a2135f80.Date
+
+relationship e7ba2d5d-e70e-4a68-837c-92644a88795c
+	fromColumn: 'Fact Workforce'.NextShiftDate
+	toColumn: LocalDateTable_aa83bbfb-7f62-49da-9e86-19e8b9cd108e.Date
+
+relationship 85f2e049-2e75-4858-9344-cf03b4925aab
+	fromColumn: 'Fact Workforce'.VisaExpiryDate
+	toColumn: LocalDateTable_83ece91d-a4e6-467e-abab-e0178d74eab5.Date
+
+relationship b934ee49-847f-4dfb-a2c9-9598c1962151
+	fromColumn: 'Fact Workforce'.DateOfBirth
+	toColumn: LocalDateTable_5f0c2bdb-c6bd-403d-b596-971af2e97fc5.Date
+
+relationship f9edd0dc-f2c9-4d5e-99c7-c1a0040f50bc
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Workforce'.MemberId
+	toColumn: 'Dim Workforce'.MemberId
+
+relationship 0d102018-c915-4e7b-8a46-d862484d77b1
+	fromColumn: 'Fact Workforce'.EmploymentStartDate
+	toColumn: 'Dim Workforce Start Date'.EmploymentStartDate
+
+relationship 5971a334-c83b-4cc1-a088-f4a057ccd036
+	isActive: false
+	fromColumn: 'Fact Workforce'.TerminationDate
+	toColumn: 'Dim Workforce Start Date'.EmploymentStartDate
+
+relationship 59fae46d-13aa-435b-adee-44b856d92e13
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Workforce'.MemberId
+	toColumn: 'Dim Workforce - Duplicates'.MemberId
+
+relationship 7b28f4df-fb1c-420b-a6bf-ad25455f54e7
+	fromColumn: 'Dim Workforce'.ExtractDate
+	toColumn: LocalDateTable_c79aaebd-ae53-47c7-8309-8f89a1468071.Date
+
+relationship 33089c90-cd4d-4f07-9b2c-b2f1cde6e3b5
+	fromColumn: 'Dim Workforce'.EmployeeAddressPostcode
+	toColumn: 'Dim Workforce Remoteness'.PostCode
+
+relationship 22186f18-be84-4242-bb33-a9e4f2e1815c
+	fromColumn: 'Fact Shift'.FinishDateTime
+	toColumn: LocalDateTable_6d358562-49f4-4561-9c0d-25d52b3d0984.Date
+
+relationship da159f51-55fb-447c-904f-0a5c94ad48fc
+	fromColumn: 'Fact Shift'.FinishDate
+	toColumn: LocalDateTable_51b42e2b-b068-4fec-9d2c-cfbfdd4bf318.Date
+
+relationship 08dd2459-a381-4a2a-bef5-0dc3e06ecc71
+	fromColumn: 'Fact Shift'.ShiftCreated
+	toColumn: LocalDateTable_76290547-5444-47b2-afea-bd16e81875f7.Date
+
+relationship f40c9f60-baf8-45a5-b794-35b1d3896c23
+	fromColumn: 'Fact Shift'.ShiftConfirmed
+	toColumn: LocalDateTable_eca3aa1d-cd72-422d-8381-c2b0f5374e04.Date
+
+relationship 2a841076-c619-40e6-8391-23edbfcfd797
+	fromColumn: 'Fact Shift'.ShiftLastUpdated
+	toColumn: LocalDateTable_1f1293be-d717-4b02-8ca3-c93f847f7e4d.Date
+
+relationship e9ed4584-43e1-4eba-afb9-2069e2cc80bd
+	fromColumn: 'Fact Shift'.ExtractDate
+	toColumn: LocalDateTable_ceeff42a-21b6-4e91-ad14-4e538139bd0a.Date
+
+relationship 035636a5-8d4b-4034-b8a8-a27b4960a073
+	fromColumn: 'Fact Shift'.MemberID
+	toColumn: 'Dim Workforce'.MemberId
+
+relationship 82c8e896-0b06-49c5-b060-81d647ab81c8
+	fromColumn: 'Fact Shift'.ClientId
+	toColumn: 'Dim Client'.ClientId
+
+relationship d07afa78-4295-4f74-9547-cb1b7dfcb836
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Fact Shift'.StartDate
+	toColumn: 'Dim Shift Start Date'.ShiftStartDate
+
+relationship f673869d-04fb-4028-86e1-9685aa37ee4a
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Shift'.ShiftId
+	toColumn: 'Dim Shift'.ShiftId
+
+relationship 3a0ff380-de45-495f-add5-d543372687ff
+	fromColumn: 'Fact Shift'.StartDateTime
+	toColumn: LocalDateTable_46179633-0ad1-477f-9920-5043f86a27a5.Date
+
+relationship 2b862db3-f689-4b33-b385-43a936350a11
+	isActive: false
+	fromColumn: 'Fact Shift'.StartDate
+	toColumn: 'Dim Workforce Start Date'.EmploymentStartDate
+
+relationship b5c14ccc-d481-46f9-b240-87739701f0e9
+	fromColumn: 'Fact Client'.KandaFirstShift
+	toColumn: LocalDateTable_1c68d673-6d16-4a57-8e54-9dc785dcfbac.Date
+
+relationship beae1921-a8ab-4032-b8da-48ce9595cd33
+	fromColumn: 'Fact Client'.KandaLastShift
+	toColumn: LocalDateTable_7243866c-415f-44bf-9df1-624dde3776b9.Date
+
+relationship 59345705-2c27-4543-ba81-286855c43911
+	fromColumn: 'Fact Client'.RequireOrientation
+	toColumn: LocalDateTable_bfc2b57b-834e-47bf-968d-c32979609799.Date
+
+relationship e0eb32f9-a69c-427f-ac4f-b64809abe445
+	fromColumn: 'Fact Client'.StatusChangedDate
+	toColumn: LocalDateTable_9e9ce824-b6bb-45df-9a12-7557d055545b.Date
+
+relationship f7dd457d-ec5b-474d-83c7-c61e4ed74ce4
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Client'.ClientId
+	toColumn: 'Dim Client'.ClientId
+
+relationship 58273e83-e5ca-498d-ad40-6bc3cf912544
+	fromColumn: 'Dim Shift Start Date'.ShiftStartDate
+	toColumn: LocalDateTable_8fe759ac-2ca4-4df9-9510-6266035f104c.Date
+
+relationship 8bd7f6e6-5d21-4c80-97d6-307fb513642e
+	fromColumn: 'Dim Shift Start Date'.StartOfYear
+	toColumn: LocalDateTable_9639edc5-36b7-495d-9639-68186d7dd4cc.Date
+
+relationship 92d166bb-febf-4050-8373-e92c31370b5e
+	fromColumn: 'Dim Shift Start Date'.StartOfWeek
+	toColumn: LocalDateTable_14ccad3c-0277-4c31-aa27-9fb823701437.Date
+
+relationship 2865a1f6-eb9e-4893-b2bb-7f088a8afd83
+	fromColumn: 'Dim Shift Start Date'.'Start of Month'
+	toColumn: LocalDateTable_94572139-cb29-4f93-8fdf-391e2644b6f1.Date
+
+relationship c07444c3-d9b2-4c69-8d4c-4913ef0da0c9
+	fromColumn: 'Dim Workforce Start Date'.EmploymentStartDate
+	toColumn: LocalDateTable_b67f671a-8f4f-4b8a-b106-61f837f4ebbb.Date
+
+relationship fc0923d3-146f-4e47-859f-534b5fa4f96f
+	fromColumn: 'Dim Workforce Start Date'.StartOfYear
+	toColumn: LocalDateTable_34112bc6-2866-4d93-83b2-d57a5a95feed.Date
+
+relationship 47fbb4de-0ed1-4bc6-881d-49d8d457aeab
+	fromColumn: 'Dim Workforce Start Date'.StartOfWeek
+	toColumn: LocalDateTable_9a929ea4-26df-4ac6-87c9-4e2f909f69c4.Date
+
+relationship 51ba6405-3d72-4ee4-bad5-45b56197e656
+	fromColumn: 'Dim Workforce - Duplicates'.ExtractDate
+	toColumn: LocalDateTable_4f4edcfb-8d72-4c16-b1f0-4b263476a7ed.Date
+
+relationship a0e7228e-b176-4aaf-9646-2c5b23dd3a35
+	fromColumn: 'Dim Related Calculations'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 8a1a7a00-7c53-4cf2-a7f0-4ba8bd3e7035
+	fromColumn: 'Fact Calculations'.Created
+	toColumn: LocalDateTable_fe4483d1-c55f-4695-b1f7-963afd8c9f57.Date
+
+relationship 5dfc45c6-377c-4e6e-80f0-c7a94edaebc7
+	fromColumn: 'Fact Calculations'.Modified
+	toColumn: LocalDateTable_06b434bb-48d2-4790-81cf-74e8a834f86b.Date
+
+relationship 5afd04b8-53bb-4105-9242-b7a0d9c48167
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Calculations'.ID
+	toColumn: 'Dim Calculations'.ID
+
+relationship eb333dcb-5a9c-4701-8a71-cd0aa1d4672d
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Calculations'.ID
+	toColumn: 'Dim Technical Owner'.ID
+
+relationship b6acf42b-e9f8-4e26-bc0a-8164f6f8721f
+	fromColumn: 'Dim Accountable Stakeholders'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 9dcdf5ce-9ad7-4b25-9d9c-c441c91c5ccd
+	fromColumn: 'Dim Calculation Data Source'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship edbd8a62-bbc3-419a-a6d0-40ace1132c93
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Calculation Semantic Model'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship a248e425-1ff7-40ae-96b4-1d0c60977111
+	crossFilteringBehavior: bothDirections
+	toCardinality: many
+	fromColumn: 'Dim Shift Remoteness'.PostCode
+	toColumn: 'Dim Shift'.Postcode
+
+relationship 25f62027-1cca-44ea-8004-0aca0c3aeb4f
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Workforce Work Areas'.MemberId
+	toColumn: 'Fact Workforce'.MemberId
+
+relationship 567a4a3b-af2d-4ea8-b1b0-5e6f83201623
+	fromColumn: 'Dim Workforce Trades'.AnniversaryDate
+	toColumn: LocalDateTable_ca158bdf-7a17-48eb-9997-d37f2f6f22e2.Date
+
+relationship 3b35fd5a-8437-4e5f-a187-1f0b44f1fc02
+	fromColumn: 'Dim Workforce Trades'.CompletionDate
+	toColumn: LocalDateTable_cf180014-24f1-4b5b-991e-2bce3743a02f.Date
+
+relationship b14c25b7-1c76-4c26-b333-ac176c70cd41
+	fromColumn: 'Dim Workforce Trades'.PracCertExpiryDate
+	toColumn: LocalDateTable_dd37b291-55d6-4caa-98a8-085c6db976ca.Date
+
+relationship c0b4dd7e-f491-4964-8dbc-1cdbce705c63
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Workforce Trades'.MemberId
+	toColumn: 'Fact Workforce'.MemberId
+
+relationship ae945b3e-a0ec-4968-b1ce-aa64b0309c62
+	fromColumn: 'Dim Shift Allocation'.ShiftID
+	toColumn: 'Fact Shift'.ShiftId
+
+relationship c9c64bec-b9d9-49f5-9b93-24f0e3e3863f
+	fromColumn: 'Dim Shift Allocation'.Time
+	toColumn: LocalDateTable_55dbae95-400f-4da6-9e38-3f74214aeedb.Date
+
+relationship f8a7fedf-af38-45a3-bd48-031c270d8141
+	fromColumn: 'Fact Shift Audit'.StartDate
+	toColumn: LocalDateTable_46361765-3e85-4ba0-b37e-75d19cbefb26.Date
+
+relationship d9d47206-d683-4d13-990a-7b9a0bb2f481
+	fromColumn: 'Fact Shift Audit'.FinishDate
+	toColumn: LocalDateTable_72ce3ab0-22e7-4e9b-9b94-0d7012cc6164.Date
+
+relationship ec0c33b9-c560-400d-8d81-51790398a1f5
+	fromColumn: 'Fact Shift Audit'.ConfirmedDate
+	toColumn: LocalDateTable_e3a1db2e-1088-4bc8-ae6e-eba33ae7f518.Date
+
+relationship fc7cabce-da94-4fc2-8651-ed654f79b737
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Fact Shift Audit'.ShiftID
+	toColumn: 'Dim Shift'.ShiftId
+
+relationship 4d820c85-f0a5-4854-be77-be59679b2a50
+	fromColumn: 'Fact Shift Audit'.UpdateTime
+	toColumn: LocalDateTable_839ee13d-f503-45fa-afaa-65cb4e095fda.Date
+
+relationship 16cad8f6-0f4c-43ff-b3f6-84748367bc71
+	fromColumn: 'Fact Shift Audit'.UpdateDate
+	toColumn: 'Dim Shift Audit Update Date'.Date
+

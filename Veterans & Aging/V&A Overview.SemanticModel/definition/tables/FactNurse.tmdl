@@ -1,0 +1,266 @@
+table FactNurse
+	lineageTag: 41906eaf-56ab-4383-97ba-5fba67af17eb
+
+	measure CountNurses = COUNT(FactNurse[nurse_id])
+		formatString: #,0
+		lineageTag: 9d96d98a-1c7b-42a4-8517-bcaf6faf0b4c
+
+	column nurse_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 2cca9ece-e40a-424b-bed5-2d84c65636c5
+		summarizeBy: none
+		sourceColumn: nurse_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column years_of_nursing
+		dataType: int64
+		formatString: 0
+		lineageTag: 7cd784de-1800-4def-a154-c91962b6791e
+		summarizeBy: sum
+		sourceColumn: years_of_nursing
+
+		annotation SummarizationSetBy = Automatic
+
+	column employment_start_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 1c4975e4-59a9-4ac5-b8b4-543409da83d8
+		summarizeBy: none
+		sourceColumn: employment_start_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column induction_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: dda69486-58ec-4b52-b965-055e5a4f3dfb
+		summarizeBy: none
+		sourceColumn: induction_date
+
+		variation Variation
+			isDefault
+			relationship: 6d8d1325-6686-4d37-be98-90fe77a6e9c3
+			defaultHierarchy: LocalDateTable_5709e8d2-ad70-4995-9474-80c41eb8d5eb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column termination_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6f663147-4612-482b-ab04-98644f93231c
+		summarizeBy: none
+		sourceColumn: termination_date
+
+		variation Variation
+			isDefault
+			relationship: a9ccecc6-9e9c-4344-8279-2c175a1bd452
+			defaultHierarchy: LocalDateTable_a0383807-4d58-4732-a2ab-ac73ff964af1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column date_of_birth
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: de99b901-a597-4614-a451-e556f3ef4581
+		summarizeBy: none
+		sourceColumn: date_of_birth
+
+		variation Variation
+			isDefault
+			relationship: 3b384be3-a0ca-4a7d-9102-ee1be16d1f19
+			defaultHierarchy: LocalDateTable_61fe67dc-c519-41aa-b0da-6808eca0a4da.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column drivers_licence_expiry
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 21269be0-854f-481c-8e61-90729afc643a
+		summarizeBy: none
+		sourceColumn: drivers_licence_expiry
+
+		variation Variation
+			isDefault
+			relationship: 70ee942f-0c84-46c5-a1a4-75946fe34cce
+			defaultHierarchy: LocalDateTable_c064a29d-bfcc-4913-b76d-86664185c869.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column car_registration_expiry
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: cc9aab23-73eb-4a24-af27-d7f513642084
+		summarizeBy: none
+		sourceColumn: car_registration_expiry
+
+		variation Variation
+			isDefault
+			relationship: 051fe71c-2f31-4bb7-9d69-e4c7d24c663d
+			defaultHierarchy: LocalDateTable_d3ae44ca-0b3e-4cf0-a413-ef6b79923ac1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column car_insurance_expiry
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 46bf29ff-db76-4736-bb9c-8badf64e16a0
+		summarizeBy: none
+		sourceColumn: car_insurance_expiry
+
+		variation Variation
+			isDefault
+			relationship: 32ddaaec-59b7-4c44-b806-2b23d9242441
+			defaultHierarchy: LocalDateTable_cc88dc4b-87b0-4562-a001-c264969dd0e6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column employee_super_top_up
+		dataType: double
+		lineageTag: 4563ded4-beaa-477e-abf9-1c935941c18d
+		summarizeBy: sum
+		sourceColumn: employee_super_top_up
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column employee_super_dollar_amt
+		dataType: double
+		lineageTag: ee98f71e-ac13-4104-9645-8336bc3ad775
+		summarizeBy: sum
+		sourceColumn: employee_super_dollar_amt
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column additional_weekly_tax
+		dataType: double
+		lineageTag: d30b6623-74a6-4672-8fe3-b7b18f2ce2e7
+		summarizeBy: sum
+		sourceColumn: additional_weekly_tax
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column additional_weekly_tax_perc
+		dataType: double
+		lineageTag: 7cb4ab8f-3de4-4229-8c18-9345753a55d0
+		summarizeBy: sum
+		sourceColumn: additional_weekly_tax_perc
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column reward_hours
+		dataType: double
+		lineageTag: ef566433-7034-4e52-b59b-888ae327f830
+		summarizeBy: sum
+		sourceColumn: reward_hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column defer_pay_amount
+		dataType: double
+		lineageTag: 30f2b8c7-2418-4666-9e2c-2f52ac4728a3
+		summarizeBy: sum
+		sourceColumn: defer_pay_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column defer_pay_perc
+		dataType: double
+		lineageTag: 050e506f-4e69-436d-b371-6f6a5b9957e9
+		summarizeBy: sum
+		sourceColumn: defer_pay_perc
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column defer_pay_balance
+		dataType: double
+		lineageTag: 91c6f8ed-4132-41c4-ad14-6ecac1ee65c2
+		summarizeBy: sum
+		sourceColumn: defer_pay_balance
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column defer_pay_taxable_gross
+		dataType: double
+		lineageTag: a4e0dcf3-e5ac-46bb-8c65-374323ed1661
+		summarizeBy: sum
+		sourceColumn: defer_pay_taxable_gross
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column repay_pay_amount
+		dataType: double
+		lineageTag: 86e01436-cebb-48c3-abd4-59f929a2557d
+		summarizeBy: sum
+		sourceColumn: repay_pay_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column suburb_geocode_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f03076ee-a9c0-4d34-87bb-1c91817b5402
+		summarizeBy: none
+		sourceColumn: suburb_geocode_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column nurse_age
+		dataType: int64
+		formatString: 0
+		lineageTag: adad6993-421c-4d98-acb9-e73613c5fb9f
+		summarizeBy: none
+		sourceColumn: nurse_age
+
+		annotation SummarizationSetBy = User
+
+	partition FactNurse = m
+		mode: import
+		queryGroup: Nurses\FactNurse
+		source =
+				let
+				    Source = Table.Combine({#"FactNurseWA - Source", #"FactNurseNSW - Source", #"FactNurseVIC - Source", #"FactNurseSA - Source", #"FactNurseQLD - Source"})
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

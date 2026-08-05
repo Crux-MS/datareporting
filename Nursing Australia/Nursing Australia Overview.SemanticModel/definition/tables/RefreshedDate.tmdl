@@ -1,8 +1,7 @@
 table RefreshedDate
 	lineageTag: aaef7c59-3c67-44a9-a89d-5bc2ef9d9fd4
 
-	measure RefreshedDateTime = MAX(RefreshedDate[Refreshed])
-		formatString: General Date
+	measure RefreshedDateTime = FORMAT(MAX(RefreshedDate[Refreshed]), "DD/MM/YYYY hh:mm:ss")
 		lineageTag: 3c4ff40e-a15b-4332-8e3b-517a7b244900
 
 	column Refreshed
@@ -24,6 +23,7 @@ table RefreshedDate
 
 	partition RefreshedDate = m
 		mode: import
+		queryGroup: Utilities
 		source =
 				let
 				    Source = DateTimeZone.UtcNow(),

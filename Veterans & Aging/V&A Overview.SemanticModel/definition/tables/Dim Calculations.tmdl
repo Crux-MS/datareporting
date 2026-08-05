@@ -1,0 +1,89 @@
+table 'Dim Calculations'
+	lineageTag: 04230239-907d-4c2c-a0ad-aba939a59872
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 40c1b364-b6d8-444d-a693-567cfca06bc4
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Metric Name'
+		dataType: string
+		isHidden
+		lineageTag: 4a158a46-c876-40f5-959c-a9b1a6eccd20
+		summarizeBy: none
+		sourceColumn: Metric Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Home Table'
+		dataType: string
+		isHidden
+		lineageTag: c044155d-1a2b-4fd0-b519-5147e79076f0
+		summarizeBy: none
+		sourceColumn: Home Table
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		isHidden
+		lineageTag: 179757e4-78a9-4677-b2bd-6378b1d73c29
+		summarizeBy: none
+		sourceColumn: Description
+		sortByColumn: ID
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Technical Definition'
+		dataType: string
+		isHidden
+		lineageTag: 764f2c13-af62-4abc-9344-4fce35a716ab
+		summarizeBy: none
+		sourceColumn: Technical Definition
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Type of Calculation'
+		dataType: string
+		isHidden
+		lineageTag: eeffa996-98c6-4dcc-9114-e7f7e21d2482
+		summarizeBy: none
+		sourceColumn: Type of Calculation
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Name", "Description", "Home Table", "Technical Definition", "Type of Calculation", "ID"})
+				in
+				    #"Removed Other Columns"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

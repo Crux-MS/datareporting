@@ -1,0 +1,102 @@
+table DimServiceTypes
+	lineageTag: 153a8ae5-41a2-4490-89bf-e61f39b3f6be
+
+	column description
+		dataType: string
+		lineageTag: cfb0c8de-4e94-4355-8097-2cb3cf15b2e9
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = Automatic
+
+	column int_value
+		dataType: int64
+		formatString: 0
+		lineageTag: 346b8920-51d9-44db-a59a-940298b4419c
+		summarizeBy: sum
+		sourceColumn: int_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column service_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 273c247a-667a-4e8c-8d52-7c6d44df5bf3
+		summarizeBy: none
+		sourceColumn: service_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column service
+		dataType: string
+		lineageTag: bf67e60d-7ff3-4002-824a-75107bede3f2
+		summarizeBy: none
+		sourceColumn: service
+
+		annotation SummarizationSetBy = Automatic
+
+	column StateDBCol =
+			SWITCH(
+			    TRUE(),
+			    LEFT(DimServiceTypes[service_id], 1) = "1", "WA",
+			    LEFT(DimServiceTypes[service_id], 1) = "2", "Vic.",
+			    LEFT(DimServiceTypes[service_id], 1) = "3", "SA",
+			    LEFT(DimServiceTypes[service_id], 1) = "4", "Qld",
+			    LEFT(DimServiceTypes[service_id], 1) = "5", "NSW")
+		lineageTag: 19a2a8cf-5418-41da-a673-e2fc9065c378
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column FundingStream
+		dataType: string
+		lineageTag: 8bc0c41a-76c2-4cf3-93f9-5066d556c937
+		summarizeBy: none
+		sourceColumn: FundingStream
+
+		annotation SummarizationSetBy = Automatic
+
+	column Claimable
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ff0b114e-0903-4994-a276-0fc24a886f63
+		summarizeBy: none
+		sourceColumn: Claimable
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceType
+		dataType: string
+		lineageTag: c628c6ba-3889-4edc-8071-61421e9df63d
+		summarizeBy: none
+		sourceColumn: ServiceType
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExclusionListMatchFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: fc545c52-0129-46ac-a34b-31322075c157
+		summarizeBy: none
+		sourceColumn: ExclusionListMatchFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimServiceTypes = m
+		mode: import
+		queryGroup: Services
+		source =
+				let
+				    Source = Table.Combine({#"DimServiceTypesWA - Source", #"DimServiceTypesVIC - Source", #"DimServiceTypesNSW - Source", #"DimServiceTypesSA - Source", #"DimServiceTypesQLD - Source"}),
+				    #"Merged Queries" = Table.NestedJoin(Source, {"service_id"}, #"DimServiceCodeExclusions-Source", {"SaturnServiceIds"}, "DimServiceCodeExclusions-Source", JoinKind.LeftOuter),
+				    #"Expanded DimServiceCodeExclusions-Source" = Table.ExpandTableColumn(#"Merged Queries", "DimServiceCodeExclusions-Source", {"ServiceType", "Claimable", "SaturnServiceIds"}, {"ServiceType", "Claimable", "SaturnServiceIds"}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Expanded DimServiceCodeExclusions-Source", "ExclusionListMatchFlag", each if [SaturnServiceIds] = null then false else true),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Conditional Column",{{"ExclusionListMatchFlag", type logical}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"SaturnServiceIds"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

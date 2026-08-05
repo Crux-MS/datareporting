@@ -1,0 +1,19 @@
+createOrReplace
+
+	ref table FactRostersVisualCare
+
+		measure MinVariationFromAvgHours = ```
+				IF(
+				    ISINSCOPE(DimRosterDateOfService[Start of Week]), 
+				    BLANK(),
+				    MINX(
+				        ALLSELECTED(DimRosterDateOfService[Start of Week]),
+				        [RosteredHours] - [AverageRosteredHoursAllTime]
+				    )
+				)
+				```
+			displayFolder: Duration
+			lineageTag: 131876e3-cc02-4d0b-bf74-87db68acfdda
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+

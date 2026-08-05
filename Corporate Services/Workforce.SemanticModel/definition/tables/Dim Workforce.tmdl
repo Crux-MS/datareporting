@@ -62,6 +62,10 @@ table 'Dim Workforce'
 		displayFolder: Selected Dimensions
 		lineageTag: 35179155-ba24-4020-ba9a-5a99f5d178a6
 
+	measure LatestDatePaid = CALCULATE(MAX('Fact Pay'[Date Paid]), CROSSFILTER(BridgeKeyPayEmploymentHero[EmailExtractKey], 'Fact Pay'[EmailExtractKey], Both))
+		formatString: Short Date
+		lineageTag: bc83c707-7ea1-4101-9911-77ab905ddca4
+
 	column 'First name'
 		dataType: string
 		lineageTag: fb934f3d-44e4-4450-8aba-fc9f444a672a
@@ -178,7 +182,7 @@ table 'Dim Workforce'
 
 	column 'Extract Date'
 		dataType: dateTime
-		formatString: Long Date
+		formatString: Short Date
 		lineageTag: 4019083a-fad3-43d7-9874-64f6c24390e3
 		summarizeBy: none
 		sourceColumn: Extract Date

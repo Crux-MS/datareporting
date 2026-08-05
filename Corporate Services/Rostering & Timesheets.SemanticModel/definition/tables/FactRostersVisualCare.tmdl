@@ -1,0 +1,1082 @@
+table FactRostersVisualCare
+	lineageTag: cb0947f3-ba57-4270-9adc-1eb228be40b1
+
+	measure CountRosteredShifts = COUNT(FactRostersVisualCare[RosterItemId])
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 8d41ef7d-5ded-4f36-95c7-4875be6ae8de
+
+		changedProperty = Name
+
+	measure CountTimesheetRecorded = CALCULATE([CountRosteredShifts], FactRostersVisualCare[TimeSheetId] <> -1)
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: cafac987-a810-4037-971c-217b2482b1f9
+
+		changedProperty = Name
+
+	measure CompleteTimesheetsRecorded% = DIVIDE([CountCompletedTimesheets], [CountRosteredShifts])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Percentages
+		lineageTag: a35d33fd-d35e-4950-80e0-090e5d057fd6
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure CountCompletedTimesheets = [CountTimesheetRecorded] - [CountTimesheetNoTimesRecorded] - [CountTimesheetNofinishTime] - [CountTimesheetNoStart]
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 57164747-02dc-4769-a1e4-af526b78e19c
+
+		changedProperty = Name
+
+	measure CountTimesheetIncomplete = CALCULATE([CountTimesheetRecorded], FactRostersVisualCare[TimesheetStartCompletedFlag] = 0 || FactRostersVisualCare[TimesheetFinishCompletedFlag] = 0 ||FactRostersVisualCare[TimesheetAllTimesCompletedFlag] = 0)
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 514fc5ca-0bd4-4d65-8975-b40ddbe2862a
+
+		changedProperty = Name
+
+	measure CountTimesheetNofinishTime = CALCULATE([CountTimesheetRecorded], FactRostersVisualCare[TimesheetFinishCompletedFlag] = 0)
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 9634ea7d-e48f-40ed-a18f-0204a9d51e55
+
+		changedProperty = Name
+
+	measure CountTimesheetNoStart = CALCULATE([CountTimesheetRecorded], FactRostersVisualCare[TimesheetStartCompletedFlag] = 0)
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: f611ca6f-c76f-4538-a344-0276e3b37d3f
+
+		changedProperty = Name
+
+	measure CountNoTimesheetRecorded = CALCULATE([CountRosteredShifts], FactRostersVisualCare[TimeSheetId] = -1)
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: e034c8b4-5d6f-404c-a908-4ffbdc0e02bd
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure CountTimesheetNoTimesRecorded = CALCULATE([CountTimesheetRecorded], FactRostersVisualCare[TimesheetAllTimesCompletedFlag] = 0)
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 6ba983ed-0370-476f-a54b-30d711d8eda7
+
+		changedProperty = Name
+
+	measure IncompleteTimesheetsRecorded% = DIVIDE([CountTimesheetIncomplete], [CountRosteredShifts])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Percentages
+		lineageTag: 9c431920-eb31-4023-9c85-2df7ed0e0217
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure MissingTimesheets% = DIVIDE([CountNoTimesheetRecorded], [CountRosteredShifts])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Percentages
+		lineageTag: f76399fa-1ee4-4ee2-873f-2dd3ec2ec13d
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure RosteredHours = SUM(FactRostersVisualCare[Minutes])/60
+		formatString: #,0.0
+		displayFolder: Duration
+		lineageTag: 376f0bad-4953-446f-8d3b-4a3f2ad67b2f
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure RosteredHoursCompletedTimesheets = [RosteredHoursTimesheetRecorded] - [TimesheetHoursNoTimesRecorded] - [TimesheetHoursNoFinishTimesheets] - [TimesheetHoursNoStartTimesheets]
+		displayFolder: Duration
+		lineageTag: 8bb19fd8-716e-47dc-8d88-6f037c6cac55
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure RosteredHoursIncompleteTimesheets = [TimesheetHoursNoTimesRecorded] + [TimesheetHoursNoFinishTimesheets] + [TimesheetHoursNoStartTimesheets]
+		displayFolder: Duration
+		lineageTag: 391c3868-5f3d-45b8-8719-e2e9c1c040e7
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TimesheetHoursNoFinishTimesheets = CALCULATE([RosteredHours], FactRostersVisualCare[TimesheetFinishCompletedFlag] = 0, FactRostersVisualCare[TimeSheetId] <> -1)
+		displayFolder: Duration
+		lineageTag: 4383ae07-c5d0-4eda-87bf-27d0307d3df9
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TimesheetHoursNoStartTimesheets = CALCULATE([RosteredHours], FactRostersVisualCare[TimesheetStartCompletedFlag] = 0, FactRostersVisualCare[TimeSheetId] <> -1)
+		displayFolder: Duration
+		lineageTag: be61ca9b-707e-40cd-8ee3-0947a19dfb43
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure RosteredHoursNoTimesheetRecorded = CALCULATE([RosteredHours], FactRostersVisualCare[TimeSheetId] = -1)
+		formatString: #,0
+		displayFolder: Duration
+		lineageTag: 403e6e0e-6685-4d37-a1e4-b144e462619a
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure TimesheetHoursNoTimesRecorded = CALCULATE([RosteredHours], FactRostersVisualCare[TimesheetAllTimesCompletedFlag] = 0, FactRostersVisualCare[TimeSheetId] <> -1)
+		displayFolder: Duration
+		lineageTag: 35bfa9dd-ca87-4c62-a25c-7bcbe03370ac
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure RosteredHoursTimesheetRecorded = CALCULATE([RosteredHours], FactRostersVisualCare[TimeSheetId] <> -1)
+		formatString: #,0.0
+		displayFolder: Duration
+		lineageTag: aed02746-92d8-4d04-940a-0ce32bd67f9c
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure SelectedRostersPeriod = FORMAT(MIN(FactRostersVisualCare[DateOfService]), "dd MMM YYYY") & " - " & FORMAT(MAX(FactRostersVisualCare[DateOfService]), "dd MMM yyyy")
+		lineageTag: 5524826b-27f9-4548-973a-83043c03339e
+
+		changedProperty = Name
+
+	measure TimesheetsRecorded% = DIVIDE([CountTimesheetRecorded], [CountRosteredShifts])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Percentages
+		lineageTag: d7fe37d0-7258-4a08-a36c-617c20a60a9e
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure Today = TODAY()
+		formatString: General Date
+		displayFolder: Dates/Times
+		lineageTag: bbb251bb-2b9e-4e35-addd-8f38469de181
+
+		changedProperty = Name
+
+	measure UnfilledShiftHours = ```
+			CALCULATE([RosteredHours], 
+			    DimWorkforceVisualCare[FirstName] = "*UNDELIVERED",  
+			    DimWorkforceVisualCare[FirstName] = "_TBA" || 
+			    DimWorkforceVisualCare[FirstName] = "_TBA Base"
+			)
+			```
+		displayFolder: Duration
+		lineageTag: 8510763a-6479-4997-8b71-65b2a9b9e982
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure UnallocatedHours% =
+			VAR _dateSelected = ISINSCOPE(DimRosterDateOfService[Date])
+			VAR _locationCodeSelcted = ISINSCOPE(DimRosterLocationsVisualCare[Code])
+			VAR _selectedArea = SELECTEDVALUE(DimRosterLocationsVisualCare[Area])
+			VAR _numerator = [RosteredHours]
+			VAR _denominator = SWITCH(
+			    TRUE(),
+			    _dateSelected, CALCULATE([RosteredHours], ALLSELECTED(DimRosterDateOfService[Date])),
+			    _locationCodeSelcted, CALCULATE([RosteredHours], ALL(DimWorkforceVisualCare[FullName]), DimRosterLocationsVisualCare[Area] = _selectedArea),
+			    CALCULATE([RosteredHours], ALLSELECTED(DimRosterDateOfService[Date]), ALL(DimWorkforceVisualCare[FullName])))
+			VAR _logic = DIVIDE(_numerator, _denominator)
+			RETURN _logic
+		displayFolder: Percentages
+		lineageTag: 0c2bcdf4-eb37-4501-8e11-a10d7085a63b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure UnfilledShifts = CALCULATE([CountRosteredShifts], DimWorkforceVisualCare[FirstName] IN {"*EXTERNAL", "*SOUTHERN", "*UNDELIVERED", "_TBA"})
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 2e449ad7-573d-4062-b290-a7b3311a8181
+
+	measure CountForms = COUNT(DimCompletedFormsVisualCare[RosterItemId])
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 419b6162-dced-4d3c-8c7b-50c61b92d057
+
+	measure CountCompletedForms = CALCULATE([CountForms], DimCompletedFormsVisualCare[Status] = "COMPLETED")
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 59b888fd-978e-4683-821b-8ce294f4b73e
+
+	measure CountInProgressForms = CALCULATE([CountForms], DimCompletedFormsVisualCare[Status] = "IN PROGRESS")
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 40a24efd-1169-4e36-abdb-a40ad093fdfb
+
+	measure CountOpenForms = CALCULATE([CountForms], DimCompletedFormsVisualCare[Status] = "OPEN")
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: d53f8141-27d1-47ed-b76d-3a18291d6c9a
+
+	measure TotalCharge = [RosteredHours] * SELECTEDVALUE(FactRostersVisualCare[ChargeRate])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 618c9f2b-623d-4d62-a026-5766bfb76e45
+
+	measure TBABaseShiftHours = CALCULATE([RosteredHours], DimWorkforceVisualCare[FirstName] ="_TBA Base")
+		formatString: #,0.00
+		displayFolder: Duration
+		lineageTag: 20afa0c8-8616-49b4-b48f-502c13cadf97
+
+	measure TBABaseShifts = ```
+			CALCULATE([CountRosteredShifts], DimWorkforceVisualCare[FirstName] = "_TBA Base") 
+			```
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 7576f480-6f93-44da-b981-3cffc8af84ee
+
+	measure TBABaseHours% = DIVIDE([TBABaseShiftHours], [WorkerRosteredHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Percentages
+		lineageTag: 14b08451-3899-4195-a00d-34b952cdf898
+
+	measure WorkerRosteredHours = CALCULATE([RosteredHours], FactRostersVisualCare[CarerId] <> -1)
+		displayFolder: Duration
+		lineageTag: 87b77df9-091a-41e8-998d-d0edd0a210d2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ClientRosteredHours = CALCULATE([RosteredHours], FactRostersVisualCare[ClientId] <> -1)
+		displayFolder: Duration
+		lineageTag: 3054bf5a-15a4-47a4-9e31-f8dd0566281f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure LocationRosteredHours = CALCULATE([RosteredHours], FactRostersVisualCare[LocationId] <> -1)
+		displayFolder: Duration
+		lineageTag: 50d6e032-4691-495b-ba1f-0fb57cfb074e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure FilledShiftHours = CALCULATE([RosteredHours], FactRostersVisualCare[UnfilledShiftFlag] = "Filled")
+		displayFolder: Duration
+		lineageTag: ee8e33b9-eff6-4e9c-abf4-81383d6b7dfc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AverageRosteredHoursAllTime =
+			IF(
+			    AVERAGEX(
+			        CROSSJOIN(
+			            ALL(DimRosterDateOfService[Start of Week]),
+			            ALL(FactRostersVisualCare[CarerId])
+			        ),
+			        [RosteredHours]
+			    ) = BLANK(),
+			    0,
+			    AVERAGEX(
+			        CROSSJOIN(
+			            ALL(DimRosterDateOfService[Start of Week]),
+			            ALL(FactRostersVisualCare[CarerId])
+			        ),
+			        [RosteredHours]
+			    )
+			)
+		displayFolder: Duration
+		lineageTag: eebf174b-b586-4c33-b82e-40e248f69448
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AverageRosteredHours = AVERAGE(FactRostersVisualCare[Minutes])/60
+		displayFolder: Duration
+		lineageTag: e4166e4e-3456-4b77-bd79-ed2f91a01169
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayRosteredHours = COALESCE([RosteredHours], 0)
+		displayFolder: Duration
+		lineageTag: 1e45b30d-2736-4449-b7ec-64ebb1df4b0b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AvgVsRosteredHoursWeeklyDifference = [WorkerHoursPaid] - [AverageRosteredHoursAllTime]
+		lineageTag: fd399364-09dc-47b9-9134-1ed413b91288
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure MinVariationFromAvgHours = ```
+			
+			    MINX(
+			        ALLSELECTED(DimRosterDateOfService[Start of Week]),
+			        [AvgVsRosteredHoursWeeklyDifference]
+			    )
+			```
+		displayFolder: Duration
+		lineageTag: 131876e3-cc02-4d0b-bf74-87db68acfdda
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AvgVsRosteredRate = DIVIDE([WorkerRosteredHours], [AverageRosteredHoursAllTime])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 0765e492-27d4-4103-a13a-206eb911a7c5
+
+	measure MinVariationFromAvgHoursRate = ```
+			IF(
+			    ISINSCOPE(DimRosterDateOfService[Start of Week]), 
+			    BLANK(),
+			    MINX(
+			        ALL(DimRosterDateOfService[Start of Week]),
+			        DIVIDE([AverageRosteredHoursAllTime],[WorkerHoursPaid])
+			    )
+			)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Duration
+		lineageTag: aa35ee8e-2f89-46c0-a9f3-4c3185f5ec90
+
+	measure NotesFlag = IF(COUNT(FactRostersVisualCare[RosterNoteId]) >0, "Contains Notes", "No Notes")
+		displayFolder: Flags
+		lineageTag: 035f9b4e-0c15-48a9-87b9-78eda22eee17
+
+	measure SelectedClientId = SELECTEDVALUE(FactRostersVisualCare[ClientId])
+		formatString: 0
+		lineageTag: 32a94b4f-a0f1-4441-ba8c-0a7fa819c9e1
+
+	measure SelectedCarerId = SELECTEDVALUE(FactRostersVisualCare[CarerId])
+		formatString: 0
+		lineageTag: 082db9c5-5634-445d-ba25-84ecde964e82
+
+	measure SelectedLocationID = SELECTEDVALUE(DimRosterLocationsVisualCare[LocationId])
+		formatString: 0
+		lineageTag: 2d4953cb-8978-4def-ac11-f19b2cef7ecd
+
+	measure SelectedClientArea = CALCULATE(SELECTEDVALUE('Dim Clients'[Area]), CROSSFILTER('Dim Clients'[ClientId], FactRostersVisualCare[ClientId], Both))
+		lineageTag: ea43973b-869a-4154-bc9c-08602113184c
+
+	measure SelectedCarerArea = CALCULATE(SELECTEDVALUE(DimWorkforceVisualCare[Area]), CROSSFILTER(DimWorkforceVisualCare[CarerId], FactRostersVisualCare[CarerId], Both))
+		lineageTag: b535a693-37e3-4767-9f8d-79779ad40ad1
+
+	measure SelectedLocationArea = CALCULATE(SELECTEDVALUE(DimRosterLocationsVisualCare[Area]), CROSSFILTER(DimRosterLocationsVisualCare[LocationId], FactRostersVisualCare[LocationId], Both))
+		lineageTag: 964e6f6c-093e-475f-8286-90c66a8ff7be
+
+	measure CountCurrentRecurringShifts =
+			VAR _selectedDate = SELECTEDVALUE(DimRosterDateOfService[Start of Week])
+			VAR _currentDate = MAX(DimRosterDateOfService[Date])
+			VAR _recurrenceStartDate = SELECTEDVALUE(FactRostersVisualCare[RecurrenceStart])
+			VAR _logic = CALCULATE(
+			    [CountRosteredShifts],
+			    OR(FactRostersVisualCare[RecurrenceEnd] >= _currentDate, FactRostersVisualCare[RecurrenceEnd] = BLANK()),
+			    FILTER(
+			        ALL(DimRosterRecurrenceStartDate[Date]),
+			        DimRosterRecurrenceStartDate[Date] <= _currentDate)
+			    )
+			RETURN _logic
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 0a50627a-1694-4621-9be9-5c47d4872eca
+
+	measure CountCurrentTBABAseShifts = CALCULATE([CountCurrentRecurringShifts], DimWorkforceVisualCare[FirstName] = "_TBA Base")
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 4bcd3b20-24b6-45ca-b346-aba7a818e488
+
+	measure CountCurrentTBAShifts = CALCULATE([CountCurrentRecurringShifts], DimWorkforceVisualCare[FirstName] = "_TBA")
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: a27a0a90-4d2e-46c6-b5be-8b5dc098cf3c
+
+	measure CurrentRecurringShiftHours =
+			VAR _selectedDate = SELECTEDVALUE(DimRosterDateOfService[Start of Week])
+			VAR _currentDate = MAX(DimRosterDateOfService[Date])
+			VAR _recurrenceStartDate = SELECTEDVALUE(FactRostersVisualCare[RecurrenceStart])
+			VAR _logic = CALCULATE(
+			    [RosteredHours],
+			    OR(FactRostersVisualCare[RecurrenceEnd] >= _currentDate, FactRostersVisualCare[RecurrenceEnd] = BLANK()),
+			    FILTER(
+			        ALL(DimRosterRecurrenceStartDate[Date]),
+			        DimRosterRecurrenceStartDate[Date] <= _currentDate)
+			    )
+			RETURN _logic
+		displayFolder: Duration
+		lineageTag: 086bbb5b-5e72-4a08-9b02-317a81ece122
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CurrentTBABAseShiftHours = CALCULATE([CurrentRecurringShiftHours], DimWorkforceVisualCare[FirstName] = "_TBA Base")
+		formatString: 0.0
+		displayFolder: Duration
+		lineageTag: 90a9deac-30be-452d-a987-46605e38c2c9
+
+	measure CurrentTBAShiftHours = CALCULATE([CurrentRecurringShiftHours], DimWorkforceVisualCare[FirstName] = "_TBA")
+		formatString: 0.0
+		displayFolder: Duration
+		lineageTag: d20c40a7-a5cd-46b8-8092-480704aaecbd
+
+	measure ShiftEnd = SELECTEDVALUE(FactRostersVisualCare[StartDateTime]) + ([RosteredHours]/24)
+		formatString: d/mm/yyyy h:nn:ss AM/PM
+		displayFolder: Dates/Times
+		lineageTag: 162864dc-3966-4460-ae2c-462eed02aa5a
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	measure TimesheetMissingAnyTimeFlag = IF(SELECTEDVALUE(FactRostersVisualCare[TimesheetStartCompletedFlag]) = FALSE() || SELECTEDVALUE(FactRostersVisualCare[TimesheetFinishCompletedFlag]) = FALSE() || SELECTEDVALUE(FactRostersVisualCare[TimesheetAllTimesCompletedFlag]) = FALSE(), 1, 0)
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 6aa64ef6-7410-4cfe-a9bb-0795bbcf0d01
+
+	measure UndeliveredShiftHours = CALCULATE([RosteredHours], DimWorkforceVisualCare[FirstName] = "*UNDELIVERED")
+		displayFolder: Duration
+		lineageTag: 95d803bb-7f50-4a4c-a20e-32cb08902c2c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TBAAdHocHours = CALCULATE([RosteredHours], DimWorkforceVisualCare[FirstName] = "_TBA")
+		displayFolder: Duration
+		lineageTag: 20bfef3e-d0b0-43f7-8e89-49c1efc04e77
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TBAAdHocHours% = DIVIDE([TBAAdHocHours], [WorkerRosteredHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Duration
+		lineageTag: 1e619c5b-eccb-45f0-933a-6f43749cd992
+
+	measure UndeliveredHours% = DIVIDE([UndeliveredShiftHours], [WorkerRosteredHours])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Duration
+		lineageTag: 1cf9530a-30a0-46ce-bdf2-07a5ddffdf00
+
+	measure CountRosteredShiftNoTimesRecorded = CALCULATE([CountRosteredShifts], FactRostersVisualCare[TimesheetAllTimesCompletedFlag] = 0)
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 034d61e5-d95a-4234-9a4a-9b836a9dc1a3
+
+	measure CountRosteredShiftNofinishTime = CALCULATE([CountRosteredShifts], FactRostersVisualCare[TimesheetFinishCompletedFlag] = 0)
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 076da977-e536-4396-8126-1090a2075b2d
+
+	measure CountRosteredShiftNoStart = CALCULATE([CountRosteredShifts], FactRostersVisualCare[TimesheetStartCompletedFlag] = 0)
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: dbf19b8d-1ac6-48fb-8af0-2002c4db0426
+
+	measure BillableUnits =
+			SUMX(
+			    VALUES(DimRosterServicesVisualCare[ServiceCode]),
+			    VAR _serviceCode = DimRosterServicesVisualCare[ServiceCode]
+			    VAR _multiplier = CALCULATE(MAX(DimRosterServicesVisualCare[BillableUnitsMultiplier]))
+			    VAR _rosteredHours = [RosteredHours]
+			    VAR _logic = IF(_serviceCode = "CS-G-Sleepover",
+			        [CountRosteredShifts],
+			        _rosteredHours *  _multiplier)
+			    RETURN _logic
+			)
+		formatString: #,0.0
+		lineageTag: 9439fd45-34eb-47b4-8dc7-f63b0ab208f6
+
+	measure DisplayAvgVsRosteredHoursWeeklyDifference = IF([AvgVsRosteredHoursWeeklyDifference]<0, [AvgVsRosteredHoursWeeklyDifference], BLANK())
+		lineageTag: 96408911-93d4-4702-bdce-4e645eb17a0b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayHoursPaid = IF([AvgVsRosteredHoursWeeklyDifference]<0, [WorkerHoursPaid], BLANK())
+		lineageTag: b60dd8a3-4ae3-44e0-8de5-c2c8e89047ca
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayAvgRosteredHoursAllTime = IF([AvgVsRosteredHoursWeeklyDifference]<0, [AverageRosteredHoursAllTime], BLANK())
+		lineageTag: 99d57557-d58f-4d16-9b40-2e806cee0925
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column RosterItemId
+		dataType: int64
+		formatString: 0
+		lineageTag: b1f5cbd4-d583-4c10-a422-301eb0858de0
+		summarizeBy: none
+		sourceColumn: RosterItemId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: int64
+		formatString: 0
+		lineageTag: bad04ce1-a7bf-47fb-b45a-ff1500bd0160
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CarerId
+		dataType: int64
+		formatString: 0
+		lineageTag: 58874183-95ab-4760-9b74-75a0aa0b2b4c
+		summarizeBy: none
+		sourceColumn: CarerId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RosterMasterId
+		dataType: int64
+		formatString: 0
+		lineageTag: cbbe3e1c-4738-4573-a01e-776b6ccbcff4
+		summarizeBy: count
+		sourceColumn: RosterMasterId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocationId
+		dataType: int64
+		formatString: 0
+		lineageTag: e2c63113-2e6a-43d1-95ad-7931c8eefe93
+		summarizeBy: none
+		sourceColumn: LocationId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5d5340ab-3e4a-411b-a60f-50c8f2947527
+		summarizeBy: count
+		sourceColumn: CategoryId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c2d18daf-2e57-46ef-b6fa-8180be27d866
+		summarizeBy: none
+		sourceColumn: ServiceId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateOfService
+		dataType: dateTime
+		formatString: d/m/yy
+		displayFolder: Dates/Times
+		lineageTag: ea07c36e-75ee-47d8-8ab2-9105307c0f89
+		summarizeBy: none
+		sourceColumn: DateOfService
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column StartTime
+		dataType: dateTime
+		formatString: Long Time
+		displayFolder: Dates/Times
+		lineageTag: 2d546814-334d-4317-b0b0-1c47f26776b1
+		summarizeBy: none
+		sourceColumn: StartTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column Minutes
+		dataType: int64
+		formatString: 0
+		displayFolder: Duration
+		lineageTag: 07d38f33-b275-45ee-91e1-91ae49537d3e
+		summarizeBy: sum
+		sourceColumn: Minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column ChargeRate
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: fac0b048-6bed-45c7-9911-b129c82af54d
+		summarizeBy: sum
+		sourceColumn: ChargeRate
+
+		annotation SummarizationSetBy = Automatic
+
+	column PayRate
+		dataType: double
+		lineageTag: 2a337dff-76dc-4026-bb63-4422ed7e58c4
+		summarizeBy: sum
+		sourceColumn: PayRate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column BreakStartTime1
+		dataType: dateTime
+		formatString: Long Time
+		displayFolder: Dates/Times
+		lineageTag: 7e540576-861d-4f5f-bf6e-59f8cc8780d6
+		summarizeBy: none
+		sourceColumn: BreakStartTime1
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column BreakMinutes1
+		dataType: int64
+		formatString: 0
+		displayFolder: Dates/Times
+		lineageTag: 35d2787d-b471-41c2-a771-4a935d4c5d5a
+		summarizeBy: sum
+		sourceColumn: BreakMinutes1
+
+		annotation SummarizationSetBy = Automatic
+
+	column RecurrenceId
+		dataType: int64
+		formatString: 0
+		displayFolder: Recurrence
+		lineageTag: fe9740e7-f9d8-475c-8a67-d32107e93e66
+		summarizeBy: count
+		sourceColumn: RecurrenceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column RecurrenceStart
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Recurrence
+		lineageTag: 9e850c7d-8ff5-42f2-8cce-273542de33c7
+		summarizeBy: none
+		sourceColumn: RecurrenceStart
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column RecurrenceEnd
+		dataType: dateTime
+		formatString: Short Date
+		displayFolder: Recurrence
+		lineageTag: b35d5219-1501-423d-a894-2d8d933bf2f9
+		summarizeBy: none
+		sourceColumn: RecurrenceEnd
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column RecurrenceType
+		dataType: string
+		displayFolder: Recurrence
+		lineageTag: df122556-0cd2-48c3-b9c2-dae5c354e875
+		summarizeBy: none
+		sourceColumn: RecurrenceType
+
+		annotation SummarizationSetBy = Automatic
+
+	column OccurenceDays
+		dataType: string
+		displayFolder: Recurrence
+		lineageTag: bc355526-cafb-402e-b703-2e55a79a241a
+		summarizeBy: none
+		sourceColumn: OccurenceDays
+
+		annotation SummarizationSetBy = Automatic
+
+	column OccurenceCount
+		dataType: int64
+		formatString: 0
+		displayFolder: Recurrence
+		lineageTag: f5391f09-c4be-4cfb-a092-6f0d0ca738ec
+		summarizeBy: sum
+		sourceColumn: OccurenceCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column OccurencePeriodic
+		dataType: string
+		displayFolder: Recurrence
+		lineageTag: ab3ad69f-d545-456d-a128-eaeb43cc695e
+		summarizeBy: none
+		sourceColumn: OccurencePeriodic
+
+		annotation SummarizationSetBy = Automatic
+
+	column OccurenceInterval
+		dataType: int64
+		formatString: 0
+		displayFolder: Recurrence
+		lineageTag: 90b19148-575a-43cc-bdf0-0fc0051eca3d
+		summarizeBy: sum
+		sourceColumn: OccurenceInterval
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldType
+		dataType: string
+		displayFolder: On Hold
+		lineageTag: 54cb299c-37f3-45fe-94e4-2280c78b592b
+		summarizeBy: none
+		sourceColumn: OnHoldType
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldNote
+		dataType: string
+		displayFolder: On Hold
+		lineageTag: e243423b-8c29-4cd6-a2ec-dbeea1e9a32e
+		summarizeBy: none
+		sourceColumn: OnHoldNote
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldCode
+		dataType: string
+		displayFolder: On Hold
+		lineageTag: 41f8a664-a992-4e95-85a2-955701cb064b
+		summarizeBy: none
+		sourceColumn: OnHoldCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldChargePer
+		dataType: int64
+		formatString: 0
+		displayFolder: On Hold
+		lineageTag: 9f8448d2-f68a-495d-9bfc-821470f41fd1
+		summarizeBy: sum
+		sourceColumn: OnHoldChargePer
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldPayMinutes
+		dataType: int64
+		formatString: 0
+		displayFolder: On Hold
+		lineageTag: 9209af4a-fbc3-40a9-afe2-2e3b83d9850c
+		summarizeBy: sum
+		sourceColumn: OnHoldPayMinutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column OnHoldDateTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: On Hold
+		lineageTag: f31c14d4-1ebf-4d6e-9c99-1acf411ba5eb
+		summarizeBy: none
+		sourceColumn: OnHoldDateTime
+
+		variation Variation
+			isDefault
+			relationship: cccf821a-87bd-4802-8cbe-a6c572c0186e
+			defaultHierarchy: LocalDateTable_d9620e94-c830-4c65-baba-c577ceff729f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column TimeSheetId
+		dataType: int64
+		formatString: 0
+		lineageTag: 3e100989-9a4b-4706-aae8-c41ac1879eeb
+		summarizeBy: none
+		sourceColumn: TimeSheetId
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgreementId
+		dataType: int64
+		formatString: 0
+		lineageTag: 1b0dc6f2-901e-4244-b595-d376f770f80e
+		summarizeBy: count
+		sourceColumn: AgreementId
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgreementItemId
+		dataType: int64
+		formatString: 0
+		lineageTag: ee18478e-63e7-4a1e-8c78-4d57a9a7a9b6
+		summarizeBy: count
+		sourceColumn: AgreementItemId
+
+		annotation SummarizationSetBy = Automatic
+
+	column DEXCaseId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 21508be7-75b4-4d91-852c-21377a09e598
+		summarizeBy: count
+		sourceColumn: DEXCaseId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DEXServiceTypeId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 94b1a8b4-9123-4d09-b80f-86df6d94a3ec
+		summarizeBy: count
+		sourceColumn: DEXServiceTypeId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column APP_StartTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: App
+		lineageTag: d4cc4bea-ccb8-485c-9382-4984251f986b
+		summarizeBy: none
+		sourceColumn: APP_StartTime
+
+		variation Variation
+			isDefault
+			relationship: 3b5d81e5-cf8e-45fa-9f34-a5a3db4aa4d2
+			defaultHierarchy: LocalDateTable_76ab74d7-fb4d-4667-9d12-448c2dfe6240.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column APP_FinishTime
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: App
+		lineageTag: 6ae23d5f-fa8a-43c9-9bb2-ecde5b2166c8
+		summarizeBy: none
+		sourceColumn: APP_FinishTime
+
+		variation Variation
+			isDefault
+			relationship: 72d3d926-080a-4f79-b93f-3136825fc74e
+			defaultHierarchy: LocalDateTable_876159dc-e275-42ab-89ea-eaaac53f161a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column APP_LastLongtitude
+		dataType: double
+		displayFolder: App
+		lineageTag: f7e91b33-8eaa-403f-be18-22ec43125ac8
+		summarizeBy: sum
+		sourceColumn: APP_LastLongtitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column APP_LastLatitude
+		dataType: double
+		displayFolder: App
+		lineageTag: a6804802-fd64-4f6c-b496-6603e0d5ab9d
+		summarizeBy: sum
+		sourceColumn: APP_LastLatitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LastModified
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: be91cc14-2e02-4f8a-8008-1e6837964c07
+		summarizeBy: none
+		sourceColumn: LastModified
+
+		variation Variation
+			isDefault
+			relationship: cccbff4a-3c17-4c17-acb1-03b0b11630a4
+			defaultHierarchy: LocalDateTable_3dabb8e8-05b6-4483-8adb-ef5476882e26.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastModifiedBy
+		dataType: string
+		isHidden
+		lineageTag: 705262fb-5566-4170-afde-87b4f50e80d4
+		summarizeBy: none
+		sourceColumn: LastModifiedBy
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastModifiedType
+		dataType: string
+		isHidden
+		lineageTag: 2136fad5-67b4-4802-82d7-a2efd9d291c2
+		summarizeBy: none
+		sourceColumn: LastModifiedType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedTime
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		displayFolder: Dates/Times
+		lineageTag: 2598ea3c-8d9a-4b47-b30f-997577b4adc2
+		summarizeBy: none
+		sourceColumn: CreatedTime
+
+		variation Variation
+			isDefault
+			relationship: 55e4c3e0-53bf-4db0-987e-70bf9ef0f5b4
+			defaultHierarchy: LocalDateTable_d05d7c43-9517-4d98-9648-e4403f4d616f.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedBy
+		dataType: string
+		isHidden
+		lineageTag: 71776d2f-af20-4f0e-9fbe-c034c90f112a
+		summarizeBy: none
+		sourceColumn: CreatedBy
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnfilledShiftFlag = CALCULATE(IF(SELECTEDVALUE(DimWorkforceVisualCare[FirstName]) IN {"*EXTERNAL", "*SOUTHERN", "*UNDELIVERED", "_TBA"}, "Unfilled", "Filled"), CROSSFILTER(DimWorkforceVisualCare[CarerId], FactRostersVisualCare[CarerId], Both))
+		displayFolder: Flags
+		lineageTag: 4e97a266-30a5-44f7-b2bd-fec49c3fcefb
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartDateTime = FactRostersVisualCare[DateOfService] & " " & FactRostersVisualCare[StartTime]
+		dataType: dateTime
+		formatString: d/mm/yyyy h:nn:ss AM/PM
+		displayFolder: Dates/Times
+		lineageTag: e83d53b1-2d7c-4394-b83f-b339cb5bf34f
+		summarizeBy: none
+
+		variation Variation
+			isDefault
+			relationship: a5c4887e-9822-45d6-88fb-dd3b182b8b34
+			defaultHierarchy: LocalDateTable_eaf780a6-3554-42fc-8f35-03b7e6d56dd0.'Date Hierarchy'
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column RosterNoteId
+		dataType: int64
+		formatString: 0
+		lineageTag: fd60cd10-6d75-4f54-afc5-3b658fad75ae
+		summarizeBy: count
+		sourceColumn: RosterNoteId
+
+		annotation SummarizationSetBy = Automatic
+
+	column RosterArea = ```
+			IF(
+			    FactRostersVisualCare[LocationId] = -1, 
+			    IF(FactRostersVisualCare[CarerId] = -1,
+			        CALCULATE(SELECTEDVALUE('Dim Clients'[Area]), CROSSFILTER('Dim Clients'[ClientId], FactRostersVisualCare[ClientId], Both)),
+			        CALCULATE(SELECTEDVALUE(DimWorkforceVisualCare[Area]), CROSSFILTER(DimWorkforceVisualCare[CarerId], FactRostersVisualCare[CarerId], Both))),
+			    CALCULATE(SELECTEDVALUE(DimRosterLocationsVisualCare[Area]), CROSSFILTER(FactRostersVisualCare[LocationId], DimRosterLocationsVisualCare[LocationId], Both))
+			)
+			```
+		lineageTag: 95b84889-a10f-444c-ac30-a4cadbb5741d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column TimesheetStartCompletedFlag
+		dataType: int64
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 6c5ee9c6-864c-4964-9fa4-c3deae015ea9
+		summarizeBy: sum
+		sourceColumn: TimesheetStartCompletedFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column TimesheetFinishCompletedFlag
+		dataType: int64
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 07cba8f9-d868-4d30-aae9-dc813406f226
+		summarizeBy: sum
+		sourceColumn: TimesheetFinishCompletedFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column TimesheetAllTimesCompletedFlag
+		dataType: int64
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 43f6f6aa-32d8-414b-a0c3-a3115255080a
+		summarizeBy: sum
+		sourceColumn: TimesheetAllTimesCompletedFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column TimesheetAnyTimesCompletedFlag
+		dataType: int64
+		formatString: 0
+		displayFolder: Flags
+		lineageTag: 38c9e40c-2342-46da-9913-001d4388a82e
+		summarizeBy: sum
+		sourceColumn: TimesheetAnyTimesCompletedFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactRostersVisualCare = m
+		mode: import
+		queryGroup: Rosters
+		source =
+				let
+				    Source = #"Rosters - Source",
+				    #"Removed Columns" = Table.RemoveColumns(Source,{"Notes"}),
+				    #"Added TimesheetStartCompletedFlag" = Table.AddColumn(#"Removed Columns", "TimesheetStartCompletedFlag", each if [APP_StartTime] <> null then 1 else 0),
+				    #"Added TimesheetFinishCompletedFlag" = Table.AddColumn(#"Added TimesheetStartCompletedFlag", "TimesheetFinishCompletedFlag", each if [APP_FinishTime] <> null then 1 else 0),
+				    #"Added TimesheetAllTimesCompletedFlag" = Table.AddColumn(#"Added TimesheetFinishCompletedFlag", "TimesheetAllTimesCompletedFlag", each if [APP_StartTime] <> null and [APP_FinishTime] <> null then 1 else 0),
+				    #"Added TimesheetAnyTimesCompletedFlag" = Table.AddColumn(#"Added TimesheetAllTimesCompletedFlag", "TimesheetAnyTimesCompletedFlag", each if [APP_StartTime] <> null or [APP_FinishTime] <> null then 1 else 0),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added TimesheetAnyTimesCompletedFlag",{{"TimesheetStartCompletedFlag", Int64.Type}, {"TimesheetFinishCompletedFlag", Int64.Type}, {"TimesheetAllTimesCompletedFlag", Int64.Type}, {"TimesheetAnyTimesCompletedFlag", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

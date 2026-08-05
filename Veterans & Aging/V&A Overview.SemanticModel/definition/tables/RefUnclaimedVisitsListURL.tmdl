@@ -1,0 +1,40 @@
+table RefUnclaimedVisitsListURL
+	lineageTag: 41ec3b7d-9d87-4e42-980e-58993954b803
+
+	column UnclaimedVisitsListUrl
+		dataType: string
+		lineageTag: 3e5eaccf-9116-4560-997f-8289f53a738b
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: UnclaimedVisitsListUrl
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnclaimedVisitsListTitle
+		dataType: string
+		lineageTag: b60f7450-d96e-4d45-86c9-9b509ab776dd
+		summarizeBy: none
+		sourceColumn: UnclaimedVisitsListTitle
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RefUnclaimedVisitsListURL = m
+		mode: import
+		queryGroup: Claims
+		source =
+				let
+				    Source = #"DimVHCUnclaimedVisits-Source",
+				    #"Kept First Rows" = Table.FirstN(Source,1),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Kept First Rows",{"FieldValuesAsText"}),
+				    #"Expanded FieldValuesAsText" = Table.ExpandRecordColumn(#"Removed Other Columns", "FieldValuesAsText", {"FileDirRef"}, {"UnclaimedVisitsListUrl"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Expanded FieldValuesAsText"," ","%20",Replacer.ReplaceText,{"UnclaimedVisitsListUrl"}),
+				    #"Added Prefix" = Table.TransformColumns(#"Replaced Value", {{"UnclaimedVisitsListUrl", each "https://cruxscss.sharepoint.com" & _, type text}}),
+				    #"Added Custom" = Table.AddColumn(#"Added Prefix", "UnclaimedVisitsListTitle", each "Update VHC Unclaimed Visits register"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"UnclaimedVisitsListTitle", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

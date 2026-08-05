@@ -1,0 +1,256 @@
+table DimVisitDate
+	lineageTag: 850799a8-ccab-46b6-884a-9b241d86076e
+	dataCategory: Time
+
+	column VisitDate
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: f487e771-1a84-4981-bca3-f046761ce371
+		summarizeBy: none
+		sourceColumn: VisitDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: f9b553e6-b97f-49a2-9f3f-8a95eab7aa1f
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: fe81cbe3-2e07-4882-be12-bb364b6ff7db
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: ad6a6266-458e-4a40-907c-d37576e6e016
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 3155d4c6-7936-4466-b622-c92b125342b5
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6a7345f0-7da9-493d-ae34-87603ccbdbfb
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 47d78737-3d34-475b-9ec7-2c3453475c5d
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: e8b7ba60-0292-4c07-aa69-e55178a803bc
+		summarizeBy: none
+		sourceColumn: DayName
+		sortByColumn: DayOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: cda986a3-4fa6-4e48-9bb8-b4055663446d
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3658ad9a-2ae3-40d9-9f0a-70f7a4ba18e1
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: bea7ba40-6ac8-48f2-a1a7-81871495cc0b
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: 965ec46a-5e9d-44e1-90de-75ef7f0235b7
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 1f91dd0b-ddb4-4710-ab8b-b7858e6b5469
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'd MMM'
+		dataType: string
+		lineageTag: ba383433-6d0c-438b-9b4a-6b7f93908698
+		summarizeBy: none
+		sourceColumn: d MMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column MMdd
+		dataType: int64
+		formatString: 0
+		lineageTag: 9ae26b1c-b44d-4132-873d-f05b1269a46c
+		summarizeBy: sum
+		sourceColumn: MMdd
+
+		annotation SummarizationSetBy = Automatic
+
+	column FortnightOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 688699d3-e901-4385-ad4c-8f099c1011bf
+		summarizeBy: sum
+		sourceColumn: FortnightOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYFF
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 127968ff-13dc-4d42-8fc7-35307f786dcb
+		summarizeBy: sum
+		sourceColumn: YYYYFF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'FF (DD MMM YYYY)'
+		dataType: string
+		lineageTag: fff58d39-5abc-482d-baee-4921b4cecb7c
+		summarizeBy: none
+		sourceColumn: FF (DD MMM YYYY)
+		sortByColumn: YYYYFF
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'End of Month'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 01cd64c0-7e44-49f7-8847-08f6938aed1c
+		summarizeBy: none
+		sourceColumn: End of Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column YYYYMMDD
+		dataType: int64
+		formatString: 0
+		lineageTag: 282f9389-c889-4e91-ad57-88de3558e32b
+		summarizeBy: sum
+		sourceColumn: YYYYMMDD
+		sortByColumn: VisitDate
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 00a889d3-dab8-4f33-9040-c3c14ec53ff7
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column SlicerStartOfWeek
+		dataType: string
+		lineageTag: eafe1262-fa78-4244-ab03-5b5570e60fb3
+		summarizeBy: none
+		sourceColumn: SlicerStartOfWeek
+		sortByColumn: StartOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekendFlag
+		dataType: string
+		lineageTag: 2872628b-3efa-4c84-a192-6a9cb45ca88c
+		summarizeBy: none
+		sourceColumn: WeekendFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimVisitDate = m
+		mode: import
+		queryGroup: Visits
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Added Custom" = Table.AddColumn(Source, "YYYYMMDD", each Text.Combine({Date.ToText([Date], "yyyy"),Date.ToText([Date], "MM"),Date.ToText([Date], "dd")})),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Custom",{{"Date", "VisitDate"}}),
+				    #"Inserted End of Month" = Table.AddColumn(#"Renamed Columns", "End of Month", each Date.EndOfMonth([VisitDate]), type date),
+				    #"Added Conditional Column" = Table.AddColumn(#"Inserted End of Month", "WeekendFlag", each if [DayName] = "Saturday" then "Weekend" else if [DayName] = "Sunday" then "Weekend" else "Week Day"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Conditional Column",{{"YYYYMMDD", Int64.Type}, {"WeekendFlag", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

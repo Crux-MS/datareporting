@@ -1,26 +1,139 @@
 table 'Fact Workforce'
 	lineageTag: 6f4e1c07-3a53-464f-b0f1-f8964f8e4d0a
 
-	measure 'Count Active Workers' = ```
-			VAR _maxTerminationDate = CALCULATE(MAX('Dim Employment Start Date'[EmploymentStartDate]), USERELATIONSHIP('Fact Workforce'[TerminationDate], 'Dim Employment Start Date'[EmploymentStartDate]))
+	measure CountActiveWorkers = ```
+			VAR _maxTerminationDate = CALCULATE(MAX('Dim Workforce Start Date'[EmploymentStartDate]), USERELATIONSHIP('Fact Workforce'[TerminationDate], 'Dim Workforce Start Date'[EmploymentStartDate]))
+			VAR _minStartDate = MIN('Dim Workforce Start Date'[EmploymentStartDate])
 			VAR _startDate = SELECTEDVALUE('Fact Workforce'[EmploymentStartDate])
 			VAR _terminationDate = SELECTEDVALUE('Fact Workforce'[TerminationDate])
-			VAR _logic = IF(_terminationDate <= TODAY(), 
+			VAR _logic = IF(_terminationDate <= _maxTerminationDate, 
 			    CALCULATE([Count People], 
 			    'Fact Workforce'[ActiveMemberFlag] = TRUE()),
 			    BLANK())
 			RETURN _logic
 			```
 		formatString: 0
+		displayFolder: KPIs
 		lineageTag: 3beb3ec3-b64d-48bb-8bd3-7a3031303172
 
-	measure 'Count People' = COUNT('Fact Workforce'[MemberId])
-		formatString: 0
+	measure 'Count People' = CALCULATE(COUNT('Fact Workforce'[MemberId]), CROSSFILTER('Dim Workforce'[MemberId], 'Fact Shift'[MemberID],Both))
+		formatString: #,0
+		displayFolder: KPIs
 		lineageTag: d787bd65-5054-43d4-bcd8-f1dfa51c642c
 
-	measure 'Count Active People on Visa' = CALCULATE([Count Active Workers], 'Fact Workforce'[OnVisaFlag] = 1)
+	measure CountActiveWorkersOnVisa = CALCULATE([CountActiveWorkers], 'Fact Workforce'[OnVisaFlag] = 1)
 		formatString: 0
+		displayFolder: KPIs
 		lineageTag: 11971fb8-0600-46af-9fd8-1eba7619a553
+
+	measure EmploymentStart = SELECTEDVALUE('Fact Workforce'[EmploymentStartDate])
+		formatString: Short Date
+		lineageTag: df3e3072-ecb1-405e-b00e-930809493bba
+
+	measure AverageHoursWorked = CALCULATE(AVERAGE('Fact Workforce'[TotalHoursWorkedNursingAustralia]), CROSSFILTER('Dim Workforce'[MemberId], 'Fact Shift'[MemberID], Both))
+		formatString: #,0.00
+		displayFolder: KPIs
+		lineageTag: 6c84523d-f729-440a-9cef-a179006f660c
+
+	measure 'Count Exited Workers' =
+			VAR _exitMonthStart = CALCULATE(STARTOFMONTH('Dim Workforce Start Date'[EmploymentStartDate]), 'Dim Workforce Start Date'[EmploymentStartDate] = TODAY(), USERELATIONSHIP('Fact Workforce'[TerminationDate], 'Dim Workforce Start Date'[EmploymentStartDate]))
+			VAR _exitMonthEnd = CALCULATE(ENDOFMONTH('Dim Workforce Start Date'[EmploymentStartDate]), 'Dim Workforce Start Date'[EmploymentStartDate] = TODAY(), USERELATIONSHIP('Fact Workforce'[TerminationDate], 'Dim Workforce Start Date'[EmploymentStartDate]))
+			VAR _terminationDate = SELECTEDVALUE('Fact Workforce'[TerminationDate])
+			VAR _logic = CALCULATE([Count People], 'Fact Workforce'[TerminationDate] <> BLANK() && 'Fact Workforce'[TerminationDate] <= _exitMonthEnd && 'Fact Workforce'[TerminationDate] >= _exitMonthStart)
+			RETURN _logic
+		formatString: 0
+		displayFolder: KPIs
+		lineageTag: d3f60ca4-35f4-4422-8d12-1d25ecd853aa
+
+	measure CountActiveWorkers0Hours = CALCULATE([CountActiveWorkers], 'Fact Workforce'[TotalHoursWorkedNursingAustralia] <= 0)
+		formatString: 0
+		displayFolder: KPIs
+		lineageTag: 9ad8bffd-2deb-411a-90ec-3e1933bed21a
+
+	measure AvgHoursWorkedNewStarters =
+			VAR _currentPeriodStart = CALCULATE(MIN('Dim Workforce Start Date'[EmploymentStartDate]), 'Dim Workforce Start Date'[RollingDateDifference] = -41)
+			VAR _logic = CALCULATE([AverageHoursWorked], 'Fact Workforce'[EmploymentStartDate] >= _currentPeriodStart && 'Fact Workforce'[EmploymentStartDate] <= TODAY())
+			RETURN _logic
+		displayFolder: KPIs
+		lineageTag: 5ac971c9-36d6-45a8-8c56-34a7d0a19fea
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CountNewStarters =
+			VAR _currentPeriodStart = CALCULATE(MIN('Dim Workforce Start Date'[EmploymentStartDate]), 'Dim Workforce Start Date'[RollingDateDifference] = -45)
+			VAR _logic = CALCULATE([Count People], 'Fact Workforce'[EmploymentStartDate] >= _currentPeriodStart && 'Fact Workforce'[EmploymentStartDate] <= TODAY())
+			RETURN _logic
+		formatString: 0
+		displayFolder: KPIs
+		lineageTag: 7594e283-cfa6-4b5f-bffe-ad2539dfa39f
+
+	measure AverageBillableHoursWorkedNewStarters = CALCULATE([AvgHoursWorkedNewStarters], 'Dim Client'[BillableClientFlag] = TRUE())
+		lineageTag: 17188cea-ec13-4a06-8c98-7b1adaf964e7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AverageNonBillableHoursWorkedNewStarters = CALCULATE([AvgHoursWorkedNewStarters], 'Dim Client'[BillableClientFlag] = FALSE())
+		lineageTag: 6d11031a-908d-4336-9fe9-5d3bb2fc3797
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure NewStarterFilledShiftHours = ```
+			VAR _maxDate = MAX('Dim Workforce Start Date'[EmploymentStartDate])
+			VAR _minDate = MIN('Dim Workforce Start Date'[EmploymentStartDate])
+			VAR _logic = CALCULATE(
+			    CALCULATE(
+			        [ShiftDurationHoursWorked], 
+			        'Fact Shift'[Outcome] = "D-Confirmed Member and Client", 
+			        'Dim Client'[BillableClientFlag] = TRUE(), 
+			        USERELATIONSHIP('Fact Shift'[StartDate], 'Dim Workforce Start Date'[EmploymentStartDate])
+			    ),
+			    'Fact Workforce'[EmploymentStartDate] >= _minDate && 'Fact Workforce'[EmploymentStartDate] <= _maxDate)
+			RETURN _logic
+			```
+		lineageTag: e11aed40-ba75-4b88-9ed0-16ee26e6eccd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure IncludedWorkerDateRange = "Filtered date range: " & FORMAT(MIN('Dim Workforce Start Date'[EmploymentStartDate]), "DD/MM/YYYY") & " - " & FORMAT(MAX('Dim Workforce Start Date'[EmploymentStartDate]), "DD/MM/YYYY")
+		lineageTag: 6fab081f-d0b0-4594-b698-2b3c545c17d8
+
+	measure NewStarterUnbillableFilledShiftHours = ```
+			VAR _maxDate = MAX('Dim Workforce Start Date'[EmploymentStartDate])
+			VAR _minDate = MIN('Dim Workforce Start Date'[EmploymentStartDate])
+			VAR _logic = CALCULATE(
+			    CALCULATE(
+			        [ShiftDurationHoursWorked], 
+			        'Fact Shift'[Outcome] = "D-Confirmed Member and Client", 
+			        'Dim Client'[BillableClientFlag] = FALSE(), 
+			        USERELATIONSHIP('Fact Shift'[StartDate], 'Dim Workforce Start Date'[EmploymentStartDate])
+			    ),
+			    'Fact Workforce'[EmploymentStartDate] >= _minDate && 'Fact Workforce'[EmploymentStartDate] <= _maxDate)
+			RETURN _logic
+			```
+		lineageTag: 13933e80-c1f3-45b2-8817-493fe067511d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure NewStarterShiftConfirmedMemberHours = ```
+			VAR _maxDate = MAX('Dim Workforce Start Date'[EmploymentStartDate])
+			VAR _minDate = MIN('Dim Workforce Start Date'[EmploymentStartDate])
+			VAR _logic = CALCULATE(
+			    CALCULATE(
+			        [ShiftDurationHoursWorked], 
+			        'Fact Shift'[Outcome] = "B-Confirmed Member Not Client", 
+			        // 'Dim Client'[BillableClientFlag] = TRUE(), 
+			        USERELATIONSHIP('Fact Shift'[StartDate], 'Dim Workforce Start Date'[EmploymentStartDate])
+			    ),
+			    'Fact Workforce'[EmploymentStartDate] >= _minDate && 'Fact Workforce'[EmploymentStartDate] <= _maxDate)
+			RETURN _logic
+			```
+		lineageTag: da9eed4c-47b9-438a-b5b4-ff2baa7eeed1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure MinShiftDuration = SUM('Fact Workforce'[MinShiftHours])
+		formatString: 0
+		lineageTag: 443d70b8-14b6-4cdd-bd50-8b7e6827093d
 
 	column MemberId
 		dataType: int64
@@ -34,6 +147,7 @@ table 'Fact Workforce'
 	column ActiveMemberFlag
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
 		lineageTag: 4935f355-2a2b-4c05-bd4d-634c1c057e0b
 		summarizeBy: none
 		sourceColumn: ActiveMemberFlag
@@ -43,6 +157,7 @@ table 'Fact Workforce'
 	column ActiveDoctorFlag
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
 		lineageTag: a156a31b-5de1-4301-9989-6cc01f7164b0
 		summarizeBy: none
 		sourceColumn: ActiveDoctorFlag
@@ -52,6 +167,7 @@ table 'Fact Workforce'
 	column ActiveNurseFlag
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
 		lineageTag: c6581033-bd06-4179-aa8a-b5e16b2e6e23
 		summarizeBy: none
 		sourceColumn: ActiveNurseFlag
@@ -60,7 +176,7 @@ table 'Fact Workforce'
 
 	column TotalHoursWorkedNursingAustralia
 		dataType: int64
-		formatString: 0
+		formatString: #,0
 		lineageTag: 1f22aaf3-d3b6-49ee-b788-6566ff70e5f6
 		summarizeBy: sum
 		sourceColumn: TotalHoursWorkedNursingAustralia
@@ -69,16 +185,20 @@ table 'Fact Workforce'
 
 	column EmploymentStartDate
 		dataType: dateTime
-		formatString: General Date
+		formatString: Long Date
+		displayFolder: DateTime
 		lineageTag: 31090302-d22a-4125-a37a-4fa763b2b94f
 		summarizeBy: none
 		sourceColumn: EmploymentStartDate
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column FirstShiftDate
 		dataType: dateTime
-		formatString: General Date
+		formatString: Short Date
+		displayFolder: DateTime
 		lineageTag: 99b568af-8a34-45ca-829a-d4c4b2447beb
 		summarizeBy: none
 		sourceColumn: FirstShiftDate
@@ -92,7 +212,8 @@ table 'Fact Workforce'
 
 	column LastShiftDate
 		dataType: dateTime
-		formatString: General Date
+		formatString: Short Date
+		displayFolder: DateTime
 		lineageTag: b1cb1999-dc2e-49b4-ade9-04d37d7d32ba
 		summarizeBy: none
 		sourceColumn: LastShiftDate
@@ -107,6 +228,7 @@ table 'Fact Workforce'
 	column NextShiftDate
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 2204dcd2-0d29-4766-b921-ab2b895988f4
 		summarizeBy: none
 		sourceColumn: NextShiftDate
@@ -121,6 +243,7 @@ table 'Fact Workforce'
 	column OnVisaFlag
 		dataType: int64
 		formatString: 0
+		displayFolder: Flags
 		lineageTag: 59739e12-a355-40b0-81f7-a62126c7a4d9
 		summarizeBy: sum
 		sourceColumn: OnVisaFlag
@@ -130,6 +253,7 @@ table 'Fact Workforce'
 	column VisaExpiryDate
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 1b730676-aa71-4316-82d0-341cd8e1f079
 		summarizeBy: none
 		sourceColumn: VisaExpiryDate
@@ -143,12 +267,15 @@ table 'Fact Workforce'
 
 	column TerminationDate
 		dataType: dateTime
-		formatString: General Date
+		formatString: Short Date
+		displayFolder: DateTime
 		lineageTag: a62aa83f-b984-4037-9803-e47e7d5ea02b
 		summarizeBy: none
 		sourceColumn: TerminationDate
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column TerminationType
 		dataType: string
@@ -161,6 +288,7 @@ table 'Fact Workforce'
 	column DateOfBirth
 		dataType: dateTime
 		formatString: General Date
+		displayFolder: DateTime
 		lineageTag: 2fd4dd76-47c2-4fdb-98e5-8a74ceb938bc
 		summarizeBy: none
 		sourceColumn: DateOfBirth
@@ -172,36 +300,66 @@ table 'Fact Workforce'
 
 		annotation SummarizationSetBy = Automatic
 
-	column ExtractDate
-		dataType: dateTime
-		formatString: General Date
-		lineageTag: 161b29a0-6015-456d-bc86-127e727b0c37
-		summarizeBy: none
-		sourceColumn: ExtractDate
-
-		variation Variation
-			isDefault
-			relationship: 350ce7cb-8e64-4b23-bdd4-78c4570cea2e
-			defaultHierarchy: LocalDateTable_59a59357-5625-4a35-96c2-954f23bb4c19.'Date Hierarchy'
-
-		annotation SummarizationSetBy = Automatic
-
 	column NeverStartFlag
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		displayFolder: Flags
 		lineageTag: 3ac89edc-14f9-420c-9b2f-3d82dc05ba24
 		summarizeBy: none
 		sourceColumn: NeverStartFlag
 
 		annotation SummarizationSetBy = Automatic
 
+	column Age
+		dataType: int64
+		formatString: 0
+		lineageTag: 1e03d7d1-1909-430f-aa24-9bf9d3c6f826
+		summarizeBy: none
+		sourceColumn: Age
+
+		annotation SummarizationSetBy = User
+
+	column AgeBand
+		dataType: string
+		lineageTag: b7714a0c-bed1-413e-889b-20ba0cad210c
+		summarizeBy: none
+		sourceColumn: AgeBand
+		sortByColumn: AgeBandSorting
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgeBandSorting
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a73904e0-a1af-4aab-a988-1d0c935b4060
+		summarizeBy: none
+		sourceColumn: AgeBandSorting
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	column MinShiftHours
+		dataType: int64
+		formatString: 0
+		lineageTag: b5377ee8-c215-4455-b597-fd9536157ed3
+		summarizeBy: sum
+		sourceColumn: MinShiftHours
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Fact Workforce' = m
 		mode: import
+		queryGroup: Workers
 		source =
 				let
-				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)m.MemberID #(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [MemberId]#(lf)#(tab),dbo.IsActiveMember(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ActiveMemberFlag]#(lf)#(tab),dbo.IsActiveDoctor(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ActiveDoctorFlag]#(lf)#(tab),dbo.IsActiveNurse(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ActiveNurseFlag]#(lf)#(tab),dbo.MemberTotalShiftsWorkedForAgencyHrs(m.MemberID, 4)#(tab)#(tab)#(tab)#(tab)AS [TotalHoursWorkedNursingAustralia]#(lf)#(tab),CAST(dbo.MemberJoined(m.MemberID) AS DATE)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [EmploymentStartDate]#(lf)#(tab),dbo.FirstShiftForMember(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [FirstShiftDate]#(lf)#(tab),dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE()))#(tab)AS [LastShiftDate]#(lf)#(tab),dbo.NextShiftForMember(m.MemberID, GETDATE())#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [NextShiftDate]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN mp.VISAExpiryDate is not null THEN 1#(lf)#(tab)#(tab)ELSE 0#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [OnVisaFlag]#(lf)#(tab),mp.VISAExpiryDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [VisaExpiryDate]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN ma.ExitReasonId IS NULL OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL  then CAST(dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE())) AS DATE)#(lf)#(tab)#(tab)#(tab)--if last shift was greater than 6 months ago assume the worker no longer takes shifts with us#(lf)#(tab)#(tab)ELSE null#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [TerminationDate]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN ma.ExitReasonId IS NULL OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL  then 'Agency Termination' #(lf)#(tab)#(tab)#(tab)--if last shift was greater than 6 months ago assume the worker no longer takes shifts with us#(lf)#(tab)#(tab)ELSE null#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [TerminationType]#(lf)#(tab),m.BirthDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [DateOfBirth]#(lf)#(tab),GETDATE()#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ExtractDate]#(lf)#(tab)#(tab),CAST(CASE#(lf)#(tab)#(tab)WHEN CAST(dbo.MemberJoined(m.MemberID) AS DATE) IS NOT NULL AND#(lf)#(tab)#(tab)#(tab)CAST(dbo.FirstShiftForMember(m.MemberID) AS DATE) IS NULL#(lf)#(tab)#(tab)#(tab)THEN 1#(lf)#(tab)#(tab)ELSE 0#(lf)#(tab)END#(tab)AS BIT)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [NeverStartFlag]#(lf)FROM dbo.member m#(lf)LEFT JOIN dbo.MemberContact mc ON m.MemberID = mc.MemberID#(lf)LEFT JOIN dbo.MemberProfile mp ON m.MemberID = mp.MemberID#(lf)LEFT JOIN (#(lf)#(tab)SELECT * #(lf)#(tab)FROM dbo.MemberAgency #(lf)#(tab)WHERE AgencyID = 4#(lf)) ma ON ma.MemberID = m.MemberID#(lf)WHERE m.MemberID not in (1, 54326, 56116, 56961, 54389, 54334, 54328, 54193)"])
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)m.MemberID #(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [MemberId]#(lf)#(tab),dbo.IsActiveMember(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ActiveMemberFlag]#(lf)#(tab),dbo.IsActiveDoctor(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ActiveDoctorFlag]#(lf)#(tab),dbo.IsActiveNurse(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [ActiveNurseFlag]#(lf)#(tab),mp.MinShiftHours#(lf)#(tab),dbo.MemberTotalShiftsWorkedForAgencyHrs(m.MemberID, 4)#(tab)#(tab)#(tab)#(tab)AS [TotalHoursWorkedNursingAustralia]#(lf)#(tab),CAST(dbo.MemberJoined(m.MemberID) AS DATE)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [EmploymentStartDate]#(lf)#(tab),dbo.FirstShiftForMember(m.MemberID)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [FirstShiftDate]#(lf)#(tab),dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE()))#(tab)AS [LastShiftDate]#(lf)#(tab),dbo.NextShiftForMember(m.MemberID, GETDATE())#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [NextShiftDate]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN mp.VISAExpiryDate is not null THEN 1#(lf)#(tab)#(tab)ELSE 0#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [OnVisaFlag]#(lf)#(tab),mp.VISAExpiryDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [VisaExpiryDate]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN ma.ExitReasonId IS NULL OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL  then CAST(dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, 365, GETDATE())) AS DATE)#(lf)#(tab)#(tab)#(tab)--if last shift was greater than 6 months ago assume the worker no longer takes shifts with us#(lf)#(tab)#(tab)ELSE null#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [TerminationDate]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN ma.ExitReasonId IS NULL OR #(lf)#(tab)#(tab)#(tab)dbo.LastShiftForMember(m.MemberID, DATEADD(DAY, -182, GETDATE())) IS NOT NULL  then 'Agency Termination' #(lf)#(tab)#(tab)#(tab)--if last shift was greater than 6 months ago assume the worker no longer takes shifts with us#(lf)#(tab)#(tab)ELSE null#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [TerminationType]#(lf)#(tab),m.BirthDate#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [DateOfBirth]#(lf)#(tab),DATEDIFF(YEAR,m.BirthDate, GETDATE())#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Age]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) < 21 THEN 'Under 21'#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) >= 21 AND DATEDIFF(YEAR,m.BirthDate, GETDATE()) < 35 THEN '21-34'#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) >= 35 AND DATEDIFF(YEAR,m.BirthDate, GETDATE()) < 50 THEN '35-49'#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) >= 50 AND m.BirthDate <> '1900-01-01 00:00:00' THEN '50+'#(lf)#(tab)#(tab)WHEN m.BirthDate = '1900-01-01 00:00:00' THEN 'Birthdate incorrect'#(lf)#(tab)#(tab)ELSE null#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [AgeBand]#(lf)#(tab),CASE#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) < 21 THEN 1#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) >= 21 AND DATEDIFF(YEAR,m.BirthDate, GETDATE()) < 35 THEN 2#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) >= 35 AND DATEDIFF(YEAR,m.BirthDate, GETDATE()) < 50 THEN 3#(lf)#(tab)#(tab)WHEN DATEDIFF(YEAR,m.BirthDate, GETDATE()) >= 50 AND m.BirthDate <> '1900-01-01 00:00:00' THEN 4#(lf)#(tab)#(tab)WHEN m.BirthDate = '1900-01-01 00:00:00' THEN 5#(lf)#(tab)#(tab)ELSE 6#(lf)#(tab)END#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [AgeBandSorting]#(lf)#(tab)#(tab),CAST(CASE#(lf)#(tab)#(tab)WHEN CAST(dbo.MemberJoined(m.MemberID) AS DATE) IS NOT NULL AND#(lf)#(tab)#(tab)#(tab)CAST(dbo.FirstShiftForMember(m.MemberID) AS DATE) IS NULL#(lf)#(tab)#(tab)#(tab)THEN 1#(lf)#(tab)#(tab)ELSE 0#(lf)#(tab)END#(tab)AS BIT)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [NeverStartFlag]#(lf)FROM dbo.member m#(lf)LEFT JOIN dbo.MemberContact mc ON m.MemberID = mc.MemberID#(lf)LEFT JOIN dbo.MemberProfile mp ON m.MemberID = mp.MemberID#(lf)LEFT JOIN (#(lf)#(tab)SELECT * #(lf)#(tab)FROM dbo.MemberAgency #(lf)#(tab)WHERE AgencyID = 4#(lf)) ma ON ma.MemberID = m.MemberID#(lf)WHERE m.MemberID not in (1, 54326, 56116, 56961, 54389, 54334, 54328, 54193, 71295, 15578)"]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"TerminationDate", type date}, {"EmploymentStartDate", type date}})
 				in
-				    Source
+				    #"Changed Type"
 
 	annotation PBI_NavigationStepName = Navigation
 

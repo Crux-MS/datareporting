@@ -1,0 +1,236 @@
+table DimVisitModifiedDate
+	lineageTag: a006eb9a-2a46-41dc-8fa5-08cd63ea0666
+
+	column VisitModifiedDate
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 5c220676-3763-4b9a-a0f5-1329afd3bca2
+		summarizeBy: none
+		sourceColumn: VisitModifiedDate
+
+		variation Variation
+			isDefault
+			relationship: 43b830d6-0b1c-4a07-bfdc-d32591e143a5
+			defaultHierarchy: LocalDateTable_35c458b5-e6d4-4fc2-bf11-6a40c4615d45.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 8a2c7ca9-d500-4656-b8b1-78c645b57b86
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 5785e915-387a-41a4-8605-46e76408e257
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 9af5cc5d-3430-4b6d-968e-4161ef35bc76
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 16adf7c2-fe1e-45f2-a141-ffd6ab5a2f9a
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ec51e318-27ca-4c3a-8d84-f1609da2ff94
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: f71f015a-6f05-41b2-99aa-bced21c72c0c
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 9df47ad3-fda6-49d7-8b89-e933046bbc67
+		summarizeBy: none
+		sourceColumn: DayName
+		sortByColumn: DayOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: c0704ca7-1137-42da-8191-3ae612ae2b9f
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a5e6089-2abf-4dc2-aaea-9bb1ce6cfb8a
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 8f23b43c-d445-4e2a-b512-a24ed13f17e0
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		variation Variation
+			isDefault
+			relationship: e99487ca-b1e2-435a-b95b-18c9ed329ba4
+			defaultHierarchy: LocalDateTable_04e47ced-7bc4-4748-bc71-2b77d56f8c71.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2003e8c9-b56c-403b-a7b4-599f8eaf78a7
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		variation Variation
+			isDefault
+			relationship: 26ac1a2f-4eb9-491f-8762-441f6b3fc2a3
+			defaultHierarchy: LocalDateTable_60140ee3-4364-4bb4-b6e0-bbbb2e9d820d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: 60c59626-9df3-463f-aa32-185ef5e76502
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: d9ea6c3d-f370-49df-a1d1-1a929ed99a2d
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column SlicerStartOfWeek
+		dataType: string
+		lineageTag: d6d80117-5ada-479c-a4df-7c2446359b05
+		summarizeBy: none
+		sourceColumn: SlicerStartOfWeek
+		sortByColumn: StartOfWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'd MMM'
+		dataType: string
+		lineageTag: 8a39d412-be14-4c7a-8f25-3d01612b2e41
+		summarizeBy: none
+		sourceColumn: d MMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column MMdd
+		dataType: int64
+		formatString: 0
+		lineageTag: 09858b00-acd8-49da-bf1f-00f78c75c216
+		summarizeBy: sum
+		sourceColumn: MMdd
+
+		annotation SummarizationSetBy = Automatic
+
+	column FortnightOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 354a350b-a347-4d2f-9f41-de35a7763fc4
+		summarizeBy: sum
+		sourceColumn: FortnightOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYFF
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fe64b5e2-3f05-4379-acd3-b716e1bce5c2
+		summarizeBy: sum
+		sourceColumn: YYYYFF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'FF (DD MMM YYYY)'
+		dataType: string
+		lineageTag: c1c14a3c-0d5e-49a3-b248-0b60acf047f0
+		summarizeBy: none
+		sourceColumn: FF (DD MMM YYYY)
+		sortByColumn: YYYYFF
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimVisitModifiedDate = m
+		mode: import
+		queryGroup: Visits
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Date", "VisitModifiedDate"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

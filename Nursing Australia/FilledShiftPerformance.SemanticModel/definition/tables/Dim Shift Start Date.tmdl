@@ -1,0 +1,257 @@
+table 'Dim Shift Start Date'
+	lineageTag: 959a324b-3c68-48db-a255-1864a7fee8b2
+	sourceLineageTag: 04baa92e-d6a6-4b28-bac7-b8933f0c17fa
+
+	measure SelectedDateRange = FORMAT(MIN('Dim Shift Start Date'[ShiftStartDate]), "DD/MM/YYYY") & " - " & FORMAT(MAX('Dim Shift Start Date'[ShiftStartDate]), "DD/MM/YYYY")
+		lineageTag: 6e526654-523c-4574-866a-96e85f72148f
+
+		changedProperty = Name
+
+	measure SelectedDatesLastMonth =
+			VAR _lastMonthIndicator = CALCULATE(MIN('Dim Shift Start Date'[RollingDateDifference]), 'Dim Shift Start Date'[SlicerMMM YYYY] = "Current Month")-1
+			VAR _lastMonth = CALCULATE(FORMAT(MAX('Dim Shift Start Date'[ShiftStartDate]), "DD/MM/YYYY"), 'Dim Shift Start Date'[RollingDateDifference] = _lastMonthIndicator)
+			VAR _startDate = CALCULATE(FORMAT(STARTOFMONTH('Dim Shift Start Date'[ShiftStartDate]), "DD/MM/YYYY"), 'Dim Shift Start Date'[RollingDateDifference] = _lastMonthIndicator)
+			VAR _logic = _startDate & " - " & _lastMonth
+			RETURN _logic
+		lineageTag: ce300f48-942d-4bf5-81a4-a926a3d1c381
+
+		changedProperty = Name
+
+	measure MaxDate = FORMAT(MAX('Dim Shift Start Date'[ShiftStartDate]), "DD/MM/YYYY")
+		lineageTag: 2d8b00b1-8e50-47fb-be35-6bbd48223785
+
+		changedProperty = Name
+
+	column ShiftStartDate
+		dataType: dateTime
+		isNullable: false
+		formatString: Short Date
+		lineageTag: cf67c439-2d53-4618-af71-112f2ec8f883
+		sourceLineageTag: 4e3d9f1e-4b90-421a-8d86-70a6d17689e5
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ShiftStartDate
+
+		variation Variation
+			isDefault
+			relationship: 58273e83-e5ca-498d-ad40-6bc3cf912544
+			defaultHierarchy: LocalDateTable_8fe759ac-2ca4-4df9-9510-6266035f104c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 08f9593d-2b96-4420-a828-21dee2aef3af
+		sourceLineageTag: 523ab89a-8875-40fa-8e25-1e62f0008da1
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = User
+
+	column MonthName
+		dataType: string
+		lineageTag: f495c2c5-ca63-4bbd-86ac-12133930d548
+		sourceLineageTag: 017d2e26-b225-4758-9ab6-6bcded9f6d02
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = User
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 02cc97e2-e3bb-4b26-95bd-174886182e22
+		sourceLineageTag: 28df4047-89fb-4216-bc50-6d05f34b4242
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		annotation SummarizationSetBy = User
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 37b2c835-61ed-4d58-b4b4-d67bdc381ed2
+		sourceLineageTag: b09dbb45-19f6-4ae5-8f10-989436c22dfc
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = User
+
+	column YYYYMM
+		dataType: string
+		lineageTag: 66a85822-ac8b-4a82-bd9f-5c9c42304a58
+		sourceLineageTag: 81cbb7d0-34b6-44b7-b2ba-0e00c2f54dae
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = User
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 3cfb636d-af21-4680-b611-c6c3abb5e707
+		sourceLineageTag: aebc3720-3618-412a-bb2d-9a3bd0ab96b5
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = User
+
+	column DayName
+		dataType: string
+		lineageTag: a7cfcfce-4897-404a-a99c-967d36903be4
+		sourceLineageTag: a795d296-7771-4a22-a862-0c941d6251c8
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = User
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 6f3df9b0-cc4a-4839-9d96-cb9529c80ed4
+		sourceLineageTag: 613ce7eb-12dd-40a6-aa2d-8a8d8114fc18
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = User
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 03c81611-ce53-41d0-80bb-4d2ef08891fb
+		sourceLineageTag: 8859dd0d-8943-4d4a-bb91-5b8249205a7d
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		variation Variation
+			isDefault
+			relationship: 8bd7f6e6-5d21-4c80-97d6-307fb513642e
+			defaultHierarchy: LocalDateTable_9639edc5-36b7-495d-9639-68186d7dd4cc.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 56fb115c-1de1-4020-a71c-3e6f9b614acc
+		sourceLineageTag: 8f84221c-93ca-4151-8480-fefb049e506e
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = User
+
+	column StartOfWeek
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: cc2362f1-a920-4846-b4a1-955378ad2671
+		sourceLineageTag: 5554261f-e047-4fc5-887d-d6dcd0b64fc3
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: StartOfWeek
+
+		variation Variation
+			isDefault
+			relationship: 92d166bb-febf-4050-8373-e92c31370b5e
+			defaultHierarchy: LocalDateTable_14ccad3c-0277-4c31-aa27-9fb823701437.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: a8d87b36-d2d2-40b0-a228-4d66b8ae9b9a
+		sourceLineageTag: 20b886d9-3489-48e4-a6a2-a2e4d73f4431
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = User
+
+	column 'SlicerMMM YYYY'
+		dataType: string
+		lineageTag: eec9f30b-50db-4858-a8c6-32e490a4d980
+		sourceLineageTag: 45995a5b-1a98-4ce0-92b0-834da04d5c4e
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: SlicerMMM YYYY
+		sortByColumn: YYYYMM
+
+		annotation SummarizationSetBy = User
+
+	column FinancialYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 1fb9f5dc-1650-47fe-8a31-cf3a6d95b526
+		sourceLineageTag: 23fa4333-ecef-467d-888e-51f036160289
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: FinancialYear
+
+		annotation SummarizationSetBy = User
+
+	column CurrentFYFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 6fc6fa09-d202-4f95-afaa-61ac4023832a
+		sourceLineageTag: c2ea0033-fa1d-43db-9749-bc31241c9e23
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: CurrentFYFlag
+
+		annotation SummarizationSetBy = User
+
+	column DayNameAcronym
+		dataType: string
+		lineageTag: 2f6a81ff-c43b-431f-927b-786a58e91f8d
+		sourceLineageTag: 163abd13-6f71-48b8-b630-70b53f20cf22
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: DayNameAcronym
+		sortByColumn: DayOfWeek
+
+		annotation SummarizationSetBy = User
+
+	column 'Start of Month'
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 6adabab1-3657-426e-b115-c3d455609ab8
+		sourceLineageTag: 6256fb0f-1133-4d39-8ecd-a6338fc4ca69
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Start of Month
+
+		variation Variation
+			isDefault
+			relationship: 2865a1f6-eb9e-4893-b2bb-7f088a8afd83
+			defaultHierarchy: LocalDateTable_94572139-cb29-4f93-8fdf-391e2644b6f1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column RollingWeekDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: 52f7c881-daa3-4de7-a552-1a55ac4192da
+		sourceLineageTag: d5ddc880-ba4c-4547-ae44-b9aa9c46fe02
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: RollingWeekDifference
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Shift Start Date' = entity
+		mode: directQuery
+		source
+			entityName: Dim Shift Start Date
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

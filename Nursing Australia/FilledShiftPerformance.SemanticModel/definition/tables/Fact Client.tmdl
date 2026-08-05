@@ -1,0 +1,230 @@
+table 'Fact Client'
+	lineageTag: d1e09186-9dbb-4fc0-bc69-eb7c5f7906f7
+	sourceLineageTag: 24c1dd4f-59bb-4df3-9835-ef8e1965316a
+
+	measure 'Count Clients' = EXTERNALMEASURE("Count Clients", INTEGER, "DirectQuery to AS - Nursing Australia Overview")
+		formatString: 0
+		lineageTag: 032a2a90-b32e-43ea-9da5-d8cf074814c3
+		sourceLineageTag: c40ce85c-9710-4bc4-a4e4-caa170d66a34
+		dataCategory: Uncategorized
+
+	measure 'Count Active Clients' = EXTERNALMEASURE("Count Active Clients", INTEGER, "DirectQuery to AS - Nursing Australia Overview")
+		formatString: 0
+		lineageTag: e6c64653-ff75-4ea8-9b2e-ca2e6367ad28
+		sourceLineageTag: b115c42e-e3e1-4746-9bd4-3a231756429b
+		dataCategory: Uncategorized
+
+	column ClientId
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		lineageTag: fd4ba0ca-e45a-488e-acc9-d3b5705eb969
+		sourceLineageTag: dec7a9bd-2f2e-4072-9019-bb87fcbe8827
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		annotation SummarizationSetBy = User
+
+	column ClientIsActive
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 25697637-72c9-456b-b352-5f471e10c0b7
+		sourceLineageTag: 3f9154ea-5368-43a5-9406-ba75d74b91fd
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClientIsActive
+
+		annotation SummarizationSetBy = User
+
+	column KandaFirstShift
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: d34391a6-55f4-4c5e-8d6b-633412345043
+		sourceLineageTag: 354a1c74-39a4-402c-b80c-fe4dbc62e336
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: KandaFirstShift
+
+		variation Variation
+			isDefault
+			relationship: b5c14ccc-d481-46f9-b240-87739701f0e9
+			defaultHierarchy: LocalDateTable_1c68d673-6d16-4a57-8e54-9dc785dcfbac.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column KandaLastShift
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: c3a6643c-5d6d-4bd5-a9a0-28024d75b13a
+		sourceLineageTag: 653daf4e-8e3c-4017-9726-7c8e7fa11a46
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: KandaLastShift
+
+		variation Variation
+			isDefault
+			relationship: beae1921-a8ab-4032-b8da-48ce9595cd33
+			defaultHierarchy: LocalDateTable_7243866c-415f-44bf-9df1-624dde3776b9.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column KandaTotalWorkerHours
+		dataType: int64
+		formatString: 0
+		lineageTag: 81f5fdbd-42ae-46c9-81b4-32a842818734
+		sourceLineageTag: d89e3558-0d83-4f7a-b315-c24df761750e
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: KandaTotalWorkerHours
+
+		annotation SummarizationSetBy = User
+
+	column ClientCampuses
+		dataType: int64
+		formatString: 0
+		lineageTag: 90b222bf-e823-4b50-a316-ecb73f1ee197
+		sourceLineageTag: b0a4022b-b88f-4b05-842d-b275354ad369
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: ClientCampuses
+
+		annotation SummarizationSetBy = User
+
+	column PrimaryAgencyID
+		dataType: int64
+		formatString: 0
+		lineageTag: c0c3e698-ab2d-4016-baf3-248a7047e96b
+		sourceLineageTag: 36619345-134d-4992-a1f1-6262b6286082
+		dataCategory: Uncategorized
+		summarizeBy: count
+		sourceColumn: PrimaryAgencyID
+
+		annotation SummarizationSetBy = User
+
+	column AccreditedFacilityStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a443ad91-a7d7-4ce1-ad5e-4d5862c40f5c
+		sourceLineageTag: 5bfe0e76-879f-40c1-9af5-ea130f4c2017
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AccreditedFacilityStatus
+
+		annotation SummarizationSetBy = User
+
+	column NoLiftPolicyStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: afcb4027-51b6-497e-9d7c-6b8644ed4821
+		sourceLineageTag: 0455c44b-97d2-4c61-aea1-9b6edfe8d49a
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: NoLiftPolicyStatus
+
+		annotation SummarizationSetBy = User
+
+	column AcceptMidwifeStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: fe9eebae-605d-4241-bc49-34105b6d507b
+		sourceLineageTag: 558bc0c9-8d60-4ba2-a8d3-41b7864df5ec
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: AcceptMidwifeStatus
+
+		annotation SummarizationSetBy = User
+
+	column ManualHandlingStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8d072145-f0c7-4c78-80c8-665408039c1f
+		sourceLineageTag: 3407aa6b-6d34-4bb1-aeab-962099130804
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ManualHandlingStatus
+
+		annotation SummarizationSetBy = User
+
+	column WorkingWithChildrenCheck
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 57b78aa1-ed49-42de-89e1-0391eedd280c
+		sourceLineageTag: 0474f252-c023-4839-b64e-b70be0ebfc26
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: WorkingWithChildrenCheck
+
+		annotation SummarizationSetBy = User
+
+	column CriminalRecordCheckStatus
+		dataType: int64
+		formatString: 0
+		lineageTag: 6d929232-b40e-4804-ada0-80ea901a2ce2
+		sourceLineageTag: d5b16c35-1128-419a-a038-21445908db22
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: CriminalRecordCheckStatus
+
+		annotation SummarizationSetBy = User
+
+	column RequireOrientation
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 5c208657-cef5-4021-9df8-d082cfd325fb
+		sourceLineageTag: 289c670d-fab5-4825-abcd-1c6963be2fdc
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: RequireOrientation
+
+		variation Variation
+			isDefault
+			relationship: 59345705-2c27-4543-ba81-286855c43911
+			defaultHierarchy: LocalDateTable_bfc2b57b-834e-47bf-968d-c32979609799.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column EnabledStatus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 2cd6cec1-982e-46db-a211-f4ab26819351
+		sourceLineageTag: 730db722-e82a-4130-9982-3160f93a580f
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: EnabledStatus
+
+		annotation SummarizationSetBy = User
+
+	column StatusChangedDate
+		dataType: dateTime
+		formatString: General Number
+		lineageTag: 930b47ea-3a4a-4950-a2dd-bb86e496098d
+		sourceLineageTag: 8d49d191-ee2f-4aca-b5be-13425df3a6ab
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: StatusChangedDate
+
+		variation Variation
+			isDefault
+			relationship: e0eb32f9-a69c-427f-ac4f-b64809abe445
+			defaultHierarchy: LocalDateTable_9e9ce824-b6bb-45df-9a12-7557d055545b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = User
+
+	column ClientNetworkID
+		dataType: int64
+		formatString: 0
+		lineageTag: 61fd76d2-1750-4ac3-b439-493732c91b5c
+		sourceLineageTag: dc8c8ee7-4c8e-47b7-b9b0-9dc35ffce57d
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClientNetworkID
+
+		annotation SummarizationSetBy = User
+
+	partition 'Fact Client' = entity
+		mode: directQuery
+		source
+			entityName: Fact Client
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

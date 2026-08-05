@@ -1,0 +1,551 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "63a8e24ce040aad4adde",
+  "position": {
+    "x": 55.862068965517238,
+    "y": 130.34482758620689,
+    "z": 3000,
+    "height": 565,
+    "width": 790,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "fullname"
+                }
+              },
+              "queryRef": "DimPatient.fullname",
+              "nativeQueryRef": "Name",
+              "displayName": "Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "gender"
+                }
+              },
+              "queryRef": "DimPatient.gender",
+              "nativeQueryRef": "Gender",
+              "displayName": "Gender"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "patient_age_band"
+                }
+              },
+              "queryRef": "DimPatient.patient_age_band",
+              "nativeQueryRef": "Age band",
+              "displayName": "Age band"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "patient_state"
+                }
+              },
+              "queryRef": "DimPatient.patient_state",
+              "nativeQueryRef": "State",
+              "displayName": "State"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPatient"
+                    }
+                  },
+                  "Property": "FirstReferralDate"
+                }
+              },
+              "queryRef": "FactVisit.FirstReferralDate",
+              "nativeQueryRef": "Initially referrred",
+              "displayName": "Initially referrred"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPatient"
+                    }
+                  },
+                  "Property": "CareInitiallyStarted"
+                }
+              },
+              "queryRef": "FactPatient.CareInitiallyStarted",
+              "nativeQueryRef": "Care started",
+              "displayName": "Care started"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPatient"
+                    }
+                  },
+                  "Property": "CountReferralInstances"
+                }
+              },
+              "queryRef": "FactVisit.CountReferralInstances",
+              "nativeQueryRef": "No. referrals",
+              "displayName": "No. referrals"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "CountCompletedVisits"
+                }
+              },
+              "queryRef": "FactVisit.DisplayCompletedVisits",
+              "nativeQueryRef": "DisplayCompletedVisits",
+              "displayName": "Completed visits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactVisit"
+                    }
+                  },
+                  "Property": "LatestCompletedVisitDate"
+                }
+              },
+              "queryRef": "FactVisit.LatestCompletedVisitDate",
+              "nativeQueryRef": "Latest completed visit",
+              "displayName": "Latest completed visit"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimPatient"
+                    }
+                  },
+                  "Property": "active_ind"
+                }
+              },
+              "queryRef": "DimPatient.active_ind",
+              "nativeQueryRef": "Active patient",
+              "displayName": "Active patient"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimReferrer"
+                    }
+                  },
+                  "Property": "ListeReferrerGroups"
+                }
+              },
+              "queryRef": "DimReferrer.ListeReferrerGroups",
+              "nativeQueryRef": "Referrer/s",
+              "displayName": "Referrer/s"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactVisit"
+                  }
+                },
+                "Property": "CountCompletedVisits"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "50.93449624796443D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.patient_age_band"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "73.55329415199235D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.gender"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "111.82877618902809D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.fullname"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "66.99084434924434D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimPatient.active_ind"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "83.94122928772613D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.LatestCompletedVisitDate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "83.950518097143D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.DisplayCompletedVisits"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "80.94273710704626D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.FirstReferralDate"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "63.68389221789161D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactVisit.CountReferralInstances"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "106.97871600358116D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimReferrer.ListeReferrerGroups"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "82.13300750421956D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactPatient.CareInitiallyStarted"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Workers'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'with expired drivers licenses'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d07019cd807370711370",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimNurse"
+              }
+            },
+            "Property": "fullname"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimNurse",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "fullname"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'AAAwriteover  .'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "2b8b0e9db3346d153c69",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimNurse"
+              }
+            },
+            "Property": "drivers_licence_current_ind"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimNurse",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "drivers_licence_current_ind"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "false"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "7259e8b5880056b0d04d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactVisit"
+              }
+            },
+            "Property": "patient_id"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      }
+    ]
+  }
+}

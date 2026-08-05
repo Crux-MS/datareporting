@@ -1,0 +1,33 @@
+table BridgeServiceContractNumber
+	isHidden
+	lineageTag: 042894f6-779a-48b4-81c7-66c891d5fd39
+
+	column 'Service Contract Reference Number'
+		dataType: string
+		isHidden
+		lineageTag: 2d1cac2b-68e1-486c-99f7-d0090f8c3d37
+		summarizeBy: none
+		sourceColumn: Service Contract Reference Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BridgeServiceContractNumber = m
+		mode: import
+		queryGroup: SharePoint
+		source =
+				let
+				    Source = Table.Combine({#"BridgeCareViewCaseNotes - Source", #"BridgeClientFunding - Source"}),
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Service Contract Reference Number"}),
+				    #"Removed Blank Rows" = Table.SelectRows(#"Removed Other Columns", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Blank Rows")
+				in
+				    #"Removed Duplicates"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

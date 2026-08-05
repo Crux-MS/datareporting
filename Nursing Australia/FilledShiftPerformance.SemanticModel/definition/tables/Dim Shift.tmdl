@@ -1,0 +1,137 @@
+table 'Dim Shift'
+	lineageTag: 15d88812-ce72-42c9-9cca-c47c431c0df1
+	sourceLineageTag: c74fb9c5-f6f0-44dc-9ea0-5c4250463794
+
+	column ShiftId
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		lineageTag: 486de9af-9cd3-47f1-9c42-a8af2cacbe04
+		sourceLineageTag: fd26588d-e72b-4e4e-bf08-6d520db014b0
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ShiftId
+
+		annotation SummarizationSetBy = User
+
+	column RequestedTrade
+		dataType: string
+		lineageTag: 106dd6f4-0cea-4489-bb1e-c041af4fc19e
+		sourceLineageTag: a0e1bde0-1788-4e78-bb74-2caca3f6eef0
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: RequestedTrade
+
+		annotation SummarizationSetBy = User
+
+	column ClientCampusName
+		dataType: string
+		lineageTag: 1bd9162a-2ef0-4887-9460-46a73a8919f4
+		sourceLineageTag: e0950f90-b98f-4159-ada9-0f9717df00cb
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ClientCampusName
+
+		annotation SummarizationSetBy = User
+
+	column BedNumbers
+		dataType: int64
+		formatString: 0
+		lineageTag: 4cc49f85-87c0-4c62-b25a-6856e9051379
+		sourceLineageTag: 58a11f5c-94d4-4e91-b4f2-7d4515d936dd
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: BedNumbers
+
+		annotation SummarizationSetBy = User
+
+	column ShiftWardName
+		dataType: string
+		lineageTag: 5250edfc-fcb8-4edb-9f12-5e52c21b4ef5
+		sourceLineageTag: 62f460bf-8912-4a2c-a4a0-eb1d2f6a145d
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ShiftWardName
+
+		annotation SummarizationSetBy = User
+
+	column WorkArea
+		dataType: string
+		lineageTag: a5ec3a9c-fa11-4a17-88b6-c4d1a5918464
+		sourceLineageTag: 624255a8-a335-485a-89ff-3f20c49a9461
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: WorkArea
+
+		annotation SummarizationSetBy = User
+
+	column Suburb
+		dataType: string
+		lineageTag: 799bec95-dfec-4687-b683-a723b36af28e
+		sourceLineageTag: 621cbd14-9e82-4592-bbe6-182de71efa74
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Suburb
+
+		annotation SummarizationSetBy = User
+
+	column Postcode
+		dataType: string
+		lineageTag: be48c0a2-905d-4ac4-8c2b-e940f35193a1
+		sourceLineageTag: 282716d2-90b5-4904-b651-1189d2b4a32c
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Postcode
+
+		annotation SummarizationSetBy = User
+
+	column State
+		dataType: string
+		lineageTag: 725021c8-cd8a-4054-a3fa-18c306853f39
+		sourceLineageTag: 19556d82-e035-4baa-85da-9d5b159a6d79
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = User
+
+	column Country
+		dataType: string
+		lineageTag: 3c22d586-e077-452d-9bb4-4175de11f35a
+		sourceLineageTag: 96d67c5b-e0ee-4c5f-b1c3-3364369da24f
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = User
+
+	hierarchy 'Shift Location'
+		lineageTag: 2f3562ea-a772-4bf7-b135-5988590a6c5d
+		sourceLineageTag: d3fae7fe-3ac7-4aaa-83a2-d412f22d3c18
+
+		level Country
+			lineageTag: 34f67021-3247-44fc-9f9b-330b96f6dc26
+			sourceLineageTag: bcf044a4-f70e-48ba-8aeb-63e83bf3cf35
+			column: Country
+
+		level State
+			lineageTag: ed2547e1-8c6c-41cb-819e-b5841eab365e
+			sourceLineageTag: c4b812c0-992c-4dcf-b88d-c022c3ae3bd4
+			column: State
+
+		level Postcode
+			lineageTag: 94452596-4563-40cc-abc9-59a562fc1bed
+			sourceLineageTag: 712954d4-fe1a-4690-b601-ec9bcddff30e
+			column: Postcode
+
+		level Suburb
+			lineageTag: 268d86c2-5391-499c-a7a4-4b50fb8596f5
+			sourceLineageTag: afce215f-94d4-494e-8432-51d1013363b8
+			column: Suburb
+
+	partition 'Dim Shift' = entity
+		mode: directQuery
+		source
+			entityName: Dim Shift
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

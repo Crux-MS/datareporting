@@ -1,0 +1,195 @@
+table DimPatient
+	lineageTag: 63394430-3f01-4011-bc37-c67efad0be32
+
+	column patient_id
+		dataType: int64
+		formatString: 0
+		lineageTag: ab7597e1-221e-4b17-b7ad-ffdd1addf22b
+		summarizeBy: none
+		sourceColumn: patient_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column firstname
+		dataType: string
+		lineageTag: 548123bb-9bf4-449f-bf1c-bcf9ffa9a7c6
+		summarizeBy: none
+		sourceColumn: firstname
+
+		annotation SummarizationSetBy = Automatic
+
+	column surname
+		dataType: string
+		lineageTag: 4b9b6a38-539c-4491-b537-c811e193cf7e
+		summarizeBy: none
+		sourceColumn: surname
+
+		annotation SummarizationSetBy = Automatic
+
+	column fullname
+		dataType: string
+		lineageTag: 70046e16-cd46-4d7e-9636-ee9922e0b11b
+		summarizeBy: none
+		sourceColumn: fullname
+
+		annotation SummarizationSetBy = Automatic
+
+	column gender
+		dataType: string
+		lineageTag: 0c48d867-1a27-4d50-a045-907b02583345
+		summarizeBy: none
+		sourceColumn: gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_suburb
+		dataType: string
+		lineageTag: 56921b6e-8a18-4047-b42b-46707908f7ac
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: patient_suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_state
+		dataType: string
+		lineageTag: 73091a64-ea47-4bbc-8bd1-008b1d14322d
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: patient_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_postcode
+		dataType: string
+		lineageTag: c6b56df4-43f0-4deb-b053-e82e1ce19089
+		dataCategory: PostalCode
+		summarizeBy: none
+		sourceColumn: patient_postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column active_ind
+		dataType: string
+		lineageTag: be561f38-6763-42f1-9500-07d7422c83a0
+		summarizeBy: none
+		sourceColumn: active_ind
+
+		annotation SummarizationSetBy = Automatic
+
+	column dva_ind
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8e40aefa-4a04-4588-9ce4-c6cda024bee5
+		summarizeBy: none
+		sourceColumn: dva_ind
+
+		annotation SummarizationSetBy = Automatic
+
+	column living_alone_ind
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ab6f4086-2364-408a-a9aa-aa4dcbfab737
+		summarizeBy: none
+		sourceColumn: living_alone_ind
+
+		annotation SummarizationSetBy = Automatic
+
+	column high_dependant_ind
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 3528ecca-c7e8-43f6-b2bf-718ab3baded2
+		summarizeBy: none
+		sourceColumn: high_dependant_ind
+
+		annotation SummarizationSetBy = Automatic
+
+	column lifter_ind
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 52956cb0-9c7c-4661-b877-75bda907447d
+		summarizeBy: none
+		sourceColumn: lifter_ind
+
+		annotation SummarizationSetBy = Automatic
+
+	column consent_to_care_ind
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c2d5c3de-9d0a-468f-b108-e629d43bd134
+		summarizeBy: none
+		sourceColumn: consent_to_care_ind
+
+		annotation SummarizationSetBy = Automatic
+
+	column extreme_weather_risk_ind
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 00e23e46-ade2-470c-8850-bdf41a8afacb
+		summarizeBy: none
+		sourceColumn: extreme_weather_risk_ind
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_age_band
+		dataType: string
+		lineageTag: fd0f6fe2-353a-4c49-a234-7e19a034d9ad
+		summarizeBy: none
+		sourceColumn: patient_age_band
+		sortByColumn: patient_age_band_sorting
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_age_band_sorting
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: edaf82cc-c4f7-49cf-8b14-71f8d499215c
+		summarizeBy: sum
+		sourceColumn: patient_age_band_sorting
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstNameOnly
+		dataType: string
+		lineageTag: 3a2075d5-7865-43d6-addf-7b56ad56df04
+		summarizeBy: none
+		sourceColumn: FirstNameOnly
+
+		annotation SummarizationSetBy = Automatic
+
+	column SurnameOnly
+		dataType: string
+		lineageTag: aef56b31-1df2-41c8-a92d-ac759f9eda40
+		summarizeBy: none
+		sourceColumn: SurnameOnly
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullNamesOnly
+		dataType: string
+		lineageTag: 3096ace0-06a4-427d-9bb6-59c92bd477bc
+		summarizeBy: none
+		sourceColumn: FullNamesOnly
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimPatient = m
+		mode: import
+		queryGroup: Patients\DimPatient
+		source =
+				let
+				    Source = Table.Combine({#"DimPatientVIC - Source", #"DimPatientWA - Source", #"DimPatientNSW - Source", #"DimPatientSA - Source", #"DimPatientQLD - Source"})
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "cf030e3e03d186c9f36a",
   "position": {
     "x": 47.881773399014776,
@@ -20,45 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Client"
+                      "Entity": "Dim Shift"
                     }
                   },
                   "Property": "State"
                 }
               },
-              "queryRef": "Dim Client.State",
+              "queryRef": "Dim Shift.State",
               "nativeQueryRef": "State",
               "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Client"
-                    }
-                  },
-                  "Property": "Region"
-                }
-              },
-              "queryRef": "Dim Client.Region",
-              "nativeQueryRef": "Region",
-              "active": false
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Client"
-                    }
-                  },
-                  "Property": "ClientName"
-                }
-              },
-              "queryRef": "Dim Client.ClientName",
-              "nativeQueryRef": "ClientName",
-              "active": false
             }
           ]
         }
@@ -104,15 +74,101 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Client State | Region | Name'"
+                  "Value": "'Client State'"
                 }
               }
             }
           }
         }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
       ]
+    },
+    "syncGroup": {
+      "groupName": "State",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "cac49e7781889ad24601"
+  "parentGroupName": "cac49e7781889ad24601",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "a23e3a91c7bf260b554c",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Shift"
+              }
+            },
+            "Property": "State"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim Shift",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "State"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "null"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

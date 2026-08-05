@@ -1,0 +1,117 @@
+table 'Dim Shift'
+	lineageTag: c74fb9c5-f6f0-44dc-9ea0-5c4250463794
+
+	column ShiftId
+		dataType: int64
+		formatString: 0
+		lineageTag: fd26588d-e72b-4e4e-bf08-6d520db014b0
+		summarizeBy: none
+		sourceColumn: ShiftId
+
+		annotation SummarizationSetBy = Automatic
+
+	column RequestedTrade
+		dataType: string
+		lineageTag: a0e1bde0-1788-4e78-bb74-2caca3f6eef0
+		summarizeBy: none
+		sourceColumn: RequestedTrade
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientCampusName
+		dataType: string
+		lineageTag: e0950f90-b98f-4159-ada9-0f9717df00cb
+		summarizeBy: none
+		sourceColumn: ClientCampusName
+
+		annotation SummarizationSetBy = Automatic
+
+	column BedNumbers
+		dataType: int64
+		formatString: 0
+		lineageTag: 58a11f5c-94d4-4e91-b4f2-7d4515d936dd
+		summarizeBy: sum
+		sourceColumn: BedNumbers
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShiftWardName
+		dataType: string
+		lineageTag: 62f460bf-8912-4a2c-a4a0-eb1d2f6a145d
+		summarizeBy: none
+		sourceColumn: ShiftWardName
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkArea
+		dataType: string
+		lineageTag: 624255a8-a335-485a-89ff-3f20c49a9461
+		summarizeBy: none
+		sourceColumn: WorkArea
+
+		annotation SummarizationSetBy = Automatic
+
+	column Suburb
+		dataType: string
+		lineageTag: 621cbd14-9e82-4592-bbe6-182de71efa74
+		summarizeBy: none
+		sourceColumn: Suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	column Postcode
+		dataType: string
+		lineageTag: 282716d2-90b5-4904-b651-1189d2b4a32c
+		summarizeBy: none
+		sourceColumn: Postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 19556d82-e035-4baa-85da-9d5b159a6d79
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: 96d67c5b-e0ee-4c5f-b1c3-3364369da24f
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Shift Location'
+		lineageTag: d3fae7fe-3ac7-4aaa-83a2-d412f22d3c18
+
+		level Country
+			lineageTag: bcf044a4-f70e-48ba-8aeb-63e83bf3cf35
+			column: Country
+
+		level State
+			lineageTag: c4b812c0-992c-4dcf-b88d-c022c3ae3bd4
+			column: State
+
+		level Postcode
+			lineageTag: 712954d4-fe1a-4690-b601-ec9bcddff30e
+			column: Postcode
+
+		level Suburb
+			lineageTag: afce215f-94d4-494e-8432-51d1013363b8
+			column: Suburb
+
+	partition 'Dim Shift' = m
+		mode: import
+		queryGroup: Shifts
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT#(lf)#(tab)s.ShiftId#(lf)#(tab),s.PayRequestedClassName#(tab)AS [RequestedTrade]#(lf)#(tab),cc.Name#(tab)#(tab)#(tab)#(tab)#(tab)AS [ClientCampusName]#(lf)#(tab),ccw.BedNumbers#(lf)#(tab),ccw.Name#(tab)#(tab)#(tab)#(tab)#(tab)AS [ShiftWardName]#(lf)#(tab),w.Name#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [WorkArea]#(lf)#(tab),cc.Suburb#(lf)#(tab),cc.Postcode#(lf)#(tab),cc.State#(lf)#(tab),'AUS'#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)AS [Country]#(lf)FROM dbo.Shift s#(lf)LEFT JOIN ClientCampus cc ON cc.CampusId = s.CampusID#(lf)LEFT JOIN ClientCampusWard ccw on ccw.WardId = s.WardID#(lf)LEFT JOIN WorkArea w on w.WorkAreaId = ccw.WorkAreaId#(lf)where --s.AgencyID = 4 #(lf)#(tab)(s.MemberID <> 1 OR s.MemberID IS NULL) and#(lf)#(tab)s.StartDate >= DATEADD(year,-3,GETDATE())#(lf)#(tab)and s.ShiftID NOT IN (6495638, 6495680, 6496332)"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

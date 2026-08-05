@@ -1,0 +1,32 @@
+table 'Fill rate map legend'
+	lineageTag: f3f14a9b-2a4c-41a1-b9fc-45e1be9d21fd
+	sourceLineageTag: 48bccbd1-6894-405d-a8ab-fd08f79ec243
+
+	column Value
+		dataType: string
+		lineageTag: fb55d8a2-29ee-4850-8959-654b8377d003
+		sourceLineageTag: b2505e57-00a6-41a2-b6a8-a47270b55962
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Value
+		sortByColumn: Order
+
+		annotation SummarizationSetBy = User
+
+	column Order
+		dataType: int64
+		formatString: 0
+		lineageTag: 3a944194-787a-4d42-838a-32eccfb93ebe
+		sourceLineageTag: 33615d69-3d56-4aa8-a0c8-dd76702fc4f2
+		dataCategory: Uncategorized
+		summarizeBy: sum
+		sourceColumn: Order
+
+		annotation SummarizationSetBy = User
+
+	partition 'Fill rate map legend' = entity
+		mode: directQuery
+		source
+			entityName: Fill rate map legend
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

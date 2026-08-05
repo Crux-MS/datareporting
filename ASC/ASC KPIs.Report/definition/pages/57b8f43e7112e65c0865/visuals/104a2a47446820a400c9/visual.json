@@ -1,0 +1,158 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "104a2a47446820a400c9",
+  "position": {
+    "x": 380.64837905236908,
+    "y": 24.239401496259351,
+    "z": 3000,
+    "height": 110.42394014962593,
+    "width": 628.428927680798,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountActiveClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountActiveClients",
+              "nativeQueryRef": "Active Clients",
+              "displayName": "Active Clients"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactClientFunding"
+                        }
+                      },
+                      "Property": "Service Contract Reference No."
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "Min(FactClientFunding.Service Contract Reference No.)",
+              "nativeQueryRef": "Active contracts",
+              "displayName": "Active contracts"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountPendingClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountPendingClients",
+              "nativeQueryRef": "Pending clients",
+              "displayName": "Pending clients"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountNewClients"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountNewClients",
+              "nativeQueryRef": "New clients",
+              "displayName": "New clients"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCareViewCaseNotes"
+                    }
+                  },
+                  "Property": "CountClientExits"
+                }
+              },
+              "queryRef": "FactCareViewCaseNotes.CountClientExits",
+              "nativeQueryRef": "Client exits",
+              "displayName": "Client exits"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactCareViewCaseNotes"
+                  }
+                },
+                "Property": "CountActiveClients"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "layout": [
+        {
+          "properties": {
+            "columnCount": {
+              "expr": {
+                "Literal": {
+                  "Value": "5L"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "paddingUniform": {
+              "expr": {
+                "Literal": {
+                  "Value": "4L"
+                }
+              }
+            },
+            "backgroundShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

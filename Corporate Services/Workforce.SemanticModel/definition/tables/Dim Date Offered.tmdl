@@ -2,10 +2,10 @@ table 'Dim Date Offered'
 	lineageTag: 9435adad-2432-4dd6-b338-d730ae2cb833
 
 	measure ORReportingYearFlag =
-			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]))//, CROSSFILTER('Dim Extract Date'[Extract Date], 'Fact Workforce'[Extract Date], Both))
+			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]), ALL('Dim Date Offered'))
 			VAR _startDate = EOMONTH(_selectedDate, -13)+1
 			VAR _endDate = EOMONTH(_selectedDate,-1)
-			VAR _selectedStartDate = MAX('Dim Date Offered'[Date])
+			VAR _selectedStartDate = EOMONTH(MIN('Dim Date Offered'[Date]), 0)
 			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
 			    1,
 			    0)
@@ -17,7 +17,7 @@ table 'Dim Date Offered'
 			VAR _selectedDate = CALCULATE(MAX('Dim Extract Date'[Extract Date]))//, CROSSFILTER('Dim Extract Date'[Extract Date], 'Fact Workforce'[Extract Date], Both))
 			VAR _startDate = EOMONTH(_selectedDate, -2)+1
 			VAR _endDate = EOMONTH(_selectedDate,-1)
-			VAR _selectedStartDate = MAX('Dim Date Offered'[Date])
+			VAR _selectedStartDate = EOMONTH(MIN('Dim Date Offered'[Date]), 0)
 			VAR _logic = IF(_selectedStartDate >= _startDate && _selectedStartDate <= _endDate,
 			    1,
 			    0)

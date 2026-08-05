@@ -1,0 +1,426 @@
+table FactASCEmployees
+	lineageTag: b1f61fba-2036-453a-ae10-2628a31d5de2
+
+	measure SelectedWorkerState = CALCULATE(SELECTEDVALUE(DimASCEmployees[State]))
+		lineageTag: 189d55f9-0e3d-4501-b37d-fd4595f6eee4
+
+	measure CountCurrentlyEmployed = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _count = CALCULATE(
+			    COUNT(FactASCEmployees[id]), 
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar), 
+			        DimCalendar[WorkDate] <= _currentDate
+			    )
+			)
+			RETURN _count
+			```
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 186760f5-4ee7-47b9-aa44-d915611e5688
+
+	measure AvailableHours = [ContractedHours] - [ApprovedLeave] - [PublicHolidayHours]
+		formatString: #,0.0
+		displayFolder: Available Hours
+		lineageTag: c6f64152-77ff-4839-af7e-20aa9284e3ee
+
+	measure BillableHours = CALCULATE(SUM(FactCareViewCaseNotes[Hours]), FactCareViewCaseNotes[BillableFlag] = TRUE(), USERELATIONSHIP(BridgeEmployeeNames[fullName], FactCareViewCaseNotes[EmployeeFullNameKey]))//+0
+		formatString: #,0.00
+		displayFolder: Delivered Hours
+		lineageTag: de6fbf95-573a-4cba-b7bd-719f7ff7a175
+
+	measure BillableHoursRate = DIVIDE([BillableHours], [AvailableHours])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Utlisation Rate
+		lineageTag: 1f9485ba-d3e0-4283-841d-6a06b4821079
+
+	measure DeliveredHours = CALCULATE(SUM(FactCareViewCaseNotes[Hours]), USERELATIONSHIP(BridgeEmployeeNames[fullName], FactCareViewCaseNotes[EmployeeFullNameKey]))
+		formatString: #,0.0
+		displayFolder: Delivered Hours
+		lineageTag: 674bff34-cd5f-4e01-8e27-a68c0825ac30
+
+	measure EstablishedBillableHoursRate = DIVIDE([EstablishedBillableHours], [EstablishedAvailableHours])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Utlisation Rate
+		lineageTag: f5a38ece-2a5b-4ba5-b482-2040645f10fa
+
+	measure EstablishedBillableHours = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _periodStartDate = MIN(DimCalendar[WorkDate])
+			VAR _establishedEndDate = (_periodStartDate - WEEKDAY(_periodStartDate, 1)+1)-28
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[FullNameKey]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate &&
+			        (DimCalendar[WorkDate] - WEEKDAY(DimCalendar[WorkDate], 1) +1) < _establishedEndDate
+			    ))
+			VAR _hours = CALCULATE(
+			    SUM(FactCareViewCaseNotes[Hours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactCareViewCaseNotes[EmployeeFullNameKey])),
+			    FactCareViewCaseNotes[BillableFlag] = TRUE()
+			)
+			RETURN _hours 
+			```
+		displayFolder: Delivered Hours
+		lineageTag: 335d667c-6354-4525-aeeb-18de565f447c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ApprovedLeave = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[id]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate
+			    )
+			)
+			VAR _hours = CALCULATE(
+			    SUM(FactASCKeyPayLeave[DailyHours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactASCKeyPayLeave[employeeId]))
+			)
+			RETURN _hours 
+			```
+		formatString: #,0.0
+		displayFolder: Available Hours
+		lineageTag: 0fe6da66-8603-487f-bc15-9dfa7df252e2
+
+	measure ContractedHours = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[FullNameKey]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate
+			    ))
+			VAR _hours = CALCULATE(
+			    SUM(FactWorkerDailyStatus[Hours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactWorkerDailyStatus[FullNameKey]))
+			)
+			RETURN _hours
+			```
+		formatString: #,0.0
+		displayFolder: Available Hours
+		lineageTag: 640245b5-6dfe-4dd3-abf1-5201ef64954b
+
+	measure EstablishedApprovedLeave = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _periodStartDate = MIN(DimCalendar[WorkDate])
+			VAR _establishedEndDate = (_periodStartDate - WEEKDAY(_periodStartDate, 1)+1)-28
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[id]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate &&
+			        (DimCalendar[WorkDate] - WEEKDAY(DimCalendar[WorkDate], 1) +1) < _establishedEndDate
+			    ))
+			VAR _hours = CALCULATE(
+			    SUM(FactASCKeyPayLeave[DailyHours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactASCKeyPayLeave[employeeId]))
+			)
+			RETURN _hours 
+			```
+		displayFolder: Available Hours
+		lineageTag: d097f5d4-e423-4213-9be5-42038deb25a8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure EstablishedContractedHours = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _periodStartDate = MIN(DimCalendar[WorkDate])
+			VAR _establishedEndDate = (_periodStartDate - WEEKDAY(_periodStartDate, 1)+1)-28
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[FullNameKey]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate &&
+			        (DimCalendar[WorkDate] - WEEKDAY(DimCalendar[WorkDate], 1) +1) < _establishedEndDate
+			    ))
+			VAR _hours = CALCULATE(
+			    SUM(FactWorkerDailyStatus[Hours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactWorkerDailyStatus[FullNameKey]))
+			)
+			RETURN _hours
+			```
+		formatString: #,0.0
+		displayFolder: Available Hours
+		lineageTag: db60ba6e-70b4-4dd2-a7e5-af2a9dcdfdad
+
+	measure EstablishedAvailableHours = [EstablishedContractedHours] - [EstablishedApprovedLeave]
+		displayFolder: Available Hours
+		lineageTag: fc2c7ef1-9996-4901-ac10-1e3e1632e73c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CountCurrentlyEmployedEstablished = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _periodStartDate = MIN(DimCalendar[WorkDate])
+			VAR _establishedEndDate = (_periodStartDate - WEEKDAY(_periodStartDate, 1)+1)-28
+			VAR _count = CALCULATE(
+			    COUNT(FactASCEmployees[id]), 
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar), 
+			        DimCalendar[WorkDate] <= _currentDate && 
+			        (DimCalendar[WorkDate] - WEEKDAY(DimCalendar[WorkDate], 1) +1) < _establishedEndDate
+			    )
+			)
+			RETURN _count
+			```
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 3ecdc535-49fa-45ca-828b-a9ed54a9fd4c
+
+	measure UnbillableHours = CALCULATE(SUM(FactCareViewCaseNotes[Hours]), FactCareViewCaseNotes[BillableFlag] = FALSE(), USERELATIONSHIP(BridgeEmployeeNames[fullName], FactCareViewCaseNotes[EmployeeFullNameKey]))
+		formatString: #,0.0
+		displayFolder: Delivered Hours
+		lineageTag: ebeef158-8e2d-4c2d-907a-f02cf2d6536a
+
+	measure PublicHolidayHours = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[FullNameKey]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate
+			    ))
+			VAR _publicHolidayPairs =
+			    SUMMARIZE (
+			        FILTER (
+			            DimASCEmployeePublicHolidays,
+			            DimASCEmployeePublicHolidays[PublicHolidayFlag] = TRUE ()
+			        ),
+			        DimASCEmployeePublicHolidays[FullNameKey],
+			        DimASCEmployeePublicHolidays[date]
+			    )
+			VAR _hours = CALCULATE(
+			    SUM(FactWorkerDailyStatus[Hours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactWorkerDailyStatus[FullNameKey])),
+			    KEEPFILTERS (
+			        TREATAS (
+			            _publicHolidayPairs,
+			            FactWorkerDailyStatus[FullNameKey],
+			            FactWorkerDailyStatus[Date]
+			        )
+			    )
+			)
+			RETURN _hours
+			```
+		formatString: #,0.0
+		displayFolder: Available Hours
+		lineageTag: 2b5d25c9-64c5-42de-95b5-15c0e387f64c
+
+	measure NewStarterContractedHours = [ContractedHours] - [EstablishedContractedHours]
+		formatString: #,0.0
+		displayFolder: Available Hours
+		lineageTag: 991e2258-20af-428c-bdef-1385fad2ea09
+
+	measure NewStarterBillableHours = [BillableHours] - [EstablishedBillableHours]
+		displayFolder: Delivered Hours
+		lineageTag: 682c327f-c458-4cd6-ae55-cbc9ba3688fc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure NewStarterApprovedLeave = [ApprovedLeave] - [EstablishedApprovedLeave]
+		displayFolder: Available Hours
+		lineageTag: 0086eef1-8743-4792-a5a8-e7a9bf8bd11d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure NewStarterAvailableHours = [NewStarterContractedHours] - [NewStarterApprovedLeave]
+		displayFolder: Available Hours
+		lineageTag: a50de9ae-3cc3-46c6-b6c5-e8ad67357837
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure NewStarterBillableHoursRate = DIVIDE([NewStarterBillableHours], [NewStarterAvailableHours])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Utlisation Rate
+		lineageTag: 183dcd31-f46f-4f6e-b550-4780e473f351
+
+	measure CountEstablishedCurrentEmployees = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _periodStartDate = MIN(DimCalendar[WorkDate])
+			VAR _establishedEndDate = (_periodStartDate - WEEKDAY(_periodStartDate, 1)+1)-28
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[FullNameKey]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    DimEmploymentEndDate[EmploymentEndDate] >= _currentDate || DimEmploymentEndDate[EmploymentEndDate] = BLANK(),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate &&
+			        (DimCalendar[WorkDate] - WEEKDAY(DimCalendar[WorkDate], 1) +1) < _establishedEndDate
+			    ))
+			VAR _hours = CALCULATE(
+			    SUM(FactWorkerDailyStatus[Hours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactWorkerDailyStatus[FullNameKey]))
+			)
+			RETURN _hours
+			```
+		displayFolder: Counts
+		lineageTag: b961faf3-bb3a-4fd2-a980-9fa552a0a15f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayEmployeeAvailableHours = IF(ISINSCOPE(FactCareViewCaseNotes[ClientRegion]), BLANK(), [AvailableHours])
+		displayFolder: Available Hours
+		lineageTag: 90b00ea6-d926-49f4-afcb-379c98d11bba
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ClientUnbillableHours = CALCULATE([UnbillableHours], FactCareViewCaseNotes[Client] <> "Access Support Coordination" && FactCareViewCaseNotes[Client] <> "Southern Cross")
+		formatString: 0.0
+		displayFolder: Delivered Hours
+		lineageTag: fd697ffc-2418-4771-8ce0-021946240915
+
+	measure ASCUnbillableHours = CALCULATE([UnbillableHours], FactCareViewCaseNotes[Client] = "Access Support Coordination" || FactCareViewCaseNotes[Client] = "Southern Cross")
+		formatString: 0.0
+		displayFolder: Delivered Hours
+		lineageTag: 79b80a81-d6d1-4a21-99e0-bd8128fc219f
+
+	measure TLBillableHoursRate = CALCULATE(DIVIDE([BillableHours], [AvailableHours]), FactWorkerDailyStatus[Title] = "TL", CROSSFILTER(FactWorkerDailyStatus[FullNameKey], BridgeEmployeeNames[fullName], Both), USERELATIONSHIP(BridgeEmployeeNames[fullName], FactCareViewCaseNotes[EmployeeFullNameKey]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Utlisation Rate
+		lineageTag: b4765f54-d9ab-48c0-a7fe-2a720d52ab35
+
+	measure TLBillableHours = CALCULATE(SUM(FactCareViewCaseNotes[Hours]), FactCareViewCaseNotes[BillableFlag] = TRUE(), FactWorkerDailyStatus[Title] = "TL", CROSSFILTER(FactWorkerDailyStatus[FullNameKey], BridgeEmployeeNames[fullName], Both), USERELATIONSHIP(BridgeEmployeeNames[fullName], FactCareViewCaseNotes[EmployeeFullNameKey]))
+		displayFolder: Delivered Hours
+		lineageTag: 83acc8f7-03bc-4d4a-9339-dcd160a6d950
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TLAvailableHours = CALCULATE([ContractedHours] - [ApprovedLeave] - [PublicHolidayHours], FactWorkerDailyStatus[Title] = "TL", CROSSFILTER(FactWorkerDailyStatus[FullNameKey], BridgeEmployeeNames[fullName], Both))
+		displayFolder: Available Hours
+		lineageTag: 63e7d9e3-f01f-40f5-9a7c-fb548f618f41
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TLApprovedLeave = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _currentEmployees = CALCULATETABLE(
+			    DISTINCT(DimASCEmployees[id]),
+			    CROSSFILTER(DimASCEmployees[id], FactASCEmployees[id], Both),
+			    OR(DimEmploymentEndDate[EmploymentEndDate] >= _currentDate, DimEmploymentEndDate[EmploymentEndDate] = BLANK()),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate
+			    )
+			)
+			VAR _hours = CALCULATE(
+			    SUM(FactASCKeyPayLeave[DailyHours]),
+			    KEEPFILTERS(TREATAS(_currentEmployees, FactASCKeyPayLeave[employeeId]))
+			)
+			RETURN _hours 
+			```
+		displayFolder: Available Hours
+		lineageTag: 4ca43639-31e5-47a9-a0bf-932daa596e93
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure SCBillableHoursRate = CALCULATE(DIVIDE([BillableHours], [AvailableHours]), FactWorkerDailyStatus[Title] = "SC", CROSSFILTER(FactWorkerDailyStatus[FullNameKey], BridgeEmployeeNames[fullName], Both), USERELATIONSHIP(BridgeEmployeeNames[fullName], FactCareViewCaseNotes[EmployeeFullNameKey]))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Utlisation Rate
+		lineageTag: 5c977383-bad7-495f-9b31-7db11b24b967
+
+	column id
+		dataType: int64
+		formatString: 0
+		lineageTag: f25a0fd1-2be2-4925-a0d9-ae3a2d1902d7
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column externalId
+		dataType: int64
+		formatString: 0
+		lineageTag: b2a5cbe1-2a7e-464f-a3d8-205fad598baf
+		summarizeBy: count
+		sourceColumn: externalId
+
+		annotation SummarizationSetBy = Automatic
+
+	column startDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 0947f171-273e-4693-962d-39a4a6ac8cbc
+		summarizeBy: none
+		sourceColumn: startDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column endDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: e7880800-dd66-44eb-b950-874eaa2c3bcc
+		summarizeBy: none
+		sourceColumn: endDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column hoursPerDay
+		dataType: double
+		isHidden
+		lineageTag: 6cd216a3-6343-4a68-bf50-c43f1b5f7033
+		summarizeBy: sum
+		sourceColumn: hoursPerDay
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column hoursPerWeek
+		dataType: double
+		isHidden
+		lineageTag: 01ee1c11-804a-4c0f-b83b-bad94b5c6801
+		summarizeBy: sum
+		sourceColumn: hoursPerWeek
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition FactASCEmployees = m
+		mode: import
+		queryGroup: 'KeyPay API'
+		source =
+				let
+				    Source = #"ASCKeyPayEmployees-Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"id", "externalId", "startDate", "endDate", "hoursPerDay", "hoursPerWeek"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns", {"id"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Duplicates", each ([id] <> 12274696))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

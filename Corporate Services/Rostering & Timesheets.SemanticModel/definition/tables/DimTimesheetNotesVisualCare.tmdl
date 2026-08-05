@@ -1,0 +1,87 @@
+table DimTimesheetNotesVisualCare
+	lineageTag: 801fa353-19ce-4040-bec0-05cf96272458
+
+	column TimeSheetId
+		dataType: int64
+		formatString: 0
+		lineageTag: 45db8429-2ee4-4acd-9199-beba19c63806
+		summarizeBy: none
+		sourceColumn: TimeSheetId
+
+		annotation SummarizationSetBy = Automatic
+
+	column RosterItemId
+		dataType: int64
+		formatString: 0
+		lineageTag: d8a77a91-3bea-42ce-965f-e0be4dcc04cf
+		summarizeBy: count
+		sourceColumn: RosterItemId
+
+		annotation SummarizationSetBy = Automatic
+
+	column NoteId
+		dataType: int64
+		formatString: 0
+		lineageTag: 77130ec4-6a0e-46d3-b247-04566295b738
+		summarizeBy: count
+		sourceColumn: NoteId
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryId
+		dataType: int64
+		formatString: 0
+		lineageTag: 47861408-25a8-4ee7-ab17-edc3a4b1d302
+		summarizeBy: count
+		sourceColumn: CategoryId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Note
+		dataType: string
+		lineageTag: 225519a0-454f-4160-8b9d-69b960dd2f56
+		summarizeBy: none
+		sourceColumn: Note
+
+		annotation SummarizationSetBy = Automatic
+
+	column NoteType
+		dataType: string
+		lineageTag: 42cd2d59-8160-4e8c-8be9-e8452cc56b68
+		summarizeBy: none
+		sourceColumn: NoteType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1b30d2a3-9bc6-4cf0-ad87-e4fc95020eb2
+		summarizeBy: none
+		sourceColumn: Timestamp
+
+		variation Variation
+			isDefault
+			relationship: e8a7ebc3-5315-4b49-9899-44ee9371cab1
+			defaultHierarchy: LocalDateTable_a52f7d2c-9c21-456c-8304-235b77dd69ea.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimTimesheetNotesVisualCare = m
+		mode: import
+		queryGroup: Timesheets
+		source =
+				let
+				    Source = #"Timesheets - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"TimeSheetId", "Notes"}),
+				    #"Expanded Notes" = Table.ExpandListColumn(#"Removed Other Columns", "Notes"),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Notes", each ([Notes] <> null)),
+				    #"Expanded Notes1" = Table.ExpandRecordColumn(#"Filtered Rows", "Notes", {"RosterItemId", "NoteId", "CategoryId", "Note", "NoteType", "Timestamp"}, {"RosterItemId", "NoteId", "CategoryId", "Note", "NoteType", "Timestamp"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Notes1",{{"Timestamp", type datetime}, {"NoteType", type text}, {"Note", type text}, {"CategoryId", Int64.Type}, {"NoteId", Int64.Type}, {"RosterItemId", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

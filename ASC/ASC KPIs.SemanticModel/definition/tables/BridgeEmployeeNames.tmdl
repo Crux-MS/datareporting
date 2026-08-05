@@ -1,0 +1,31 @@
+table BridgeEmployeeNames
+	lineageTag: ca970fa0-3e2a-44c9-8c77-0f4d44c3807b
+
+	column fullName
+		dataType: string
+		lineageTag: 19edae3a-2b01-4f44-a72f-1c8d7cd817dc
+		summarizeBy: none
+		sourceColumn: fullName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BridgeEmployeeNames = m
+		mode: import
+		queryGroup: 'KeyPay API'
+		source =
+				let
+				    Source = #"ASCKeyPayEmployees-Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"fullName"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Replaced Value" = Table.ReplaceValue(#"Removed Duplicates"," ","",Replacer.ReplaceText,{"fullName"})
+				in
+				    #"Replaced Value"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

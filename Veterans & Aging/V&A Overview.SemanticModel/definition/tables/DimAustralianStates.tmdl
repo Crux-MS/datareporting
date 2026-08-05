@@ -1,0 +1,32 @@
+table DimAustralianStates
+	lineageTag: 5a826be1-c05c-4d59-b87b-f53bc2cdeb9a
+
+	column State
+		dataType: string
+		lineageTag: 781f3c66-7b74-4451-ace4-d0f74494585a
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Acronym
+		dataType: string
+		lineageTag: 2120b59d-fbc4-4064-aafc-8dec355bdfc1
+		summarizeBy: none
+		sourceColumn: Acronym
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimAustralianStates = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("VY3NCgIhFEZfRVzPS8i0CUIYlHEhLi51YQTTuF6J3j5TiNqe8/14L1WrTJAiZLHCIzIkYZEocqGXXKRarQyLlxqfwpTGh3CQsHajjZumEB9I+a+mZ2triLkmyLfOtstpwDnz/e3GqCEs1DvkQawyAzms/Nn+TbuZ3uO1nw2yn1cZwhs=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [State = _t, Acronym = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"State", type text}, {"Acronym", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

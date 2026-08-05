@@ -1,0 +1,489 @@
+table FactClientFunding
+	lineageTag: 1635ad1e-392d-4b55-98bb-6741b4d98ea5
+
+	measure CountClientsVeryHighUnderspend = CALCULATE(DISTINCTCOUNT(FactClientFunding[NDIS Number]), FactClientFunding[VarianceCategory] = "Very High Underspend")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: b2518435-85ae-411d-b224-8ae40efa9a69
+
+	measure CountClientsVeryHighOverspend = CALCULATE(DISTINCTCOUNT(FactClientFunding[NDIS Number]), FactClientFunding[VarianceCategory] = "Very High Overspend")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 56ececf9-18f1-4351-b0cc-94312c7f4845
+
+	measure CountCurrentServicePlans = ```
+			VAR _currentDate = MAX(DimCalendar[WorkDate])
+			VAR _currentPlans = CALCULATETABLE(
+			    DISTINCT(FactClientFunding[NDIS Number]),
+			    // CROSSFILTER(FactClientFunding[FullNameKey], BridgeCareViewClients[ClientFullNameKey], Both),
+			    FactClientFunding[NDIS Plan Start Date] >= _currentDate || FactClientFunding[NDIS Plan End Date] = BLANK(),
+			    FILTER(
+			        ALL(DimCalendar[WorkDate]), 
+			        DimCalendar[WorkDate] <= _currentDate
+			    ))
+			VAR _hours = CALCULATE(
+			    COUNT(FactClientFunding[Service Contract Reference No.]),
+			    KEEPFILTERS(TREATAS(_currentPlans, FactClientFunding[FullNameKey]))
+			)
+			RETURN _hours
+			```
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 9186714c-6c23-4d60-a1c2-ebd538c4ba47
+
+	measure MaxRiskCategory =
+			VAR _maxVarianceCategoryOrder = MAX(FactClientFunding[VarianceCategoryOrder])
+			RETURN CALCULATE(SELECTEDVALUE(FactClientFunding[VarianceCategory]), FactClientFunding[VarianceCategoryOrder] = _maxVarianceCategoryOrder)
+		lineageTag: 6b09a8a4-6880-4131-bb69-5efd73b20c7f
+
+	measure CountClientsHighUnderspend = CALCULATE(DISTINCTCOUNT(FactClientFunding[NDIS Number]), FactClientFunding[VarianceCategory] = "High Underspend")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 69efe1ab-c248-482a-854f-4838e8139f32
+
+	measure CountClientsWithinTarget = CALCULATE(DISTINCTCOUNT(FactClientFunding[NDIS Number]), FactClientFunding[VarianceCategory] = "Within Target")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 957ef7cb-afe8-43e8-aa54-4f5928ba40b7
+
+	measure CountClientsHighOverspend = CALCULATE(DISTINCTCOUNT(FactClientFunding[NDIS Number]), FactClientFunding[VarianceCategory] = "High Overspend")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 7816f885-e30a-466e-8722-4ae8d1d25c00
+
+	measure FundingExtractDate = "CareView client funding data last loaded: " & FORMAT(MAX(FactClientFunding[Date created]), "d/m/yyyy")
+		lineageTag: 20b7ee1c-ffee-4d28-9315-2a804e47ab0b
+
+	measure LatestExportDate = MAX(FactClientFunding[Date created])
+		formatString: General Date
+		lineageTag: 9d5eeb4c-543e-48aa-a97d-cf3a5a4ac1d9
+
+	measure CountFundedClients = CALCULATE(DISTINCTCOUNT(FactClientFunding[NDIS Number]))//, CROSSFILTER(FactClientFunding[FullNameKey], BridgeCareViewClients[ClientFullNameKey],Both))
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: c303dadb-ce5a-4254-b9b9-aad17362895f
+
+	measure CountActiveFundedClients = CALCULATE([CountFundedClients], FactClientFunding[Client Status] = "Active")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: b4e5a651-f169-4092-9c0e-11ba7eb1fbc7
+
+	measure DisplayTotalContractValue =
+			
+			IF (
+			    ISINSCOPE (FactClientFunding[Date created]),
+			        // Expanded date row: the actual value for that export
+			        SUM ( FactClientFunding[Total Service Contract Value] ),
+			        // Collapsed client row OR grand total: latest export only.
+			        // KEEPFILTERS so the client context on the parent row is preserved;
+			        // at the grand total this naturally sums each client's latest row.
+			        CALCULATE (
+			            SUM ( FactClientFunding[Total Service Contract Value] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 01be9a30-c146-4c82-98f3-53f7533a4757
+
+	measure DisplayFundsRemainingRate =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE ( FactClientFunding[FundsRemainingRate] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[FundsRemainingRate] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 2a1c35a1-55f1-48cd-ab95-0664562d7a8c
+
+	measure DisplayTimeRemainingRate =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE ( FactClientFunding[PlanDurationRemainingRate] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[PlanDurationRemainingRate] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 2e00d628-dc49-4f72-9963-e7b53d129c85
+
+	measure DisplayRiskCategory =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE ( FactClientFunding[VarianceCategory] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[VarianceCategory] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		lineageTag: ec8528dc-62bf-45b4-a873-88e8f47523c1
+
+	measure DisplayRiskVarianceRate =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE( FactClientFunding[RiskRateVariance] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[RiskRateVariance] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		lineageTag: 365ad007-5b1e-4368-bf80-896ff05ba8e4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure DisplayNDISPlanStartDate =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE( FactClientFunding[NDIS Plan Start Date] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[NDIS Plan Start Date] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		formatString: d/m/yyyy
+		lineageTag: 776f321d-3432-4451-bed9-fdc95551e14b
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	measure DisplayNDISPlanEndDate =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE( FactClientFunding[NDIS Plan End Date] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[NDIS Plan End Date] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		formatString: d/m/yyyy
+		lineageTag: 1dc4360e-9d28-4ae5-af76-f2d0830e3791
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	measure DisplayClientStatus =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE( FactClientFunding[Client Status] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[Client Status] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		lineageTag: f6730208-7a11-46e7-b570-c7149aa9132c
+
+	measure DisplayServiceContractStatus =
+			
+			IF (
+			    ISINSCOPE ( FactClientFunding[Date created] ),
+			        SELECTEDVALUE( FactClientFunding[Service Contract Status] ),
+			        // Client row: the latest export's rate (one row, so this is exact).
+			        // Grand total: this returns the rate over the pooled latest rows, whose
+			        // correctness depends on how FundsRemainingRate is defined — confirm.
+			        CALCULATE (
+			            SELECTEDVALUE ( FactClientFunding[Service Contract Status] ),
+			            KEEPFILTERS ( FactClientFunding[ClientLatestExportFlag] = 0 )
+			        )
+			)
+		lineageTag: 8ef1d4eb-b20e-44ff-9fab-448d6cc2e8ed
+
+	column FullNameKey
+		dataType: string
+		lineageTag: 071c2952-2474-48d5-86c5-f72ce14dc597
+		summarizeBy: none
+		sourceColumn: FullNameKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NDIS Number'
+		dataType: string
+		lineageTag: 3f7bed86-4f62-438d-a992-667d9e76bb4d
+		summarizeBy: none
+		sourceColumn: NDIS Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Contract Reference No.'
+		dataType: string
+		lineageTag: 1b8cc0fb-24cc-4034-844f-0c0381438527
+		summarizeBy: none
+		sourceColumn: Service Contract Reference No.
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NDIS Plan Start Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: d79f129b-caaf-4186-bc4d-c9399ef29cb2
+		summarizeBy: none
+		sourceColumn: NDIS Plan Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'NDIS Plan End Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 294dfec4-1eed-483f-93d1-03d6d32798dc
+		summarizeBy: none
+		sourceColumn: NDIS Plan End Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Total Service Contract Value'
+		dataType: double
+		formatString: \$#,0.00;-\$#,0.00;\$#,0.00
+		lineageTag: 8d55d40c-6b5a-439d-aa28-1eca709cd7b7
+		summarizeBy: sum
+		sourceColumn: Total Service Contract Value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-AU"}
+
+	column 'Total Delivered'
+		dataType: double
+		formatString: \$#,0.###############;-\$#,0.###############;\$#,0.###############
+		lineageTag: aa048128-2142-4897-9038-06de4c157bee
+		summarizeBy: sum
+		sourceColumn: Total Delivered
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-AU"}
+
+	column 'Total Remaining'
+		dataType: double
+		formatString: \$#,0.###############;-\$#,0.###############;\$#,0.###############
+		lineageTag: 9958d693-af53-4b1b-83ad-71dcd1c24044
+		summarizeBy: sum
+		sourceColumn: Total Remaining
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-AU"}
+
+	column 'Service Contract Category'
+		dataType: string
+		lineageTag: 764882b1-a660-47f3-9a23-8272bf7a64b7
+		summarizeBy: none
+		sourceColumn: Service Contract Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date created'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 9feac26d-2a0c-4c9c-a990-97ad0bb404b4
+		summarizeBy: none
+		sourceColumn: Date created
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Client Status'
+		dataType: string
+		lineageTag: 286b4624-8637-4136-a2d6-89d5a3b76188
+		summarizeBy: none
+		sourceColumn: Client Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column PlanDuration
+		dataType: double
+		formatString: 0
+		lineageTag: b552caec-8e84-498c-abe8-6608d3d1679b
+		summarizeBy: sum
+		sourceColumn: PlanDuration
+
+		annotation SummarizationSetBy = Automatic
+
+	column CurrentDuration
+		dataType: double
+		formatString: 0
+		lineageTag: 1cad66a1-0f93-451e-a424-8557fb18f026
+		summarizeBy: sum
+		sourceColumn: CurrentDuration
+
+		annotation SummarizationSetBy = Automatic
+
+	column FundsRemainingRate
+		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: d8141d9f-0c34-4dac-9330-bdd95ec7a7a0
+		summarizeBy: sum
+		sourceColumn: FundsRemainingRate
+
+		annotation SummarizationSetBy = Automatic
+
+	column RiskRateVariance
+		dataType: double
+		lineageTag: e80c6fa1-ef5b-4ac8-85b0-640681d6d20c
+		summarizeBy: sum
+		sourceColumn: RiskRateVariance
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PlanDurationCompletedRate
+		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: db3e3787-26a6-4043-80f9-42c535867183
+		summarizeBy: sum
+		sourceColumn: PlanDurationCompletedRate
+
+		annotation SummarizationSetBy = Automatic
+
+	column PlanDurationRemainingRate
+		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 46f855c7-68cb-4928-a3c1-2134ca413beb
+		summarizeBy: sum
+		sourceColumn: PlanDurationRemainingRate
+
+		annotation SummarizationSetBy = Automatic
+
+	column FundsDeliveredRate
+		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 3f7d5d64-5590-40b2-b5c4-10d9f0e45234
+		summarizeBy: sum
+		sourceColumn: FundsDeliveredRate
+
+		annotation SummarizationSetBy = Automatic
+
+	column VarianceCategory
+		dataType: string
+		lineageTag: 03b12807-1b98-4c74-83c6-663f0fd73712
+		summarizeBy: none
+		sourceColumn: VarianceCategory
+		sortByColumn: VarianceCategoryOrder
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column VarianceCategoryOrder
+		dataType: double
+		formatString: 0
+		lineageTag: 76aeee44-9593-4ce6-97db-b1de8bd55770
+		summarizeBy: sum
+		sourceColumn: VarianceCategoryOrder
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PlanEndPassedFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: e3cca395-0bb3-463c-8c68-b852ef48af27
+		summarizeBy: none
+		sourceColumn: PlanEndPassedFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Contract Status'
+		dataType: string
+		lineageTag: 19ab01b9-b8ff-41c9-9c8c-4283ba64fd91
+		summarizeBy: none
+		sourceColumn: Service Contract Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Full Name'
+		dataType: string
+		lineageTag: f438cc63-7425-4613-9752-4f3738183ba5
+		summarizeBy: none
+		sourceColumn: Full Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientLatestExportFlag
+		dataType: double
+		lineageTag: a4676c42-3f2e-4ed5-b3a4-2dbacaa0627c
+		summarizeBy: sum
+		sourceColumn: ClientLatestExportFlag
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition FactClientFunding = m
+		mode: import
+		queryGroup: SharePoint
+		source = ```
+				let
+				    Source = #"CareViewClientFunding - Source",
+				    #"Filtered Rows" = Table.SelectRows(Source, each ([Service Contract Status] = "Active")),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"Full Name", "NDIS Number", "Client Status", "Service Contract Reference No.", "Service Contract Status", "NDIS Plan Start Date", "NDIS Plan End Date", "Total Service Contract Value", "Total Delivered", "Total Remaining", "Service Contract Category", "Date created", "FullNameKey"}),
+				    #"Added PlanDuration" = Table.AddColumn(#"Removed Other Columns", "PlanDuration", each Duration.Days([NDIS Plan End Date] - [NDIS Plan Start Date])),
+				    #"Added CurrentDuration" = Table.AddColumn(#"Added PlanDuration", "CurrentDuration", each Duration.Days(DateTime.Date([Date created]) - [NDIS Plan Start Date])),
+				    #"Added PlanEndPassedFlag" = Table.AddColumn(#"Added CurrentDuration", "PlanEndPassedFlag", each if [NDIS Plan End Date] >= [Date created] then false else true),
+				    #"Added PlanDurationCompletedRate" = Table.AddColumn(#"Added PlanEndPassedFlag", "PlanDurationCompletedRate", each if [PlanEndPassedFlag] = false then [CurrentDuration]/[PlanDuration] else [PlanDuration]/[PlanDuration]),
+				    #"Added PlanDurationRemainingRate" = Table.AddColumn(#"Added PlanDurationCompletedRate", "PlanDurationRemainingRate", each 1-[PlanDurationCompletedRate]),
+				    #"Added FundsRemainingRate" = Table.AddColumn(#"Added PlanDurationRemainingRate", "FundsRemainingRate", each [Total Remaining]/[Total Service Contract Value]),
+				    #"Added FundsDeliveredRate" = Table.AddColumn(#"Added FundsRemainingRate", "FundsDeliveredRate", each [Total Delivered]/[Total Service Contract Value]),
+				    #"Added RiskRateVariance" = Table.AddColumn(#"Added FundsDeliveredRate", "RiskRateVariance", each [FundsRemainingRate]-[PlanDurationRemainingRate]),
+				    #"Added VarianceCategory" = Table.AddColumn(#"Added RiskRateVariance", "VarianceCategory", each if [RiskRateVariance] <= -0.4 then "Very High Overspend" else if [RiskRateVariance] < -0.2 then "High Overspend" else if [RiskRateVariance] < 0.2 then "Within Target" else if [RiskRateVariance] < 0.4 then "High Underspend" else if [RiskRateVariance] >= 0.4 then "Very High Underspend" else null),
+				    #"Added VarianceCategoryOrder" = Table.AddColumn(#"Added VarianceCategory", "VarianceCategoryOrder", each if [RiskRateVariance] <= -0.4 then 1 else if [RiskRateVariance] < -0.2 then 2 else if [RiskRateVariance] < 0.2 then 3 else if [RiskRateVariance] < 0.4 then 4 else if [RiskRateVariance] >= 0.4 then 5 else 6),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added VarianceCategoryOrder",{{"PlanDuration", Int64.Type}, {"CurrentDuration", Int64.Type}, {"FundsRemainingRate", Percentage.Type}, {"RiskRateVariance", type number}, {"PlanDurationCompletedRate", Percentage.Type}, {"FundsDeliveredRate", Percentage.Type}, {"PlanDurationRemainingRate", Percentage.Type}, {"VarianceCategory", type text}, {"VarianceCategoryOrder", Int64.Type}, {"PlanEndPassedFlag", type logical}}),
+				    #"Grouped Rows" = Table.Group(#"Changed Type", {"NDIS Number"}, {{"AllRows", each _, type table [Full Name=nullable text, NDIS Number=nullable text, Client Status=nullable text, #"Service Contract Reference No."=nullable text, Service Contract Status=nullable text, NDIS Plan Start Date=nullable date, NDIS Plan End Date=nullable date, Total Service Contract Value=nullable number, Total Delivered=nullable number, Total Remaining=nullable number, Service Contract Category=nullable text, Date created=nullable date, FullNameKey=text, PlanDuration=nullable number, CurrentDuration=nullable number, PlanEndPassedFlag=nullable logical, PlanDurationCompletedRate=nullable number, PlanDurationRemainingRate=nullable number, FundsRemainingRate=nullable number, FundsDeliveredRate=nullable number, RiskRateVariance=nullable number, VarianceCategory=nullable text, VarianceCategoryOrder=nullable number]}}),
+				    #"Added ClientLatestExportFlag" = #"Table.TransformColumns"(
+				        #"Grouped Rows",
+				        {
+				            "AllRows", 
+				            each Table.AddIndexColumn(
+				                Table.Sort(_, {{"Date created", Order.Descending}}), 
+				                "ClientLatestExportFlag", 0, 1, Int64.Type), 
+				                type table [Full Name=nullable text, NDIS Number=nullable text, Client Status=nullable text, #"Service Contract Reference No."=nullable text, Service Contract Status=nullable text, NDIS Plan Start Date=nullable date, NDIS Plan End Date=nullable date, Total Service Contract Value=nullable number, Total Delivered=nullable number, Total Remaining=nullable number, Service Contract Category=nullable text, Date created=nullable date, FullNameKey=text, PlanDuration=nullable number, CurrentDuration=nullable number, PlanEndPassedFlag=nullable logical, PlanDurationCompletedRate=nullable number, PlanDurationRemainingRate=nullable number, FundsRemainingRate=nullable number, FundsDeliveredRate=nullable number, RiskRateVariance=nullable number, VarianceCategory=nullable text, VarianceCategoryOrder=nullable number, ClientLatestExportFlag=number]}),
+				    #"Expanded AllRows" = Table.ExpandTableColumn(#"Added ClientLatestExportFlag", "AllRows", {"Full Name", "Client Status", "Service Contract Reference No.", "Service Contract Status", "NDIS Plan Start Date", "NDIS Plan End Date", "Total Service Contract Value", "Total Delivered", "Total Remaining", "Service Contract Category", "Date created", "FullNameKey", "PlanDuration", "CurrentDuration", "PlanEndPassedFlag", "PlanDurationCompletedRate", "PlanDurationRemainingRate", "FundsRemainingRate", "FundsDeliveredRate", "RiskRateVariance", "VarianceCategory", "VarianceCategoryOrder", "ClientLatestExportFlag"}, {"Full Name", "Client Status", "Service Contract Reference No.", "Service Contract Status", "NDIS Plan Start Date", "NDIS Plan End Date", "Total Service Contract Value", "Total Delivered", "Total Remaining", "Service Contract Category", "Date created", "FullNameKey", "PlanDuration", "CurrentDuration", "PlanEndPassedFlag", "PlanDurationCompletedRate", "PlanDurationRemainingRate", "FundsRemainingRate", "FundsDeliveredRate", "RiskRateVariance", "VarianceCategory", "VarianceCategoryOrder", "ClientLatestExportFlag"})
+				in
+				    #"Expanded AllRows"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

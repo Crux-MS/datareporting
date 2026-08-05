@@ -1,0 +1,182 @@
+table DimRosterRecurrenceStartDate
+	lineageTag: 4f1587ad-cd8a-4375-989d-12ef36c6bc05
+	dataCategory: Time
+
+	measure RecurrenceEndDate = CALCULATE(MAX(DimRosterRecurrenceStartDate[MMM YYYY]), USERELATIONSHIP(FactRostersVisualCare[RecurrenceEnd], DimRosterRecurrenceStartDate[Date]))
+		lineageTag: 7391cc64-04b8-4718-8a23-e13299acf534
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 6e213a07-ba25-4161-88a8-4a62237803cf
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 12549167-b2c6-4ed8-930f-ac029fdc2836
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 39e78394-9cb1-4ec8-be90-5871307af1ea
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 3c14736f-d17f-4df8-b82b-92d0bac685c3
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 6819dfd4-a3d4-4a0f-b535-749179ebed70
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f745f81a-e3b9-4351-aa59-45566dd7ccc6
+		summarizeBy: sum
+		sourceColumn: YYYYMM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 267f9b8d-ba27-4d9a-b163-861cbcfbf860
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: ad43238f-0648-4217-b7b7-c1c47eda68da
+		summarizeBy: none
+		sourceColumn: DayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 27fb99bd-044f-418e-8c7c-9af43a472f44
+		summarizeBy: sum
+		sourceColumn: DayOfWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Week'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 891cba4f-19d4-4099-9400-847d663df21d
+		summarizeBy: none
+		sourceColumn: Start of Week
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column StartOfYear
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3f197b67-21ac-4320-a22e-3098096f874a
+		summarizeBy: none
+		sourceColumn: StartOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 23d561bb-b9f2-444b-ac89-ecf17fbb6d11
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: cb52842d-c178-4649-8ec4-e1e0b037ccd6
+		summarizeBy: sum
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: f817ed88-76bf-45bb-887c-1685b1a3ffd2
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'd MMM'
+		dataType: string
+		lineageTag: ac1aab32-acdc-4fcf-8f19-2a58aed29072
+		summarizeBy: none
+		sourceColumn: d MMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column MMdd
+		dataType: int64
+		formatString: 0
+		lineageTag: ab823876-02c6-47a0-af9e-b4911d73f018
+		summarizeBy: sum
+		sourceColumn: MMdd
+
+		annotation SummarizationSetBy = Automatic
+
+	column PastPresentFutureFlag
+		dataType: string
+		lineageTag: 59e63ca4-1699-4275-9d43-2dbeeae1e527
+		summarizeBy: none
+		sourceColumn: PastPresentFutureFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimRosterRecurrenceStartDate = m
+		mode: import
+		queryGroup: Calendar
+		source =
+				let
+				    Source = #"Calendar - Source",
+				    #"Added Conditional Column" = Table.AddColumn(Source, "Custom", each if [RollingDateDifference] = 0 then "Today" else if [RollingDateDifference] < 0 then "Past" else if [RollingDateDifference] > 0 then "Planned" else null),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Conditional Column",{{"Custom", "PastPresentFutureFlag"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

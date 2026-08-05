@@ -1,0 +1,231 @@
+table FactPatient
+	lineageTag: dd52d711-e1bf-4c22-bd9a-d701bb573475
+
+	measure CountPatients =
+			CALCULATE(
+			    DISTINCTCOUNT(FactPatient[patient_id]),
+			    CROSSFILTER(FactVisit[patient_id], DimPatient[patient_id], Both),
+			    CROSSFILTER(DimPatientStartDate[Date], FactPatient[care_start_date],Both))
+		formatString: #,0
+		lineageTag: 0bf14d7a-7c28-4309-a5bf-9ebe3936598e
+
+	measure CountCurrentlyActivePatients =
+			VAR _periodEnd = CALCULATE(MAX(DimPatientStartDate[Date]), CROSSFILTER(DimPatientStartDate[Date], FactPatient[care_start_date], Both), CROSSFILTER(DimPatient[patient_id], FactVisit[patient_id], Both))
+			VAR _activePatients = CALCULATE(
+			    [CountPatients],
+			    KEEPFILTERS(DimPatient[active_ind] = "Active"),
+			    FILTER(
+			        ALLEXCEPT(FactPatient, DimPatient[patient_state]),
+			        FactPatient[care_start_date] <= _periodEnd &&
+			        (FactPatient[care_end_date] >= _periodEnd || FactPatient[care_end_date] = BLANK()))
+			)
+			RETURN _activePatients
+		formatString: #,0
+		lineageTag: 2873f74f-6295-4852-9b7a-3489ebed78b7
+
+	measure CountReferralInstances = DISTINCTCOUNT(FactPatient[referrer_id])
+		formatString: 0
+		lineageTag: 61a46193-72fb-41b4-80c5-07851880d21c
+
+	measure FirstReferralDate = MIN(FactPatient[referral_date])
+		formatString: Short Date
+		lineageTag: 14e762ce-0ce8-4800-9d3d-432778f9eb59
+
+	measure CareInitiallyStarted = MIN(FactPatient[care_start_date])
+		formatString: Short Date
+		lineageTag: 74558eb4-0a2e-4c19-b51e-779f67b70d85
+
+	measure CountBilledPatients = CALCULATE([CountPatients], FactVisit[status] = "Completed")
+		formatString: #,0
+		lineageTag: 657a4896-a4e7-4f7d-9c1d-4baad3bd6b39
+
+	column patient_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 3c532829-ed3d-4017-a87a-79ab3333d853
+		summarizeBy: none
+		sourceColumn: patient_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column referrer_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fbf1043b-41de-4972-840c-bf7d61056f31
+		summarizeBy: none
+		sourceColumn: referrer_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_of_birth
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 40f9fe47-ac6b-495b-a263-7b0d4810784d
+		summarizeBy: none
+		sourceColumn: date_of_birth
+
+		variation Variation
+			isDefault
+			relationship: 4816531e-cb57-4bf3-9778-51a1362b6bf5
+			defaultHierarchy: LocalDateTable_f9c867b5-8da6-469c-b943-7038eda9881f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column referral_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: e070fc0a-6141-4126-83d9-2d09e8c0594b
+		summarizeBy: none
+		sourceColumn: referral_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column care_start_date
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: f2069721-df88-4617-aa4d-2b05784fdfe5
+		summarizeBy: none
+		sourceColumn: care_start_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column care_end_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: c09c34a6-b060-4762-87cc-9abb3a0a1f2f
+		summarizeBy: none
+		sourceColumn: care_end_date
+
+		variation Variation
+			isDefault
+			relationship: 3070da06-3bbd-43a9-b99a-aa13d159c987
+			defaultHierarchy: LocalDateTable_1f448922-352e-4f0d-a462-ab0a87a62e09.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column cancelled_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 594afc65-e49f-49d6-9dcd-98605e4555bf
+		summarizeBy: none
+		sourceColumn: cancelled_date
+
+		variation Variation
+			isDefault
+			relationship: f27fcaea-fa4c-4640-89b7-01a27c942880
+			defaultHierarchy: LocalDateTable_3885aee5-1d52-4067-88dd-5fd0d197d217.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column discharge_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 23a18e15-8ed6-4d66-af27-9f57fc52cffe
+		summarizeBy: none
+		sourceColumn: discharge_date
+
+		variation Variation
+			isDefault
+			relationship: 45236519-42b7-4ba5-ab55-713fa090dad3
+			defaultHierarchy: LocalDateTable_7b72019f-2b86-4fd4-823d-45d255daee56.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column current_co_payment
+		dataType: double
+		lineageTag: 4638f46b-c277-47e2-b52c-e3f3923587fe
+		summarizeBy: sum
+		sourceColumn: current_co_payment
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column referrer_type
+		dataType: string
+		lineageTag: 492751cc-a694-4d71-8436-b717b22e53ff
+		summarizeBy: none
+		sourceColumn: referrer_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column referrer_note
+		dataType: string
+		lineageTag: e35e9c2c-c381-4c6a-aa5e-aee6d298bd1e
+		summarizeBy: none
+		sourceColumn: referrer_note
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_age
+		dataType: int64
+		formatString: 0
+		lineageTag: d174092a-3fc9-48ec-a58e-8108a78c6c3e
+		summarizeBy: sum
+		sourceColumn: patient_age
+
+		annotation SummarizationSetBy = Automatic
+
+	column suburb_geocode_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e3f54642-b375-4884-8d1f-43a6d6e23a3a
+		summarizeBy: none
+		sourceColumn: suburb_geocode_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column dva_number
+		dataType: string
+		lineageTag: 95fe03cc-481b-4e7e-abff-f97d679130b7
+		summarizeBy: none
+		sourceColumn: dva_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column patient_state
+		dataType: string
+		lineageTag: 30f95c60-7828-4bb7-803e-220258518e8d
+		summarizeBy: none
+		sourceColumn: patient_state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactPatient = m
+		mode: import
+		queryGroup: Patients\FactPatient
+		source =
+				let
+				    Source = Table.Combine({#"FactPatientVIC-Source", #"FactPatientWA-Source", #"FactPatientNSW - Source", #"FactPatientSA-Source", #"FactPatientQLD-Source"})
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

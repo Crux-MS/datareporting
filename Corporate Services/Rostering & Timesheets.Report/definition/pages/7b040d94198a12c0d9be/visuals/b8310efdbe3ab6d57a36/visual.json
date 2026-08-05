@@ -1,0 +1,491 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "b8310efdbe3ab6d57a36",
+  "position": {
+    "x": 55.440729483282681,
+    "y": 156.59574468085108,
+    "z": 4000,
+    "height": 515.50151975683889,
+    "width": 1203.161094224924,
+    "tabOrder": 9003
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimWorkforceVisualCare"
+                    }
+                  },
+                  "Property": "FullName"
+                }
+              },
+              "queryRef": "DimWorkforceVisualCare.FullName",
+              "nativeQueryRef": "Worker",
+              "displayName": "Worker"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactRostersVisualCare"
+                    }
+                  },
+                  "Property": "StartDateTime"
+                }
+              },
+              "queryRef": "FactRostersVisualCare.StartDateTime",
+              "nativeQueryRef": "Shift start",
+              "displayName": "Shift start"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRosterLocationsVisualCare"
+                    }
+                  },
+                  "Property": "Area"
+                }
+              },
+              "queryRef": "DimRosterLocationsVisualCare.Area",
+              "nativeQueryRef": "Area"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRosterLocationsVisualCare"
+                    }
+                  },
+                  "Property": "Code"
+                }
+              },
+              "queryRef": "Min(DimRosterLocationsVisualCare.Code)",
+              "nativeQueryRef": "Code",
+              "displayName": "Rostered location"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRosterServicesVisualCare"
+                    }
+                  },
+                  "Property": "IsSleepover"
+                }
+              },
+              "queryRef": "Count(DimRosterServicesVisualCare.IsSleepover)",
+              "nativeQueryRef": "Is Sleepover?",
+              "displayName": "Is Sleepover?"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRosterServicesVisualCare"
+                    }
+                  },
+                  "Property": "Type"
+                }
+              },
+              "queryRef": "Min(DimRosterServicesVisualCare.Type)",
+              "nativeQueryRef": "Type1"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimRosterServicesVisualCare"
+                    }
+                  },
+                  "Property": "Description"
+                }
+              },
+              "queryRef": "Min(DimRosterServicesVisualCare.Description)",
+              "nativeQueryRef": "Description1"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactRostersVisualCare"
+                    }
+                  },
+                  "Property": "RosteredHours"
+                }
+              },
+              "queryRef": "FactRostersVisualCare.RosteredHours",
+              "nativeQueryRef": "Rostered hours",
+              "displayName": "Rostered hours"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactRostersVisualCare"
+                  }
+                },
+                "Property": "StartDateTime"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {}
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "FactRostersVisualCare.RosteredHours"
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "79.73554273662943D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactWorkforceVisualCare.work+leavehours"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "175.87233170199198D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Min(DimRosterLocationsVisualCare.Code)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "84.35562619572495D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Count(DimRosterServicesVisualCare.IsSleepover)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "421.45613676089334D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Min(DimRosterServicesVisualCare.Description)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "72.06686930091186D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactRostersVisualCare.RosteredHours"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "86.24620060790274D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimRosterLocationsVisualCare.Area"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "165.71124580760278D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactRostersVisualCare.StartDateTime"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Missed PPT Hours'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "3ada7dcc56e90896929b",
+        "ordinal": 0,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactRostersVisualCare"
+              }
+            },
+            "Property": "AverageRosteredHours"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "818de60de223c35d3904",
+        "ordinal": 1,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactWorkforceVisualCare"
+              }
+            },
+            "Property": "WorkerHoursPaid"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "4b2a2787c7ce6852332e",
+        "ordinal": 2,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactRostersVisualCare"
+              }
+            },
+            "Property": "AverageRosteredHoursAllTime"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "78796df71330654a1b49",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimWorkforceVisualCare"
+              }
+            },
+            "Property": "FullName"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "f6ea8bf91c741e5b5614",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimRosterServicesVisualCare"
+              }
+            },
+            "Property": "Type"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "febf2682ca28d7cbd9ee",
+        "ordinal": 5,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimRosterServicesVisualCare"
+              }
+            },
+            "Property": "Description"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "938fbac3c59cee6ca808",
+        "ordinal": 6,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimRosterLocationsVisualCare"
+              }
+            },
+            "Property": "Code"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "e630c6154d7d201351d0",
+        "ordinal": 7,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimRosterServicesVisualCare"
+              }
+            },
+            "Property": "IsSleepover"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "29c820c8ab4097ced127",
+        "ordinal": 8,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactRostersVisualCare"
+              }
+            },
+            "Property": "RosteredHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8599ce41353757ed44d6",
+        "ordinal": 9,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactRostersVisualCare"
+              }
+            },
+            "Property": "StartDateTime"
+          }
+        },
+        "type": "Categorical"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

@@ -1,0 +1,34 @@
+table 'Dim Calculation Data Source'
+	isHidden
+	lineageTag: d5a7b8e0-cbb9-45cc-b7e7-96f6ef808225
+	sourceLineageTag: dd6ee150-65bc-4a3c-b5ec-4ddebc68ba39
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7e8561f7-8120-4db9-b97d-7c052a27a253
+		sourceLineageTag: 10b0c35d-d424-4165-9c82-eaa9e7fd8945
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column 'Data Source'
+		dataType: string
+		isHidden
+		lineageTag: d374e6b6-5072-4760-b247-67acda2e19b4
+		sourceLineageTag: 525e9a85-dd8d-4b9d-b9eb-abf8d6a98e2d
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: Data Source
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Calculation Data Source' = entity
+		mode: directQuery
+		source
+			entityName: Dim Calculation Data Source
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

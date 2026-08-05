@@ -1,0 +1,292 @@
+table FactCareViewCaseNotes
+	lineageTag: 11605176-abf9-4708-9778-6e96c4b10500
+
+	measure SelectedServiceRegion = DISTINCTCOUNT(FactCareViewCaseNotes[Service Region])
+		formatString: 0
+		lineageTag: 9b04f500-24e6-45a0-bf0f-0f5b8853fc9c
+
+	measure CountClientProfiles = DISTINCTCOUNT(DimCareViewClients[NDIS Number])
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 8fe85734-3d31-436f-8382-617672f05a38
+
+	measure CountNewClients = ```
+			VAR _currentDate = MAX('DimFundingExportDate'[Start of Month])
+			// VAR _windowStart = 
+			VAR _periodStart = CALCULATE(MIN(DimCalendar[WorkDate]), DimCalendar[WorkDate] = _currentDate)
+			VAR _periodEnd = CALCULATE(MAX(DimCalendar[WorkDate]), DimCalendar[WorkDate] = _currentDate)
+			VAR _logic = CALCULATE([CountClientProfiles], DimClientServiceStartDate[ServiceStartDate] >= _periodStart, DimClientServiceStartDate[ServiceStartDate] <= _periodEnd)
+			RETURN _logic
+			```
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 891602ab-f9f9-4bbf-b542-66ee18b4631b
+
+	measure CountClientExits =
+			VAR _currentDate = MAX('DimFundingExportDate'[StartOfWeek])
+			VAR _periodStart = CALCULATE(MIN(DimCalendar[WorkDate]), DimCalendar[StartOfWeek] = _currentDate)
+			VAR _periodEnd = CALCULATE(MAX(DimCalendar[WorkDate]), DimCalendar[StartOfWeek] = _currentDate)
+			VAR _logic = CALCULATE([CountClientProfiles], USERELATIONSHIP(DimClientServiceStartDate[ServiceStartDate], DimCareViewClients[Plan End Date]), DimClientServiceStartDate[ServiceStartDate] >= _periodStart, DimClientServiceStartDate[ServiceStartDate] <= _periodEnd)
+			RETURN _logic
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: 7e76639d-2289-4e92-857d-161168b365d8
+
+	measure CountActiveClients = CALCULATE([CountClientProfiles], DimCareViewClients[Status] = "Active")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: e1a10281-0cdb-4f4a-8990-ff529797ed4c
+
+	measure CountPendingClients = CALCULATE([CountClientProfiles], DimCareViewClients[Status] = "Pending")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 30c820bb-83a7-4201-bd12-42aa5d28497a
+
+	measure CountDeceasedClients = CALCULATE([CountClientProfiles], DimCareViewClients[Status] = "Deceased")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: 3fb9f4a2-ef36-4868-a54e-6d92dc8bbfb2
+
+	measure CountInactiveClients = CALCULATE([CountClientProfiles], DimCareViewClients[Status] = "Inactive")
+		formatString: #,0
+		displayFolder: Counts
+		lineageTag: f0c0ee9d-20e7-4735-8465-5c78f71c5c02
+
+	measure CountBilledClients = DISTINCTCOUNT(FactCareViewCaseNotes[ClientFullNameKey])
+		formatString: 0
+		displayFolder: Counts
+		lineageTag: ee00b547-5f00-427f-a59f-d47d028cb1bb
+
+	measure CaseNotesExtractDate = "CareView client case notes data last loaded: " & FORMAT(MAX(FactCareViewCaseNotes[Date created]), "d/m/yyyy")
+		lineageTag: 0064bd92-4b1f-4501-bc11-c1d617c0f372
+
+	measure SelectedClientStartDates = "Clients commencing: " & [SelectedDates]
+		lineageTag: 23f287fd-27e7-46e5-9ff5-a8b75f181614
+
+	column 'Service Contract Reference Number'
+		dataType: string
+		lineageTag: 4d3f6a8f-44bc-4f9d-8104-6a4b83051c8f
+		summarizeBy: none
+		sourceColumn: Service Contract Reference Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Created Date'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Dates
+		lineageTag: efdce99b-b34b-4594-b3c1-44c8464ced64
+		summarizeBy: none
+		sourceColumn: Created Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Delivered Date'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Dates
+		lineageTag: a8a4c44f-8d1c-4735-90d1-476dc9e60454
+		summarizeBy: none
+		sourceColumn: Delivered Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Hours
+		dataType: double
+		lineageTag: 84e1ff04-6b86-4078-b038-cb144499d0fc
+		summarizeBy: sum
+		sourceColumn: Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column KMs
+		dataType: int64
+		lineageTag: b9d3a797-a6ca-4fda-a26b-0bb641ff8bce
+		summarizeBy: sum
+		sourceColumn: KMs
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Delivery Amount'
+		dataType: double
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: b5e98b76-5a63-4c4a-aafc-4555e73e73eb
+		summarizeBy: sum
+		sourceColumn: Delivery Amount
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Rate'
+		dataType: double
+		lineageTag: ba122bee-626f-4d60-ac23-9d866485a5f2
+		summarizeBy: sum
+		sourceColumn: Unit Rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Created By'
+		dataType: string
+		lineageTag: 68d60b0f-832b-4bb4-ab42-6296209f6375
+		summarizeBy: none
+		sourceColumn: Created By
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client
+		dataType: string
+		lineageTag: ac02ef34-1275-4cc7-a61b-a07caa5c3eab
+		summarizeBy: none
+		sourceColumn: Client
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Case Note Status'
+		dataType: string
+		lineageTag: 858d0ad4-0a06-4588-a2f4-3a9ab8379ad5
+		summarizeBy: none
+		sourceColumn: Case Note Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Delivery Status'
+		dataType: string
+		lineageTag: 44d2dc07-49f5-4842-a4c8-bb25c919e0f4
+		summarizeBy: none
+		sourceColumn: Delivery Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Header Reference'
+		dataType: string
+		lineageTag: 15ece070-e4e7-44ba-8488-915f64824044
+		summarizeBy: none
+		sourceColumn: Header Reference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'DS Number'
+		dataType: string
+		lineageTag: ff3a2dfa-9d0b-477e-99e1-9ba1dd9c7950
+		summarizeBy: none
+		sourceColumn: DS Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Contact Type'
+		dataType: string
+		lineageTag: 32175186-d1b9-4073-95f9-e56d2e61983a
+		summarizeBy: none
+		sourceColumn: Contact Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subject
+		dataType: string
+		lineageTag: f2b1354b-39a0-45c4-918c-0e16d17ebdd0
+		summarizeBy: none
+		sourceColumn: Subject
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Line Item Code'
+		dataType: string
+		lineageTag: a3ba5c1a-23b7-47d4-802d-f2fbf0a2404c
+		summarizeBy: none
+		sourceColumn: Line Item Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Region'
+		dataType: string
+		lineageTag: 37f16f47-f671-4251-8403-d9615e9f7044
+		summarizeBy: none
+		sourceColumn: Service Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column BillableFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0058cf9b-0906-407c-b579-7b19bf02378d
+		summarizeBy: none
+		sourceColumn: BillableFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeFullNameKey
+		dataType: string
+		lineageTag: 3649bcff-9272-4361-9527-cb4800eb0694
+		summarizeBy: none
+		sourceColumn: EmployeeFullNameKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientFullNameKey
+		dataType: string
+		isHidden
+		lineageTag: 30f9ba1d-ca25-4697-a534-1b73fff39f0e
+		summarizeBy: none
+		sourceColumn: ClientFullNameKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientRegion = CALCULATE(SELECTEDVALUE(DimCareViewClients[Region]), CROSSFILTER(FactCareViewCaseNotes[Service Contract Reference Number], BridgeServiceContractNumber[Service Contract Reference Number], Both))
+		lineageTag: 91ec7a4d-cf2a-48c3-af3b-639922c2aad5
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date created'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4f7434b4-d208-4df5-b317-921c9f258ec3
+		summarizeBy: none
+		sourceColumn: Date created
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactCareViewCaseNotes = m
+		mode: import
+		queryGroup: SharePoint
+		source =
+				let
+				    Source = Table.Combine({#"CareViewCaseNotesDynamic - Source", #"CareViewCaseNotesStatic - Source"}),
+				    #"Replaced Tom Hobert" = Table.ReplaceValue(Source,"Tom Hobert","Thomas Hobert",Replacer.ReplaceText,{"Created By"}),
+				    #"Replaced Kelly-anne Hodgins" = Table.ReplaceValue(#"Replaced Tom Hobert","Kelly-anne Hodgins","Kelly-Anne Hodgins",Replacer.ReplaceText,{"Created By"}),
+				    #"Replaced Carly Cole" = Table.ReplaceValue(#"Replaced Kelly-anne Hodgins","Carly Cole","Carlene Cole",Replacer.ReplaceText,{"Created By"}),
+				    #"Replaced Jo Pengelly" = Table.ReplaceValue(#"Replaced Carly Cole","Jo Pengelly","Joanne Pengelly",Replacer.ReplaceText,{"Created By"}),
+				    #"Replaced Kate ( Kathryn ) Barnes" = Table.ReplaceValue(#"Replaced Jo Pengelly","Kate ( Kathryn )  Barnes ","Kathryn Barnes",Replacer.ReplaceText,{"Created By"}),
+				    #"Replaced Lisa Fallen" = Table.ReplaceValue(#"Replaced Kate ( Kathryn ) Barnes","Lisa Fallen","Lisa-Maree Fallen",Replacer.ReplaceText,{"Created By"}),
+				    #"Replaced Shannon Vanhout" = Table.ReplaceValue(#"Replaced Lisa Fallen","Shannon Vanhout","Shannon Van Hout",Replacer.ReplaceText,{"Created By"}),
+				    #"Replaced Sienna  Chen" = Table.ReplaceValue(#"Replaced Shannon Vanhout","Sienna  Chen","Siyu Chen",Replacer.ReplaceText,{"Created By"}),
+				    #"Added BillableFlag" = Table.AddColumn(#"Replaced Sienna  Chen", "BillableFlag", each if [Delivery Amount] = null then false else if [Delivery Amount] = 0 then false else true),
+				    #"Add EmployeeFullNameKey" = Table.AddColumn(#"Added BillableFlag", "EmployeeFullNameKey",each Text.Replace([Created By], " ", ""), type text),
+				    #"Added ClientFullNameKey" = Table.AddColumn(#"Add EmployeeFullNameKey", "ClientFullNameKey",each Text.Replace([Client], " ", ""), type text),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Added ClientFullNameKey",{{"Hours", type duration}, {"BillableFlag", type logical}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

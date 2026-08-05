@@ -1,16 +1,44 @@
 model Model
 	culture: en-US
 	defaultPowerBIDataSourceVersion: powerBI_V3
-	sourceQueryCulture: en-AU
+	sourceQueryCulture: en-GB
 	dataAccessOptions
 		legacyRedirects
 		returnErrorValuesAsNull
 
+queryGroup 'Utilities\Data Dictionary'
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup 'Utilities\Transform File from Query1'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Utilities\Transform File from Query1\Helper Queries'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup Utilities
+
+	annotation PBI_QueryGroupOrder = 3
+
+queryGroup Workers
+
+	annotation PBI_QueryGroupOrder = 4
+
+queryGroup Shifts
+
+	annotation PBI_QueryGroupOrder = 5
+
+queryGroup Clients
+
+	annotation PBI_QueryGroupOrder = 6
+
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["RefreshedDate","Calendar - Source","Fact Workforce","Dim Workforce","Fact Shift","Fact Client","Dim Client","Dim Shift Start Date","Dim Employment Start Date","Dim Workforce - Duplicates"]
+annotation PBI_QueryOrder = ["RefreshedDate","Calendar - Source","Fact Workforce","Dim Workforce","Dim Workforce - Duplicates","Dim Workforce Work Areas","Dim Workforce Remoteness","Dim Workforce Start Date","Fact Shift","Fact Shift Audit","Dim Shift","Dim Shift Remoteness","Dim Shift Allocation","Dim Shift Start Date","Dim Shift Audit Update Date","Dim Client","Fact Client","Data Dictionary - Source","Dim Related Calculations","Fact Calculations","Dim Calculations","Dim Technical Owner","Dim Accountable Stakeholders","Dim Calculation Data Source","Dim Calculation Semantic Model","Sample File","Parameter1","Transform Sample File","Transform File","PostCodeRemoteness","Dim Workforce Trades","PostCodeDescriptive","Fill rate map legend","ShiftCalendar - Source","Fact Shift Audit old"]
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DaxQueryView_Desktop","DevMode"]
 
 ref table RefreshedDate
 ref table DateTableTemplate_946158d7-2e24-4f2d-bc8a-c1ff11d11798
@@ -21,11 +49,9 @@ ref table LocalDateTable_07d60e86-76aa-4422-9ddf-83e2a2135f80
 ref table LocalDateTable_aa83bbfb-7f62-49da-9e86-19e8b9cd108e
 ref table LocalDateTable_83ece91d-a4e6-467e-abab-e0178d74eab5
 ref table LocalDateTable_5f0c2bdb-c6bd-403d-b596-971af2e97fc5
-ref table LocalDateTable_59a59357-5625-4a35-96c2-954f23bb4c19
 ref table 'Dim Workforce'
 ref table LocalDateTable_c79aaebd-ae53-47c7-8309-8f89a1468071
 ref table 'Fact Shift'
-ref table LocalDateTable_7c61d204-22af-4ed6-a356-be5799d29086
 ref table LocalDateTable_6d358562-49f4-4561-9c0d-25d52b3d0984
 ref table LocalDateTable_51b42e2b-b068-4fec-9d2c-cfbfdd4bf318
 ref table LocalDateTable_76290547-5444-47b2-afea-bd16e81875f7
@@ -42,13 +68,42 @@ ref table 'Dim Shift Start Date'
 ref table LocalDateTable_8fe759ac-2ca4-4df9-9510-6266035f104c
 ref table LocalDateTable_9639edc5-36b7-495d-9639-68186d7dd4cc
 ref table LocalDateTable_14ccad3c-0277-4c31-aa27-9fb823701437
-ref table 'Dim Employment Start Date'
+ref table 'Dim Workforce Start Date'
 ref table LocalDateTable_b67f671a-8f4f-4b8a-b106-61f837f4ebbb
 ref table LocalDateTable_34112bc6-2866-4d93-83b2-d57a5a95feed
 ref table LocalDateTable_9a929ea4-26df-4ac6-87c9-4e2f909f69c4
 ref table 'Dim Workforce - Duplicates'
 ref table LocalDateTable_4f4edcfb-8d72-4c16-b1f0-4b263476a7ed
-ref table Parameter
+ref table WorkforceDimensions
+ref table 'Dim Related Calculations'
+ref table 'Fact Calculations'
+ref table LocalDateTable_fe4483d1-c55f-4695-b1f7-963afd8c9f57
+ref table LocalDateTable_06b434bb-48d2-4790-81cf-74e8a834f86b
+ref table 'Dim Calculations'
+ref table 'Dim Technical Owner'
+ref table 'Dim Accountable Stakeholders'
+ref table 'Dim Calculation Data Source'
+ref table 'Dim Calculation Semantic Model'
+ref table 'Dim Shift'
+ref table 'Dim Shift Remoteness'
+ref table 'Dim Workforce Remoteness'
+ref table 'Dim Workforce Work Areas'
+ref table 'Dim Workforce Trades'
+ref table LocalDateTable_ca158bdf-7a17-48eb-9997-d37f2f6f22e2
+ref table LocalDateTable_cf180014-24f1-4b5b-991e-2bce3743a02f
+ref table LocalDateTable_dd37b291-55d6-4caa-98a8-085c6db976ca
+ref table 'Dim Shift Allocation'
+ref table LocalDateTable_55dbae95-400f-4da6-9e38-3f74214aeedb
+ref table 'Fact Shift Audit'
+ref table LocalDateTable_72ce3ab0-22e7-4e9b-9b94-0d7012cc6164
+ref table LocalDateTable_e3a1db2e-1088-4bc8-ae6e-eba33ae7f518
+ref table 'Dim Shift Audit Update Date'
+ref table LocalDateTable_839ee13d-f503-45fa-afaa-65cb4e095fda
+ref table 'Fill rate map legend'
+ref table LocalDateTable_94572139-cb29-4f93-8fdf-391e2644b6f1
+ref table ShiftFillParameter
+ref table LocalDateTable_46179633-0ad1-477f-9920-5043f86a27a5
+ref table LocalDateTable_72524969-3218-4d21-b831-b54223edd838
 
 ref cultureInfo en-US
 

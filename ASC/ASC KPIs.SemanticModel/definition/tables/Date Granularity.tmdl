@@ -1,0 +1,59 @@
+table 'Date Granularity'
+	lineageTag: 9fae33a6-d11f-4de4-ab88-f79a0ce2fcf1
+
+	measure WeeksClarifier =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE('Date Granularity'[Date Granularity Fields]) = "'DimCalendar'[MMM YYYY]", BLANK(),
+			    SELECTEDVALUE('Date Granularity'[Date Granularity Fields]) = "'DimCalendar'[StartOfWeek]", "N.B. Start of week date displayed",
+			    SELECTEDVALUE('Date Granularity'[Date Granularity Fields]) = "'DimCalendar'[WorkDate]", BLANK()
+			    )
+		formatString: 0
+		lineageTag: 093e2c2c-14ac-45c9-822e-1405f6b06f25
+
+	column 'Date Granularity'
+		lineageTag: 386396c9-a317-47d8-b023-18e4dafd5c94
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Date Granularity Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Date Granularity Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Granularity Fields'
+		isHidden
+		lineageTag: 0217da34-30fb-4813-b94d-da213cc9b671
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Date Granularity Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Granularity Order'
+		isHidden
+		formatString: 0
+		lineageTag: e5ca63e8-a90f-4ca8-a548-5b6c98d632d7
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Date Granularity' = calculated
+		mode: import
+		source =
+				{
+				    ("Months", NAMEOF('DimCalendar'[MMM YYYY]), 0),
+				    ("Weeks", NAMEOF('DimCalendar'[StartOfWeek]), 1),
+				    ("Days", NAMEOF(DimCalendar[WorkDate]), 2)
+				}
+
+	annotation PBI_Id = 556426fd06ef4bbca1bbb0fda09b4324
+

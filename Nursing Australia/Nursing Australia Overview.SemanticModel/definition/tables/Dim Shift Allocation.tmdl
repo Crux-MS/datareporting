@@ -1,0 +1,121 @@
+table 'Dim Shift Allocation'
+	lineageTag: d38ee1f0-94ef-4a53-ab37-970cc2791323
+
+	column ShiftID
+		dataType: int64
+		formatString: 0
+		lineageTag: 3bf1d3c2-2f93-445d-81f0-70d9096ea205
+		summarizeBy: none
+		sourceColumn: ShiftID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MemberID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3f88f92a-21c1-4841-8289-f5262d972f97
+		summarizeBy: count
+		sourceColumn: MemberID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MemberInteractionID
+		dataType: int64
+		formatString: 0
+		lineageTag: b19d3093-f6ae-4a32-aa7b-933485318a3b
+		summarizeBy: count
+		sourceColumn: MemberInteractionID
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgencyID
+		dataType: int64
+		formatString: 0
+		lineageTag: 885c0a29-33d6-449c-a2f0-d6aa7a0ba6c8
+		summarizeBy: count
+		sourceColumn: AgencyID
+
+		annotation SummarizationSetBy = Automatic
+
+	column InteractionType
+		dataType: string
+		lineageTag: 75324d52-382e-40e5-ab7a-d2cb9996ba85
+		summarizeBy: none
+		sourceColumn: InteractionType
+
+		annotation SummarizationSetBy = Automatic
+
+	column InteractionMethod
+		dataType: string
+		lineageTag: 8966dba8-f93d-43c1-8a9a-f78d76bcc2ae
+		summarizeBy: none
+		sourceColumn: InteractionMethod
+
+		annotation SummarizationSetBy = Automatic
+
+	column interactionInstigator
+		dataType: string
+		lineageTag: 41a4ef41-919f-4f35-82f2-5a21ece52a7c
+		summarizeBy: none
+		sourceColumn: interactionInstigator
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserName
+		dataType: string
+		lineageTag: 0faa60d9-8c32-45e2-8d5a-446c23d19ef4
+		summarizeBy: none
+		sourceColumn: UserName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Time
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: f9c2f2e0-6169-4439-9f8f-5f86941808ec
+		summarizeBy: none
+		sourceColumn: Time
+
+		variation Variation
+			isDefault
+			relationship: 27b0be07-3df9-41a9-890b-b9672d5e4101
+			defaultHierarchy: LocalDateTable_55dbae95-400f-4da6-9e38-3f74214aeedb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column User
+		dataType: string
+		lineageTag: 6eee3bb5-ac32-4e53-a8f5-717184a73439
+		summarizeBy: none
+		sourceColumn: User
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserEmail
+		dataType: string
+		lineageTag: 2d2c7d20-cca2-4d58-8e42-5453f8e8ed4f
+		summarizeBy: none
+		sourceColumn: UserEmail
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Shift Allocation' = m
+		mode: import
+		queryGroup: Shifts
+		source =
+				let
+				    Source = Sql.Database("10.2.0.5\azhrinkuat,50660", "HRLink", [Query="SELECT [MemberInteractionID]#(lf)      ,mi.[ShiftID]#(lf)      ,mi.[MemberID]#(lf)      ,mi.[AgencyID]#(lf)      ,it.Description                   AS [InteractionType]#(lf)      ,im.Description                   AS [InteractionMethod]#(lf)      ,ints.Name                        AS [interactionInstigator]#(lf)      ,mi.UserName#(lf)      ,u.GivenName + ' ' + u.Surname    AS [User]#(lf)      ,u.EmailAddress                   AS [UserEmail]#(lf)      ,[Time]#(lf)  FROM [HRLink].[dbo].[MemberInteraction] mi#(lf)  LEFT JOIN dbo.InteractionType it on it.InteractionTypeID = mi.InteractionTypeID#(lf)  LEFT JOIN dbo.InteractionInstigator ints  on ints.InteractionInstigatorID = mi.InteractionInstigatorID#(lf)  LEFT JOIN dbo.InteractionMethod im ON im.InteractionMethodID = mi.InteractionMethodID#(lf)  LEFT JOIN dbo.Shift s on s.ShiftID = mi.ShiftID#(lf)  LEFT JOIN dbo.[User] u on u.Username = mi.UserName#(lf)  where mi.AgencyID = 4 and s.StartDate >= DATEADD(year,-3,GETDATE())"])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

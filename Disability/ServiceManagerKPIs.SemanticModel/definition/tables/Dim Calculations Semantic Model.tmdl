@@ -1,0 +1,44 @@
+table 'Dim Calculations Semantic Model'
+	isHidden
+	lineageTag: 20638c29-9c5d-4508-b6ab-7c60ecc13530
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3841a06b-4ef8-4142-97b2-aa659f79ff82
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Semantic Model'
+		dataType: string
+		isHidden
+		lineageTag: d1514bdf-bf6c-4a6c-94a9-fb6c640f39d0
+		summarizeBy: none
+		sourceColumn: Semantic Model
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculations Semantic Model' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Semantic Model"}),
+				    #"Expanded Semantic Model" = Table.ExpandListColumn(#"Removed Other Columns", "Semantic Model")
+				in
+				    #"Expanded Semantic Model"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

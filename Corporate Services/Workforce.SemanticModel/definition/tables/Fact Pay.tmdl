@@ -307,16 +307,10 @@ table 'Fact Pay'
 
 	column 'Date Paid'
 		dataType: dateTime
-		isHidden
 		formatString: Long Date
 		lineageTag: 3df8f8fe-d935-4442-873e-a270567770a1
 		summarizeBy: none
 		sourceColumn: Date Paid
-
-		variation Variation
-			isDefault
-			relationship: 41fe3d72-8e3c-44f5-b519-e668f78a5f63
-			defaultHierarchy: LocalDateTable_1ed46c0d-c694-4ce8-a9df-a2296be02204.'Date Hierarchy'
 
 		changedProperty = IsHidden
 
@@ -359,6 +353,7 @@ table 'Fact Pay'
 
 	column Amount
 		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
 		displayFolder: Amount Paid
 		lineageTag: 96beac3d-20bc-4f42-bb4c-4343376d8994
 		summarizeBy: sum
@@ -367,8 +362,6 @@ table 'Fact Pay'
 		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column 'SG Super'
 		dataType: double
@@ -387,6 +380,11 @@ table 'Fact Pay'
 		lineageTag: ceff5f09-1e0f-4e6a-83dc-d1d2888fa3aa
 		summarizeBy: none
 		sourceColumn: StartExtractPeriod
+
+		variation Variation
+			isDefault
+			relationship: 6c90fc88-ae5d-4462-905c-a178999eb5ab
+			defaultHierarchy: LocalDateTable_64c9631c-4ed5-4352-8402-c27d778dfa7a.'Date Hierarchy'
 
 		changedProperty = IsHidden
 

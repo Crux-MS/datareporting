@@ -1,0 +1,46 @@
+table 'Dim Related Calculations'
+	isHidden
+	lineageTag: 23102a2f-dc05-4596-84e6-f97ee8dcfb11
+	sourceLineageTag: 34a53253-d607-44aa-a0a8-a486b743283e
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 69c38d5e-d19c-4329-ae22-b99581fcc169
+		sourceLineageTag: d67b0f1d-8c8c-4091-831f-4b9aded884e6
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column RelatedCalculationId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4e96d406-cfac-4239-9226-783f967db7df
+		sourceLineageTag: 0e43c240-8fc0-4543-b9d9-5b85482bc2e3
+		dataCategory: Uncategorized
+		summarizeBy: count
+		sourceColumn: RelatedCalculationId
+
+		annotation SummarizationSetBy = User
+
+	column RelatedCalculation
+		dataType: string
+		isHidden
+		lineageTag: 76a04fc4-3705-40b8-8091-ff25a01c243b
+		sourceLineageTag: 73cace7d-5d95-4848-9de8-0b0acfcbe07f
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: RelatedCalculation
+
+		annotation SummarizationSetBy = User
+
+	partition 'Dim Related Calculations' = entity
+		mode: directQuery
+		source
+			entityName: Dim Related Calculations
+			expressionSource: 'DirectQuery to AS - Nursing Australia Overview'
+

@@ -1,0 +1,562 @@
+table FactSMWeeklySnapshot
+	lineageTag: b6b10dd1-61a7-42c6-950c-bec57e3124bd
+
+	measure TotalWeeklyHoursPaid = SUM(FactSMWeeklySnapshot[Payroll Standard Hours]) + SUM(FactSMWeeklySnapshot[Payroll Leave Hours]) + SUM(FactSMWeeklySnapshot[Payroll Overtime Hours]) + SUM(FactSMWeeklySnapshot[Payroll Other Hours])
+		formatString: #,0.0
+		displayFolder: Payroll
+		lineageTag: a41641d3-9c30-44e8-bc9a-1852f1572563
+
+	measure LeavePaidWeeklyRate = DIVIDE(SUM(FactSMWeeklySnapshot[Payroll Leave Hours]), [TotalWeeklyHoursPaid])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Payroll
+		lineageTag: 1500ab33-199a-48e4-973f-d961fec31d08
+
+	measure OvertimePaidWeeklyRate = DIVIDE(SUM(FactSMWeeklySnapshot[Payroll Overtime Hours]), [TotalWeeklyHoursPaid])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Payroll
+		lineageTag: 366a25f4-037f-40f5-924b-5aa7f529f018
+
+	measure CountWeeklyActiveClients = SUM(FactSMWeeklySnapshot[Client Active Cas Count]) + SUM(FactSMWeeklySnapshot[Client Active Sil Count]) + SUM(FactSMWeeklySnapshot[Client Active Unknown Count])
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 93c8d27c-f82d-403f-a28e-ee173549a9a7
+
+	measure TotalWeeklyScheduledHours = SUM(FactSMWeeklySnapshot[Worker Scheduled Nonsil Hours]) + SUM(FactSMWeeklySnapshot[Worker Scheduled Sil Hours])
+		displayFolder: Clients
+		lineageTag: fe1eee3e-5a48-482b-ba3a-d1e1d1c3d132
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TotalWeeklyImpactedHours = SUM(FactSMWeeklySnapshot[Worker Undelivered Nonsil Hours]) + SUM(FactSMWeeklySnapshot[Worker Undelivered Sil Hours])
+		displayFolder: Clients
+		lineageTag: cc28779a-402e-4596-98d6-ef3e8a442dc5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TotalWeeklyHoursDelivered = SUM(FactSMWeeklySnapshot[Worker Delivered Cas Hours]) + SUM(FactSMWeeklySnapshot[Worker Delivered Other Hours]) + SUM(FactSMWeeklySnapshot[Worker Delivered Sil Hours])
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 44d626b5-19d9-4885-923e-037492f030af
+
+	measure SILWeeklyHoursDeliveredRate = DIVIDE(SUM(FactSMWeeklySnapshot[Worker Delivered Sil Hours]), [TotalWeeklyHoursDelivered])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Workers
+		lineageTag: 6dee5c3b-09de-46cc-a656-59329011e3e9
+
+	measure CASWeeklyHoursDeliveredRate = DIVIDE(SUM(FactSMWeeklySnapshot[Worker Delivered Cas Hours]), [TotalWeeklyHoursDelivered])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Workers
+		lineageTag: a814869e-c615-49be-865d-bc8decfce536
+
+	measure OtherWeeklyHoursDeliveredRate = DIVIDE(SUM(FactSMWeeklySnapshot[Payroll Other Hours]), [TotalWeeklyHoursDelivered])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Workers
+		lineageTag: bb9802f2-3769-4060-be04-cc4b75f3fd16
+
+	measure WeeklyHoursCancelledRate = DIVIDE(SUM(FactSMWeeklySnapshot[Worker Cancellation Hours]), [TotalWeeklyHoursDelivered])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Workers
+		lineageTag: 221d0c07-55d0-4927-9e09-8272f4da2815
+
+	column 'Id Service Manager'
+		dataType: string
+		isHidden
+		lineageTag: 4d96d888-16ef-429e-b31e-899f8d84da49
+		summarizeBy: none
+		sourceColumn: Id Service Manager
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Start Date'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 96744785-ee53-403d-a0d2-6cce79178f76
+		summarizeBy: none
+		sourceColumn: Week Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Employee Active Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 66afe684-6601-46ee-bd4d-119cee25aa0b
+		summarizeBy: sum
+		sourceColumn: Employee Active Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Exit Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 63f6922d-ca61-4296-9fef-bcf5cda10c0a
+		summarizeBy: sum
+		sourceColumn: Employee Exit Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Active Sil Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 494e5103-abfb-456a-9553-54ad7c37a76f
+		summarizeBy: sum
+		sourceColumn: Client Active Sil Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Active Cas Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 1f5a5961-9180-42cf-83f2-cd15991a2510
+		summarizeBy: sum
+		sourceColumn: Client Active Cas Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Active Unknown Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: d4611ed7-d460-4f6a-802c-5425b5b53f6c
+		summarizeBy: sum
+		sourceColumn: Client Active Unknown Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Exit Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: ced58785-6e24-44f7-84a7-8c89db8e0388
+		summarizeBy: sum
+		sourceColumn: Client Exit Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payroll Overtime Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Payroll
+		lineageTag: 9ae0d4df-2ab0-4ca0-b172-f454559c8518
+		summarizeBy: sum
+		sourceColumn: Payroll Overtime Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payroll Leave Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Payroll
+		lineageTag: 0af94c0e-349b-42b6-b049-e76008c2066c
+		summarizeBy: sum
+		sourceColumn: Payroll Leave Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payroll Standard Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Payroll
+		lineageTag: ea5a2801-c785-49bb-9152-9c378d3cc8c0
+		summarizeBy: sum
+		sourceColumn: Payroll Standard Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payroll Other Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Payroll
+		lineageTag: 31649061-767d-42c2-a3b8-d1bb5f0a1036
+		summarizeBy: sum
+		sourceColumn: Payroll Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payroll Run Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Payroll
+		lineageTag: bf0fa19f-080c-45c9-bebc-af6b27605c8e
+		summarizeBy: sum
+		sourceColumn: Payroll Run Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Undelivered Sil Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 02212edc-242b-4570-a71e-832aa3a1d6a6
+		summarizeBy: sum
+		sourceColumn: Worker Undelivered Sil Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Worker Scheduled Sil Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: bbf9a408-acba-4487-b692-a755bcdab53a
+		summarizeBy: sum
+		sourceColumn: Worker Scheduled Sil Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Worker Undelivered Nonsil Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 2460359b-1e97-4496-b75c-6be01959cce5
+		summarizeBy: sum
+		sourceColumn: Worker Undelivered Nonsil Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Worker Scheduled Nonsil Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 30e4c938-7bbb-4549-9e8a-2b2547510d56
+		summarizeBy: sum
+		sourceColumn: Worker Scheduled Nonsil Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Worker Delivered Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 4f9bbc97-dc57-4e17-b568-7f5d2484e0e4
+		summarizeBy: sum
+		sourceColumn: Worker Delivered Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Worker Delivered Sil Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 2938c19d-188f-4037-8a47-4e0301491e24
+		summarizeBy: sum
+		sourceColumn: Worker Delivered Sil Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Delivered Cas Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 9f439e33-3f15-455b-b6c2-bf095873416e
+		summarizeBy: sum
+		sourceColumn: Worker Delivered Cas Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Delivered Other Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 62624a17-9926-4208-8059-34096303270b
+		summarizeBy: sum
+		sourceColumn: Worker Delivered Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Cancellation Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: f098352d-f251-41e6-86ce-b04786d3a68b
+		summarizeBy: sum
+		sourceColumn: Worker Cancellation Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Admin Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 16206618-ea01-458a-9cfe-7d4f9563c131
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Admin Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Training Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 91b33c7a-3df1-4205-b639-780aaf0c4b6d
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Training Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Meeting Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 239c3e17-6056-4d51-8649-97a38475d956
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Meeting Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Shadow Shift Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 061aaa55-04da-49e8-9f8f-c81560886fda
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Shadow Shift Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Awake Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 9baffb98-8d27-432b-935c-156dcda95a19
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Awake Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Travel Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: ae5cc220-1141-4a1a-8adc-d64e544aa470
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Travel Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Phnw Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 0d697543-f866-40b7-a587-f544d30dcec5
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Phnw Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Unbillable Other Hours'
+		dataType: double
+		formatString: #,0.0
+		displayFolder: Workers
+		lineageTag: 4be7a964-b7e4-4014-acbc-cd9b1e999164
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Schedule Hours Assigned'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: a5287d5c-7a99-4248-8500-ed74869d890d
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours Assigned
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Client Schedule Hours Unknown'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: 3a22b4da-2db2-4b5b-be91-bf69c1001e3b
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours Unknown
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Client Schedule Hours Unassigned Planned'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: e31afff2-0680-4dd7-b205-db0ad367b6b8
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours Unassigned Planned
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Client Schedule Hours Unassigned Unplanned'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: e98d7deb-2a2e-47ea-9a36-3cfbc133af4a
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours Unassigned Unplanned
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Client Schedule Hours Undelivered'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: 2f621e1d-0d3e-43fc-bd47-286ea03f59a7
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours Undelivered
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Client Schedule Hours Completed'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: c6537821-1ba0-42d4-86dc-9ed2b745a5c7
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours Completed
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Employee Rolling 52W Churn Rate'
+		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: d2ba0609-a1fd-467b-bad6-c45baa5fcca9
+		summarizeBy: sum
+		sourceColumn: Employee Rolling 52W Churn Rate
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Rolling 52W Churn Rate'
+		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Clients
+		lineageTag: 96106e07-eb8f-4c0e-882e-815fd0754650
+		summarizeBy: sum
+		sourceColumn: Client Rolling 52W Churn Rate
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Enter Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: dcdd5f1b-2dfd-46ff-b414-75880a667152
+		summarizeBy: sum
+		sourceColumn: Client Enter Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Enter Sil Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: 105856b4-4a7d-4e21-8a62-f3a656345687
+		summarizeBy: sum
+		sourceColumn: Client Enter Sil Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Enter Cas Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: 678505ed-8cee-4588-ab0a-18a49553ad1a
+		summarizeBy: sum
+		sourceColumn: Client Enter Cas Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Enter Unknown Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: edc33c6e-f751-4257-bd04-c21ce2897e68
+		summarizeBy: sum
+		sourceColumn: Client Enter Unknown Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Exit Sil Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: 33a0eaaf-fa81-4e09-ab0c-58f29388da19
+		summarizeBy: sum
+		sourceColumn: Client Exit Sil Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Exit Cas Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: c0e93cc9-19db-4f5a-8874-48fcd7ed0ae5
+		summarizeBy: sum
+		sourceColumn: Client Exit Cas Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Exit Unknown Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: e2eb7a9f-3b20-4aac-bfc9-31f7835c77fa
+		summarizeBy: sum
+		sourceColumn: Client Exit Unknown Count
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Billable Cyf Hours'
+		dataType: double
+		lineageTag: ba2b695a-c52b-4887-85e7-0ae25c100be1
+		summarizeBy: sum
+		sourceColumn: Worker Billable Cyf Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Worker Billable Ndis Hours'
+		dataType: double
+		lineageTag: 9f9ded33-01f9-453c-b8f2-cdd1dd8dbc68
+		summarizeBy: sum
+		sourceColumn: Worker Billable Ndis Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Client Schedule Hours'
+		dataType: double
+		lineageTag: a0e8f59e-59a2-45b7-9c9f-826f94602b6e
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition FactSMWeeklySnapshot = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Fact_service_manager_kpi_weekly = Source{[Schema="Fact",Item="service_manager_kpi_weekly"]}[Data],
+				    RenameColumns = fnCleanColumnNames(Fact_service_manager_kpi_weekly)
+				in
+				    RenameColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
