@@ -11,7 +11,7 @@ expression 'Data Dictionary - Source' =
 
 	annotation PBI_ResultType = Table
 
-expression 'KeyPay API Authorisation String' = "Basic REPLACE_WITH_KEYPAY_TOKEN_LOCALLY" meta [IsParameterQuery=true, List={"Basic REPLACE_WITH_KEYPAY_TOKEN_LOCALLY"}, DefaultValue="Basic REPLACE_WITH_KEYPAY_TOKEN_LOCALLY", Type="Text", IsParameterQueryRequired=true]
+expression 'KeyPay API Authorisation String' = "YOUR_SECRET_HERE" meta [IsParameterQuery=true, List={"YOUR_SECRET_HERE"}, DefaultValue="YOUR_SECRET_HERE", Type="Text", IsParameterQueryRequired=true]
 	lineageTag: 026c8938-c7dc-412a-b14f-3e40c0085ec5
 	queryGroup: Utilities
 
@@ -335,7 +335,7 @@ expression 'Transform File (3)' =
 
 expression ASCEmployeePublicHolidays-Source =
 		let
-		    Source = List.Union({{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2023"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2024"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2025"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2026"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2027"],Headers=[#"Authorization"=#"KeyPay API Authorisation String"]]))}
+		    Source = List.Union({{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2023"],Headers=[#"Authorization"="YOUR_SECRET_HERE"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2024"],Headers=[#"Authorization"="YOUR_SECRET_HERE"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2025"],Headers=[#"Authorization"="YOUR_SECRET_HERE"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2026"],Headers=[#"Authorization"="YOUR_SECRET_HERE"]]))},{Json.Document(Web.Contents("https://api.yourpayroll.com.au/api/v2/business/325716/publicholiday",[Query=[year="2027"],Headers=[#"Authorization"="YOUR_SECRET_HERE"]]))}
 		}),
 		    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
 		    #"Expanded Column1" = Table.ExpandListColumn(#"Converted to Table", "Column1"),

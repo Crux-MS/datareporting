@@ -31,7 +31,7 @@ table DimServiceCategories
 		queryGroup: Services
 		source =
 				let
-				    Source = Json.Document(Web.Contents("https://publicapi.visualcare.com.au/category-services", [Query=[includeDeleted="TRUE"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
+				    Source = Json.Document(Web.Contents("https://papi.kanda.visualcare.com.au/category-services", [Query=[includeDeleted="TRUE"],Headers=[User=VisualCareUser, Key=VisualCareKey, Secret=VisualCareSecret]])),
 				    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
 				    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"CategoryId", "CategoryCode", "Description"}, {"CategoryId", "CategoryCode", "Description"}),
 				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Column1",{{"CategoryId", Int64.Type}, {"CategoryCode", type text}, {"Description", type text}})
