@@ -164,7 +164,7 @@ table 'Fact Worker Roster'
 		queryGroup: Utilities
 		source =
 				let
-				    Source = fnCleanColumnNames(Sql.Database("yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com", DatabaseName, [Query="SELECT [Id_Roster]#(lf)      ,[Id_Worker]#(lf)      ,[Id_Location]#(lf)      ,wr.[Id_Service]#(lf)      ,[Date_Of_Service]#(lf)      ,[Start_Datetime]#(lf)      ,[End_Datetime]#(lf)      ,[Duration_Hours]#(lf)      ,[Duration_Hours] - [Break_Hours] AS [Worked_Hours]#(lf)      ,[Has_Timesheet]#(lf)      ,s.[Is_Cancellation]#(lf)      ,s.[Is_Billable]#(lf)      ,s.[Billable_Category]#(lf)      ,s.[Unbillable_Category]#(lf)  FROM [Fact].[worker_roster] wr #(lf)  LEFT JOIN [Dim].[service] s ON wr.[Id_Service] = s.[Id_Service]#(lf)  WHERE [Has_Timesheet] = 1#(lf)  AND [Date_Of_Service] >= DATEADD(MONTH, -12, GetDate())"])),
+				    Source = fnCleanColumnNames(Sql.Database(ServerName, DatabaseName, [Query="SELECT [Id_Roster]#(lf)      ,[Id_Worker]#(lf)      ,[Id_Location]#(lf)      ,wr.[Id_Service]#(lf)      ,[Date_Of_Service]#(lf)      ,[Start_Datetime]#(lf)      ,[End_Datetime]#(lf)      ,[Duration_Hours]#(lf)      ,[Duration_Hours] - [Break_Hours] AS [Worked_Hours]#(lf)      ,[Has_Timesheet]#(lf)      ,s.[Is_Cancellation]#(lf)      ,s.[Is_Billable]#(lf)      ,s.[Billable_Category]#(lf)      ,s.[Unbillable_Category]#(lf)  FROM [Fact].[worker_roster] wr #(lf)  LEFT JOIN [Dim].[service] s ON wr.[Id_Service] = s.[Id_Service]#(lf)  WHERE [Has_Timesheet] = 1#(lf)  AND [Date_Of_Service] >= DATEADD(MONTH, -12, GetDate())"])),
 				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Date Of Service", type date}})
 				in
 				    #"Changed Type"
