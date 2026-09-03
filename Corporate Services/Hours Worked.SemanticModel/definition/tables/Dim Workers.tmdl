@@ -1,0 +1,81 @@
+table 'Dim Workers'
+	lineageTag: 841ca4a4-16e6-4dc2-a4de-b4e551228556
+
+	column 'Id Worker'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8881024c-e73e-4270-b33e-7dac691dfd24
+		summarizeBy: none
+		sourceColumn: Id Worker
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Employee Payroll'
+		dataType: string
+		lineageTag: 77e5d120-84f0-449b-abe2-021a42b0fde6
+		summarizeBy: none
+		sourceColumn: Id Employee Payroll
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Name'
+		dataType: string
+		lineageTag: 04e7077f-bcf5-4543-9f41-1b72fbd5d7d1
+		summarizeBy: none
+		sourceColumn: Employee Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Division'
+		dataType: string
+		lineageTag: d59e05e8-5663-40f8-8e64-1a69cdc5cf8c
+		summarizeBy: none
+		sourceColumn: Employee Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Employment Type'
+		dataType: string
+		lineageTag: f431b6e1-a9c3-49ec-b407-f580c8be7e19
+		summarizeBy: none
+		sourceColumn: Employee Employment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Role Category'
+		dataType: string
+		lineageTag: fa1b5801-3c08-4157-8df9-6df1fba76186
+		summarizeBy: none
+		sourceColumn: Employee Role Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Manager Name'
+		dataType: string
+		lineageTag: ea81cfd5-ccd4-41ea-b490-6d821beb2319
+		summarizeBy: none
+		sourceColumn: Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Manager Role Category'
+		dataType: string
+		lineageTag: 2f79c8e9-f099-4d24-9048-11e33fed94e1
+		summarizeBy: none
+		sourceColumn: Manager Role Category
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Workers' = m
+		mode: import
+		queryGroup: Utilities
+		source =
+				let
+				    Source = fnCleanColumnNames(Sql.Database(ServerName, DatabaseName, [Query="SELECT [Id_Worker]#(lf)      ,w.[Id_Employee_Payroll]#(lf)      ,e.[Employee_Name]    AS [Employee_Name]#(lf)      ,[Division]           AS [Employee_Division]#(lf)      ,e.[Employment_Type]  AS [Employee_Employment_Type]#(lf)      ,e.[Role_Category]        AS [Employee_Role_Category]#(lf)      ,e.[Manager_Name]#(lf)      ,e2.[Role_Category] AS [Manager_Role_Category]#(lf)  FROM [Dim].[worker] w#(lf)  LEFT JOIN [Dim].[employee] e ON w.[Id_Employee_Payroll] = e.[Id_Employee_Payroll]#(lf)  LEFT JOIN [Dim].[employee] e2 ON e.[Id_Manager] = e2.[Id_Employee]#(lf)  WHERE e.Employee_Status = 'active'"]))
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

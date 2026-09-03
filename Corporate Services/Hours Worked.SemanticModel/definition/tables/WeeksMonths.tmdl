@@ -1,0 +1,48 @@
+table WeeksMonths
+	lineageTag: b16c7a28-d8d4-4c6d-9be7-984ba728cbf1
+
+	column WeeksMonths
+		lineageTag: e31cbbcb-c4e7-470f-9f38-5ce90eb4ccbf
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'WeeksMonths Order'
+
+		relatedColumnDetails
+			groupByColumn: 'WeeksMonths Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WeeksMonths Fields'
+		isHidden
+		lineageTag: b7c4ab12-8b67-4445-9192-c93ff6e7b55c
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'WeeksMonths Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WeeksMonths Order'
+		isHidden
+		formatString: 0
+		lineageTag: c00cfe3c-fe77-4009-905e-3f6afc06b310
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition WeeksMonths = calculated
+		mode: import
+		source =
+				{
+				    ("Weeks", NAMEOF('Dim Date'[Start of Week]), 0),
+				    ("Months", NAMEOF('Dim Date'[Start of Month]), 1)
+				}
+
+	annotation PBI_Id = 9bf8bf6895714922b353d30ba2dd9639
+

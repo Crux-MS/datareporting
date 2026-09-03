@@ -1,0 +1,73 @@
+table 'Dim Accountable Stakeholders'
+	isHidden
+	lineageTag: ae1dbd11-52d5-4fe3-aa19-e2026d8b0965
+
+	measure 'Accountable Stakeholders' = CONCATENATEX(VALUES('Dim Accountable Stakeholders'[StakeholderName]), 'Dim Accountable Stakeholders'[StakeholderName], ", ")
+		isHidden
+		lineageTag: 23090859-eb5f-4909-8873-bbe16d94e3e7
+
+		changedProperty = IsHidden
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9e90378a-7a11-46af-9257-f77bd568dc0e
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderID
+		dataType: string
+		isHidden
+		lineageTag: 9a7c1c92-24f7-43df-b51b-492a794e3a00
+		summarizeBy: none
+		sourceColumn: StakeholderID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderName
+		dataType: string
+		isHidden
+		lineageTag: 87a79344-5cc1-447b-ba5b-58323d4056c4
+		summarizeBy: none
+		sourceColumn: StakeholderName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StakeholderEmail
+		dataType: string
+		isHidden
+		lineageTag: 4f6f3350-293e-46be-b6e3-0012674b5308
+		summarizeBy: none
+		sourceColumn: StakeholderEmail
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Accountable Stakeholders' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Accountable Stakeholder"}),
+				    #"Expanded Accountable Stakeholder" = Table.ExpandTableColumn(#"Removed Other Columns", "Accountable Stakeholder", {"id", "value", "email"}, {"id.1", "value", "email"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Accountable Stakeholder",{{"id.1", "StakeholderID"}, {"value", "StakeholderName"}, {"email", "StakeholderEmail"}})
+				in
+				    #"Renamed Columns"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

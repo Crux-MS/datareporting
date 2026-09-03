@@ -1,0 +1,66 @@
+relationship 4f876168-ac48-4b13-b3e6-092854ce9455
+	joinOnDateBehavior: datePartOnly
+	fromColumn: RefreshedDate.Refreshed
+	toColumn: LocalDateTable_22abea15-3a2c-4fec-b1a5-ddc2355c4b9f.Date
+
+relationship 02bb1080-5168-450d-b810-984019da3abd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Calculations'.Created
+	toColumn: LocalDateTable_8caa365c-1a13-4999-8f69-6194cb6cc959.Date
+
+relationship 975cce6e-9a90-4cb5-b94d-9ded13040bb1
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Calculations'.Modified
+	toColumn: LocalDateTable_a3a133dc-5edb-42a0-b1bb-c7003d8c5c9e.Date
+
+relationship 64c4f874-cea7-5645-2cfa-a5e204e6070e
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Fact Calculations'.ID
+	toColumn: 'Dim Calculations'.ID
+
+relationship 42f4f0a8-1b20-0ed7-2dbd-069397289edf
+	fromColumn: 'Dim Calculation Data Source'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship e62991b7-9cf5-3146-e51f-b4c9fad30438
+	fromColumn: 'Dim Related Calculations'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 1aaa1419-b683-4fce-acd9-be9bc9b21eb6
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'Dim Technical Owner'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship c4d29ff9-984d-6151-f6e4-98db848ba715
+	fromColumn: 'Dim Accountable Stakeholders'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship eb7cea6e-3362-513a-7cbf-f917d020e3e4
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Calculations Semantic Model'.ID
+	toColumn: 'Fact Calculations'.ID
+
+relationship 0afc03dd-0ae8-b4b9-abb8-c825c3be0140
+	fromColumn: 'Fact Worker Roster'.'Date Of Service'
+	toColumn: 'Dim Date'.Date
+
+relationship 34751e24-be96-ca9c-db23-5a1cc6bd0cb5
+	fromColumn: 'Fact Worker Roster'.'Id Location'
+	toColumn: 'Dim Locations'.'Id Location'
+
+relationship AutoDetected_e2bf5075-c1ed-4df5-9264-be30ec03ad3b
+	fromColumn: 'Fact Worker Roster'.'Id Worker'
+	toColumn: 'Dim Workers'.'Id Worker'
+
+relationship 71823d7f-63eb-4b7b-8400-39e433cac871
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Worker Roster'.'Start Datetime'
+	toColumn: LocalDateTable_d3afecae-b10f-4ac4-904f-9440b1f20976.Date
+
+relationship b099e219-4d9a-4118-8400-3aaad31ca9ea
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Worker Roster'.'End Datetime'
+	toColumn: LocalDateTable_cd94f136-e628-4bfa-b3e3-94b99ac404b5.Date
+

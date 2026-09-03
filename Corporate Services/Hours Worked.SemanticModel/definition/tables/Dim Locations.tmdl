@@ -1,0 +1,102 @@
+table 'Dim Locations'
+	lineageTag: 125ae800-f41f-4e79-af3f-f9abcf4cfe31
+
+	column 'Id Location'
+		dataType: string
+		lineageTag: af5607a7-6bdd-4d62-b2c8-fc62ee4092fe
+		summarizeBy: none
+		sourceColumn: Id Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Area'
+		dataType: string
+		lineageTag: bcba54e0-5a1d-4bed-9bc1-cf2fbb9fb273
+		summarizeBy: none
+		sourceColumn: Id Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column Latitude
+		dataType: double
+		lineageTag: d7cd1628-6163-40ae-9ba7-0974717632c4
+		summarizeBy: none
+		sourceColumn: Latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Longitude
+		dataType: double
+		lineageTag: 560c6f39-25d3-49ad-bc35-6c72f00b6d3d
+		summarizeBy: none
+		sourceColumn: Longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column State
+		dataType: string
+		lineageTag: 5e6bf052-5015-4b15-897a-11d52626b961
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Postcode
+		dataType: string
+		lineageTag: 274ff1c7-67ed-433c-968b-d29bf18d4eec
+		summarizeBy: none
+		sourceColumn: Postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Location Code'
+		dataType: string
+		lineageTag: aaeb9865-987f-4a43-9492-2126bb369cea
+		summarizeBy: none
+		sourceColumn: Location Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Location Status'
+		dataType: string
+		lineageTag: 2a7ad2e2-c2a9-4104-8143-754e6dc59a69
+		summarizeBy: none
+		sourceColumn: Location Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Occupancy
+		dataType: int64
+		formatString: 0
+		lineageTag: b5721d95-4751-489b-b728-0233ba1b26c2
+		summarizeBy: none
+		sourceColumn: Occupancy
+
+		annotation SummarizationSetBy = Automatic
+
+	column Capacity
+		dataType: int64
+		formatString: 0
+		lineageTag: 47166b05-9a66-4a15-8436-13a387856513
+		summarizeBy: none
+		sourceColumn: Capacity
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Locations' = m
+		mode: import
+		queryGroup: Utilities
+		source =
+				let
+				    Source = fnCleanColumnNames(Sql.Database(ServerName, DatabaseName, [Query="SELECT [Id_Location]#(lf)      ,[Id_Area]#(lf)      ,[Latitude]#(lf)      ,[Longitude]#(lf)      ,[State]#(lf)      ,[Postcode]#(lf)      ,[Location_Code]#(lf)      ,[Location_Status]#(lf)      ,[Occupancy]#(lf)      ,[Capacity]#(lf)  FROM [Dim].[location]"]))
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

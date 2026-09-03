@@ -1,0 +1,68 @@
+table 'Dim Technical Owner'
+	isHidden
+	lineageTag: ede18e31-3a15-4f21-bd49-f90cfb1fb0b6
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 81e90513-3b34-4479-9551-32be6433fab0
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TechnicalOwnerID
+		dataType: string
+		isHidden
+		lineageTag: f0213b35-c61c-4179-95c5-a88152a5de37
+		summarizeBy: none
+		sourceColumn: TechnicalOwnerID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TechnicalOwnerName
+		dataType: string
+		isHidden
+		lineageTag: 7acb0d15-219a-4d1a-a514-0f2eca19f9ca
+		summarizeBy: none
+		sourceColumn: TechnicalOwnerName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TechnicalOwnerEmail
+		dataType: string
+		isHidden
+		lineageTag: c9770059-575e-4094-bc01-c2024b960e7d
+		summarizeBy: none
+		sourceColumn: TechnicalOwnerEmail
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Technical Owner' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Technical Owner"}),
+				    #"Expanded Technical Owner" = Table.ExpandListColumn(#"Removed Other Columns", "Technical Owner"),
+				    #"Expanded Technical Owner1" = Table.ExpandRecordColumn(#"Expanded Technical Owner", "Technical Owner", {"id", "title", "email"}, {"id.1", "title", "email"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Technical Owner1",{{"id.1", "TechnicalOwnerID"}, {"title", "TechnicalOwnerName"}, {"email", "TechnicalOwnerEmail"}})
+				in
+				    #"Renamed Columns"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,397 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "33d26006f9ecb0cdd519",
+  "position": {
+    "x": 54.468085106382979,
+    "y": 132.27963525835867,
+    "z": 2750,
+    "height": 549.54407294832833,
+    "width": 1201.2158054711247,
+    "tabOrder": 9001
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Date"
+                    }
+                  },
+                  "Property": "Start of Week"
+                }
+              },
+              "queryRef": "Dim Date.Start of Week",
+              "nativeQueryRef": "Weeks",
+              "active": true,
+              "displayName": "Weeks"
+            }
+          ],
+          "fieldParameters": [
+            {
+              "parameterExpr": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "WeeksMonths"
+                    }
+                  },
+                  "Property": "WeeksMonths"
+                }
+              },
+              "index": 0,
+              "length": 1
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workers"
+                    }
+                  },
+                  "Property": "Manager Name"
+                }
+              },
+              "queryRef": "Dim Workers.Manager Name",
+              "nativeQueryRef": "Manager | Employee Employment Type | Location | Employee",
+              "active": true,
+              "displayName": "Manager | Employee Employment Type | Location | Employee"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workers"
+                    }
+                  },
+                  "Property": "Employee Employment Type"
+                }
+              },
+              "queryRef": "Dim Workers.Employee Employment Type",
+              "nativeQueryRef": "Employee Employment Type",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Locations"
+                    }
+                  },
+                  "Property": "Location Code"
+                }
+              },
+              "queryRef": "Dim Locations.Location Code",
+              "nativeQueryRef": "Location Code",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workers"
+                    }
+                  },
+                  "Property": "Employee Name"
+                }
+              },
+              "queryRef": "Dim Workers.Employee Name",
+              "nativeQueryRef": "Employee Name",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Worker Roster"
+                    }
+                  },
+                  "Property": "EmployeeCompletedShifts"
+                }
+              },
+              "queryRef": "Fact Worker Roster.EmployeeCompletedShifts",
+              "nativeQueryRef": "EmployeeCompletedShifts"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Dim Workers"
+                  }
+                },
+                "Property": "Manager Name"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "Dim Workers.Manager Name"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workers"
+                    }
+                  },
+                  "Property": "Manager Name"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Workers.Employee Employment Type"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Workers"
+                    }
+                  },
+                  "Property": "Employee Employment Type"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Locations.Location Code"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Locations"
+                    }
+                  },
+                  "Property": "Location Code"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Dim Workers.Employee Name"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "valuesOnRow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "columnSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "237.3008599028684D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim Workers.Manager Name"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d000c2df732e52edac17",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Locations"
+              }
+            },
+            "Property": "Location Code"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "d210d04b4839063513cf",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workers"
+              }
+            },
+            "Property": "Employee_Role_Category"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "826f6e7e6876e3d806a8",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workers"
+              }
+            },
+            "Property": "Manager Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "8f33182360cf9bb5849e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workers"
+              }
+            },
+            "Property": "Employee Employment Type"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ac6e011ae418821e3ad9",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Workers"
+              }
+            },
+            "Property": "Employee Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "606b07eb73a44e63ebba",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Worker Roster"
+              }
+            },
+            "Property": "EmployeeCompletedShifts"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "21611aef8e3d540ef1b1",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Date"
+              }
+            },
+            "Property": "Start of Week"
+          }
+        },
+        "type": "RelativeDate"
+      }
+    ]
+  }
+}
