@@ -1,0 +1,124 @@
+table DimActiveSMs
+	lineageTag: f466c3ad-5ddc-4bc5-942e-df8527e3e3d3
+
+	column 'Id Service Manager'
+		dataType: string
+		lineageTag: 50960ffd-d121-4279-8080-07f3cf22746c
+		summarizeBy: none
+		sourceColumn: Id Service Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Service Manager Payroll'
+		dataType: string
+		lineageTag: 5e6750d5-b67c-4768-97f2-d768d70daaf3
+		summarizeBy: none
+		sourceColumn: Id Service Manager Payroll
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Organisation'
+		dataType: string
+		lineageTag: c1b0f282-df3c-49df-8c42-57a8dbc56316
+		summarizeBy: none
+		sourceColumn: Id Organisation
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Company Email'
+		dataType: string
+		lineageTag: f8938523-f966-47e0-a235-bfa912ed0985
+		summarizeBy: none
+		sourceColumn: Company Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Regional Manager Name'
+		dataType: string
+		lineageTag: 2e0b96e7-1f6b-4624-866c-aa2094fd1dab
+		summarizeBy: none
+		sourceColumn: Regional Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Manager Name'
+		dataType: string
+		lineageTag: c47a784b-0f3d-41ff-88e6-177874836c40
+		summarizeBy: none
+		sourceColumn: Service Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: 74b8e74a-7039-4a5d-b041-454155633eea
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employing Entity'
+		dataType: string
+		lineageTag: c9d7919b-19a4-4098-9e83-72e7df3ac9da
+		summarizeBy: none
+		sourceColumn: Employing Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Job Title'
+		dataType: string
+		lineageTag: 5c71fd05-1587-40f9-8daa-7e3892db9461
+		summarizeBy: none
+		sourceColumn: Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Role Category'
+		dataType: string
+		lineageTag: 4daa443b-4ba8-40cb-92ef-070959c20e81
+		summarizeBy: none
+		sourceColumn: Role Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start Date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 68d29090-d44f-4967-b0ec-e7ff2a33f9f6
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		variation Variation
+			isDefault
+			relationship: 512bb9fd-f003-4908-a5bd-a8c3ce118698
+			defaultHierarchy: LocalDateTable_67a9d32b-023f-4a94-a657-a53459f5554b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Termination Date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7c454c3e-5a73-455e-9a23-2d4daf227bfc
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+		variation Variation
+			isDefault
+			relationship: 01176796-57e3-484c-8b46-fd7c4826f104
+			defaultHierarchy: LocalDateTable_3b194bf3-8f2b-4162-8f29-d943eaa9d983.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimActiveSMs = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName", [Query="WITH Employees AS (#(lf)    SELECT [Id_Employee]#(lf)      ,[Id_Employee_Payroll]#(lf)      ,[Id_Organisation]#(lf)      ,[Id_Manager]#(lf)      ,[Company_Email]#(lf)      ,[Employee_Name]#(lf)      ,[Location]#(lf)      ,[Employing_Entity]#(lf)      ,[Job_Title]#(lf)      ,[Employee_Status]#(lf)      ,[Role_Category]#(lf)      ,[Start_Date]#(lf)      ,[Termination_Date]#(lf)    FROM [Dim].[employee]#(lf)),#(lf)ServiceManagers AS (#(lf)    SELECT *#(lf)    FROM Employees#(lf)    WHERE Role_Category = 'Service Manager' and [Employee_Status] = 'active'#(lf))#(lf)SELECT sm.[Id_Employee]  AS [Id_Service_Manager]#(lf)      ,sm.[Id_Employee_Payroll] AS [Id_Service_Manager_Payroll]#(lf)      ,sm.[Id_Organisation]#(lf)      ,sm.[Company_Email]#(lf)      ,e.[Employee_Name] AS [Regional_Manager_Name]#(lf)      ,sm.[Employee_Name] AS [Service_Manager_Name]#(lf)      ,sm.[Location]#(lf)      ,sm.[Employing_Entity]#(lf)      ,sm.[Job_Title]#(lf)      ,sm.[Role_Category]#(lf)      ,sm.[Start_Date]#(lf)      ,sm.[Termination_Date]#(lf)FROM ServiceManagers sm#(lf)LEFT JOIN Employees e ON sm.[Id_Manager] = e.[Id_Employee]"]),
+				    RenameColumns = #"fnCleanColumnNames"(Source)
+				in
+				    RenameColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

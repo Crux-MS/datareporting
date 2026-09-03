@@ -1,0 +1,64 @@
+table 'Client Type'
+	isHidden
+	lineageTag: 96744c95-5acd-436c-81d9-107c784669fb
+
+	column SIL
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 225e19fd-d14f-4e6a-a6b6-473c5d872537
+		summarizeBy: sum
+		sourceColumn: SIL
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CAS
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b892c7b0-d36a-441c-8387-de595119725d
+		summarizeBy: sum
+		sourceColumn: CAS
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Total
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ec9315d1-89ee-4b19-8d42-aec31bb5f55f
+		summarizeBy: sum
+		sourceColumn: Total
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Other
+		dataType: int64
+		formatString: 0
+		lineageTag: 9ba4fdf8-154f-40fc-a558-2354b7cc9317
+		summarizeBy: sum
+		sourceColumn: Other
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Client Type' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WMlTSQcKxsQA=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [SIL = _t, CAS = _t, Other = _t, Total = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"SIL", Int64.Type}, {"CAS", Int64.Type}, {"Other", Int64.Type}, {"Total", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

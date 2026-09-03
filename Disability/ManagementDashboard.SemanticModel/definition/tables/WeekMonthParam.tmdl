@@ -1,0 +1,48 @@
+table WeekMonthParam
+	lineageTag: d7bf0bfa-c610-4859-b6eb-2aaca08aceae
+
+	column MonthWeekParam
+		lineageTag: 712f882b-a732-409f-9587-1b83b9636bb4
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'MonthWeekParam Order'
+
+		relatedColumnDetails
+			groupByColumn: 'MonthWeekParam Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MonthWeekParam Fields'
+		isHidden
+		lineageTag: e761b250-1ffc-4368-83e5-65f7020ea0e8
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'MonthWeekParam Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MonthWeekParam Order'
+		isHidden
+		formatString: 0
+		lineageTag: 0b9ee953-9eee-4d19-9b96-93c770ce6ff1
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition WeekMonthParam = calculated
+		mode: import
+		source =
+				{
+				    ("Months", NAMEOF('DimDate'[Start of Month]), 0),
+				    ("Weeks", NAMEOF('DimDate'[Start of Week (Monday)]), 1)
+				}
+
+	annotation PBI_Id = f161ce64af2e4fd6a8b51b709e30039f
+

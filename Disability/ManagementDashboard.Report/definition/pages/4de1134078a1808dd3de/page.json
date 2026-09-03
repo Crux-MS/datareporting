@@ -1,0 +1,117 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "4de1134078a1808dd3de",
+  "displayName": "Amount Paid",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "045e0992eaaed015a49e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Service Manager Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough",
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "b1381008ccb218bc98e8",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Location"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimActiveSMs",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Location"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Beenleigh'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "Drillthrough"
+      }
+    ]
+  },
+  "pageBinding": {
+    "name": "4296ae6113e71304d0bb",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "53bd6df549002edd1db5",
+        "boundFilter": "045e0992eaaed015a49e",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Service Manager Name"
+          }
+        }
+      },
+      {
+        "name": "0bca31c57d1bc8718535",
+        "boundFilter": "b1381008ccb218bc98e8",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Location"
+          }
+        }
+      }
+    ]
+  },
+  "visibility": "HiddenInViewMode"
+}

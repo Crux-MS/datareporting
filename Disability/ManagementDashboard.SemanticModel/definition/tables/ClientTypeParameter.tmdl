@@ -1,0 +1,50 @@
+table ClientTypeParameter
+	lineageTag: 503f92c9-33b9-4f4f-97fc-dce8da5dccb5
+
+	column ClientTypeParameter
+		lineageTag: 6ae3677c-0c93-44a2-8eaf-aa26f0e8917e
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'ClientTypeParameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'ClientTypeParameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ClientTypeParameter Fields'
+		isHidden
+		lineageTag: a4e87b56-5b2e-46ff-9e08-1f21f8dbefa1
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'ClientTypeParameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ClientTypeParameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 3d260564-d33c-4989-b762-01f4df73ff53
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ClientTypeParameter = calculated
+		mode: import
+		source =
+				{
+				    ("Total", NAMEOF('Client Type'[Total]), 0),
+				    ("CAS", NAMEOF('Client Type'[CAS]), 1),
+				    ("SIL", NAMEOF('Client Type'[SIL]), 2),
+				    ("Other", NAMEOF('Client Type'[Other]), 3)
+				}
+
+	annotation PBI_Id = b577c4657b7148399c59d997b206c137
+

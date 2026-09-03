@@ -1,0 +1,117 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "1aad0ef50662527a116a",
+  "displayName": "Unbillable Hours",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "045e0992eaaed015a49e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Service Manager Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough",
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "bec21fa8c0ec2fe826bd",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Location"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimActiveSMs",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Location"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Bundaberg'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "Drillthrough"
+      }
+    ]
+  },
+  "pageBinding": {
+    "name": "1f48601040728ab194d0",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "53bd6df549002edd1db5",
+        "boundFilter": "045e0992eaaed015a49e",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Service Manager Name"
+          }
+        }
+      },
+      {
+        "name": "8180a2bf8a7c3d4dfa98",
+        "boundFilter": "bec21fa8c0ec2fe826bd",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimActiveSMs"
+              }
+            },
+            "Property": "Location"
+          }
+        }
+      }
+    ]
+  },
+  "visibility": "HiddenInViewMode"
+}
