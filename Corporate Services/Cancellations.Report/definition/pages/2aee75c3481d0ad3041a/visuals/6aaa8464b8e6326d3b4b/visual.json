@@ -1,0 +1,152 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "6aaa8464b8e6326d3b4b",
+  "position": {
+    "x": 385.40447504302927,
+    "y": 9.2943201376936315,
+    "z": 4126,
+    "height": 107.81411359724612,
+    "width": 579.96557659208258,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "CancelledWorkerShifts"
+                        }
+                      },
+                      "Property": "Duration Hours"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(CancelledWorkerShifts.Duration Hours)",
+              "nativeQueryRef": "Total duration (hours)",
+              "displayName": "Total duration (hours)"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "CancelledWorkerShifts"
+                        }
+                      },
+                      "Property": "Id Roster"
+                    }
+                  },
+                  "Function": 5
+                }
+              },
+              "queryRef": "CountNonNull(CancelledWorkerShifts.Id Roster)",
+              "nativeQueryRef": "Shifts",
+              "displayName": "Shifts"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "CancelledWorkerShifts"
+                        }
+                      },
+                      "Property": "Worker Name"
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "Min(CancelledWorkerShifts.Worker Name)",
+              "nativeQueryRef": "Distinct workers",
+              "displayName": "Distinct workers"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "CancelledWorkerShifts"
+                      }
+                    },
+                    "Property": "Duration Hours"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "layout": [
+        {
+          "properties": {
+            "columnCount": {
+              "expr": {
+                "Literal": {
+                  "Value": "3L"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "backgroundShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "value": [
+        {
+          "properties": {
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "0L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Sum(CancelledWorkerShifts.Duration Hours)"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

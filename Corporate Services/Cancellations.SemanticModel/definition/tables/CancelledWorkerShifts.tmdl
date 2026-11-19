@@ -1,0 +1,228 @@
+table CancelledWorkerShifts
+	lineageTag: 9601e5ec-c8c3-4305-b3c8-e4c139a5178a
+
+	measure CancelledWorkerShiftCount = ```
+			VAR _workerName = SELECTEDVALUE(CancelledWorkerShifts[Worker Name])
+			VAR _minDate = CALCULATE(MIN(DimDate[Date]), ALLSELECTED())
+			VAR _maxDate = CALCULATE(MAX(DimDate[Date]), ALLSELECTED())
+			VAR _logic = CALCULATE(
+			    COUNT(CancelledWorkerShifts[Id Roster]), 
+			    REMOVEFILTERS(),
+			    CancelledWorkerShifts[Worker Name] = _workerName,
+			    DimDate[Date] >= _minDate && DimDate[Date] <= _maxDate
+			)
+			RETURN _logic
+			```
+		formatString: 0
+		lineageTag: d4e61516-14d0-4aac-b29b-b5605d0f39e4
+
+	measure CancelledWorkerShiftThresholds =
+			VAR _startDate = CALCULATE(MIN(DimDate[Date]), ALLSELECTED())
+			VAR _endDate = CALCULATE(MAX(DimDate[Date]), ALLSELECTED())
+			VAR _durationWeeks = DATEDIFF(_startDate, _endDate, WEEK)
+			VAR _shiftCount = CancelledWorkerShifts[CancelledWorkerShiftCount]
+			VAR _logic = SWITCH(TRUE(),
+			    _durationWeeks = 2 && _shiftCount >= 3, 1,
+			    _durationWeeks = 2 && _shiftCount < 3, 2,
+			    _durationWeeks = 6 && _shiftCount >= 6, 3,
+			    _durationWeeks = 6 && _shiftCount < 6, 4,
+			    _durationWeeks > 6 && _shiftCount > 6, 5,
+			    6
+			)
+			RETURN _logic
+		formatString: 0
+		lineageTag: e36f950a-cad7-4f8a-9b0c-122cd879d4b2
+
+	column 'Id Roster'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8db70b04-41a5-42bb-80d9-48e0ada37e69
+		summarizeBy: none
+		sourceColumn: Id Roster
+
+		annotation SummarizationSetBy = User
+
+	column 'Id Location'
+		dataType: int64
+		formatString: 0
+		lineageTag: f9fda151-5c7d-46f3-827b-11f2c41f8e04
+		summarizeBy: none
+		sourceColumn: Id Location
+
+		annotation SummarizationSetBy = User
+
+	column 'Service Description'
+		dataType: string
+		lineageTag: c8121ac9-e3b3-4b9d-88b2-7d45065ad17c
+		summarizeBy: none
+		sourceColumn: Service Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Cancellation'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a9f810a0-3a9e-46d3-825e-5c20b786abff
+		summarizeBy: none
+		sourceColumn: Is Cancellation
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Of Service'
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: a298c458-6a7c-4088-81cf-cd59e560b156
+		summarizeBy: none
+		sourceColumn: Date Of Service
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Start Datetime'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 2eb8c70f-d9ac-4505-b5fc-fd2f96daeab5
+		summarizeBy: none
+		sourceColumn: Start Datetime
+
+		variation Variation
+			isDefault
+			relationship: 870fae4e-d7d6-494f-b042-1f6c398a7256
+			defaultHierarchy: LocalDateTable_a109b0ab-11e5-4425-b4d1-5afc70c79e54.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'End Datetime'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6a6ec2ca-06d6-4d03-b6cb-6dd200abd1b4
+		summarizeBy: none
+		sourceColumn: End Datetime
+
+		variation Variation
+			isDefault
+			relationship: 32e63c93-f3a0-4070-9c2b-688d0445f783
+			defaultHierarchy: LocalDateTable_518e2791-99cb-455a-b745-94ec89a7c211.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Duration Minutes'
+		dataType: int64
+		formatString: 0
+		lineageTag: 623b168b-759a-47a0-8216-c3d658d375d7
+		summarizeBy: sum
+		sourceColumn: Duration Minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Client'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5663132a-ecc5-45b5-81da-2d27c73f06cc
+		summarizeBy: none
+		sourceColumn: Id Client
+
+		annotation SummarizationSetBy = User
+
+	column 'Worker Area'
+		dataType: string
+		lineageTag: c0848452-06f9-4341-99b2-12614da36cdc
+		summarizeBy: none
+		sourceColumn: Worker Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Division'
+		dataType: string
+		lineageTag: f1f60ced-5b40-4270-83d4-38dfb30438d1
+		summarizeBy: none
+		sourceColumn: Worker Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Duration Hours'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: b939c1cb-332a-4671-ae05-c4039b3e464a
+		summarizeBy: sum
+		sourceColumn: Duration Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 1f620539-50e5-47d8-98cb-f095bcf0622c
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Employee'
+		dataType: string
+		lineageTag: 2f3f5e2e-e0c3-4428-ba17-5620aa23600d
+		summarizeBy: none
+		sourceColumn: Id Employee
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Manager Name'
+		dataType: string
+		lineageTag: 9ddcecf2-30c0-48a7-8920-cd9a43a990b4
+		summarizeBy: none
+		sourceColumn: Service Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Job Title'
+		dataType: string
+		lineageTag: 49d7d41d-7380-460b-bf11-b2faff36fe7c
+		summarizeBy: none
+		sourceColumn: Employee Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employment Type'
+		dataType: string
+		lineageTag: f0e83a43-7b5c-4c1c-84a9-beed5e881dba
+		summarizeBy: none
+		sourceColumn: Employment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Employee Status'
+		dataType: string
+		lineageTag: 0ae85ce3-5cf5-457b-ab58-a44ebde55b68
+		summarizeBy: none
+		sourceColumn: Employee Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Worker Name'
+		dataType: string
+		lineageTag: 0d4ce111-aa3d-4da1-a8c1-ea447fc3113f
+		summarizeBy: none
+		sourceColumn: Worker Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition CancelledWorkerShifts = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com", "L3_Conformed", [Query="SELECT [Id_Roster]#(lf)      ,[Id_Client]#(lf)      ,[Id_Location]#(lf)      ,w.Id_Employee#(lf)      ,w.Id_Area                        AS [Worker_Area]#(lf)      ,w.First_Name + ' ' + w.Last_Name AS Worker_Name#(lf)      ,sm.Employee_Name                 AS Service_Manager_Name#(lf)      ,e.Job_Title                      AS Employee_Job_Title#(lf)      ,e.Employment_Type#(lf)      ,CASE #(lf)        WHEN e.Employee_Status = 'active' THEN 'Active' #(lf)        WHEN e.Employee_Status = 'terminated' THEN 'Exited'#(lf)        ELSE 'Unknown'#(lf)      END AS Employee_Status#(lf)      ,w.Division                       AS Worker_Division    #(lf)      ,sc.[Description]                 AS Service_Description#(lf)      ,sc.Is_Cancellation#(lf)      ,[Date_Of_Service]#(lf)      ,[Start_Datetime]#(lf)      ,[End_Datetime]#(lf)      ,[Duration_Minutes]#(lf)  FROM [Rostering].[worker_rosters] wr#(lf)  LEFT JOIN Employee.workers w ON wr.Id_Worker = w.Id_Worker#(lf)  LEFT JOIN Employee.employees e ON w.Id_Employee = e.Id_Employee_Payroll#(lf)  LEFT JOIN Employee.employees sm ON e.Id_Manager = sm.Id_Employee#(lf)  LEFT JOIN [Client].service_categories sc ON wr.Id_Service = sc.Id_Service#(lf)  Where sc.Is_Cancellation = 1 AND wr.[Id_Timesheet] <> -1"]),
+				    #"Clean Column Names" = fnCleanColumnNames(Source),
+				    #"Inserted Division" = Table.AddColumn(#"Clean Column Names", "Duration Hours", each [Duration Minutes] / 60, type number),
+				    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Inserted Division", "State", each Text.BeforeDelimiter([Worker Area], "-"), type text),
+				    #"Replaced Value" = Table.ReplaceValue(#"Inserted Text Before Delimiter","Q","QLD",Replacer.ReplaceText,{"State"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"Date Of Service", type date}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

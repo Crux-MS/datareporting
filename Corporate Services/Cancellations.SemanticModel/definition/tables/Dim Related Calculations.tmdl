@@ -1,0 +1,59 @@
+table 'Dim Related Calculations'
+	isHidden
+	lineageTag: 2415b4cd-e4d1-44ec-80af-0cd82ec5388f
+
+	measure 'Source Calculations list' = CONCATENATEX(VALUES('Dim Related Calculations'[RelatedCalculationName]), 'Dim Related Calculations'[RelatedCalculationName], ", ")
+		isHidden
+		lineageTag: 713c7a32-5ea7-4663-9855-d41b9dbe944a
+
+		changedProperty = IsHidden
+
+	column ID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fed9887d-908e-4ca0-82f5-02e1b12472dd
+		summarizeBy: none
+		sourceColumn: ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RelatedCalculationID
+		dataType: int64
+		formatString: 0
+		lineageTag: 8479f87a-1961-41a4-a91e-02d6af64da86
+		summarizeBy: count
+		sourceColumn: RelatedCalculationID
+
+		annotation SummarizationSetBy = Automatic
+
+	column RelatedCalculationName
+		dataType: string
+		lineageTag: e4cedd3a-dae4-465b-9bd0-b2c6bdc9554a
+		summarizeBy: none
+		sourceColumn: RelatedCalculationName
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Related Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Related Calculations"}),
+				    #"Expanded Related Calculations" = Table.ExpandTableColumn(#"Removed Other Columns", "Related Calculations", {"lookupId", "lookupValue"}, {"lookupId", "lookupValue"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded Related Calculations",{{"lookupId", "RelatedCalculationID"}, {"lookupValue", "RelatedCalculationName"}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Renamed Columns", each ([RelatedCalculationID] <> null)),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"RelatedCalculationID", Int64.Type}, {"RelatedCalculationName", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,207 @@
+table DimDate
+	lineageTag: 7e3ba0bf-3ffc-4be2-b829-d3c83ebe44e7
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: d/mm/yyyy
+		lineageTag: a14205f2-7178-41dc-bf10-8d51ca2ebca1
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: d3035051-614a-4e22-8a4d-27dacdcbdccb
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: a038b0f8-6d35-4439-bed8-a91683908b1a
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: 2e20250e-493e-430b-a71a-0399c395fd26
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: 3754ee19-2430-49b5-8852-d892dfc6e5f2
+		summarizeBy: none
+		sourceColumn: Day
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Date'
+		dataType: int64
+		formatString: 0
+		lineageTag: 366772ed-a321-4b11-b122-cc9cc4e963ad
+		summarizeBy: none
+		sourceColumn: Id Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 02c32af8-ae22-40e4-9d2a-fff3d8668104
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: 2a6bfc2e-0717-42e3-859e-8382e47eb5eb
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: edc99e06-51fa-4700-8899-3f6296c5c85c
+		summarizeBy: none
+		sourceColumn: Day Of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 216f70b2-8be7-41a4-bfac-9dd7be6fd1e5
+		summarizeBy: none
+		sourceColumn: Week Of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Weekend'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ce848887-1107-4136-87a2-58d96e1e66f0
+		summarizeBy: none
+		sourceColumn: Is Weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Financial Year'
+		dataType: string
+		lineageTag: 6505c49e-e9df-4d38-b88a-6cd1a03fc077
+		summarizeBy: none
+		sourceColumn: Financial Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Financial Quarter'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9c63c450-907d-4cff-a3f7-70f078985a05
+		summarizeBy: none
+		sourceColumn: Financial Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Start of Month'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8b5b15c0-9453-42d8-9a1e-58022cf7b3ec
+		summarizeBy: none
+		sourceColumn: Start of Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Start of Week'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: ac7eef69-b517-45dc-9ee0-5d5c64990c81
+		summarizeBy: none
+		sourceColumn: Start of Week
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: 7e5005e3-8730-474d-a7ee-ac46b0b94761
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM
+		dataType: int64
+		formatString: 0
+		lineageTag: 11564ba7-e77b-410b-8c93-4c3d9321da63
+		summarizeBy: none
+		sourceColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column RollingDateDifference
+		dataType: int64
+		formatString: 0
+		lineageTag: cd9af36a-a30a-4212-8ede-2051cc45705f
+		summarizeBy: none
+		sourceColumn: RollingDateDifference
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Slicer MMM YYYY'
+		dataType: string
+		lineageTag: 6c72f977-c58d-40a2-99e9-94b6dc8ccbe0
+		summarizeBy: none
+		sourceColumn: Slicer MMM YYYY
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com", #"DatabaseName"),
+				    Dim_date = Source{[Schema="Dim",Item="date"]}[Data],
+				    Custom1 = fnCleanColumnNames(Dim_date),
+				    #"Inserted Start of Month" = Table.AddColumn(Custom1, "Start of Month", each Date.StartOfMonth([Date]), type date),
+				    #"Inserted Start of Week" = Table.AddColumn(#"Inserted Start of Month", "Start of Week", each Date.StartOfWeek([Date]), type date),
+				    #"Added MMM YYYY" = Table.AddColumn(#"Inserted Start of Week", "MMM YYYY", each Text.Combine({Date.ToText([Date], "MMM"), " ", Date.ToText([Date], "yyyy")}), type text),
+				    #"Added YYYYMM" = Table.AddColumn(#"Added MMM YYYY", "YYYYMM", each if Date.Month([Date]) <=9 then Text.From([Year]) & "0" & Text.From(Date.Month([Date])) else Text.From([Year]) & Text.From(Date.Month([Date]))),
+				    #"Added Rolling Date Difference" = Table.AddColumn(#"Added YYYYMM", "RollingDateDifference", each Duration.Days([Date] - Date.From(DateTime.LocalNow()))),
+				    #"Added Slicer MMM YYYY" = Table.AddColumn(#"Added Rolling Date Difference", "Slicer MMM YYYY", each let
+				    currentMonthYear = List.First(
+				        Table.SelectRows(#"Added Rolling Date Difference", each [RollingDateDifference] = 0)[MMM YYYY]
+				    )
+				in
+				    if [MMM YYYY] = currentMonthYear then "Current Month" else [MMM YYYY]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Slicer MMM YYYY",{{"Slicer MMM YYYY", type text}, {"RollingDateDifference", Int64.Type}, {"YYYYMM", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
