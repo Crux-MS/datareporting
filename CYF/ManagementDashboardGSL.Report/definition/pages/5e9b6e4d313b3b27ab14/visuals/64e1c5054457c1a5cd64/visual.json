@@ -1,0 +1,705 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "64e1c5054457c1a5cd64",
+  "position": {
+    "x": 55.451263537906136,
+    "y": 114.59927797833934,
+    "z": 3500,
+    "height": 591.48014440433212,
+    "width": 1200.5198555956679,
+    "tabOrder": 9001
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Start of Month"
+                }
+              },
+              "queryRef": "DimDate.Start of Month",
+              "nativeQueryRef": "Months",
+              "active": true,
+              "displayName": "Months"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Fortnight Start Date"
+                }
+              },
+              "queryRef": "DimDate.Fortnight Start Date",
+              "nativeQueryRef": "Fortnights",
+              "active": false,
+              "displayName": "Fortnights"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Start of Week (Monday)"
+                }
+              },
+              "queryRef": "DimDate.Start of Week (Monday)",
+              "nativeQueryRef": "Weeks",
+              "active": false,
+              "displayName": "Weeks"
+            }
+          ],
+          "fieldParameters": [
+            {
+              "parameterExpr": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PeriodParam"
+                    }
+                  },
+                  "Property": "MonthWeekParam"
+                }
+              },
+              "index": 0,
+              "length": 3
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCaseManagers"
+                    }
+                  },
+                  "Property": "Case Manager Name"
+                }
+              },
+              "queryRef": "DimActiveCMs.Case Manager Name",
+              "nativeQueryRef": "Case Manager",
+              "active": true,
+              "displayName": "Case Manager"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerOvertimeRate"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerOvertimeRate",
+              "nativeQueryRef": "Overtime rate",
+              "displayName": "Overtime rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerOvertimeHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerOvertimeHours",
+              "nativeQueryRef": "Overtime",
+              "displayName": "Overtime"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerStandardHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerStandardHours",
+              "nativeQueryRef": "Standard",
+              "displayName": "Standard"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerLeaveHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerLeaveHours",
+              "nativeQueryRef": "Leave",
+              "displayName": "Leave"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerOtherHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerOtherHours",
+              "nativeQueryRef": "Other",
+              "displayName": "Other"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerWeightedCost"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerWeightedCost",
+              "nativeQueryRef": "Weighted cost",
+              "displayName": "Weighted cost"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'fitToContent'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "valuesOnRow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ParameterMeasures"
+                            }
+                          },
+                          "Property": "WorkerWeightedCost"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient3": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#F8F6F0'"
+                              }
+                            }
+                          },
+                          "mid": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#fcdf80'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#d04a33'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "ParameterMeasures.WorkerWeightedCost"
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "ParameterMeasures.WorkerOvertimeRate"
+          }
+        },
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Conditional": {
+                      "Cases": [
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 0,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "ParameterMeasures"
+                                    }
+                                  },
+                                  "Property": "WorkerOvertimeExceedsTarget"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "2D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#e7a599'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 0,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "ParameterMeasures"
+                                    }
+                                  },
+                                  "Property": "WorkerOvertimeExceedsTarget"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "1D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#e6bc99'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 0,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "ParameterMeasures"
+                                    }
+                                  },
+                                  "Property": "WorkerOvertimeExceedsTarget"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "0D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#c0cbb2'"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 0
+                }
+              }
+            ],
+            "metadata": "ParameterMeasures.WorkerOvertimeRate"
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Hours Paid'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "''"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "63c4b05c6d432ae7be51",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMWeeklySnapshot"
+              }
+            },
+            "Property": "Week Start Date"
+          }
+        },
+        "type": "RelativeDate",
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "c5c3f6952655b53919c6",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMMonthlySnapshot"
+              }
+            },
+            "Property": "Month Start Date"
+          }
+        },
+        "type": "RelativeDate",
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "9718b9b9b24761e1a003",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerTotalPayrollHours"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "p",
+              "Entity": "ParameterMeasures",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 1,
+                  "Left": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "p"
+                        }
+                      },
+                      "Property": "WorkerTotalPayrollHours"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "0L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "56649e760ceace31a31d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Start of Month"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "83b5b5a6706c063a4203",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Fortnight Start Date"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "944c2914b20a206871ae",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Start of Week (Monday)"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "943922c88258c020017d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCaseManagers"
+              }
+            },
+            "Property": "Case Manager Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "34fff85c207e2cc0585a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerOvertimeRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d798503bb4b07c363180",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerOvertimeHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "96a680025c0361322d22",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerStandardHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0023ac10cb8004bb0109",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerLeaveHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "aac707c0b36ec09a7459",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerOtherHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b8ccef0edc8009644115",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerWeightedCost"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

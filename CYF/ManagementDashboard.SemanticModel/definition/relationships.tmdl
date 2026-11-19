@@ -1,0 +1,148 @@
+relationship 4f876168-ac48-4b13-b3e6-092854ce9455
+	joinOnDateBehavior: datePartOnly
+	fromColumn: RefreshedDate.Refreshed
+	toColumn: LocalDateTable_22abea15-3a2c-4fec-b1a5-ddc2355c4b9f.Date
+
+relationship 165ee5de-b40f-4278-8491-3fd0bec59d45
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.Date
+	toColumn: LocalDateTable_108e9768-b538-4f7f-a2a8-70c61fb49db3.Date
+
+relationship a590a2b8-4e21-4f16-8eea-a6813e0dc4a8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.'Start of Week (Monday)'
+	toColumn: LocalDateTable_52b0466c-08f3-4e20-bd76-f2d0b0a16612.Date
+
+relationship 0c5d1c09-493f-4153-b832-c9a669bc98f1
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.'Start of Month'
+	toColumn: LocalDateTable_4b734684-def9-4dff-a187-917f95a45c59.Date
+
+relationship 512bb9fd-f003-4908-a5bd-a8c3ce118698
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimCaseManagers.'Start Date'
+	toColumn: LocalDateTable_67a9d32b-023f-4a94-a657-a53459f5554b.Date
+
+relationship 01176796-57e3-484c-8b46-fd7c4826f104
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimCaseManagers.'Termination Date'
+	toColumn: LocalDateTable_3b194bf3-8f2b-4162-8f29-d943eaa9d983.Date
+
+relationship d914305d-e067-76ba-4242-425f9a25d90e
+	fromColumn: FactCMMonthlySnapshot.'Month Start Date'
+	toColumn: DimDate.Date
+
+relationship f98da7c0-b1e2-0271-cb32-9408b0b86373
+	fromColumn: FactCMWeeklySnapshot.'Week Start Date'
+	toColumn: DimDate.Date
+
+relationship 211c5347-2ea4-48f4-a0d3-9be1a8273c99
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.'Fortnight Start Date'
+	toColumn: LocalDateTable_9f5d3eb4-debc-4c68-9cae-ce1350b31671.Date
+
+relationship 2a40aac9-40f7-4943-a8e8-a64748aa74f9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FactCMWorkerRoster.'Start Datetime'
+	toColumn: LocalDateTable_5493e5bd-cc36-4e27-ac4f-9bf16f6513c4.Date
+
+relationship 5c3072f1-239f-4e45-9a70-ab1844da0140
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FactCMWorkerRoster.'End Datetime'
+	toColumn: LocalDateTable_9f043815-14ad-436c-90cf-214faacb2481.Date
+
+relationship 5a1f5b04-daa3-16df-9624-37eede49f100
+	fromColumn: FactCMWorkerRoster.'Date Of Service'
+	toColumn: DimDate.Date
+
+relationship 272c6e65-a22f-4dd9-bd68-757951682cf3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimEmployees.'Start Date'
+	toColumn: LocalDateTable_d2a53635-736f-4330-81f7-4d206205d575.Date
+
+relationship 4b70e5fd-9835-44c5-abf7-9c7bdd9f8662
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimEmployees.'Termination Date'
+	toColumn: LocalDateTable_e9db6697-e7e0-487e-a303-e5eb3646158e.Date
+
+relationship AutoDetected_4169b71b-bf26-43bf-b07e-4863b1bb7392
+	fromColumn: FactCMWorkerRoster.'Id Employee'
+	toColumn: DimEmployees.'Id Employee'
+
+relationship 9baa0333-e27c-96c7-fc48-0c5a7bd803a1
+	fromColumn: FactCMFortnightlySnapshot.'Fortnight Start Date'
+	toColumn: DimDate.Date
+
+relationship 3db9b682-2a82-94dc-e815-745f77a52780
+	fromColumn: FactCriticalIncidents.Date
+	toColumn: DimDate.Date
+
+relationship 5f240f19-a417-e7a9-761e-f38ee304f802
+	fromColumn: FactStandardOfCareReviews.Date
+	toColumn: DimDate.Date
+
+relationship AutoDetected_79fb88df-ce1e-41c3-8788-a85b9a15e865
+	fromColumn: FactCMMonthlySnapshot.'Id Case Manager'
+	toColumn: DimCaseManagers.'Id Case Manager'
+
+relationship AutoDetected_a771bc08-6510-4a6c-92c3-11112657f864
+	fromColumn: FactCMWeeklySnapshot.'Id Case Manager'
+	toColumn: DimCaseManagers.'Id Case Manager'
+
+relationship AutoDetected_5ac0c117-5614-4b5b-b1db-48eea50a1a48
+	fromColumn: FactCMFortnightlySnapshot.'Id Case Manager'
+	toColumn: DimCaseManagers.'Id Case Manager'
+
+relationship b424786a-2251-4aae-95e2-441563709cf6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Calculations'.'Last Updated'
+	toColumn: LocalDateTable_f512036e-844a-4cdc-8e4e-d5b7eda18661.Date
+
+relationship AutoDetected_a25556a2-c9be-41bd-843b-913d85c1a92d
+	fromColumn: 'Dim Related Calculations'.'Metric Id'
+	toColumn: 'Fact Calculations'.'Metric Id'
+
+relationship AutoDetected_cda92dc6-6d25-46eb-b073-87c239a3d445
+	fromColumn: 'Dim Calculation Data Source'.'Metric Id'
+	toColumn: 'Fact Calculations'.'Metric Id'
+
+relationship AutoDetected_fb983169-053d-4033-bb0e-10758ce048a7
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Dim Calculation Semantic Model'.'Metric Id'
+	toColumn: 'Fact Calculations'.'Metric Id'
+
+relationship cf0df535-f5df-d31a-a8d5-31088aedab1c
+	fromColumn: FactCMWeeklySnapshot.'Id Area'
+	toColumn: DimArea.'Id Area'
+
+relationship 3e8ef254-f90a-c307-8cfd-3aacec46a354
+	fromColumn: FactCMFortnightlySnapshot.'Id Area'
+	toColumn: DimArea.'Id Area'
+
+relationship a878310e-57c6-7282-e391-214c3182ac42
+	fromColumn: FactCMMonthlySnapshot.'Id Area'
+	toColumn: DimArea.'Id Area'
+
+relationship 111283fe-3256-324b-816b-9c2aa03b919b
+	fromColumn: FactCMWorkerRoster.'Worker Id Area'
+	toColumn: DimArea.'Id Area'
+
+relationship 03a155cf-177d-2dbb-7320-d8273c18066a
+	fromColumn: DimEmployees.'Id Manager'
+	toColumn: DimCaseManagers.'Id Case Manager'
+
+relationship 64ad95e3-23b3-4c33-b4ed-b97142330b35
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.'Week Start Date'
+	toColumn: LocalDateTable_7c46e0ce-baa4-4b29-bff3-cd9a893f974d.Date
+
+relationship f9cd715c-d1d4-4662-b275-2266ba6aead5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.'Month Start Date'
+	toColumn: LocalDateTable_2ce0608f-50a1-41b8-9752-b3f6f6410501.Date
+
+relationship ba780a4b-66c4-4bed-9b60-43bda38e570b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimDate.'Quarter Start Date'
+	toColumn: LocalDateTable_70531d8f-040c-4806-8888-9d76de62345a.Date
+

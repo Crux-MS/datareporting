@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "494288f6b1692e433d6a",
   "position": {
     "x": 48.135072908672292,
@@ -7,7 +7,7 @@
     "z": 5000,
     "height": 80.729483282674778,
     "width": 234.40729483282675,
-    "tabOrder": 8000
+    "tabOrder": 7000
   },
   "visual": {
     "visualType": "slicer",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "Employing entity"
+                  "Property": "Job Title"
                 }
               },
-              "queryRef": "Dim Workforce.Employing entity",
-              "nativeQueryRef": "Employing entity",
+              "queryRef": "DimEmployee.Job Title",
+              "nativeQueryRef": "Job Title",
               "active": true
             }
           ]
@@ -99,12 +99,20 @@
             }
           }
         }
+      ],
+      "header": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'State | Location'"
+                }
+              }
+            }
+          }
+        }
       ]
-    },
-    "syncGroup": {
-      "groupName": "Slicer MMM YYYY",
-      "fieldChanges": true,
-      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   },

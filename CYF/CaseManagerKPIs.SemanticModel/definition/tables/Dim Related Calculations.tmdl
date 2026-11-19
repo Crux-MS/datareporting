@@ -1,0 +1,40 @@
+table 'Dim Related Calculations'
+	lineageTag: 28dea6af-b4e9-4fa2-9b03-a158a21984f1
+
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: 97638829-a96f-40dc-8b93-9de35fef69aa
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Related Metric Id'
+		dataType: string
+		lineageTag: faac1a32-eca0-444f-80d9-eee481a470ac
+		summarizeBy: none
+		sourceColumn: Related Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Related Metric Name'
+		dataType: string
+		lineageTag: e50c5e03-7205-442a-ad0b-d1c5258e2a2e
+		summarizeBy: none
+		sourceColumn: Related Metric Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Related Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Related Metrics"}),
+				    #"Expanded Related Metrics" = Table.ExpandListColumn(#"Removed Other Columns", "Related Metrics"),
+				    #"Expanded Related Metrics1" = #"fnCleanColumnNames (2)"(Table.ExpandRecordColumn(#"Expanded Related Metrics", "Related Metrics", {"metric_id", "metric_name"}, {"Related_metric_id", "related_metric_name"}))
+				in
+				    #"Expanded Related Metrics1"
+

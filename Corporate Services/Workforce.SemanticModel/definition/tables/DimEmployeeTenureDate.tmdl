@@ -1,0 +1,239 @@
+/// Definition: Calendar for employment and onboarding event dates. One row per date; a copy of DimShiftDate.
+/// For analysis: Date table for employee and new starter measures. Active joins: DimEmployee Start Date, DimWorker account creation date.
+table DimEmployeeTenureDate
+	lineageTag: 66f689c1-8844-4704-9af3-56723be26a68
+	dataCategory: Time
+
+	/// Definition: Date key in YYYYMMDD form.
+	/// For analysis: Identifier only. Do not sum.
+	column 'Id Date'
+		dataType: int64
+		formatString: 0
+		lineageTag: 41b59728-d9c2-4f7c-9711-183b7c2d4e8a
+		summarizeBy: sum
+		sourceColumn: Id Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Calendar date.
+	/// For analysis: Key: one row per date.
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: d/m/yyyy
+		lineageTag: 7fdf51c8-caea-4443-a133-91dfd75a4e94
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Calendar year.
+	/// For analysis: Do not sum.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 108087a0-db56-4c97-b9e2-629fad0da032
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Calendar quarter, 1 to 4.
+	/// For analysis: Do not sum.
+	column Quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: 398db649-95df-41d4-95cb-ceae07c73d24
+		summarizeBy: sum
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Month number, 1 to 12.
+	/// For analysis: Do not sum.
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: e53f9e38-4488-4b69-b522-ed9b242e1183
+		summarizeBy: sum
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Month name.
+	column 'Month Name'
+		dataType: string
+		lineageTag: 7c2fbc7e-979f-42a9-abd9-5e8be5b70ea2
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Day of the month.
+	/// For analysis: Do not sum.
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: db246fb3-f866-4412-a2e7-0ee51fec9ac8
+		summarizeBy: sum
+		sourceColumn: Day
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Name of the weekday.
+	column 'Day Name'
+		dataType: string
+		lineageTag: 35e6f738-019b-4897-8dec-06379d9499ac
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Weekday number, 1 (Sunday) to 7 (Saturday).
+	/// For analysis: Do not sum.
+	column 'Day Of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: 128a57c2-86e8-4d1d-a046-11dc0fc863dd
+		summarizeBy: sum
+		sourceColumn: Day Of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Week number within the calendar year.
+	/// For analysis: Do not sum.
+	column 'Week Of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 7825a89b-0a2e-465b-af9c-c6251ea5ea6d
+		summarizeBy: sum
+		sourceColumn: Week Of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: True for Saturdays and Sundays.
+	column 'Is Weekend'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: cba39692-dfd8-4c81-81c8-69d0702968fd
+		summarizeBy: none
+		sourceColumn: Is Weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Australian financial year (1 July to 30 June), for example FY2026-27.
+	column 'Financial Year'
+		dataType: string
+		lineageTag: 1ba99dc0-c400-419f-a394-c43d5a2e14ff
+		summarizeBy: none
+		sourceColumn: Financial Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Quarter of the Australian financial year, 1 (July to September) to 4.
+	/// For analysis: Do not sum.
+	column 'Financial Quarter'
+		dataType: int64
+		formatString: 0
+		lineageTag: 7d13db45-042f-46e7-840d-5bc25dc66837
+		summarizeBy: sum
+		sourceColumn: Financial Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Week of the fortnightly pay cycle: Week 1 or Week 2.
+	column 'Pay Cycle Week'
+		dataType: string
+		lineageTag: a66c0186-f196-4938-aa7a-c50c4ed245cf
+		summarizeBy: none
+		sourceColumn: Pay Cycle Week
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Monday that starts the pay fortnight the date falls in.
+	column 'Fortnight Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a5d7e074-4214-4ed4-82cf-823a292e1ecd
+		summarizeBy: none
+		sourceColumn: Fortnight Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Month and year label, for example Oct 2026.
+	/// For analysis: Sort by Month Start Date.
+	column 'MMM YYYY'
+		dataType: string
+		lineageTag: c064e172-eee4-44fc-8b90-cd3c1600202a
+		summarizeBy: none
+		sourceColumn: MMM YYYY
+		sortByColumn: 'Month Start Date'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: First day of the week the date falls in.
+	column 'Week Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 23b6735a-24d1-4d6e-853a-ab8acb5ec171
+		summarizeBy: none
+		sourceColumn: Week Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: First day of the month the date falls in.
+	column 'Month Start Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 59bd88fc-4133-4acc-953d-8267c2cc0887
+		summarizeBy: none
+		sourceColumn: Month Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: First day of the calendar quarter the date falls in.
+	column 'Quarter Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a4a78d32-10ec-4ca9-98b9-3e1cc512b690
+		summarizeBy: none
+		sourceColumn: Quarter Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EmployeeStartDateFlag = IF(CALCULATE(COUNT(DimEmployee[Id Employee])) <> BLANK(), TRUE(), FALSE())
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 947f50b8-bf9f-4481-8592-b650678fbbe4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimEmployeeTenureDate = m
+		mode: import
+		queryGroup: EDP
+		source =
+				let
+				    Source = DimShiftDate
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

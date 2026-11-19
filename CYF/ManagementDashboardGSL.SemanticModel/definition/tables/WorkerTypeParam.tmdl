@@ -1,0 +1,57 @@
+/// Definition: Report slicer for the worker type option: Total, Workers or Service Managers (case managers working as workers).
+/// For analysis: Report slicer. Not for analysis.
+table WorkerTypeParam
+	lineageTag: 3581aa55-f615-4415-bd4d-9b2978872caf
+
+	/// Definition: Option shown on the report slicer.
+	/// For analysis: Report slicer. Not for analysis.
+	column 'Worker Type'
+		lineageTag: f90ff8bf-77ca-4bac-8d31-b8cdc4be96a9
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Model field each option points to.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: 51c4db88-0004-4248-a940-1c5fb1989c96
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order of the options.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 9515edc5-050e-4396-ba35-9693bb49dd1e
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition WorkerTypeParam = calculated
+		mode: import
+		source =
+				{
+				    ("All", NAMEOF('Worker Type'[Total]), 0),
+				    ("Workers", NAMEOF('Worker Type'[Workers]), 1),
+				    ("Service Managers", NAMEOF('Worker Type'[Service Managers]), 2)
+				}
+
+	annotation PBI_Id = 75dc86fcad504e7983f73a1eba22954c
+

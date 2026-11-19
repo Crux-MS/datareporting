@@ -1,10 +1,10 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "17c7ddd21449853bd3e4",
   "position": {
     "x": 48.135072908672292,
     "y": 358.30928626253336,
-    "z": 4000,
+    "z": 6000,
     "height": 80.729483282674778,
     "width": 234.40729483282675,
     "tabOrder": 5000
@@ -20,30 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce Location"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
-                  "Property": "State"
+                  "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Workforce Location.State",
-              "nativeQueryRef": "State",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
+              "nativeQueryRef": "MMM YYYY",
               "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Workforce"
-                    }
-                  },
-                  "Property": "Location"
-                }
-              },
-              "queryRef": "Dim Workforce.Location",
-              "nativeQueryRef": "Location",
-              "active": false
             }
           ]
         }
@@ -97,25 +82,7 @@
         {
           "properties": {}
         }
-      ],
-      "header": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'State | Location'"
-                }
-              }
-            }
-          }
-        }
       ]
-    },
-    "syncGroup": {
-      "groupName": "Location",
-      "fieldChanges": true,
-      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   },

@@ -1,10 +1,10 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "25a1e9456ba1cca66abc",
   "position": {
     "x": 62.249240121580549,
     "y": 167.26747720364702,
-    "z": 3000,
+    "z": 1000,
     "height": 251.91489361702128,
     "width": 390.03039513677811,
     "tabOrder": 0
@@ -20,16 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce"
+                      "Entity": "DimEmployee"
                     }
                   },
                   "Property": "Gender"
                 }
               },
-              "queryRef": "Dim Workforce.Gender",
-              "nativeQueryRef": "gender",
-              "active": true,
-              "displayName": "gender"
+              "queryRef": "DimEmployee.Gender",
+              "nativeQueryRef": "Gender",
+              "active": true
             }
           ]
         },
@@ -40,15 +39,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Currently Employed %"
+                  "Property": "Employees%"
                 }
               },
-              "queryRef": "Fact Workforce.Currently Employed %",
-              "nativeQueryRef": "Currently Employed",
-              "displayName": "Currently Employed"
+              "queryRef": "DisplayMeasures.Employees%",
+              "nativeQueryRef": "Current Employees",
+              "displayName": "Current Employees"
             }
           ],
           "fieldParameters": [
@@ -57,10 +56,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Workforce %"
+                      "Entity": "WorkerParam%"
                     }
                   },
-                  "Property": "Workforce %"
+                  "Property": "WorkerParam"
                 }
               },
               "index": 0,
@@ -76,10 +75,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Workforce"
+                    "Entity": "DisplayMeasures"
                   }
                 },
-                "Property": "Currently Employed %"
+                "Property": "Employees%"
               }
             },
             "direction": "Descending"
@@ -171,23 +170,56 @@
       ],
       "dataPoint": [
         {
+          "properties": {}
+        },
+        {
           "properties": {
             "fill": {
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 7,
-                      "Percent": 0
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "DisplayMeasures"
+                            }
+                          },
+                          "Property": "Employees%"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#b9b4d3'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#4f4392'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
               }
             }
-          }
-        },
-        {
-          "properties": {},
+          },
           "selector": {
             "data": [
               {
@@ -196,33 +228,6 @@
                 }
               }
             ]
-          }
-        }
-      ]
-    },
-    "visualContainerObjects": {
-      "subTitle": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Extract Date"
-                    }
-                  },
-                  "Property": "EH Reporting Month"
-                }
-              }
-            }
           }
         }
       ]

@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "eaa02c140477d8e759d5",
   "position": {
     "x": 668.20668693009122,
     "y": 149.78723404255319,
-    "z": 4000,
+    "z": 2000,
     "height": 259.69604863221883,
     "width": 587.47720364741645,
-    "tabOrder": 6000
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Employment Start Date"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Employment Start Date.MMM YYYY",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
               "nativeQueryRef": "MMM YYYY",
               "active": true
             }
@@ -39,16 +39,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Job Categories"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "DivisionAcronym"
+                  "Property": "Division"
                 }
               },
-              "queryRef": "Dim Job Categories.DivisionAcronym",
-              "nativeQueryRef": " ",
-              "active": true,
-              "displayName": " "
+              "queryRef": "DimEmployee.Division",
+              "nativeQueryRef": "Division",
+              "active": true
             }
           ]
         },
@@ -59,81 +58,20 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "DisplayNewStarters"
+                  "Property": "NewStarters"
                 }
               },
-              "queryRef": "Fact Workforce.DisplayNewStarters",
-              "nativeQueryRef": "DisplayNewStarters"
+              "queryRef": "ParamMeasures.NewStarters",
+              "nativeQueryRef": "NewStarters"
             }
           ]
         }
       }
     },
     "objects": {
-      "values": [
-        {
-          "properties": {
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "FillRule": {
-                      "Input": {
-                        "Measure": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Workforce"
-                            }
-                          },
-                          "Property": "DisplayNewStarters"
-                        }
-                      },
-                      "FillRule": {
-                        "linearGradient2": {
-                          "min": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#F8F6F0'"
-                              }
-                            }
-                          },
-                          "max": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#c0cbb2'"
-                              }
-                            }
-                          },
-                          "nullColoringStrategy": {
-                            "strategy": {
-                              "Literal": {
-                                "Value": "'noColor'"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Fact Workforce.DisplayNewStarters"
-          }
-        }
-      ],
       "subTotals": [
         {
           "properties": {
@@ -1233,20 +1171,6 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "49D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Dim Job Categories.DivisionAcronym"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
                   "Value": "43.261455525606465D"
                 }
               }
@@ -1352,6 +1276,175 @@
               }
             ]
           }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "46.60181623577192D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployeeTenureDate"
+                          }
+                        },
+                        "Property": "MMM YYYY"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Apr 2026'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployeeTenureDate"
+                          }
+                        },
+                        "Property": "MMM YYYY"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'May 2026'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployeeTenureDate"
+                          }
+                        },
+                        "Property": "MMM YYYY"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Jun 2026'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "DisplayMeasures"
+                            }
+                          },
+                          "Property": "NewStarters"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#F8F6F0'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#339eb1'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "ParamMeasures.NewStarters"
+          }
         }
       ]
     },
@@ -1394,7 +1487,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'New starters'"
+                  "Value": "'New employees'"
                 }
               }
             },
@@ -1410,55 +1503,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "96658ec95b621d94eb38",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Employment Start Date"
-              }
-            },
-            "Property": "Employment Start Date"
-          }
-        },
-        "type": "RelativeDate",
-        "howCreated": "User"
-      },
-      {
-        "name": "78fbf95d3050d288367a",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Job Categories"
-              }
-            },
-            "Property": "DivisionAcronym"
-          }
-        },
-        "type": "Categorical",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true,
-        "objects": {
-          "general": [
-            {
-              "properties": {
-                "isInvertedSelectionMode": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "true"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
   }
 }

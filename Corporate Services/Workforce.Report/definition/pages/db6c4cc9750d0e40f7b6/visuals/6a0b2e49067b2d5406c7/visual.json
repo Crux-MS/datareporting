@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "6a0b2e49067b2d5406c7",
   "position": {
-    "x": 54.763092269326684,
-    "y": 165.18703241895261,
-    "z": 2000,
-    "height": 293.56608478802991,
-    "width": 763.09226932668321,
-    "tabOrder": 5000
+    "x": 54.468085106382979,
+    "y": 130.33434650455928,
+    "z": 1000,
+    "height": 256.77811550151978,
+    "width": 777.14285714285722,
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "lineChart",
@@ -20,15 +20,16 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Date Offered"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Date Offered.MMM YYYY",
-              "nativeQueryRef": "MMM YYYY",
-              "active": true
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
+              "nativeQueryRef": "Month",
+              "active": true,
+              "displayName": "Month"
             }
           ]
         },
@@ -39,78 +40,68 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Rolling3MonthOnboardingProcessing"
+                  "Property": "AvgOnboardingDays"
                 }
               },
-              "queryRef": "Fact Onboarding Register.Rolling3MonthOnboardingProcessing",
-              "nativeQueryRef": "Onboarding",
-              "displayName": "Onboarding"
+              "queryRef": "DimWorker.AvgOnboardingTime",
+              "nativeQueryRef": "Total processing (avg. days)",
+              "displayName": "Total processing (avg. days)"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Rolling3MonthPEProcessing"
+                  "Property": "AvgPECompletionDays"
                 }
               },
-              "queryRef": "Fact Onboarding Register.Rolling3MonthPEProcessing",
-              "nativeQueryRef": "Days in PE",
-              "displayName": "Days in PE"
+              "queryRef": "DimWorker.AvgPECompletionDays",
+              "nativeQueryRef": "EH profile created to PE completion (avg. days)",
+              "displayName": "EH profile created to PE completion (avg. days)"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Rolling3MonthTotalProcessing"
+                  "Property": "AvgPEToBillableDays"
                 }
               },
-              "queryRef": "Fact Onboarding Register.Rolling3MonthTotalProcessing",
-              "nativeQueryRef": "Total days (onboarding + PE)",
-              "displayName": "Total days (onboarding + PE)"
+              "queryRef": "DimWorker.AvgPEToBillableDays",
+              "nativeQueryRef": "PE to first billable shift (avg. days)",
+              "displayName": "PE to first billable shift (avg. days)"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimEmployeeTenureDate"
+                  }
+                },
+                "Property": "MMM YYYY"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
       }
     },
     "objects": {
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
-            "start": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
-                }
-              }
-            },
-            "showAxisTitle": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
       "categoryAxis": [
         {
           "properties": {
@@ -124,7 +115,7 @@
             "titleText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Date offered'"
+                  "Value": "'EH profile created'"
                 }
               }
             },
@@ -194,6 +185,33 @@
             ]
           }
         }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "0L"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Days'"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -203,7 +221,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Rolling 3 month average processing (days)'"
+                  "Value": "'Average Onboarding Time'"
                 }
               }
             }
@@ -212,60 +230,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "0dcd5ef7005aab2b7510",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Date Offered"
-              }
-            },
-            "Property": "ORReportingYearFlag"
-          }
-        },
-        "type": "Advanced",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Date Offered",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 0,
-                  "Left": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
-                        }
-                      },
-                      "Property": "ORReportingYearFlag"
-                    }
-                  },
-                  "Right": {
-                    "Literal": {
-                      "Value": "1L"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
-      }
-    ]
   }
 }

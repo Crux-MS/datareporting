@@ -1,0 +1,59 @@
+/// Definition: Report field parameter holding the new starter measure options: new employees, probation unsuccessful, never starts.
+/// For analysis: Report slicer. Not for analysis.
+table NewStarterParam
+	lineageTag: e5bde6f4-654e-4a0d-98f1-9601db1efc08
+
+	/// Definition: Option shown on the report slicer.
+	/// For analysis: Report slicer. Not for analysis.
+	column NewStarterParam
+		lineageTag: 37f3d21b-8f56-40a4-a5f1-896ad19e156b
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'NewStarterPram Order'
+
+		relatedColumnDetails
+			groupByColumn: 'NewStarterPram Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Model field each option points to.
+	/// For analysis: Report helper. Not for analysis.
+	column 'NewStarterPram Fields'
+		isHidden
+		lineageTag: cba80d9b-a9bd-49f6-813f-2754a78d99a8
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'NewStarterPram Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order of the options.
+	/// For analysis: Report helper. Not for analysis.
+	column 'NewStarterPram Order'
+		isHidden
+		formatString: 0
+		lineageTag: a67d2716-8bd3-45e6-b6df-e9d8a44f7771
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition NewStarterParam = calculated
+		mode: import
+		source = ```
+				{
+				    ("New employees", NAMEOF('DisplayMeasures'[NewStarters%]), 0),
+				    ("Probation unsuccessful", NAMEOF('DisplayMeasures'[UnsuccessfulProbation%]), 1),
+				    ("Never starts", NAMEOF('DisplayMeasures'[NeverStarts%]), 2)
+				}
+				
+				```
+
+	annotation PBI_Id = bdcefed78c524e16a5ade840b3defcf1
+

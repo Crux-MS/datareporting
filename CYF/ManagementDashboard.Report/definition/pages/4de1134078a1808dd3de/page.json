@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "4de1134078a1808dd3de",
+  "displayName": "Payroll ($)",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b3deba6064c1079dc723",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimArea"
+              }
+            },
+            "Property": "Id Area"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      },
+      {
+        "name": "5cdb10f7c5d1d410546b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimArea"
+              }
+            },
+            "Property": "State"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      },
+      {
+        "name": "b6acd2ad74a38208084d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCaseManagers"
+              }
+            },
+            "Property": "Case Manager Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      }
+    ]
+  },
+  "pageBinding": {
+    "name": "44f09e91080003bb9aed",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "ced02cf63e7c91921b0b",
+        "boundFilter": "b3deba6064c1079dc723",
+        "asAggregation": false,
+        "qnaSingleSelectRequired": false,
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimArea"
+              }
+            },
+            "Property": "Id Area"
+          }
+        }
+      },
+      {
+        "name": "dcd729fe01d702a73103",
+        "boundFilter": "5cdb10f7c5d1d410546b",
+        "asAggregation": false,
+        "qnaSingleSelectRequired": false,
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimArea"
+              }
+            },
+            "Property": "State"
+          }
+        }
+      },
+      {
+        "name": "0de2bc00600c3e8ea815",
+        "boundFilter": "b6acd2ad74a38208084d",
+        "asAggregation": false,
+        "qnaSingleSelectRequired": false,
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCaseManagers"
+              }
+            },
+            "Property": "Case Manager Name"
+          }
+        }
+      }
+    ]
+  },
+  "visibility": "HiddenInViewMode"
+}

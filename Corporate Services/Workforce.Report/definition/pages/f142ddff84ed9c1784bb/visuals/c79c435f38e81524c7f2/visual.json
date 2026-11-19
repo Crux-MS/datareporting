@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "c79c435f38e81524c7f2",
   "position": {
     "x": 1031.9660537482318,
     "y": 430.89108910891088,
-    "z": 6000,
+    "z": 4000,
     "height": 263.42291371994344,
     "width": 226.30834512022631,
-    "tabOrder": 5000
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "pieChart",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "WorkerAgeBand"
+                  "Property": "Age Band"
                 }
               },
-              "queryRef": "Fact Workforce.WorkerAgeBand",
-              "nativeQueryRef": "WorkerAgeBand",
+              "queryRef": "DimEmployee.Age Band",
+              "nativeQueryRef": "Age Band",
               "active": true
             }
           ]
@@ -39,15 +39,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Currently Employed %"
+                  "Property": "Employees%"
                 }
               },
-              "queryRef": "Fact Workforce.Currently Employed %",
-              "nativeQueryRef": "Currently Employed",
-              "displayName": "Currently Employed"
+              "queryRef": "DisplayMeasures.Employees%",
+              "nativeQueryRef": "Current Employees",
+              "displayName": "Current Employees"
             }
           ],
           "fieldParameters": [
@@ -56,10 +56,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Workforce %"
+                      "Entity": "WorkerParam%"
                     }
                   },
-                  "Property": "Workforce %"
+                  "Property": "WorkerParam"
                 }
               },
               "index": 0,
@@ -72,18 +72,19 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Workforce"
+                    "Entity": "DisplayMeasures"
                   }
                 },
-                "Property": "WorkerAgeBand"
+                "Property": "Employees%"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
-        ]
+        ],
+        "isDefaultSort": true
       }
     },
     "objects": {
@@ -193,24 +194,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
             "text": {
               "expr": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Workforce %"
-                        }
-                      },
-                      "Property": "Workforce %"
-                    }
-                  },
-                  "Function": 3
+                "Literal": {
+                  "Value": "''"
                 }
               }
             }

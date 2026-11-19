@@ -1,0 +1,1017 @@
+/// Definition: Report measures that switch between weekly, fortnightly and monthly case manager snapshot figures based on the period slicer, and between funding streams or worker types.
+/// For analysis: Report display measures. Not for analysis; use the snapshot table columns.
+table ParameterMeasures
+	lineageTag: 0e431f16-9c3d-470b-8352-0bed5a162842
+
+	/// Definition: The number of clients who started receiving services from the selected case managers in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot Client Enter columns instead.
+	measure ClientEntries =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Client Enter Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Client Enter Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Client Enter Count]))
+		formatString: 0
+		displayFolder: WeeklyMonthly
+		lineageTag: fa509024-1eb2-4527-b73f-94c4cb28bb4b
+
+	/// Definition: The number of clients who stopped receiving services from the selected case managers in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot Client Exit columns instead.
+	measure ClientExits =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Client Exit Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Client Exit Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Client Exit Count]))
+		displayFolder: WeeklyMonthly
+		lineageTag: fa8185c8-f27a-44f3-b1fb-f7b057562367
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The number of active clients for the selected case managers in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot Client Active columns instead.
+	measure ActiveClients =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Client Active Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Client Active Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Client Active Count]))
+		formatString: 0
+		displayFolder: WeeklyMonthly
+		lineageTag: 49b8ec62-62a6-49a3-b104-bed82b7cbe64
+
+	/// Definition: The number of client service hours scheduled for the selected case managers in each week, fortnight or month, for the funding stream chosen on the page (all, IPS, OSD or other).
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot Client Schedule Hours columns instead.
+	measure ClientScheduledHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [ClientScheduledHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [ClientScheduledHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [ClientScheduledHoursWeekly])
+		formatString: #,0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: d14cf02a-ae6c-4300-ba81-d5a3eb5d567b
+
+	/// Definition: The number of scheduled client service hours that were completed in each week, fortnight or month, for the funding stream chosen on the page (all, IPS, OSD or other).
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot Client Schedule Hours Completed columns instead.
+	measure ClientCompleteHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [ClientCompletedHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [ClientCompletedHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [ClientCompletedHoursWeekly])
+		formatString: #,0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: 9aea7a83-1292-4f7b-887c-4ed5dff33afa
+
+	/// Definition: The number of billable CYF hours delivered in each week, fortnight or month, by workers, case managers or both depending on the worker type chosen.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Billable Cyf Hours and Worker Sm Billable Cyf Hours instead.
+	measure WorkerBillableHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerBillableHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerBillableHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerBillableHoursWeekly]
+			    )
+		formatString: #,0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: 7a9086b6-3540-4464-8bfe-33bb72d3cb44
+
+	/// Definition: The total unbillable hours across admin, awake, meetings, other, Public Holiday Not Worked, shadow shifts, training and travel, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add the snapshot Worker Unbillable and Worker Sm Unbillable columns instead.
+	measure WorkerUnbillableHours = [WorkerUnbillableAdminHours] + [WorkerUnbillableAwakeHours] + [WorkerUnbillableMeetingHours] + [WorkerUnbillableOtherHours] + [WorkerUnbillablePHNWHours] + [WorkerUnbillableShadowShiftHours] + [WorkerUnbillableTrainingHours] + [WorkerUnbillableTravelHours]
+		displayFolder: WeeklyMonthly
+		lineageTag: 93ff3a88-83c9-4220-bfc6-afc83ecdf46e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours as a percentage of billable CYF hours.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Divide total unbillable hours by billable CYF hours from the snapshot instead.
+	measure WorkerUnbillableHoursRate = DIVIDE([WorkerUnbillableHours], [WorkerBillableHours])
+		formatString: #,0.00%;-#,0.00%;#,0.00%
+		displayFolder: WeeklyMonthly
+		lineageTag: 82fdf4f6-de74-4bd5-a2db-bbee3ad191ea
+
+	/// Definition: The total overtime hours paid to employees in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Overtime Hours instead.
+	measure WorkerOvertimeHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Overtime Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Overtime Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Overtime Hours]))
+		displayFolder: WeeklyMonthly
+		lineageTag: d1decc2b-2918-4f0f-a6a5-8c7ae4eed143
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The total leave hours paid to employees in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Leave Hours instead.
+	measure WorkerLeaveHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Leave Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Leave Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Leave Hours]))
+		displayFolder: WeeklyMonthly
+		lineageTag: bedd4519-69cb-4e6b-83aa-c5c3a1b91db2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The total standard hours paid to employees in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Standard Hours instead.
+	measure WorkerStandardHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Standard Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Standard Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Standard Hours]))
+		displayFolder: WeeklyMonthly
+		lineageTag: 154bcbe9-4ad7-4f4b-ab43-040d4b5d7814
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The total other hours paid to employees in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Other Hours instead.
+	measure WorkerOtherHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Other Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Other Hours]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Other Hours]))
+		displayFolder: WeeklyMonthly
+		lineageTag: a9d562c1-21ca-4ce9-95f8-d7736b8b779c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The share of total hours paid that was overtime.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Divide snapshot Payroll Overtime Hours by total payroll hours instead.
+	measure WorkerOvertimeRate = DIVIDE([WorkerOvertimeHours], [WorkerHoursPaid])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: WeeklyMonthly
+		lineageTag: 5a960b89-7e68-4a1a-bc29-01d08bebbb14
+
+	/// Definition: The total hours paid to employees, adding standard, leave, overtime and other hours, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add the snapshot Payroll Standard, Leave, Overtime and Other Hours instead.
+	measure WorkerHoursPaid = [WorkerStandardHours] + [WorkerLeaveHours] + [WorkerOvertimeHours] + [WorkerOtherHours]
+		displayFolder: WeeklyMonthly
+		lineageTag: 6d616b59-aa75-4243-8481-02bbcb1317cf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Client entries minus client exits in each week, fortnight or month; a positive number means the client base grew.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Subtract snapshot Client Exit Count from Client Enter Count instead.
+	measure ClientsNetChange = [ClientEntries] - [ClientExits]
+		formatString: 0
+		displayFolder: WeeklyMonthly
+		lineageTag: 15680053-c3f4-4ccd-bdf0-b0894ced1314
+
+	/// Definition: Unbillable hours spent on admin by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Admin Hours instead.
+	measure WorkerUnbillableAdminHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerUnbillableAdminHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillableAdminHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillableAdminHoursWeekly]
+			)
+		displayFolder: WeeklyMonthly
+		lineageTag: c7b1b68f-486d-4746-8c60-7eded319a991
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on awake shifts by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Awake Hours instead.
+	measure WorkerUnbillableAwakeHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]",[WorkerUnbillableAwakeHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillableAwakeHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillableAwakeHoursWeekly]
+			)
+		displayFolder: WeeklyMonthly
+		lineageTag: 0fa232af-4d1a-4611-b25b-061e817e6da4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on meetings by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Meeting Hours instead.
+	measure WorkerUnbillableMeetingHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerUnbillableMeetingHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillableMeetingHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillableMeetingHoursWeekly]
+			)
+		formatString: 0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: 2362839c-6f37-4ee7-bedc-8586a1fa82e0
+
+	/// Definition: Unbillable hours spent on other unbillable activity by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Other Hours instead.
+	measure WorkerUnbillableOtherHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerUnbillableOtherHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillableOtherHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillableOtherHoursWeekly]
+			)
+		formatString: 0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: e351ddce-edce-4e13-9592-ddbf41d9f737
+
+	/// Definition: Unbillable hours spent on public holidays not worked (PHNW) by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Phnw Hours instead.
+	measure WorkerUnbillablePHNWHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerUnbillablePhnwHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillablePhnwHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillablePhnwHoursWeekly]
+			)
+		formatString: 0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: 3455d698-cfb7-4335-9c68-2b0ef8aede45
+
+	/// Definition: Unbillable hours spent on shadow shifts by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Shadow Shift Hours instead.
+	measure WorkerUnbillableShadowShiftHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerUnbillableShadowShiftHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillableShadowShiftHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillableShadowShiftHoursWeekly]
+			)
+		formatString: 0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: 60720771-9bcf-41e9-8cda-c1715c03ba9e
+
+	/// Definition: Unbillable hours spent on training by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Training Hours instead.
+	measure WorkerUnbillableTrainingHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerUnbillableTrainingHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillableTrainingHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillableTrainingHoursWeekly]
+			)
+		formatString: 0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: f535085d-96ea-4351-92df-3ae33b8d0239
+
+	/// Definition: Unbillable hours spent on travel by workers, case managers or both, depending on the worker type chosen, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add snapshot Worker Unbillable and Worker Sm Unbillable Travel Hours instead.
+	measure WorkerUnbillableTravelHours =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", [WorkerUnbillableTravelHoursMonthly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", [WorkerUnbillableTravelHoursFortnightly],
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", [WorkerUnbillableTravelHoursWeekly]
+			)
+		formatString: 0.0
+		displayFolder: WeeklyMonthly
+		lineageTag: 03fa6eed-a5dd-4dc4-919d-78fec1791a3e
+
+	/// Definition: The total dollars paid to employees as overtime in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Overtime Amount instead.
+	measure WorkerOvertimeAmount =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Overtime Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Overtime Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Overtime Amount]))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: WeeklyMonthly
+		lineageTag: 7bfa1270-3c8a-4b86-975d-f8a95ebb9e8f
+
+	/// Definition: The total standard pay in dollars to employees in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Standard Amount instead.
+	measure WorkerStandardAmount =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Standard Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Standard Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Standard Amount]))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: WeeklyMonthly
+		lineageTag: cf6069a0-7c74-4781-89cd-cf86c78f9bda
+
+	/// Definition: The total other pay in dollars to employees in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Other Amount instead.
+	measure WorkerOtherAmount =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Other Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Other Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Other Amount]))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: WeeklyMonthly
+		lineageTag: 38840211-2ce2-43b3-95c1-73c7192c6118
+
+	/// Definition: The total leave pay in dollars to employees in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Payroll Leave Amount instead.
+	measure WorkerLeaveAmount =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Payroll Leave Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Payroll Leave Amount]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Payroll Leave Amount]))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: WeeklyMonthly
+		lineageTag: a6f86778-1430-4471-93b6-84df26946f1a
+
+	/// Definition: The total dollars paid to employees, adding standard, leave, overtime and other pay, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Add the four snapshot Payroll Amount columns instead.
+	measure WorkerAmountPaid = [WorkerStandardAmount] + [WorkerLeaveAmount] + [WorkerOvertimeAmount] + [WorkerOtherAmount]
+		displayFolder: WeeklyMonthly
+		lineageTag: ee4294ed-ced0-4b18-8224-098f5fb4a494
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Client service hours scheduled in each month, for the chosen funding stream (all, IPS, OSD or other).
+	/// For analysis: Report helper that changes with the funding stream option. Not for analysis. Building block of ClientScheduledHours.
+	measure ClientScheduledHoursMonthly =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[IPS]", SUM(FactCMMonthlySnapshot[Client Schedule Ips Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[OSD]", SUM(FactCMMonthlySnapshot[Client Schedule Osd Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Other]", SUM(FactCMMonthlySnapshot[Client Schedule Other Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Total]", SUM(FactCMMonthlySnapshot[Client Schedule Hours]))
+		displayFolder: ClientType
+		lineageTag: f2f11a5b-695b-4748-be9a-bd730eae93e0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Scheduled client service hours completed in each month, for the chosen funding stream (all, IPS, OSD or other).
+	/// For analysis: Report helper that changes with the funding stream option. Not for analysis. Building block of ClientCompleteHours.
+	measure ClientCompletedHoursMonthly =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[IPS]", SUM(FactCMMonthlySnapshot[Client Schedule Ips Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[OSD]", SUM(FactCMMonthlySnapshot[Client Schedule Osd Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Other]", SUM(FactCMMonthlySnapshot[Client Schedule Other Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Total]", SUM(FactCMMonthlySnapshot[Client Schedule Hours Completed]))
+		displayFolder: ClientType
+		lineageTag: 5fd14ffc-4d5b-44b7-8314-11f4c5e05e1b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Client service hours scheduled in each week, for the chosen funding stream (all, IPS, OSD or other).
+	/// For analysis: Report helper that changes with the funding stream option. Not for analysis. Building block of ClientScheduledHours.
+	measure ClientScheduledHoursWeekly =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[IPS]", SUM(FactCMWeeklySnapshot[Client Schedule Ips Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[OSD]", SUM(FactCMWeeklySnapshot[Client Schedule Osd Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Other]", SUM(FactCMWeeklySnapshot[Client Schedule Other Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Total]", SUM(FactCMWeeklySnapshot[Client Schedule Hours]))
+		displayFolder: ClientType
+		lineageTag: ba73392b-73c5-4971-8945-867659258799
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Scheduled client service hours completed in each week, for the chosen funding stream (all, IPS, OSD or other).
+	/// For analysis: Report helper that changes with the funding stream option. Not for analysis. Building block of ClientCompleteHours.
+	measure ClientCompletedHoursWeekly =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[IPS]", SUM(FactCMWeeklySnapshot[Client Schedule Ips Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[OSD]", SUM(FactCMWeeklySnapshot[Client Schedule Osd Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Other]", SUM(FactCMWeeklySnapshot[Client Schedule Other Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Total]", SUM(FactCMWeeklySnapshot[Client Schedule Hours Completed]))
+		displayFolder: ClientType
+		lineageTag: 4696b298-74d4-477b-b088-acbda9171794
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on admin in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableAdminHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Admin Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Admin Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Admin Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Admin Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 17789f79-4034-4ad9-b944-4bba8323d954
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on admin in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableAdminHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Admin Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Admin Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Admin Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Admin Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: a1d10efe-d0de-4364-aa65-c60d3560fb9f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on awake shifts in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableAwakeHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Awake Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Awake Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Awake Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Awake Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 431e6165-cdfa-4171-a5cc-53fb6ce897f3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on awake shifts in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableAwakeHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Awake Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Awake Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Awake Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Awake Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 0c68ddb1-3f42-4f57-b3d6-08e9d41a572f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on meetings in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableMeetingHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Meeting Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Meeting Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Meeting Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Meeting Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 1d69b278-50b7-4623-b5b8-e27e23538aa9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on meetings in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableMeetingHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Meeting Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Meeting Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Meeting Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Meeting Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 937c7c59-193b-48c4-8dd1-2aa74790864c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on other unbillable activity in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableOtherHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Other Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Other Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Other Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Other Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 66d3bfe7-e78f-4acf-ad98-d4f17a4c9a19
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on other unbillable activity in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableOtherHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Other Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Other Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Other Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Other Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 253381c7-6a82-486d-9ead-d3890df3be41
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on public holidays not worked (PHNW) in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillablePhnwHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Phnw Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Phnw Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Phnw Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Phnw Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 60b57521-8e70-4ae7-874e-d9e843ac951d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on public holidays not worked (PHNW) in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillablePhnwHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Phnw Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Phnw Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Phnw Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Phnw Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: e639325a-39b8-4dfb-a7ef-a0128bcb0d17
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on shadow shifts in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableShadowShiftHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Shadow Shift Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Shadow Shift Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Shadow Shift Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Shadow Shift Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 6e74f16f-f177-409d-a6c0-a8e2d0377709
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on shadow shifts in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableShadowShiftHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Shadow Shift Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Shadow Shift Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Shadow Shift Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Shadow Shift Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 4ecfe5eb-af03-4da9-ade5-2fce0c1d2d41
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on training in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableTrainingHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Training Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Training Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Training Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Training Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: c0a98623-01ce-4a9d-acc9-5f3185c22dab
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on training in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableTrainingHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Training Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Training Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Training Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Training Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 95c57713-4738-4bfe-9225-44f17f4b5eed
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on travel in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableTravelHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Unbillable Travel Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Travel Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Unbillable Travel Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Unbillable Travel Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 066d4a9d-c726-4bec-9b7d-b815eae5cf66
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on travel in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableTravelHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Unbillable Travel Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Travel Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Unbillable Travel Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Unbillable Travel Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 1be2fec4-f792-496a-bb8c-c8e85b35e458
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Billable CYF hours in each month, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of WorkerBillableHours.
+	measure WorkerBillableHoursMonthly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMMonthlySnapshot[Worker Billable Cyf Hours]) + SUM(FactCMMonthlySnapshot[Worker Sm Billable Cyf Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMMonthlySnapshot[Worker Billable Cyf Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMMonthlySnapshot[Worker Sm Billable Cyf Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: d0aca612-f219-44bd-888c-a34ee02996e0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Billable CYF hours in each week, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of WorkerBillableHours.
+	measure WorkerBillableHoursWeekly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMWeeklySnapshot[Worker Billable Cyf Hours]) + SUM(FactCMWeeklySnapshot[Worker Sm Billable Cyf Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMWeeklySnapshot[Worker Billable Cyf Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMWeeklySnapshot[Worker Sm Billable Cyf Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 6d4680f5-bdf2-4171-9784-9c9c64288b1a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The number of active employees who report to the selected case managers in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Employee Active Count instead.
+	measure ActiveEmployees =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Employee Active Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Employee Active Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Employee Active Count]))
+		formatString: #,0
+		displayFolder: WeeklyMonthly
+		lineageTag: 333064c1-5bb7-4101-a5da-2c35c2023fe4
+
+	/// Definition: The number of workers who worked at least one shift in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Use the snapshot column Worker With Shift Count instead.
+	measure WorkerWithShiftCount =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", SUM(FactCMMonthlySnapshot[Worker With Shift Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Worker With Shift Count]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", SUM(FactCMWeeklySnapshot[Worker With Shift Count]))
+		formatString: #,0
+		displayFolder: WeeklyMonthly
+		lineageTag: 649dab28-264c-4b4a-af64-220c8d0647a6
+
+	/// Definition: The share of active employees who worked at least one shift in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Divide snapshot Worker With Shift Count by Employee Active Count instead.
+	measure WorkerWithShiftRate = DIVIDE([WorkerWithShiftCount], [ActiveEmployees])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: WeeklyMonthly
+		lineageTag: 2975d5dd-933d-48e5-a242-2fe424e3fa3a
+
+	/// Definition: The total hours of completed shifts worked by employees who report to the selected case managers, counting back from today:
+	/// - Months: last 12 months
+	/// - Fortnights: last 6 months
+	/// - Weeks: last 12 weeks
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Sum FactCMWorkerRoster Duration Hours for completed shifts instead.
+	measure EmployeeCompletedShifts =
+			VAR _today = TODAY ()
+			VAR _windowStart =
+			    SWITCH (
+			        TRUE (),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Month]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -12 ),
+			        SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -6 ),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Week (Monday)]", _today - (12 * 7)
+			    )
+			RETURN
+			    CALCULATE (
+			        [TotalCompletedShifts],          // <-- your daily metric
+			        KEEPFILTERS (
+			            'DimDate'[Date] >= _windowStart && 'DimDate'[Date] <= _today
+			        )
+			    )
+		displayFolder: WeeklyMonthly
+		lineageTag: 598941a0-aa4a-46a9-bb90-1eb33694a90e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The total hours of completed billable shifts worked by employees who report to the selected case managers, counting back from today:
+	/// - Months: last 12 months
+	/// - Fortnights: last 6 months
+	/// - Weeks: last 12 weeks
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis.
+	measure EmployeeBillableShifts =
+			
+			VAR _today = TODAY ()
+			VAR _windowStart =
+			    SWITCH (
+			        TRUE (),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Month]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -12 ),
+			        SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -6 ),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Week (Monday)]", _today - (12 * 7)
+			    )
+			RETURN
+			    CALCULATE (
+			        [BillableCompletedShifts],
+			        KEEPFILTERS (
+			            'DimDate'[Date] >= _windowStart && 'DimDate'[Date] <= _today
+			        )
+			    )
+		displayFolder: WeeklyMonthly
+		lineageTag: ccbf3239-5048-44de-be77-cd28652a1ba4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The total hours of cancelled shifts for employees who report to the selected case managers, counting back from today:
+	/// - Months: last 12 months
+	/// - Fortnights: last 6 months
+	/// - Weeks: last 12 weeks
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Sum FactCMWorkerRoster Duration Hours for cancellations instead.
+	measure EmployeeCancellations =
+			VAR _today = TODAY ()
+			VAR _windowStart =
+			    SWITCH (
+			        TRUE (),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Month]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -12 ),
+			        SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -6 ),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Week (Monday)]", _today - (12 * 7)
+			    )
+			RETURN
+			    CALCULATE (
+			        [TotalCancellations],
+			        KEEPFILTERS (
+			            'DimDate'[Date] >= _windowStart && 'DimDate'[Date] <= _today
+			        )
+			    )
+		displayFolder: WeeklyMonthly
+		lineageTag: 8887250c-3784-4029-a762-6dcc97300a39
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The total hours of completed unbillable shifts worked by employees who report to the selected case managers, counting back from today:
+	/// - Months: last 12 months
+	/// - Fortnights: last 6 months
+	/// - Weeks: last 12 weeks
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis.
+	measure EmployeeUnbillableShifts =
+			VAR _today = TODAY ()
+			VAR _windowStart =
+			    SWITCH (
+			        TRUE (),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Month]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -12 ),
+			        SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -6 ),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Week (Monday)]", _today - (12 * 7)
+			    )
+			RETURN
+			    CALCULATE (
+			        [UnbillableCompletedShifts],
+			        KEEPFILTERS (
+			            'DimDate'[Date] >= _windowStart && 'DimDate'[Date] <= _today
+			        )
+			    )
+		displayFolder: WeeklyMonthly
+		lineageTag: 4839ab79-d479-44dc-91b9-7b8294819628
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Cancelled shift hours as a share of completed shift hours for employees who report to the selected case managers, counting back from today:
+	/// - Months: last 12 months
+	/// - Fortnights: last 6 months
+	/// - Weeks: last 12 weeks
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis.
+	measure EmployeeCancellationRate =
+			VAR _today = TODAY ()
+			VAR _windowStart =
+			    SWITCH (
+			        TRUE (),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Month]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -12 ),
+			        SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", EDATE ( DATE ( YEAR ( _today ), MONTH ( _today ), 1 ), -6 ),
+			        SELECTEDVALUE ( PeriodParam[MonthWeekParam Fields] ) = "'DimDate'[Start of Week (Monday)]", _today - (12 * 7)
+			    )
+			RETURN
+			    CALCULATE (
+			        [CancellationRate],
+			        KEEPFILTERS (
+			            'DimDate'[Date] >= _windowStart && 'DimDate'[Date] <= _today
+			        )
+			    )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: WeeklyMonthly
+		lineageTag: d3538002-17c7-4adc-8ba4-2e08f037f3f3
+
+	/// Definition: The typical rate at which clients leave a case manager over about the past year, shown as the middle value across the selected case managers and areas.
+	/// - Weeks: rolling 52 weeks
+	/// - Fortnights: rolling 25 fortnights
+	/// - Months: rolling 12 months
+	/// For analysis: Not used on any page. Not for analysis; the Fortnights branch adds the rates instead of taking the median. Use the median of the snapshot Client Rolling Churn Rate column.
+	measure ClientMedianRollingTurnover =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Month]", MEDIAN(FactCMMonthlySnapshot[Client Rolling 12M Churn Rate]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Fortnight Start Date]", SUM(FactCMFortnightlySnapshot[Client Rolling 25Fn Churn Rate]),
+			    SELECTEDVALUE(PeriodParam[MonthWeekParam Fields]) = "'DimDate'[Start of Week (Monday)]", MEDIAN(FactCMWeeklySnapshot[Client Rolling 52W Churn Rate]))
+		displayFolder: WeeklyMonthly
+		lineageTag: b5a4d706-8ab6-469b-8cda-10a71802b9f0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Scheduled client service hours completed in each fortnight, for the chosen funding stream (all, IPS, OSD or other).
+	/// For analysis: Report helper that changes with the funding stream option. Not for analysis. Building block of ClientCompleteHours.
+	measure ClientCompletedHoursFortnightly =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[IPS]", SUM(FactCMFortnightlySnapshot[Client Schedule Ips Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[OSD]", SUM(FactCMFortnightlySnapshot[Client Schedule Osd Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Other]", SUM(FactCMFortnightlySnapshot[Client Schedule Other Hours Completed]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Total]", SUM(FactCMFortnightlySnapshot[Client Schedule Hours Completed]))
+		displayFolder: ClientType
+		lineageTag: b634e614-769d-46a5-b704-1408b6a31cd1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Client service hours scheduled in each fortnight, for the chosen funding stream (all, IPS, OSD or other).
+	/// For analysis: Report helper that changes with the funding stream option. Not for analysis. Building block of ClientScheduledHours.
+	measure ClientScheduledHoursFortnightly =
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[IPS]", SUM(FactCMFortnightlySnapshot[Client Schedule Ips Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[OSD]", SUM(FactCMFortnightlySnapshot[Client Schedule Osd Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Other]", SUM(FactCMFortnightlySnapshot[Client Schedule Other Hours]),
+			    SELECTEDVALUE(ClientTypeParameter[ClientTypeParameter Fields]) = "'ClientType'[Total]", SUM(FactCMFortnightlySnapshot[Client Schedule Hours]))
+		displayFolder: ClientType
+		lineageTag: 00b5d4d9-3a31-44e8-a2e1-25e2f32b482b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Billable CYF hours in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of WorkerBillableHours.
+	measure WorkerBillableHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Billable Cyf Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Billable Cyf Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Billable Cyf Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Billable Cyf Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 80551cef-4186-4e6b-9312-a7a78ac58180
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on admin in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableAdminHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Admin Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Admin Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Admin Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Admin Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 80541157-c577-4600-bfcb-bbcd66ff8f7b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on awake shifts in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableAwakeHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Awake Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Awake Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Awake Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Awake Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: dc3fc28a-8482-44d2-80e6-adbcc86f005f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on meetings in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableMeetingHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Meeting Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Meeting Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Meeting Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Meeting Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 2ab73dd3-27cd-4a2d-b7c1-3e145603bd72
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on other unbillable activity in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableOtherHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Other Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Other Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Other Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Other Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: cfc37dc1-dc57-48db-8c4f-ea34f63dd59f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on public holidays not worked (PHNW) in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillablePhnwHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Phnw Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Phnw Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Phnw Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Phnw Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 1bdbe0ea-107b-4713-a841-fcacd7396435
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on shadow shifts in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableShadowShiftHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Shadow Shift Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Shadow Shift Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Shadow Shift Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Shadow Shift Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 95171694-f50a-4c47-9819-fc7ae3695bc7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on training in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableTrainingHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Training Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Training Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Training Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Training Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 8a92f570-e84c-4fcb-8bfa-cf2bca93068c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours spent on travel in each fortnight, for the chosen worker type.
+	/// For analysis: Report helper that changes with the worker type option. Not for analysis. Building block of the period-switch measure.
+	measure WorkerUnbillableTravelHoursFortnightly =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Total]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Travel Hours]) + SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Travel Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Workers]", SUM(FactCMFortnightlySnapshot[Worker Unbillable Travel Hours]),
+			    SELECTEDVALUE(WorkerTypeParam[Parameter Fields]) = "'Worker Type'[Service Managers]", SUM(FactCMFortnightlySnapshot[Worker Sm Unbillable Travel Hours])
+			    )
+		displayFolder: WorkerType
+		lineageTag: 117ddf36-8fa2-419e-9bf5-0a8a33511c18
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Total pay in dollars to employees, adding standard, leave, overtime and other pay, in each week, fortnight or month.
+	/// For analysis: Report helper for conditional formatting; same result as WorkerAmountPaid. Not for analysis.
+	measure WorkerTotalPayrollAmount = [WorkerLeaveAmount] + [WorkerOvertimeAmount] + [WorkerOtherAmount] + [WorkerStandardAmount]
+		displayFolder: WeeklyMonthly
+		lineageTag: 97ed2208-0db0-47b4-a994-7d5470ed44ed
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Total hours paid to employees, adding standard, leave, overtime and other hours, in each week, fortnight or month.
+	/// For analysis: Report helper for conditional formatting; same result as WorkerHoursPaid. Not for analysis.
+	measure WorkerTotalPayrollHours = [WorkerLeaveHours] + [WorkerOvertimeHours] + [WorkerOtherHours] + [WorkerStandardHours]
+		displayFolder: WeeklyMonthly
+		lineageTag: c16603e0-0c7d-4c37-bbdc-35d050a647c6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The target for unbillable hours as a share of billable CYF hours, set at 9.5%.
+	/// For analysis: Fixed target value for charts and conditional formatting.
+	measure WorkerUnbillableHoursTargetRate = 0.095
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Targets
+		lineageTag: 1105ee89-a96c-40f3-82ee-d9feaf35f358
+
+	/// Definition: The target for overtime as a share of total hours paid, set at 5.5%.
+	/// For analysis: Fixed target value for charts and conditional formatting.
+	measure WorkerOvertimeTargetRate = 0.055
+		displayFolder: Targets
+		lineageTag: d18034e6-e023-4245-b4a9-ef4d3c581a0c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Status of unbillable hours against target: 0 below the 9.5% target, 1 from 9.5% to under 11%, 2 at 11% or more.
+	/// For analysis: Drives conditional formatting icons. Not for analysis.
+	measure WorkerUnbillableExceedsTarget =
+			SWITCH(
+			    TRUE(),
+			    [WorkerUnbillableHoursRate] < [WorkerUnbillableHoursTargetRate], 0,
+			    [WorkerUnbillableHoursRate] >= [WorkerUnbillableHoursTargetRate] && [WorkerUnbillableHoursRate] < 0.11, 1,
+			    [WorkerUnbillableHoursRate] >= 0.11, 2
+			)
+		formatString: 0
+		lineageTag: 57c641c0-6f8f-44ac-996f-02cfde8b4174
+
+	/// Definition: Status of overtime against target: 0 below the 5.5% target, 1 from 5.5% to under 7%, 2 at 7% or more.
+	/// For analysis: Drives conditional formatting icons. Not for analysis.
+	measure WorkerOvertimeExceedsTarget =
+			SWITCH(
+			    TRUE(),
+			    [WorkerOvertimeRate] < [WorkerOvertimeTargetRate], 0,
+			    [WorkerOvertimeRate] >= [WorkerOvertimeTargetRate] && [WorkerOvertimeRate] < 0.07, 1,
+			    [WorkerOvertimeRate] >= 0.07, 2
+			)
+		formatString: 0
+		lineageTag: a581ea11-cb4e-4b5c-8b6b-659bce3a66fb
+
+	/// Definition: The average cost per hour paid, worked out as total pay divided by total hours paid, in each week, fortnight or month.
+	/// For analysis: Report display measure that changes with the period slicer. Not for analysis. Divide total payroll amounts by total payroll hours from the snapshot instead.
+	measure WorkerWeightedCost = DIVIDE([WorkerAmountPaid], [WorkerHoursPaid])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: f844f347-a62f-444e-8907-651e6c2e2f1d
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	partition ParameterMeasures = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Measures = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Measures", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Measures"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

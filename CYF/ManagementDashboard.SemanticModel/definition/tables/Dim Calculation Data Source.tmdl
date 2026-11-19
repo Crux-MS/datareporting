@@ -1,0 +1,82 @@
+/// Definition: Legacy copy of the data dictionary's data sources, loaded from master_data_dictionary.json on SharePoint. One row per metric, source table and column.
+/// For analysis: Not for analysis.
+table 'Dim Calculation Data Source'
+	lineageTag: fea282cf-5c34-4121-a4b7-84c944ce3967
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: 0fcbd9fb-d2b3-4c33-a22d-2eb2f72a3f92
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Edp Layer'
+		dataType: string
+		lineageTag: ab8093e1-6f84-4da8-9f0b-3a7f5f53ea25
+		summarizeBy: none
+		sourceColumn: Edp Layer
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column name
+		dataType: string
+		lineageTag: 4bfaa0c9-d468-4c43-97df-c92b9ebd4ab2
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column model_table_names
+		dataType: string
+		lineageTag: d98796d2-c97a-4808-9f3e-272e27c21d17
+		summarizeBy: none
+		sourceColumn: model_table_names
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column columns
+		dataType: string
+		lineageTag: 9f180657-772d-42a5-8082-5ed312e350a1
+		summarizeBy: none
+		sourceColumn: columns
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Edp Source'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: d6e17bd9-9b7b-4f66-9a1d-b6e4de4db3d6
+		summarizeBy: none
+		sourceColumn: Edp Source
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculation Data Source' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Edp Layer", "Source Tables", "Edp Source"}),
+				    #"Expanded Source Tables" = Table.ExpandListColumn(#"Removed Other Columns", "Source Tables"),
+				    #"Expanded Source Tables1" = Table.ExpandRecordColumn(#"Expanded Source Tables", "Source Tables", {"name", "model_table_names", "columns"}, {"name", "model_table_names", "columns"}),
+				    #"Expanded model_table_names" = Table.ExpandListColumn(#"Expanded Source Tables1", "model_table_names"),
+				    #"Expanded columns" = Table.ExpandListColumn(#"Expanded model_table_names", "columns"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded columns",{{"name", type text}, {"columns", type text}})
+				in
+				    #"Changed Type"
+

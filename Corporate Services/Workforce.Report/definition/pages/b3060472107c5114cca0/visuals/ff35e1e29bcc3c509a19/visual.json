@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "ff35e1e29bcc3c509a19",
   "position": {
-    "x": 214,
-    "y": 29.999999999999975,
+    "x": 211.71428571428572,
+    "y": 10.249999359776002,
     "z": 2000,
-    "height": 135.35387177352206,
-    "width": 490,
+    "height": 156.42857142857144,
+    "width": 487.85714285714289,
     "tabOrder": 3000
   },
   "visual": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Job History"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "Employment type"
+                  "Property": "Employment Type"
                 }
               },
-              "queryRef": "Dim Job History.Employment type",
-              "nativeQueryRef": "Employment type"
+              "queryRef": "DimEmployee.Employment Type",
+              "nativeQueryRef": "Employment Type"
             }
           ]
         },
@@ -38,15 +38,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "New Starters %"
+                  "Property": "NewStarters%"
                 }
               },
-              "queryRef": "Fact Workforce.New Starters %",
-              "nativeQueryRef": "New Starters",
-              "displayName": "New Starters"
+              "queryRef": "DisplayMeasures.NewStarters%",
+              "nativeQueryRef": "New employees",
+              "displayName": "New employees"
             }
           ],
           "fieldParameters": [
@@ -55,10 +55,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "NewStarters"
+                      "Entity": "NewStarterParam"
                     }
                   },
-                  "Property": "NewStarters"
+                  "Property": "NewStarterParam"
                 }
               },
               "index": 0,
@@ -74,10 +74,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Workforce"
+                    "Entity": "DisplayMeasures"
                   }
                 },
-                "Property": "New Starters %"
+                "Property": "NewStarters%"
               }
             },
             "direction": "Descending"
@@ -380,6 +380,174 @@
               }
             ]
           }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": -0.2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Employment Type"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 2,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Employment Type"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Casual'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 5,
+                      "Percent": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Employment Type"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Full-time'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 6,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Employment Type"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Part-time'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       ],
       "legend": [
@@ -427,13 +595,18 @@
             },
             "text": {
               "expr": {
-                "Measure": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Employment Start Date"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
                     }
                   },
-                  "Property": "DisplayLatestMonth"
+                  "Function": 3
                 }
               }
             }
@@ -473,7 +646,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "''"
                 }
               }
             }
@@ -487,45 +667,67 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "903764c9b30863dc93b9",
+        "name": "ad33b5e6edac3c62da5c",
         "field": {
           "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Job History"
+                "Entity": "DimEmployeeTenureDate"
               }
             },
-            "Property": "MemberLatestJobFlag"
+            "Property": "Month Start Date"
           }
         },
-        "type": "Advanced",
+        "type": "RelativeDate",
         "filter": {
           "Version": 2,
           "From": [
             {
               "Name": "d",
-              "Entity": "Dim Job History",
+              "Entity": "DimEmployeeTenureDate",
               "Type": 0
             }
           ],
           "Where": [
             {
               "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 0,
-                  "Left": {
+                "Between": {
+                  "Expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
                           "Source": "d"
                         }
                       },
-                      "Property": "MemberLatestJobFlag"
+                      "Property": "Month Start Date"
                     }
                   },
-                  "Right": {
-                    "Literal": {
-                      "Value": "0L"
+                  "LowerBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "DateAdd": {
+                          "Expression": {
+                            "Now": {}
+                          },
+                          "Amount": -1,
+                          "TimeUnit": 2
+                        }
+                      },
+                      "TimeUnit": 2
+                    }
+                  },
+                  "UpperBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "DateAdd": {
+                          "Expression": {
+                            "Now": {}
+                          },
+                          "Amount": -1,
+                          "TimeUnit": 2
+                        }
+                      },
+                      "TimeUnit": 2
                     }
                   }
                 }
@@ -533,9 +735,7 @@
             }
           ]
         },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
+        "howCreated": "User"
       }
     ]
   }

@@ -1,0 +1,278 @@
+/// Definition: Calendar of dates with week, fortnight, month and financial year attributes, from the date table in L4_Analytical. One row per date.
+/// For analysis: Main date table for the snapshot tables, the roster, critical incidents and Standard of Care Reviews.
+table DimDate
+	lineageTag: 325114c7-d0d3-4c7e-a5ac-985bb5401676
+
+	/// Definition: Date key in YYYYMMDD form.
+	/// For analysis: Identifier only. Do not sum.
+	column 'Id Date'
+		dataType: int64
+		formatString: 0
+		lineageTag: ae3089c0-9bf4-4e26-a340-2b47972c4d97
+		summarizeBy: sum
+		sourceColumn: Id Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Calendar date.
+	/// For analysis: Key: one row per date.
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cc252228-55e9-4163-b360-6c5c620b66ba
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 165ee5de-b40f-4278-8491-3fd0bec59d45
+			defaultHierarchy: LocalDateTable_108e9768-b538-4f7f-a2a8-70c61fb49db3.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Calendar year.
+	/// For analysis: Do not sum.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 3c2cae9c-f8d6-4b02-be3f-c6fdf416f05d
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Calendar quarter, 1 to 4.
+	/// For analysis: Do not sum.
+	column Quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: f43464cb-625f-49a8-a4fa-6cb8ad338daf
+		summarizeBy: sum
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Month number, 1 to 12.
+	/// For analysis: Do not sum.
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: dae5ad31-072f-4950-99a8-d82068cd79bc
+		summarizeBy: sum
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Month name.
+	column 'Month Name'
+		dataType: string
+		lineageTag: d4a54597-a7cc-4ca9-8b9b-4cde4806b6ac
+		summarizeBy: none
+		sourceColumn: Month Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Day of the month.
+	/// For analysis: Do not sum.
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: e64dbb34-3abd-41df-b26c-28d060806d88
+		summarizeBy: sum
+		sourceColumn: Day
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Name of the weekday.
+	column 'Day Name'
+		dataType: string
+		lineageTag: ad7956df-1c9c-448e-83b1-73d53db2831c
+		summarizeBy: none
+		sourceColumn: Day Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Weekday number, 1 (Sunday) to 7 (Saturday).
+	/// For analysis: Do not sum.
+	column 'Day Of Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: 01804d0b-cc4c-4fed-8a22-808b1bbab9ce
+		summarizeBy: sum
+		sourceColumn: Day Of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Week number within the calendar year.
+	/// For analysis: Do not sum.
+	column 'Week Of Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9c294313-c49b-43b3-92bc-cb683b31be5e
+		summarizeBy: sum
+		sourceColumn: Week Of Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: True for Saturdays and Sundays.
+	column 'Is Weekend'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: e04d40bc-7da5-4d7e-942e-e65cd4c7d04a
+		summarizeBy: none
+		sourceColumn: Is Weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Australian financial year (1 July to 30 June), for example FY2026-27.
+	column 'Financial Year'
+		dataType: string
+		lineageTag: 20beca53-b334-4dc3-b8b2-8d1e2fa1a5ba
+		summarizeBy: none
+		sourceColumn: Financial Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Quarter of the Australian financial year, 1 (July to September) to 4.
+	/// For analysis: Do not sum.
+	column 'Financial Quarter'
+		dataType: int64
+		formatString: 0
+		lineageTag: 11e720d2-1434-415d-8e68-9db85caf4dac
+		summarizeBy: sum
+		sourceColumn: Financial Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Monday of the week the date falls in.
+	column 'Start of Week (Monday)'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: e5c4c9bb-b6fe-4edf-a089-ca6b47809a5a
+		summarizeBy: none
+		sourceColumn: Start of Week (Monday)
+
+		variation Variation
+			isDefault
+			relationship: a590a2b8-4e21-4f16-8eea-a6813e0dc4a8
+			defaultHierarchy: LocalDateTable_52b0466c-08f3-4e20-bd76-f2d0b0a16612.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: First day of the month the date falls in.
+	column 'Start of Month'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 6ca3819a-1d19-4c73-b2d2-0eab2d5d98a0
+		summarizeBy: none
+		sourceColumn: Start of Month
+
+		variation Variation
+			isDefault
+			relationship: 0c5d1c09-493f-4153-b832-c9a669bc98f1
+			defaultHierarchy: LocalDateTable_4b734684-def9-4dff-a187-917f95a45c59.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Week of the fortnightly pay cycle: Week 1 or Week 2.
+	column 'Pay Cycle Week'
+		dataType: string
+		lineageTag: 5e0bad63-df11-4e77-800b-501a2ebf8cd5
+		summarizeBy: none
+		sourceColumn: Pay Cycle Week
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Monday that starts the pay fortnight the date falls in.
+	column 'Fortnight Start Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 735932ef-083a-4791-a34a-e5023d892405
+		summarizeBy: none
+		sourceColumn: Fortnight Start Date
+
+		variation Variation
+			isDefault
+			relationship: 211c5347-2ea4-48f4-a0d3-9be1a8273c99
+			defaultHierarchy: LocalDateTable_9f5d3eb4-debc-4c68-9cae-ce1350b31671.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Week Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d9c8cac4-36d9-448e-b6a6-13c04959dc5d
+		summarizeBy: none
+		sourceColumn: Week Start Date
+
+		variation Variation
+			isDefault
+			relationship: 64ad95e3-23b3-4c33-b4ed-b97142330b35
+			defaultHierarchy: LocalDateTable_7c46e0ce-baa4-4b29-bff3-cd9a893f974d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Month Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f256e996-c9f2-4ccc-b30c-3c288e2a9ba2
+		summarizeBy: none
+		sourceColumn: Month Start Date
+
+		variation Variation
+			isDefault
+			relationship: f9cd715c-d1d4-4662-b275-2266ba6aead5
+			defaultHierarchy: LocalDateTable_2ce0608f-50a1-41b8-9752-b3f6f6410501.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Quarter Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1f537131-336a-4556-8c02-b01cfe65e801
+		summarizeBy: none
+		sourceColumn: Quarter Start Date
+
+		variation Variation
+			isDefault
+			relationship: ba780a4b-66c4-4bed-9b60-43bda38e570b
+			defaultHierarchy: LocalDateTable_70531d8f-040c-4806-8888-9d76de62345a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Dim_date = Source{[Schema="Dim",Item="date"]}[Data],
+				    #"Clean Column Names" = #"fnCleanColumnNames"(Dim_date),
+				    #"Inserted Start of Week" = Table.AddColumn(#"Clean Column Names", "Start of Week (Monday)", each Date.StartOfWeek([Date], Day.Monday), type date),
+				    #"Inserted Start of Month" = Table.AddColumn(#"Inserted Start of Week", "Start of Month", each Date.StartOfMonth([Date]), type date)
+				in
+				    #"Inserted Start of Month"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "4d6adabf5e7e30e294ab",
   "position": {
-    "x": 54.339622641509429,
-    "y": 483.88140161725067,
-    "z": 5000,
-    "height": 206.14555256064691,
-    "width": 1201.5094339622642,
-    "tabOrder": 7000
+    "x": 70.0172117039587,
+    "y": 403.99311531841653,
+    "z": 3000,
+    "height": 287.50430292598969,
+    "width": 1186.5748709122204,
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -20,46 +20,45 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimOnboardingRegister"
-                    }
-                  },
-                  "Property": "Division"
-                }
-              },
-              "queryRef": "DimOnboardingRegister.Division",
-              "nativeQueryRef": "Division | State",
-              "active": true,
-              "displayName": "Division | State"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimOnboardingRegister"
-                    }
-                  },
-                  "Property": "State Acronym"
-                }
-              },
-              "queryRef": "DimOnboardingRegister.State Acronym",
-              "nativeQueryRef": "State | Division | Line Manager",
-              "active": false,
-              "displayName": "State | Division | Line Manager"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Date Offered"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Date Offered.MMM YYYY",
-              "nativeQueryRef": "MMM YYYY",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
+              "nativeQueryRef": "Month | Division | State",
+              "active": true,
+              "displayName": "Month | Division | State"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimWorker"
+                    }
+                  },
+                  "Property": "Worker Division"
+                }
+              },
+              "queryRef": "DimWorker.Worker Division",
+              "nativeQueryRef": "Worker Division",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimWorker"
+                    }
+                  },
+                  "Property": "State"
+                }
+              },
+              "queryRef": "DimWorker.State",
+              "nativeQueryRef": "State",
               "active": false
             }
           ]
@@ -71,120 +70,165 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "CountWorkersOnboarded"
+                  "Property": "NewStarters"
                 }
               },
-              "queryRef": "Fact Onboarding Register.WorkersOnboarded",
-              "nativeQueryRef": "Onboarding started",
-              "displayName": "Onboarding started"
+              "queryRef": "DisplayMeasures.NewStarters",
+              "nativeQueryRef": "New employees",
+              "displayName": "New employees"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "CountApplicantsWithdrawn"
+                  "Property": "NeverStartActiveCount"
                 }
               },
-              "queryRef": "Fact Onboarding Register.CountApplicantsWithdrawn",
-              "nativeQueryRef": "Applications withdrawn",
-              "displayName": "Applications withdrawn"
+              "queryRef": "DisplayMeasures.NeverStartActiveCount",
+              "nativeQueryRef": "Never start (current employees)",
+              "displayName": "Never start (current employees)"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "CountApplicantsOffboarded"
+                  "Property": "PECompleted"
                 }
               },
-              "queryRef": "Fact Onboarding Register.CountApplicantsOffboarded",
-              "nativeQueryRef": "Applications offboarded",
-              "displayName": "Applications offboarded"
+              "queryRef": "DisplayMeasures.PECompleted",
+              "nativeQueryRef": "PE shifts completed",
+              "displayName": "PE shifts completed"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "CountApplicantsReadyForPE"
+                  "Property": "EEMCompleted"
                 }
               },
-              "queryRef": "Fact Onboarding Register.CountApplicantsReadyForPE",
-              "nativeQueryRef": "Applications ready for PE",
-              "displayName": "Applications ready for PE"
+              "queryRef": "DisplayMeasures.EEMCompleted",
+              "nativeQueryRef": "Engagement meetings completed",
+              "displayName": "Engagement meetings completed"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "CountApplicantsReadyToGo"
+                  "Property": "ShadowShiftCompleted"
                 }
               },
-              "queryRef": "Fact Onboarding Register.CountApplicantsReadyToGo",
-              "nativeQueryRef": "Applications ready to go",
-              "displayName": "Applications ready to go"
+              "queryRef": "DisplayMeasures.ShadowShiftCompleted",
+              "nativeQueryRef": "Shadow shifts completed",
+              "displayName": "Shadow shifts completed"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Rolling3MonthOnboardingProcessing"
+                  "Property": "BillableShiftCompleted"
                 }
               },
-              "queryRef": "Fact Onboarding Register.Rolling3MonthOnboardingProcessing",
-              "nativeQueryRef": "Days onboarding (3 month rolling avg)",
-              "displayName": "Days onboarding (3 month rolling avg)"
+              "queryRef": "DisplayMeasures.BillableShiftCompleted",
+              "nativeQueryRef": "First billable shifts completed",
+              "displayName": "First billable shifts completed"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Rolling3MonthPEProcessing"
+                  "Property": "ExitedNewStartersFrontline"
                 }
               },
-              "queryRef": "Fact Onboarding Register.Rolling3MonthPEProcessing",
-              "nativeQueryRef": "Days in PE (3 month rolling avg days)",
-              "displayName": "Days in PE (3 month rolling avg days)"
+              "queryRef": "DisplayMeasures.ExitedNewStarters",
+              "nativeQueryRef": "Exited (total frontline)",
+              "displayName": "Exited (total frontline)"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Rolling3MonthTotalProcessing"
+                  "Property": "ExitedNewStartersWithShift"
                 }
               },
-              "queryRef": "Fact Onboarding Register.Rolling3MonthTotalProcessing",
-              "nativeQueryRef": "Total days (3 month rolling avg)",
-              "displayName": "Total days (3 month rolling avg)"
+              "queryRef": "DisplayMeasures.OffboardedNewStarters",
+              "nativeQueryRef": "Exited (after completing shift)",
+              "displayName": "Exited (after completing shift)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DisplayMeasures"
+                    }
+                  },
+                  "Property": "ExitedNewStartersWithoutShift"
+                }
+              },
+              "queryRef": "DisplayMeasures.NewStartersExitedWithoutShift",
+              "nativeQueryRef": "Never start (exited)",
+              "displayName": "Never start (exited)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DisplayMeasures"
+                    }
+                  },
+                  "Property": "AvgPECompletionDays"
+                }
+              },
+              "queryRef": "DisplayMeasures.AvgPECompletionDays",
+              "nativeQueryRef": "EH profile creation to PE completion (avg. days)",
+              "displayName": "EH profile creation to PE completion (avg. days)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DisplayMeasures"
+                    }
+                  },
+                  "Property": "AvgOnboardingDays"
+                }
+              },
+              "queryRef": "DimWorker.AvgOnboardingTime",
+              "nativeQueryRef": "Total processing (avg. days)",
+              "displayName": "Total processing (avg. days)"
             }
           ]
         }
@@ -193,13 +237,13 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Onboarding Register"
+                    "Entity": "DimEmployeeTenureDate"
                   }
                 },
-                "Property": "Rolling3MonthTotalProcessing"
+                "Property": "MMM YYYY"
               }
             },
             "direction": "Descending"
@@ -215,7 +259,7 @@
         "levels": [
           {
             "queryRefs": [
-              "DimOnboardingRegister.Division"
+              "DimEmployeeTenureDate.MMM YYYY"
             ],
             "isCollapsed": true,
             "identityKeys": [
@@ -223,10 +267,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimOnboardingRegister"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
-                  "Property": "Division"
+                  "Property": "MMM YYYY"
                 }
               }
             ],
@@ -234,7 +278,7 @@
           },
           {
             "queryRefs": [
-              "DimOnboardingRegister.State Acronym"
+              "DimWorker.Worker Division"
             ],
             "isCollapsed": true,
             "identityKeys": [
@@ -242,10 +286,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimOnboardingRegister"
+                      "Entity": "DimWorker"
                     }
                   },
-                  "Property": "State Acronym"
+                  "Property": "Worker Division"
                 }
               }
             ],
@@ -253,9 +297,21 @@
           },
           {
             "queryRefs": [
-              "Dim Date Offered.MMM YYYY"
+              "DimWorker.State"
             ],
             "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimWorker"
+                    }
+                  },
+                  "Property": "State"
+                }
+              }
+            ],
             "isPinned": true
           }
         ],
@@ -263,19 +319,32 @@
       }
     ],
     "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
       "columnWidth": [
         {
           "properties": {
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "89.2525029474113D"
+                  "Value": "86.65727504675256D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.WorkersOnboarded"
+            "metadata": "DisplayMeasures.NewStarters"
           }
         },
         {
@@ -283,13 +352,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "172.63762544928605D"
+                  "Value": "85.0315611975138D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "DimOnboardingRegister.Division"
+            "metadata": "DisplayMeasures.PECompleted"
           }
         },
         {
@@ -297,13 +366,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "211D"
+                  "Value": "89.27150453601801D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "DimOnboardingRegister.State Acronym"
+            "metadata": "DisplayMeasures.OffboardedNewStarters"
           }
         },
         {
@@ -311,13 +380,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "91.29698953348242D"
+                  "Value": "90.02190976402045D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.CountApplicantsWithdrawn"
+            "metadata": "DisplayMeasures.BillableShiftCompleted"
           }
         },
         {
@@ -325,13 +394,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "93.62410081872262D"
+                  "Value": "84.77896557111337D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.CountApplicantsOffboarded"
+            "metadata": "DisplayMeasures.ShadowShiftCompleted"
           }
         },
         {
@@ -339,13 +408,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "91D"
+                  "Value": "93.65882607521783D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.CountApplicantsReadyForPE"
+            "metadata": "DisplayMeasures.EEMCompleted"
           }
         },
         {
@@ -353,13 +422,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "97.58680614436004D"
+                  "Value": "60.69015568011201D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.CountApplicantsReadyToGo"
+            "metadata": "DisplayMeasures.NewStartersExitedWithoutShift"
           }
         },
         {
@@ -367,13 +436,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "141.34039987943436D"
+                  "Value": "85.51787925017398D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.Rolling3MonthOnboardingProcessing"
+            "metadata": "DimWorker.AvgOnboardingTime"
           }
         },
         {
@@ -381,13 +450,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "137.5606334005955D"
+                  "Value": "86.89673802305549D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.Rolling3MonthPEProcessing"
+            "metadata": "DisplayMeasures.ExitedNewStarters"
           }
         },
         {
@@ -395,13 +464,27 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "133.72238606445825D"
+                  "Value": "88.06958073534318D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Fact Onboarding Register.Rolling3MonthTotalProcessing"
+            "metadata": "DisplayMeasures.NeverStartActiveCount"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "130.729081180124D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DisplayMeasures.AvgPECompletionDays"
           }
         }
       ]
@@ -420,7 +503,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Onboarding outcomes by date offered'"
+                  "Value": "'Onboarding performance'"
                 }
               }
             }
@@ -433,24 +516,27 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
             "text": {
               "expr": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Date Offered"
-                        }
-                      },
-                      "Property": "MMM YYYY"
-                    }
-                  },
-                  "Function": 3
+                "Literal": {
+                  "Value": "''"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualTooltip": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -463,56 +549,202 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "239528d67339249e3db8",
+        "name": "268d5f56664f700ede41",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployeeTenureDate"
+              }
+            },
+            "Property": "MMM YYYY"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "a8ae058dde873fa20ace",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployee"
+              }
+            },
+            "Property": "State"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "6e212f2373e26ab5b387",
+        "ordinal": 2,
         "field": {
           "Measure": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Date Offered"
+                "Entity": "DisplayMeasures"
               }
             },
-            "Property": "ORReportingMonthFlag"
+            "Property": "NewStarters"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "fbe946a767beaaa63cb1",
+        "ordinal": 3,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "PECompleted"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6d0fabf697f46afb8d7c",
+        "ordinal": 4,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "ShadowShiftCompleted"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "eb3e88b74677561d5892",
+        "ordinal": 5,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "BillableShiftCompleted"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0e6324445617c456b64a",
+        "ordinal": 6,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "ExitedNewStartersWithShift"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8a6f130572004d4052c9",
+        "ordinal": 7,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "AvgOnboardingDays"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ea1e50270ae5c80bcb42",
+        "ordinal": 8,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "ExitedNewStartersFrontline"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d52e582c2218b34338c2",
+        "ordinal": 9,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "ExitedNewStartersWithoutShift"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d00d4bd4e4a763c09147",
+        "ordinal": 10,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DisplayMeasures"
+              }
+            },
+            "Property": "EEMCompleted"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "c223d160ab2d136571fd",
+        "ordinal": 11,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimWorker"
+              }
+            },
+            "Property": "Worker Division"
           }
         },
         "type": "Advanced",
-        "filter": {
-          "Version": 2,
-          "From": [
+        "objects": {
+          "general": [
             {
-              "Name": "d",
-              "Entity": "Dim Date Offered",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 0,
-                  "Left": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
-                        }
-                      },
-                      "Property": "ORReportingMonthFlag"
-                    }
-                  },
-                  "Right": {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
                     "Literal": {
-                      "Value": "1L"
+                      "Value": "true"
                     }
                   }
                 }
               }
             }
           ]
-        },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
+        }
       }
-    ]
+    ],
+    "filterSortOrder": "Custom"
   }
 }

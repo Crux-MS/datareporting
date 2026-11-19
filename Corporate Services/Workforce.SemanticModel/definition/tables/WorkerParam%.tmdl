@@ -1,0 +1,70 @@
+/// Definition: Report field parameter holding the employee share options: current, new and exited employees.
+/// For analysis: Report slicer. Not for analysis.
+table WorkerParam%
+	lineageTag: f2f5bf3a-e750-4460-9c21-c609c4d06439
+
+	/// Definition: The number of current employees, new starters or employees who left, depending on the option selected.
+	/// For analysis: Report display measure that changes with the employee option. Not for analysis; use EmployeeCount, NewStarters or Exits instead.
+	measure WorkerParamCounts =
+			SWITCH(
+			    SELECTEDVALUE('WorkerParam%'[WorkerParam Fields]),
+			    "'DisplayMeasures'[Employees%]", [EmployeeCount],
+			    "'DisplayMeasures'[NewStarters%]", [NewStarters],
+			    "'DisplayMeasures'[Exits%]", [Exits]
+			)
+		lineageTag: f16ba05e-ef92-4425-a942-b4b9271fce90
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Option shown on the report slicer.
+	/// For analysis: Report slicer. Not for analysis.
+	column WorkerParam
+		lineageTag: 313a76ea-75cd-46c4-9cce-532a5adea277
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'WorkerParam Order'
+
+		relatedColumnDetails
+			groupByColumn: 'WorkerParam Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Model field each option points to.
+	/// For analysis: Report helper. Not for analysis.
+	column 'WorkerParam Fields'
+		isHidden
+		lineageTag: 84b3944d-54fe-4cbb-bd7f-88875fde3edc
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'WorkerParam Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order of the options.
+	/// For analysis: Report helper. Not for analysis.
+	column 'WorkerParam Order'
+		isHidden
+		formatString: 0
+		lineageTag: a78cf14e-18d1-4367-bd7f-737ebe17c839
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition WorkerParam% = calculated
+		mode: import
+		source =
+				{
+				    ("Current Employees", NAMEOF('DisplayMeasures'[Employees%]), 0),
+				    ("New Employees", NAMEOF('DisplayMeasures'[NewStarters%]), 1),
+				    ("Exited Employees", NAMEOF('DisplayMeasures'[Exits%]), 2)
+				}
+
+	annotation PBI_Id = 6fe5453986d940ab8275c6fbd9477e58
+

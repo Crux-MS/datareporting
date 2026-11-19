@@ -1,0 +1,57 @@
+/// Definition: Report field parameter holding the payroll share options: total payroll, overtime, leave.
+/// For analysis: Report slicer. Not for analysis.
+table Payroll%Param
+	lineageTag: f2b5c434-36e9-46fa-8e1d-55bb9e506a76
+
+	/// Definition: Option shown on the report slicer.
+	/// For analysis: Report slicer. Not for analysis.
+	column Payroll%Param
+		lineageTag: d7e34930-1ae8-49cb-9c5d-a979cdc885d7
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Payroll%Param Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Payroll%Param Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Model field each option points to.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Payroll%Param Fields'
+		isHidden
+		lineageTag: cda9d053-99d1-429b-a0cb-85cdb721834a
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Payroll%Param Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order of the options.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Payroll%Param Order'
+		isHidden
+		formatString: 0
+		lineageTag: 5dfd2777-7e06-4808-a3b4-9c8df0ad3f2c
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Payroll%Param = calculated
+		mode: import
+		source =
+				{
+				    ("Total Payroll", NAMEOF('DisplayMeasures'[TotalPayroll%]), 0),
+				    ("Overtime", NAMEOF('DisplayMeasures'[Overtime%]), 1),
+				    ("Leave", NAMEOF('DisplayMeasures'[Leave%]), 2)
+				}
+
+	annotation PBI_Id = 183a985fd51b4f3381aa413b2254d243
+

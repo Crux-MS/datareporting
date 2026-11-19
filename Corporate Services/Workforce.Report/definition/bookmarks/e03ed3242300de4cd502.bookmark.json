@@ -1,36 +1,591 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/1.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
   "displayName": "RSD Open",
   "name": "e03ed3242300de4cd502",
   "options": {
     "applyOnlyToTargetVisuals": true,
     "targetVisualNames": [
-      "a27f017a51600137e389",
+      "19c93be100c95dec3717",
       "e31bdba10c4b7d9c60a0",
-      "1bdb080446dd830e3a09",
-      "a372e78f086403314399",
       "157cd3a4dea85beb52dd",
       "17c7ddd21449853bd3e4",
-      "19c93be100c95dec3717",
       "3d75ac6deb25ae435b30",
       "688f721d241744be038b",
       "816602d18a892400ba06",
       "855c7aabc10c8e55100e",
       "863daa7dd0d7d31130ae",
-      "a511f7dc722190a9099a"
+      "a511f7dc722190a9099a",
+      "e98d2a8da50907047200",
+      "b1212e7024c9749673e1",
+      "d4a742702bbb909b8c79"
     ],
     "suppressData": true
   },
   "explorationState": {
     "version": "1.3",
     "activeSection": "f3ae70b66e70228296ec",
+    "filters": {
+      "byName": {
+        "52d70af10a312753d8e5": {
+          "name": "52d70af10a312753d8e5",
+          "type": "Categorical",
+          "expression": {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "DimEmployee"
+                }
+              },
+              "Property": "Division"
+            }
+          },
+          "howCreated": 1
+        }
+      }
+    },
     "sections": {
       "f3ae70b66e70228296ec": {
+        "filters": {
+          "byExpr": [
+            {
+              "name": "a03aec70b719923e6e74",
+              "type": "Categorical",
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "f",
+                    "Entity": "FactDivisionFortnightlyPaySummary",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "Not": {
+                        "Expression": {
+                          "In": {
+                            "Expressions": [
+                              {
+                                "Column": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "f"
+                                    }
+                                  },
+                                  "Property": "Division"
+                                }
+                              }
+                            ],
+                            "Values": [
+                              [
+                                {
+                                  "Literal": {
+                                    "Value": "'Admin'"
+                                  }
+                                }
+                              ]
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactDivisionFortnightlyPaySummary"
+                    }
+                  },
+                  "Property": "Division"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "5df8ce393f83b1546ba2",
+              "type": "RelativeDate",
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "d",
+                    "Entity": "DimShiftDate",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "Between": {
+                        "Expression": {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "Fortnight Start Date"
+                          }
+                        },
+                        "LowerBound": {
+                          "DateSpan": {
+                            "Expression": {
+                              "DateAdd": {
+                                "Expression": {
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "Now": {}
+                                    },
+                                    "Amount": 1,
+                                    "TimeUnit": 0
+                                  }
+                                },
+                                "Amount": -2,
+                                "TimeUnit": 2
+                              }
+                            },
+                            "TimeUnit": 0
+                          }
+                        },
+                        "UpperBound": {
+                          "DateSpan": {
+                            "Expression": {
+                              "Now": {}
+                            },
+                            "TimeUnit": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimShiftDate"
+                    }
+                  },
+                  "Property": "Fortnight Start Date"
+                }
+              },
+              "howCreated": 1
+            }
+          ]
+        },
         "visualContainers": {
-          "169bfd5fe3c0a16e6050": {
+          "240950a517219d81ec4a": {
             "singleVisual": {
               "visualType": "textbox",
               "objects": {}
+            }
+          },
+          "32e37137419995583d0e": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "34a54144ea590c473344",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimShiftDate"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "d039a7de351035714671",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "1c4c9a1f605dec4e556b",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "PayrollHoursDollarsPersonalLeavePaid"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Columns": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimShiftDate"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  }
+                ],
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "4afb421c3b4149a75334": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "f23cf2e694d800c6d86d",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "HoursDollarsParam"
+                        }
+                      },
+                      "Property": "HoursDollarsParam"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "advancedSlicerVisual",
+              "objects": {
+                "merge": {
+                  "general": [
+                    {
+                      "properties": {
+                        "filter": {
+                          "filter": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "h",
+                                "Entity": "HoursDollarsParam",
+                                "Type": 0
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "h"
+                                            }
+                                          },
+                                          "Property": "HoursDollarsParam Fields"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "'''FactDivisionFortnightlyPaySummary''[Total Hourly Amount]'"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "selection": [
+                    {
+                      "properties": {
+                        "strictSingleSelect": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "cachedFilterDisplayItems": [
+                {
+                  "id": {
+                    "scopeId": {
+                      "Comparison": {
+                        "ComparisonKind": 0,
+                        "Left": {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "HoursDollarsParam"
+                              }
+                            },
+                            "Property": "HoursDollarsParam Fields"
+                          }
+                        },
+                        "Right": {
+                          "Literal": {
+                            "Value": "'''FactDivisionFortnightlyPaySummary''[Total Hourly Amount]'"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "displayName": "Total Amount ($)"
+                }
+              ]
+            }
+          },
+          "554da2eb9574370c06b7": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "7f509fa5008b03e062e5",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimShiftDate"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "8fed8a206909b7c8615c",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "573efc29d00ccb640e43",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "FullTimeEquivalentCount"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Columns": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimShiftDate"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  }
+                ],
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "652a7a313339e702a360": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "33110135a7a7698d5147",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimShiftDate"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "2a077aea26a0c052b320",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "3a35e8945a0643099ec0",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "PayrollHoursDollarsOvertime%"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Columns": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimShiftDate"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  }
+                ],
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                ]
+              }
             }
           },
           "1bdb080446dd830e3a09": {
@@ -45,35 +600,116 @@
               "objects": {}
             }
           },
-          "157cd3a4dea85beb52dd": {
+          "e1d8779800519791172a": {
             "filters": {
               "byExpr": [
                 {
-                  "name": "51103e832665e3aabb5e",
-                  "type": "RelativeDate",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Extract Date"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "54575d32c114c4d091a9",
+                  "name": "47323319b79691dd72d7",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Workforce"
+                          "Entity": "DimShiftDate"
                         }
                       },
-                      "Property": "Employing entity"
+                      "Property": "Fortnight Start Date"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "ca70567ac78354d37e33",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "277badb47248c15e0c76",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "PayrollHoursDollarsPaid"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Columns": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimShiftDate"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  }
+                ],
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "157cd3a4dea85beb52dd": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "8318ae9cd3dd1c83208d",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Job Title"
                     }
                   },
                   "howCreated": 0
@@ -105,13 +741,16 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Workforce"
+                          "Entity": "DimEmployee"
                         }
                       },
-                      "Property": "Employing entity"
+                      "Property": "Job Title"
                     }
                   }
                 ]
+              },
+              "display": {
+                "mode": "hidden"
               }
             }
           },
@@ -119,16 +758,16 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "69da12165640a79a7930",
+                  "name": "e9a5a1d6b00b05ad385d",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Workforce Location"
+                          "Entity": "DimEmployeeTenureDate"
                         }
                       },
-                      "Property": "State"
+                      "Property": "MMM YYYY"
                     }
                   },
                   "howCreated": 0
@@ -160,13 +799,16 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Workforce Location"
+                          "Entity": "DimEmployeeTenureDate"
                         }
                       },
-                      "Property": "State"
+                      "Property": "MMM YYYY"
                     }
                   }
                 ]
+              },
+              "display": {
+                "mode": "hidden"
               }
             }
           },
@@ -180,59 +822,31 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "7e0807ab729c00c306ac",
+                  "name": "bbeab4c32bbe12d8941b",
                   "type": "Categorical",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "d",
-                        "Entity": "Dim Job Categories",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Not": {
-                            "Expression": {
-                              "In": {
-                                "Expressions": [
-                                  {
-                                    "Column": {
-                                      "Expression": {
-                                        "SourceRef": {
-                                          "Source": "d"
-                                        }
-                                      },
-                                      "Property": "Division"
-                                    }
-                                  }
-                                ],
-                                "Values": [
-                                  [
-                                    {
-                                      "Literal": {
-                                        "Value": "'N/A'"
-                                      }
-                                    }
-                                  ]
-                                ]
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Job Categories"
+                          "Entity": "DimEmployee"
                         }
                       },
-                      "Property": "Division"
+                      "Property": "State"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0fbadef0056740049722",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Location"
                     }
                   },
                   "howCreated": 0
@@ -264,13 +878,16 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Job Categories"
+                          "Entity": "DimEmployee"
                         }
                       },
-                      "Property": "Division"
+                      "Property": "State"
                     }
                   }
                 ]
+              },
+              "display": {
+                "mode": "hidden"
               }
             }
           },
@@ -284,16 +901,16 @@
             "filters": {
               "byExpr": [
                 {
-                  "name": "dab20b40a74bebc1a09a",
+                  "name": "169587400ba9a845d85c",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Workforce"
+                          "Entity": "DimEmployeeTenureDate"
                         }
                       },
-                      "Property": "Visa type"
+                      "Property": "MMM YYYY"
                     }
                   },
                   "howCreated": 0
@@ -325,13 +942,16 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Workforce"
+                          "Entity": "DimEmployeeTenureDate"
                         }
                       },
-                      "Property": "Visa type"
+                      "Property": "MMM YYYY"
                     }
                   }
                 ]
+              },
+              "display": {
+                "mode": "hidden"
               }
             }
           },
@@ -349,145 +969,33 @@
           },
           "a511f7dc722190a9099a": {
             "filters": {
-              "byName": {
-                "6d63a1d3ef5821044428": {
-                  "name": "6d63a1d3ef5821044428",
-                  "type": "RelativeDate",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "d",
-                        "Entity": "Dim Extract Date",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Between": {
-                            "Expression": {
-                              "Column": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "d"
-                                  }
-                                },
-                                "Property": "Extract Date"
-                              }
-                            },
-                            "LowerBound": {
-                              "DateSpan": {
-                                "Expression": {
-                                  "DateAdd": {
-                                    "Expression": {
-                                      "DateAdd": {
-                                        "Expression": {
-                                          "Now": {}
-                                        },
-                                        "Amount": 1,
-                                        "TimeUnit": 0
-                                      }
-                                    },
-                                    "Amount": -5,
-                                    "TimeUnit": 3
-                                  }
-                                },
-                                "TimeUnit": 0
-                              }
-                            },
-                            "UpperBound": {
-                              "DateSpan": {
-                                "Expression": {
-                                  "Now": {}
-                                },
-                                "TimeUnit": 0
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Extract Date"
-                    }
-                  },
-                  "howCreated": 1
-                }
-              },
               "byExpr": [
                 {
-                  "name": "9b0fd428c5dcdd71d1ff",
-                  "type": "Advanced",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "d",
-                        "Entity": "Dim Extract Date",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Comparison": {
-                            "ComparisonKind": 2,
-                            "Left": {
-                              "Column": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "d"
-                                  }
-                                },
-                                "Property": "Extract Date"
-                              }
-                            },
-                            "Right": {
-                              "DateSpan": {
-                                "Expression": {
-                                  "Literal": {
-                                    "Value": "datetime'2025-10-01T00:00:00'"
-                                  }
-                                },
-                                "TimeUnit": 5
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Extract Date"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "37974634dd7730082970",
+                  "name": "9d1b0d4b21d8e2c1e105",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Extract Date"
+                          "Entity": "DimEmployee"
                         }
                       },
-                      "Property": "Slicer MMM YYYY"
+                      "Property": "Division"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "4dc8d72b1e38b95a693a",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Employing Entity"
                     }
                   },
                   "howCreated": 0
@@ -498,53 +1006,6 @@
               "visualType": "slicer",
               "objects": {
                 "merge": {
-                  "general": [
-                    {
-                      "properties": {
-                        "filter": {
-                          "filter": {
-                            "Version": 2,
-                            "From": [
-                              {
-                                "Name": "d",
-                                "Entity": "Dim Extract Date",
-                                "Type": 0
-                              }
-                            ],
-                            "Where": [
-                              {
-                                "Condition": {
-                                  "In": {
-                                    "Expressions": [
-                                      {
-                                        "Column": {
-                                          "Expression": {
-                                            "SourceRef": {
-                                              "Source": "d"
-                                            }
-                                          },
-                                          "Property": "Slicer MMM YYYY"
-                                        }
-                                      }
-                                    ],
-                                    "Values": [
-                                      [
-                                        {
-                                          "Literal": {
-                                            "Value": "'Current Month'"
-                                          }
-                                        }
-                                      ]
-                                    ]
-                                  }
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  ],
                   "data": [
                     {
                       "properties": {
@@ -581,30 +1042,82 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Extract Date"
+                          "Entity": "DimEmployee"
                         }
                       },
-                      "Property": "Slicer MMM YYYY"
+                      "Property": "Division"
                     }
                   }
                 ]
+              },
+              "display": {
+                "mode": "hidden"
               }
             }
           },
-          "bd6eee5713e01b8ab408": {
+          "f4110ab61268b75503c3": {
+            "singleVisual": {
+              "visualType": "image",
+              "objects": {}
+            }
+          },
+          "e98d2a8da50907047200": {
             "filters": {
               "byExpr": [
                 {
-                  "name": "23fef260ac0501965650",
-                  "type": "Advanced",
+                  "name": "dc1e08c1ec0e1e671957",
+                  "type": "Categorical",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "f",
+                        "Entity": "FactDivisionFortnightlyPaySummary",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Not": {
+                            "Expression": {
+                              "In": {
+                                "Expressions": [
+                                  {
+                                    "Column": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Source": "f"
+                                        }
+                                      },
+                                      "Property": "Division"
+                                    }
+                                  }
+                                ],
+                                "Values": [
+                                  [
+                                    {
+                                      "Literal": {
+                                        "Value": "'Admin'"
+                                      }
+                                    }
+                                  ]
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
                   "expression": {
-                    "Measure": {
+                    "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Extract Date"
+                          "Entity": "FactDivisionFortnightlyPaySummary"
                         }
                       },
-                      "Property": "EH Reporting Month"
+                      "Property": "Division"
                     }
                   },
                   "howCreated": 0
@@ -612,20 +1125,178 @@
               ]
             },
             "singleVisual": {
-              "visualType": "cardVisual",
-              "objects": {}
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  }
+                ]
+              }
             }
           },
-          "a932604cc0ce2090b036": {
+          "b1212e7024c9749673e1": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "2810beb054c696cd3097",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Employment Type"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
             "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {}
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Employment Type"
+                    }
+                  }
+                ]
+              }
             }
           },
-          "615ff3c050154a36921e": {
+          "d4a742702bbb909b8c79": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "5a0a6919a760b309bd09",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
             "singleVisual": {
-              "visualType": "actionButton",
-              "objects": {}
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "FactDivisionFortnightlyPaySummary"
+                        }
+                      },
+                      "Property": "Fortnight Start Date"
+                    }
+                  }
+                ]
+              }
             }
           }
         },
@@ -642,6 +1313,13 @@
           {
             "properties": {
               "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              },
+              "visible": {
                 "expr": {
                   "Literal": {
                     "Value": "false"

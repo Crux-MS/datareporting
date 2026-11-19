@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "97df54601c107e9e9502",
   "position": {
-    "x": 847.87061994609167,
-    "y": 226.84636118598382,
-    "z": 3000,
-    "height": 232.02156334231805,
-    "width": 407.97843665768193,
-    "tabOrder": 6000
+    "x": 847.64199655765924,
+    "y": 177.21170395869191,
+    "z": 2000,
+    "height": 209.50672645739908,
+    "width": 407.5336322869955,
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "barChart",
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimOnboardingRegister"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "PositionTitle"
+                  "Property": "Role Category"
                 }
               },
-              "queryRef": "DimOnboardingRegister.PositionTitle",
+              "queryRef": "DimEmployee.Role Category",
               "nativeQueryRef": "Position Title",
               "active": true,
               "displayName": "Position Title"
@@ -36,13 +36,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Date Offered"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Date Offered.MMM YYYY",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
               "nativeQueryRef": "MMM YYYY",
               "active": false
             }
@@ -71,15 +71,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Onboarding Register"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "CountWorkersOnboarded"
+                  "Property": "NewStarters"
                 }
               },
-              "queryRef": "Fact Onboarding Register.WorkersOnboarded",
-              "nativeQueryRef": "Workers onboarded",
-              "displayName": "Workers onboarded"
+              "queryRef": "DisplayMeasures.NewStarters",
+              "nativeQueryRef": "New employees",
+              "displayName": "New employees"
             }
           ]
         }
@@ -91,10 +91,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Onboarding Register"
+                    "Entity": "DisplayMeasures"
                   }
                 },
-                "Property": "CountWorkersOnboarded"
+                "Property": "NewStarters"
               }
             },
             "direction": "Descending"
@@ -182,10 +182,10 @@
                         "Measure": {
                           "Expression": {
                             "SourceRef": {
-                              "Entity": "Fact Onboarding Register"
+                              "Entity": "DisplayMeasures"
                             }
                           },
-                          "Property": "CountWorkersOnboarded"
+                          "Property": "NewStarters"
                         }
                       },
                       "FillRule": {
@@ -257,8 +257,13 @@
           "properties": {
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'Workers onboarded by date offered'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DisplayMeasures"
+                    }
+                  },
+                  "Property": "WorkersOnboardedTitle"
                 }
               }
             }
@@ -294,6 +299,19 @@
             }
           }
         }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
@@ -318,15 +336,15 @@
         "isLockedInViewMode": true
       },
       {
-        "name": "54174eb5e09770d91aec",
+        "name": "f6e894e31d0d86a18803",
         "field": {
           "Measure": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Date Offered"
+                "Entity": "DisplayMeasures"
               }
             },
-            "Property": "ORReportingMonthFlag"
+            "Property": "NewStarters"
           }
         },
         "type": "Advanced",
@@ -335,7 +353,7 @@
           "From": [
             {
               "Name": "d",
-              "Entity": "Dim Date Offered",
+              "Entity": "DisplayMeasures",
               "Type": 0
             }
           ],
@@ -343,7 +361,7 @@
             {
               "Condition": {
                 "Comparison": {
-                  "ComparisonKind": 0,
+                  "ComparisonKind": 1,
                   "Left": {
                     "Measure": {
                       "Expression": {
@@ -351,12 +369,82 @@
                           "Source": "d"
                         }
                       },
-                      "Property": "ORReportingMonthFlag"
+                      "Property": "NewStarters"
                     }
                   },
                   "Right": {
                     "Literal": {
-                      "Value": "1L"
+                      "Value": "0L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "0dbab3dafa06f418f3b8",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployeeTenureDate"
+              }
+            },
+            "Property": "Month Start Date"
+          }
+        },
+        "type": "RelativeDate",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimEmployeeTenureDate",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Between": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "d"
+                        }
+                      },
+                      "Property": "Month Start Date"
+                    }
+                  },
+                  "LowerBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "DateAdd": {
+                          "Expression": {
+                            "Now": {}
+                          },
+                          "Amount": -1,
+                          "TimeUnit": 2
+                        }
+                      },
+                      "TimeUnit": 2
+                    }
+                  },
+                  "UpperBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "DateAdd": {
+                          "Expression": {
+                            "Now": {}
+                          },
+                          "Amount": -1,
+                          "TimeUnit": 2
+                        }
+                      },
+                      "TimeUnit": 2
                     }
                   }
                 }
@@ -364,6 +452,21 @@
             }
           ]
         },
+        "howCreated": "User"
+      },
+      {
+        "name": "a540bc125d0c4ec0edb5",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimWorker"
+              }
+            },
+            "Property": "Id Worker"
+          }
+        },
+        "type": "Advanced",
         "howCreated": "User"
       }
     ]

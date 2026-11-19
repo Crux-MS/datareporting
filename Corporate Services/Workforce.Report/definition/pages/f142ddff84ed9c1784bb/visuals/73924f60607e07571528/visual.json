@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "73924f60607e07571528",
   "position": {
     "x": 1032.1182266009853,
     "y": 167.58620689655172,
-    "z": 7000,
+    "z": 5000,
     "height": 251.82266009852216,
     "width": 226.10837438423644,
-    "tabOrder": 6000
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -20,15 +20,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Workforce %"
+                      "Entity": "WorkerParam%"
                     }
                   },
-                  "Property": "Display Workforce Metric Parameter"
+                  "Property": "WorkerParamCounts"
                 }
               },
-              "queryRef": "Fact Workforce.Display Workforce Metric Parameter",
-              "nativeQueryRef": "Workers",
-              "displayName": "Workers"
+              "queryRef": "DisplayMeasures.WorkerParamCounts",
+              "nativeQueryRef": "Employees",
+              "displayName": "Employees"
             }
           ]
         },
@@ -39,13 +39,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Employment Start Date"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Employment Start Date.MMM YYYY",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
               "nativeQueryRef": "MMM YYYY"
             }
           ]
@@ -267,10 +267,10 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Workforce %"
+                          "Entity": "WorkerParam%"
                         }
                       },
-                      "Property": "Workforce %"
+                      "Property": "WorkerParam"
                     }
                   },
                   "Function": 3
@@ -319,45 +319,67 @@
         "howCreated": "User"
       },
       {
-        "name": "8e4e83790e95c0405450",
+        "name": "eae960372fc746b525a0",
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Extract Date"
+                "Entity": "DimEmployeeTenureDate"
               }
             },
-            "Property": "EH Reporting Month Flag"
+            "Property": "Month Start Date"
           }
         },
-        "type": "Advanced",
+        "type": "RelativeDate",
         "filter": {
           "Version": 2,
           "From": [
             {
               "Name": "d",
-              "Entity": "Dim Extract Date",
+              "Entity": "DimEmployeeTenureDate",
               "Type": 0
             }
           ],
           "Where": [
             {
               "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 0,
-                  "Left": {
-                    "Measure": {
+                "Between": {
+                  "Expression": {
+                    "Column": {
                       "Expression": {
                         "SourceRef": {
                           "Source": "d"
                         }
                       },
-                      "Property": "EH Reporting Month Flag"
+                      "Property": "Month Start Date"
                     }
                   },
-                  "Right": {
-                    "Literal": {
-                      "Value": "1L"
+                  "LowerBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "DateAdd": {
+                          "Expression": {
+                            "DateAdd": {
+                              "Expression": {
+                                "Now": {}
+                              },
+                              "Amount": 1,
+                              "TimeUnit": 0
+                            }
+                          },
+                          "Amount": -1,
+                          "TimeUnit": 2
+                        }
+                      },
+                      "TimeUnit": 0
+                    }
+                  },
+                  "UpperBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "Now": {}
+                      },
+                      "TimeUnit": 0
                     }
                   }
                 }
@@ -365,9 +387,7 @@
             }
           ]
         },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
+        "howCreated": "User"
       }
     ]
   }

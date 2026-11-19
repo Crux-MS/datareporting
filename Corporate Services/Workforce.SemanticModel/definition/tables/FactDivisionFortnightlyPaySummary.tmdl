@@ -1,0 +1,338 @@
+/// Definition: Payroll totals per division and employment type for each fortnightly pay period, from the division pay summary table in L4_Analytical. One row per division, employment type and fortnight.
+/// For analysis: Pre-aggregated in the warehouse. Group by Division, Employment Type and DimShiftDate. AUD wages, no GST.
+table FactDivisionFortnightlyPaySummary
+	lineageTag: b964a038-194c-4887-890d-d6f38a5a80cb
+
+	/// Definition: Personal leave pay as a share of pay for hours paid.
+	/// For analysis: Total Personal Leave Amount divided by Total Hourly Amount; rate 0 to 1.
+	measure 'Personal Leave Paid % of Total' =
+			
+			DIVIDE(
+			    SUM(FactDivisionFortnightlyPaySummary[Total Personal Leave Amount]),
+			    SUM(FactDivisionFortnightlyPaySummary[Total Hourly Amount]),
+			    0
+			)
+		lineageTag: e5e417ef-ff47-421e-a87c-d352b0fc5795
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Personal leave hours as a share of hours paid.
+	/// For analysis: Total Personal Leave Hours divided by Total Hours; rate 0 to 1.
+	measure 'Personal Leave Paid % of Total Hours' =
+			
+			DIVIDE(
+			    SUM(FactDivisionFortnightlyPaySummary[Total Personal Leave Hours]),
+			    SUM(FactDivisionFortnightlyPaySummary[Total Hours]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ebc2e0f6-622a-4430-a865-8b91baf9ee1f
+
+	/// Definition: Overtime hours as a share of hours paid.
+	/// For analysis: Total Overtime Hours divided by Total Hours; rate 0 to 1.
+	measure 'Overtime Paid % of Total Hours' =
+			
+			DIVIDE(
+			    SUM(FactDivisionFortnightlyPaySummary[Total Overtime Hours]),
+			    SUM(FactDivisionFortnightlyPaySummary[Total Hours]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: c54713cf-da2b-4a5d-a0ef-0fe1a552a2c5
+
+	/// Definition: Overtime pay as a share of pay for hours paid.
+	/// For analysis: Total Overtime Amount divided by Total Hourly Amount; rate 0 to 1.
+	measure 'Overtime Paid % of Total' =
+			
+			DIVIDE(
+			    SUM(FactDivisionFortnightlyPaySummary[Total Overtime Amount]),
+			    SUM(FactDivisionFortnightlyPaySummary[Total Hourly Amount]),
+			    0
+			)
+		lineageTag: fb3ac7df-88cb-443f-9531-fff02a91af90
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Dollars paid for hours in the selected period, in AUD.
+	/// For analysis: Sum of Total Hourly Amount.
+	measure TotalAmountPaid = SUM(FactDivisionFortnightlyPaySummary[Total Hourly Amount])
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 66fde064-a0c9-427b-8b7a-1c0286e22371
+
+	/// Definition: Division the pay totals belong to.
+	column Division
+		dataType: string
+		lineageTag: 6892f8fc-fe3e-41e2-82a5-e6fc30bb0f45
+		summarizeBy: none
+		sourceColumn: Division
+		sortByColumn: 'Division Order'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order for divisions in visuals.
+	/// For analysis: Sort helper. Not for analysis.
+	column 'Division Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 81e26473-b99c-434d-ae57-6b4a7afcaa7b
+		summarizeBy: sum
+		sourceColumn: Division Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment basis: casual, part-time or full-time.
+	column 'Employment Type'
+		dataType: string
+		lineageTag: 52b2d2fd-d22a-4af0-afac-378c98b06bc9
+		summarizeBy: none
+		sourceColumn: Employment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the fortnightly pay period starts.
+	/// For analysis: Key: joins DimShiftDate Date.
+	column 'Fortnight Start Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 3a43f6d5-70a9-4763-a3fc-e54f8914c01e
+		summarizeBy: none
+		sourceColumn: Fortnight Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Total gross pay in the fortnight, in AUD (wages, no GST).
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Gross Payment'
+		dataType: double
+		lineageTag: c87114a9-b7ab-44ee-9df4-b342ca7ceca7
+		summarizeBy: sum
+		sourceColumn: Total Gross Payment
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Total net pay after tax and deductions in the fortnight, in AUD.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Net Payment'
+		dataType: double
+		lineageTag: a052c9aa-50f2-4dca-9ef5-a1a9815b2fe4
+		summarizeBy: sum
+		sourceColumn: Total Net Payment
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Total payroll units paid in the fortnight.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Units'
+		dataType: double
+		lineageTag: 184dd1d8-213d-4689-a580-a400223d7020
+		summarizeBy: sum
+		sourceColumn: Total Units
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Employees paid in the fortnight.
+	/// For analysis: Distinct employees per row; add across divisions and employment types, never across fortnights.
+	column 'Total Paid Employee Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: e4e82f18-1234-4dc7-89d8-ced5bc5b767b
+		summarizeBy: sum
+		sourceColumn: Total Paid Employee Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Pay for leave in the fortnight, in AUD.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Leave Amount'
+		dataType: double
+		lineageTag: 3e436429-1bc6-47f6-90cb-a9aa79ad3840
+		summarizeBy: sum
+		sourceColumn: Total Leave Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Leave hours paid in the fortnight, in decimal hours.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Leave Hours'
+		dataType: double
+		lineageTag: 3768bfdc-e642-4df0-b2b9-f4fcc875341e
+		summarizeBy: sum
+		sourceColumn: Total Leave Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Pay for personal leave in the fortnight, in AUD.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Personal Leave Amount'
+		dataType: double
+		lineageTag: 26cae40b-6e6f-430a-88d2-b1d75b759a1e
+		summarizeBy: sum
+		sourceColumn: Total Personal Leave Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Personal leave hours paid in the fortnight.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Personal Leave Hours'
+		dataType: double
+		lineageTag: cae97693-4d5e-45c0-ae6d-313c6fbba39e
+		summarizeBy: sum
+		sourceColumn: Total Personal Leave Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Employees paid personal leave in the fortnight.
+	/// For analysis: Distinct employees per row; add across divisions and employment types, never across fortnights.
+	column 'Total Personal Leave Employee Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: 471fd50f-f90c-412d-90f8-f992aa0816d9
+		summarizeBy: sum
+		sourceColumn: Total Personal Leave Employee Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Pay for overtime in the fortnight, in AUD.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Overtime Amount'
+		dataType: double
+		lineageTag: 8b757364-106a-4f1f-b661-104aeffdd76b
+		summarizeBy: sum
+		sourceColumn: Total Overtime Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Overtime hours paid in the fortnight.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Overtime Hours'
+		dataType: double
+		lineageTag: 748f6b69-c072-436f-8c38-f894eb02edfc
+		summarizeBy: sum
+		sourceColumn: Total Overtime Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Employees paid overtime in the fortnight.
+	/// For analysis: Distinct employees per row; add across divisions and employment types, never across fortnights.
+	column 'Total Overtime Employee Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: 59ab74f0-80ca-41b5-8d9d-604da6292315
+		summarizeBy: sum
+		sourceColumn: Total Overtime Employee Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Pay for hours paid in the fortnight, in AUD (the dollars paid).
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Hourly Amount'
+		dataType: double
+		lineageTag: b0fb6237-601f-4f5e-8e1a-f8dd69b176c0
+		summarizeBy: sum
+		sourceColumn: Total Hourly Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Hours paid in the fortnight, in decimal hours.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Total Hours'
+		dataType: double
+		lineageTag: a92fd22e-3a31-4388-a8e7-c762c7e37e5e
+		summarizeBy: sum
+		sourceColumn: Total Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Employees paid for hours in the fortnight.
+	/// For analysis: Distinct employees per row; add across divisions and employment types, never across fortnights.
+	column 'Total Hourly Employee Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: a8e9c7e3-837d-44f7-b1f4-630cbde0d3ff
+		summarizeBy: sum
+		sourceColumn: Total Hourly Employee Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: The number of different active employees paid in each fortnightly pay period.
+	/// For analysis: Distinct employees per row; add across divisions and employment types, never across fortnights.
+	column 'Employee Active Count'
+		dataType: int64
+		formatString: #,0
+		lineageTag: ce962044-6481-4f25-adc3-e9e1f5e242c9
+		summarizeBy: sum
+		sourceColumn: Employee Active Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employees paid for the first time in the fortnight.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Employee Enter Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5cd4aca9-2268-40b7-9c77-945823ff0eed
+		summarizeBy: sum
+		sourceColumn: Employee Enter Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employees paid for the last time in the fortnight.
+	/// For analysis: Additive across divisions, employment types and fortnights.
+	column 'Employee Exit Count'
+		dataType: int64
+		formatString: 0
+		lineageTag: 21bc3927-d606-4c79-a30e-ca5deb0a7b55
+		summarizeBy: sum
+		sourceColumn: Employee Exit Count
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactDivisionFortnightlyPaySummary = m
+		mode: import
+		queryGroup: EDP
+		source =
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    L4_Fact_division_pay_summary_fortnightly = fnCleanColumnNames(Source{[Schema="Fact",Item="division_pay_summary_fortnightly"]}[Data]),
+				//     Fact_division_pay_summary_fortnightly = fnCleanColumnNames(Source{[Schema="Fact",Item="division_pay_summary_fortnightly"]}[Data]),
+				    #"Added Division Order" = Table.AddColumn(L4_Fact_division_pay_summary_fortnightly, "Division Order", each if [Division] = "Disability" then 0 else if [Division] = "CYF" then 1 else if [Division] = "V&A" then 2 else if [Division] = "GSL" then 3 else if [Division] = "Corporate Services" then 4 else if [Division] = "ASC" then 5 else if [Division] = "NHN" then 6 else if [Division] = "Finance" then 7 else if [Division] = "IT" then 8 else if [Division] = "NA" then 9 else if [Division] = "Kanda Foundation" then 10 else if [Division] = "APM" then 11 else if [Division] = "Quality" then 12 else if [Division] = "Office of the CEO" then 13 else if [Division] = "Transformation" then 14 else if [Division] = "Admin" then 15 else if [Division] = "External" then 16 else 17),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Division Order",{{"Division Order", Int64.Type}})
+				in
+				    #"Changed Type"
+				    // L4_Fact_division_pay_summary_fortnightly
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

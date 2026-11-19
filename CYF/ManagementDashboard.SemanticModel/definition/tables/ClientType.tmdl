@@ -1,0 +1,77 @@
+/// Definition: Helper table holding the funding stream options: IPS, OSD, Other and Total.
+/// For analysis: Report helper. Not for analysis.
+table ClientType
+	isHidden
+	lineageTag: d0f1a40c-f05e-4efd-97f9-0af1cec5c540
+
+	/// Definition: Placeholder column for the IPS option.
+	/// For analysis: Report helper. Not for analysis.
+	column IPS
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c522162a-fcbc-4c84-99a5-e574334dfd13
+		summarizeBy: sum
+		sourceColumn: IPS
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Placeholder column for the OSD option.
+	/// For analysis: Report helper. Not for analysis.
+	column OSD
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fd92f7e7-2614-49d1-b7ba-0f7093fc9a8e
+		summarizeBy: sum
+		sourceColumn: OSD
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Placeholder column for the Other option.
+	/// For analysis: Report helper. Not for analysis.
+	column Other
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2eb5c530-67f7-4b03-8d92-9a8f4cb94d99
+		summarizeBy: sum
+		sourceColumn: Other
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Placeholder column for the Total option.
+	/// For analysis: Report helper. Not for analysis.
+	column Total
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bebceb23-d485-4bcb-a700-2be919a96ea4
+		summarizeBy: sum
+		sourceColumn: Total
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ClientType = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WMlTSQcKxsQA=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [IPS = _t, OSD = _t, Other = _t, Total = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"IPS", Int64.Type}, {"OSD", Int64.Type}, {"Other", Int64.Type}, {"Total", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

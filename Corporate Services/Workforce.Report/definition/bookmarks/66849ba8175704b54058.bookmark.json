@@ -1,56 +1,588 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
   "displayName": "OB Open",
   "name": "66849ba8175704b54058",
   "options": {
     "applyOnlyToTargetVisuals": true,
     "targetVisualNames": [
-      "dafc3c4282156fc26778",
       "847e39c4d35e2109c38b",
-      "7480ef171dedbe673f6d",
-      "da6ed8335bb601576b80",
+      "dafc3c4282156fc26778",
+      "1926246ff98416228235",
       "1f5c53bf3810acce895d",
-      "22a520691e33059636e4",
       "28528b77c3016cd3853a",
-      "329d4fbd69de3c32209b",
-      "337f3d6a61a36a10d03b",
-      "46a5735afc0f942b2ad2",
+      "4ccdd40357a96f3791e7",
       "5841e3fe4c36610b274d",
+      "1f287b8ed9368d451380",
+      "58953e7fa6886038bd3c",
       "5f954a99e65ed7b9619d",
-      "99d0bd8215016a6ab328"
+      "80cb2386ac391820b6bb",
+      "984126d41bfde08aeb13",
+      "c4c14b50546fbed5be45",
+      "7480ef171dedbe673f6d",
+      "da6ed8335bb601576b80"
     ],
     "suppressData": true
   },
   "explorationState": {
-    "version": "1.3",
+    "version": "1.11",
     "activeSection": "db6c4cc9750d0e40f7b6",
+    "filters": {
+      "byName": {
+        "52d70af10a312753d8e5": {
+          "name": "52d70af10a312753d8e5",
+          "type": "Categorical",
+          "expression": {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "DimEmployee"
+                }
+              },
+              "Property": "Division"
+            }
+          },
+          "howCreated": 1
+        }
+      }
+    },
     "sections": {
       "db6c4cc9750d0e40f7b6": {
+        "filters": {
+          "byExpr": [
+            {
+              "name": "55027bf7c8922fce38c9",
+              "type": "RelativeDate",
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "d",
+                    "Entity": "DimEmployeeTenureDate",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "Between": {
+                        "Expression": {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "Month Start Date"
+                          }
+                        },
+                        "LowerBound": {
+                          "DateSpan": {
+                            "Expression": {
+                              "DateAdd": {
+                                "Expression": {
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "Now": {}
+                                    },
+                                    "Amount": 1,
+                                    "TimeUnit": 0
+                                  }
+                                },
+                                "Amount": -14,
+                                "TimeUnit": 2
+                              }
+                            },
+                            "TimeUnit": 0
+                          }
+                        },
+                        "UpperBound": {
+                          "DateSpan": {
+                            "Expression": {
+                              "Now": {}
+                            },
+                            "TimeUnit": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployeeTenureDate"
+                    }
+                  },
+                  "Property": "Month Start Date"
+                }
+              },
+              "howCreated": 1
+            }
+          ]
+        },
         "visualContainers": {
-          "1f5c53bf3810acce895d": {
+          "2e8299b02c93ba03ebe0": {
             "singleVisual": {
-              "visualType": "actionButton",
+              "visualType": "textbox",
               "objects": {}
             }
           },
-          "28528b77c3016cd3853a": {
-            "singleVisual": {
-              "visualType": "shape",
-              "objects": {}
-            }
-          },
-          "46a5735afc0f942b2ad2": {
+          "4d6adabf5e7e30e294ab": {
             "filters": {
               "byExpr": [
                 {
-                  "name": "9b0fd428c5dcdd71d1ff",
+                  "name": "268d5f56664f700ede41",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "a8ae058dde873fa20ace",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "State"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "6e212f2373e26ab5b387",
+                  "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "d",
+                        "Entity": "DisplayMeasures",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 1,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "d"
+                                  }
+                                },
+                                "Property": "NewStarters"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "0L"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "NewStarters"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "fbe946a767beaaa63cb1",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "PECompleted"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "6d0fabf697f46afb8d7c",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "ShadowShiftCompleted"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "eb3e88b74677561d5892",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "BillableShiftCompleted"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0e6324445617c456b64a",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "ExitedNewStartersWithShift"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "8a6f130572004d4052c9",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "AvgOnboardingDays"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "ea1e50270ae5c80bcb42",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "ExitedNewStartersFrontline"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "d52e582c2218b34338c2",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "ExitedNewStartersWithoutShift"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "d00d4bd4e4a763c09147",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "EEMCompleted"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "c223d160ab2d136571fd",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "Worker Division"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "9fe3d7af042777020521",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "State"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "7174a040bc730960254e",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "NeverStartActiveCount"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                ]
+              },
+              "expansionStates": [
+                {
+                  "roles": [
+                    "Rows"
+                  ],
+                  "levels": [
+                    {
+                      "queryRefs": [
+                        "DimEmployeeTenureDate.MMM YYYY"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "DimEmployeeTenureDate"
+                              }
+                            },
+                            "Property": "MMM YYYY"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "DimWorker.Worker Division"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "DimWorker"
+                              }
+                            },
+                            "Property": "Worker Division"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "DimWorker.State"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "DimWorker"
+                              }
+                            },
+                            "Property": "State"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    }
+                  ],
+                  "root": {
+                    "identityValues": []
+                  }
+                }
+              ]
+            }
+          },
+          "5af9401137d7b6c12cb9": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "126d041d35a70fae5577",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "NewStarters"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "6a3bdf99a75c67fecd85",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "ExitedNewStartersFrontline"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "8443b70a1db1b4f3e84a",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "PECompleted"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "d4217fd8d3259a9d7ed2",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "ShadowShiftCompleted"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "9050f63959f4a540f31e",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "BillableShiftCompleted"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "29eb2c345c1b7af19dfc",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "bb10195890a382463149",
                   "type": "RelativeDate",
                   "filter": {
                     "Version": 2,
                     "From": [
                       {
                         "Name": "d",
-                        "Entity": "Dim Extract Date",
+                        "Entity": "DimEmployeeTenureDate",
                         "Type": 0
                       }
                     ],
@@ -65,7 +597,7 @@
                                     "Source": "d"
                                   }
                                 },
-                                "Property": "Extract Date"
+                                "Property": "Month Start Date"
                               }
                             },
                             "LowerBound": {
@@ -75,14 +607,20 @@
                                     "Expression": {
                                       "DateAdd": {
                                         "Expression": {
-                                          "Now": {}
+                                          "DateAdd": {
+                                            "Expression": {
+                                              "Now": {}
+                                            },
+                                            "Amount": -1,
+                                            "TimeUnit": 0
+                                          }
                                         },
                                         "Amount": 1,
                                         "TimeUnit": 0
                                       }
                                     },
-                                    "Amount": -2,
-                                    "TimeUnit": 3
+                                    "Amount": -1,
+                                    "TimeUnit": 2
                                   }
                                 },
                                 "TimeUnit": 0
@@ -91,7 +629,13 @@
                             "UpperBound": {
                               "DateSpan": {
                                 "Expression": {
-                                  "Now": {}
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "Now": {}
+                                    },
+                                    "Amount": -1,
+                                    "TimeUnit": 0
+                                  }
                                 },
                                 "TimeUnit": 0
                               }
@@ -105,25 +649,217 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Extract Date"
+                          "Entity": "DimEmployeeTenureDate"
                         }
                       },
-                      "Property": "Extract Date"
+                      "Property": "Month Start Date"
                     }
                   },
                   "howCreated": 1
                 },
                 {
-                  "name": "4baa87b1de795ec4588e",
+                  "name": "0ccf341c331a62436418",
+                  "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "d",
+                        "Entity": "DimWorker",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Not": {
+                            "Expression": {
+                              "Comparison": {
+                                "ComparisonKind": 0,
+                                "Left": {
+                                  "Column": {
+                                    "Expression": {
+                                      "SourceRef": {
+                                        "Source": "d"
+                                      }
+                                    },
+                                    "Property": "Id Worker"
+                                  }
+                                },
+                                "Right": {
+                                  "Literal": {
+                                    "Value": "null"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "Id Worker"
+                    }
+                  },
+                  "howCreated": 1
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "cardVisual",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "6a0b2e49067b2d5406c7": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "7f337c6da58d556a2706",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Extract Date"
+                          "Entity": "DimEmployeeTenureDate"
                         }
                       },
-                      "Property": "Slicer MMM YYYY"
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "ead3de713a282609636d",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "AvgOnboardingDays"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "1c41d3693d7320d053db",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "AvgPECompletionDays"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "e233d6fe070b8b483045",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "AvgPEToBillableDays"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "lineChart",
+              "objects": {},
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "1926246ff98416228235": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "9eb3219382018414f999",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Role Group"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "1d2e172e02cc9a980d90",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Division"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "c3930015e0845dad7bd5",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Employing Entity"
                     }
                   },
                   "howCreated": 0
@@ -149,31 +885,86 @@
                   ]
                 }
               },
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Slicer MMM YYYY"
-                    }
-                  }
-                }
-              ],
               "activeProjections": {
                 "Values": [
                   {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Extract Date"
+                          "Entity": "DimEmployee"
                         }
                       },
-                      "Property": "Slicer MMM YYYY"
+                      "Property": "Division"
+                    }
+                  }
+                ]
+              },
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "1f5c53bf3810acce895d": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "28528b77c3016cd3853a": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "4ccdd40357a96f3791e7": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "f7c2d471a05682197edb",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
                     }
                   }
                 ]
@@ -186,21 +977,684 @@
               "objects": {}
             }
           },
+          "58953e7fa6886038bd3c": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "9e55bef05d697be2d3ba",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Role Category"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Role Category"
+                    }
+                  }
+                ]
+              },
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
           "5f954a99e65ed7b9619d": {
             "singleVisual": {
               "visualType": "actionButton",
               "objects": {}
             }
           },
+          "80cb2386ac391820b6bb": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "c38539a700e2e6977e02",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "State"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "State"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "984126d41bfde08aeb13": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "869a9eed85ac150315d4",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "Worker Division"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "Worker Division"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "c4c14b50546fbed5be45": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "740fad230254bd0e975a",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "State"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "94a4f3ef5066b67a32ab",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Location"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "State"
+                    }
+                  }
+                ]
+              },
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "859e1cc7d5c09873b8b9": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "8810de8440e0d429a6c0",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "OnboardingRegisterDimensions"
+                        }
+                      },
+                      "Property": "OnboardingRegisterDimensions"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "advancedSlicerVisual",
+              "objects": {
+                "merge": {
+                  "general": [
+                    {
+                      "properties": {
+                        "filter": {
+                          "filter": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "o",
+                                "Entity": "OnboardingRegisterDimensions",
+                                "Type": 0
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "o"
+                                            }
+                                          },
+                                          "Property": "OnboardingRegisterDimensions Fields"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "'''DimEmployee''[Role Category]'"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "selection": [
+                    {
+                      "properties": {
+                        "strictSingleSelect": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "cachedFilterDisplayItems": [
+                {
+                  "id": {
+                    "scopeId": {
+                      "Comparison": {
+                        "ComparisonKind": 0,
+                        "Left": {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "OnboardingRegisterDimensions"
+                              }
+                            },
+                            "Property": "OnboardingRegisterDimensions Fields"
+                          }
+                        },
+                        "Right": {
+                          "Literal": {
+                            "Value": "'''DimEmployee''[Role Category]'"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "displayName": "Position Title"
+                }
+              ]
+            }
+          },
+          "97df54601c107e9e9502": {
+            "filters": {
+              "byName": {
+                "9e0e5c3ea050d5e292cb": {
+                  "name": "9e0e5c3ea050d5e292cb",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Dim Date Offered"
+                        }
+                      },
+                      "Property": "RollingDateDifference"
+                    }
+                  },
+                  "howCreated": 1
+                }
+              },
+              "byExpr": [
+                {
+                  "name": "f6e894e31d0d86a18803",
+                  "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "d",
+                        "Entity": "DisplayMeasures",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Comparison": {
+                            "ComparisonKind": 1,
+                            "Left": {
+                              "Measure": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "d"
+                                  }
+                                },
+                                "Property": "NewStarters"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "0L"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "NewStarters"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0dbab3dafa06f418f3b8",
+                  "type": "RelativeDate",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "d",
+                        "Entity": "DimEmployeeTenureDate",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Between": {
+                            "Expression": {
+                              "Column": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "d"
+                                  }
+                                },
+                                "Property": "Month Start Date"
+                              }
+                            },
+                            "LowerBound": {
+                              "DateSpan": {
+                                "Expression": {
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "DateAdd": {
+                                        "Expression": {
+                                          "Now": {}
+                                        },
+                                        "Amount": 1,
+                                        "TimeUnit": 0
+                                      }
+                                    },
+                                    "Amount": -1,
+                                    "TimeUnit": 2
+                                  }
+                                },
+                                "TimeUnit": 0
+                              }
+                            },
+                            "UpperBound": {
+                              "DateSpan": {
+                                "Expression": {
+                                  "Now": {}
+                                },
+                                "TimeUnit": 0
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "Month Start Date"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "825ce95465d059b07ef7",
+                  "type": "Advanced",
+                  "filter": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "d",
+                        "Entity": "DimWorker",
+                        "Type": 0
+                      }
+                    ],
+                    "Where": [
+                      {
+                        "Condition": {
+                          "Not": {
+                            "Expression": {
+                              "Comparison": {
+                                "ComparisonKind": 0,
+                                "Left": {
+                                  "Column": {
+                                    "Expression": {
+                                      "SourceRef": {
+                                        "Source": "d"
+                                      }
+                                    },
+                                    "Property": "Id Worker"
+                                  }
+                                },
+                                "Right": {
+                                  "Literal": {
+                                    "Value": "null"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimWorker"
+                        }
+                      },
+                      "Property": "Id Worker"
+                    }
+                  },
+                  "howCreated": 1
+                },
+                {
+                  "name": "0a16792631c8e98094e1",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Role Category"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "f6d4c5071ae2c045ed96",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "barChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "NewStarters"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Role Category"
+                    }
+                  }
+                ]
+              },
+              "projections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployee"
+                        }
+                      },
+                      "Property": "Role Category"
+                    }
+                  },
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DimEmployeeTenureDate"
+                        }
+                      },
+                      "Property": "MMM YYYY"
+                    }
+                  }
+                ],
+                "Y": [
+                  {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "DisplayMeasures"
+                        }
+                      },
+                      "Property": "NewStarters"
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "Category": [
+                  {
+                    "expr": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "OnboardingRegisterDimensions"
+                          }
+                        },
+                        "Property": "OnboardingRegisterDimensions"
+                      }
+                    },
+                    "index": 0,
+                    "length": 1
+                  }
+                ]
+              }
+            }
+          },
           "7480ef171dedbe673f6d": {
             "singleVisual": {
               "visualType": "actionButton",
-              "objects": {}
-            }
-          },
-          "8432e4c04030e5e8fe7e": {
-            "singleVisual": {
-              "visualType": "textbox",
               "objects": {}
             }
           },
@@ -216,60 +1670,20 @@
               "objects": {}
             }
           },
-          "6a0b2e49067b2d5406c7": {
+          "1f287b8ed9368d451380": {
             "filters": {
               "byExpr": [
                 {
-                  "name": "347f31f88b5248562a38",
-                  "type": "Advanced",
-                  "expression": {
-                    "Aggregation": {
-                      "Expression": {
-                        "Column": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Onboarding Register"
-                            }
-                          },
-                          "Property": "Days Onboarding"
-                        }
-                      },
-                      "Function": 1
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "dafb7fac06978163032d",
+                  "name": "cec86c248a76dacee53a",
                   "type": "Categorical",
                   "expression": {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Date Offered"
+                          "Entity": "DimWorker"
                         }
                       },
-                      "Property": "MMM YYYY"
-                    }
-                  },
-                  "howCreated": 0
-                },
-                {
-                  "name": "c6d8cf1a4072bdd71207",
-                  "type": "Advanced",
-                  "expression": {
-                    "Aggregation": {
-                      "Expression": {
-                        "Column": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Onboarding Register"
-                            }
-                          },
-                          "Property": "ID"
-                        }
-                      },
-                      "Function": 5
+                      "Property": "Role Category"
                     }
                   },
                   "howCreated": 0
@@ -277,38 +1691,34 @@
               ]
             },
             "singleVisual": {
-              "visualType": "lineChart",
-              "objects": {},
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Aggregation": {
-                      "Expression": {
-                        "Column": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Onboarding Register"
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
                             }
-                          },
-                          "Property": "Days Onboarding"
+                          }
                         }
-                      },
-                      "Function": 1
+                      }
                     }
-                  }
+                  ]
                 }
-              ],
+              },
               "activeProjections": {
-                "Category": [
+                "Values": [
                   {
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Dim Date Offered"
+                          "Entity": "DimWorker"
                         }
                       },
-                      "Property": "MMM YYYY"
+                      "Property": "Role Category"
                     }
                   }
                 ]
@@ -329,6 +1739,13 @@
           {
             "properties": {
               "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              },
+              "visible": {
                 "expr": {
                   "Literal": {
                     "Value": "false"

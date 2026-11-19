@@ -1,0 +1,493 @@
+/// Definition: A person set up in Visual Care, the rostering system, so they can be given shifts. Workers are linked to employees by payroll ID. In this report: worker records with their onboarding milestones, one row per worker record, from the worker milestones view in L4_Analytical.
+/// For analysis: Joins DimEmployee on payroll ID (many-to-many) and FactWorkerRoster on Id Worker. Milestone dates use inactive joins to DimEmployeeTenureDate.
+table DimWorker
+	lineageTag: 37627b8c-6d28-4bbd-bcc8-720cd62a748c
+
+	/// Definition: Worker identifier from the rostering system.
+	/// For analysis: Key: joins FactWorkerRoster Id Worker. Count distinct for worker numbers.
+	column 'Id Worker'
+		dataType: int64
+		formatString: 0
+		lineageTag: 303b5650-4dec-4dce-80c3-d8003d9b19c9
+		summarizeBy: none
+		sourceColumn: Id Worker
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Payroll ID of the employee who holds the worker record.
+	/// For analysis: Key: joins DimEmployee Id Employee Payroll (many-to-many, both directions).
+	column 'Id Employee Payroll'
+		dataType: string
+		lineageTag: 94e1a2da-3d2a-4851-8eba-f41bc3a8e071
+		summarizeBy: none
+		sourceColumn: Id Employee Payroll
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the worker is booked to complete Practice Essentials, the basic training care staff need before they can take a shift.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date.
+	column 'Pe Scheduled Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 58ab93a9-799d-4b79-be1e-1edbe7ab60e6
+		summarizeBy: none
+		sourceColumn: Pe Scheduled Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Date the worker completed Practice Essentials; blank until completed.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date.
+	column 'Pe Completed Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 49323909-0f9c-4767-a8dd-4b877ba7ec51
+		summarizeBy: none
+		sourceColumn: Pe Completed Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Date the worker completed the engagement meeting; blank until completed.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date.
+	column 'Eem Completed Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 65595b03-c0f9-4537-a578-bb1bd7a3344c
+		summarizeBy: none
+		sourceColumn: Eem Completed Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Date the worker completed a shadow shift alongside an experienced worker; blank until completed.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date.
+	column 'Shadow Completed Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 13d636e7-28d1-40f8-82ed-96098f7c0e1c
+		summarizeBy: none
+		sourceColumn: Shadow Completed Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Date of the worker's first billable shift; blank if they have not had one.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date. Blank marks a never start.
+	column 'First Billable Shift Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: d479a2ea-7b7c-41df-a0d8-e7039323eca9
+		summarizeBy: none
+		sourceColumn: First Billable Shift Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Date of the worker's first shift of any kind; blank if they have not had one.
+	column 'First Shift Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 9c0e4d00-2e27-4bea-8622-bd4c6c59363e
+		summarizeBy: none
+		sourceColumn: First Shift Date
+
+		variation Variation
+			isDefault
+			relationship: 5965121b-6183-41d4-8181-15ff2ace591b
+			defaultHierarchy: LocalDateTable_09f11b52-ba5e-48cb-87e6-229d779f2b07.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Furthest onboarding stage reached, for example PE Scheduled, PE Completed, EEM Shift Completed, Shadow Shift Completed, First Billable Shift or Exited; Other for current workers with no billable shift who have not reached a recorded onboarding stage (for example only non-billable shifts).
+	/// For analysis: Sort by New Starter Status Order. Whether the worker is a never start is in Start Flag.
+	column 'New Starter Status'
+		dataType: string
+		lineageTag: 00ce3d87-1bcc-440d-9d82-b759f28c8047
+		summarizeBy: none
+		sourceColumn: New Starter Status
+		sortByColumn: 'New Starter Status Order'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order for New Starter Status.
+	/// For analysis: Sort helper. Not for analysis.
+	column 'New Starter Status Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7600656c-38d7-4107-8ce4-40b070cdddc3
+		summarizeBy: sum
+		sourceColumn: New Starter Status Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the worker's employment ended; blank while employed.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date.
+	column 'Termination Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 1dd15b2b-c028-48b2-bdfe-60dcd9bcb8a0
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Date the worker's Employment Hero account was created, the first onboarding step.
+	/// For analysis: Active relationship to DimEmployeeTenureDate Date.
+	column 'Eh Account Created Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 16772d6f-a870-4d96-a30b-354727dbadb0
+		summarizeBy: none
+		sourceColumn: Eh Account Created Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Start date key in YYYYMMDD form.
+	/// For analysis: Identifier only. Do not sum.
+	column 'Id Start Date'
+		dataType: int64
+		formatString: 0
+		lineageTag: fd6d7e0c-a41e-4e5d-9d41-199d5652b3b6
+		summarizeBy: sum
+		sourceColumn: Id Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: First day of the month the worker started.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date.
+	column 'Start Month'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 8f868a38-0156-4bf2-9bfc-7b026fb5ab80
+		summarizeBy: none
+		sourceColumn: Start Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Australian financial year the worker started, for example FY2026-27.
+	column 'Start Financial Year'
+		dataType: string
+		lineageTag: 102d4b49-bbd7-4376-9ff8-ab7b9a819372
+		summarizeBy: none
+		sourceColumn: Start Financial Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date of the worker's first completed shift; blank if none.
+	column 'First Completed Shift Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: ca0b2ec8-b63f-4e54-b1d0-aec9343b6de4
+		summarizeBy: none
+		sourceColumn: First Completed Shift Date
+
+		variation Variation
+			isDefault
+			relationship: 537a1220-1211-4616-ade2-f24a929d0da9
+			defaultHierarchy: LocalDateTable_1a8af5f6-ade8-4f77-adf0-728f3666dea1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Days from Employment Hero account creation to completing Practice Essentials.
+	/// For analysis: Average, do not sum, for typical time.
+	column 'Days Eh To Pe'
+		dataType: int64
+		formatString: 0
+		lineageTag: 57068a95-c3e0-4dd6-b53e-90bbd3398fa2
+		summarizeBy: sum
+		sourceColumn: Days Eh To Pe
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Days from completing Practice Essentials to completing the engagement meeting.
+	/// For analysis: Average, do not sum, for typical time.
+	column 'Days Pe To Eem'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6f0ba565-3288-430d-8811-f1ca672e8a3b
+		summarizeBy: sum
+		sourceColumn: Days Pe To Eem
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Days from the engagement meeting to the completed shadow shift.
+	/// For analysis: Average, do not sum, for typical time.
+	column 'Days Eem To Shadow'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9326afd0-376b-4e6b-a569-4bcd92d55390
+		summarizeBy: sum
+		sourceColumn: Days Eem To Shadow
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Days from the shadow shift to the first billable shift.
+	/// For analysis: Average, do not sum, for typical time.
+	column 'Days Shadow To Billable'
+		dataType: int64
+		formatString: 0
+		lineageTag: 47a06dc3-cf38-4f2a-bb38-ba65dec6d568
+		summarizeBy: sum
+		sourceColumn: Days Shadow To Billable
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Days from Employment Hero account creation to the first billable shift.
+	/// For analysis: Average, do not sum, for typical time.
+	column 'Days Eh To Billable'
+		dataType: int64
+		formatString: 0
+		lineageTag: ba10a7e3-99c1-4271-9bde-4c27f0929d1c
+		summarizeBy: sum
+		sourceColumn: Days Eh To Billable
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Colour band for days EH to PE against target.
+	/// For analysis: Conditional formatting helper. Not for analysis.
+	column 'Colour Eh To Pe'
+		dataType: string
+		lineageTag: ee96494e-2913-48c4-a1a5-63009bf3ab15
+		summarizeBy: none
+		sourceColumn: Colour Eh To Pe
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Colour band for days PE to EEM against target.
+	/// For analysis: Conditional formatting helper. Not for analysis.
+	column 'Colour Pe To Eem'
+		dataType: string
+		lineageTag: f42690a6-c89d-4908-acbb-46cce8a5f3e5
+		summarizeBy: none
+		sourceColumn: Colour Pe To Eem
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Colour band for days EEM to shadow against target.
+	/// For analysis: Conditional formatting helper. Not for analysis.
+	column 'Colour Eem To Shadow'
+		dataType: string
+		lineageTag: 2d2d6566-3691-442f-947a-50524ca405f5
+		summarizeBy: none
+		sourceColumn: Colour Eem To Shadow
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Colour band for days shadow to billable against target.
+	/// For analysis: Conditional formatting helper. Not for analysis.
+	column 'Colour Shadow To Billable'
+		dataType: string
+		lineageTag: 0546f683-e56e-4fb0-a564-9795130d7564
+		summarizeBy: none
+		sourceColumn: Colour Shadow To Billable
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Colour band for days EH to billable against target.
+	/// For analysis: Conditional formatting helper. Not for analysis.
+	column 'Colour Eh To Billable'
+		dataType: string
+		lineageTag: 6df59e26-05bc-4921-af72-4b14df21af1d
+		summarizeBy: none
+		sourceColumn: Colour Eh To Billable
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: 1 when the worker has never had a billable shift (a never start), whether still employed or exited; otherwise 0.
+	/// For analysis: Summing counts never starts; add a termination date filter (or Termination Date not blank) for never start exits.
+	column 'Is Never Started'
+		dataType: int64
+		formatString: 0
+		lineageTag: 99f4d612-9126-4be2-be32-b626bd25ed9d
+		summarizeBy: sum
+		sourceColumn: Is Never Started
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: 1 when the worker reached a billable shift without a recorded shadow shift, otherwise 0.
+	/// For analysis: Summing counts workers who skipped the shadow shift.
+	column 'Is Shadow Skipped'
+		dataType: int64
+		formatString: 0
+		lineageTag: 96a1a4b0-832b-41b6-9c79-8647f9ee0016
+		summarizeBy: sum
+		sourceColumn: Is Shadow Skipped
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Division the worker record belongs to, for example Disability or CYF.
+	column 'Worker Division'
+		dataType: string
+		lineageTag: 75f90e0e-c2ca-4a2f-aca3-7766a0fc8e7e
+		summarizeBy: none
+		sourceColumn: Worker Division
+		sortByColumn: 'Division Order'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Worker's full name. Personal information.
+	column 'Employee Name'
+		dataType: string
+		lineageTag: 981d87d2-32cb-4de9-b63d-e1bdc8c14298
+		summarizeBy: none
+		sourceColumn: Employee Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Worker's job title.
+	column 'Job Title'
+		dataType: string
+		lineageTag: 9c162876-2f81-420f-b290-53f0798c923b
+		summarizeBy: none
+		sourceColumn: Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Role grouping from the HR system, for example Support Worker.
+	column 'Role Category'
+		dataType: string
+		lineageTag: 646ec122-760c-46e1-ada0-8eabec739c2c
+		summarizeBy: none
+		sourceColumn: Role Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment basis: casual, part-time or full-time.
+	column 'Employment Type'
+		dataType: string
+		lineageTag: dbc987d1-3738-40e6-b95e-d9f99744bb9b
+		summarizeBy: none
+		sourceColumn: Employment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Work location recorded for the worker.
+	column Location
+		dataType: string
+		lineageTag: 448b9f23-841c-4232-884d-dc9bc1f031d0
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: State or territory of the worker's location, for example QLD.
+	column State
+		dataType: string
+		lineageTag: 2ae5349e-920b-4174-8297-7aef1c5accc5
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Full name of the worker's manager. Personal information.
+	column 'Manager Name'
+		dataType: string
+		lineageTag: 9a44d5af-2594-4747-86e2-29121463d75e
+		summarizeBy: none
+		sourceColumn: Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Description of the service on the worker's first completed shift.
+	column 'First Completed Shift Description'
+		dataType: string
+		lineageTag: f6295625-9563-44c3-84b0-ea42c5d4c9af
+		summarizeBy: none
+		sourceColumn: First Completed Shift Description
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order for divisions in visuals.
+	/// For analysis: Sort helper. Not for analysis.
+	column 'Division Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 598c0b45-0393-4ac8-bef3-d10a7616e94d
+		summarizeBy: sum
+		sourceColumn: Division Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Whether the worker has started: Started (has had a billable shift), Exited (left after starting), Never Start (Active) (no billable shift, still employed) or Never Start (Exited) (no billable shift, has left).
+	/// For analysis: Sorted by Start Flag Order.
+	column 'Start Flag'
+		dataType: string
+		lineageTag: 0c73a121-06c7-4714-87e3-232291384d56
+		summarizeBy: none
+		sourceColumn: Start Flag
+		sortByColumn: 'Start Flag Order'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order for Start Flag: 0 Never Start (Active), 1 Never Start (Exited), 2 Started, 3 Exited.
+	/// For analysis: Sort helper. Not for analysis.
+	column 'Start Flag Order'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3e05f783-c746-4f84-8dfe-e0d4c56fcbd0
+		summarizeBy: sum
+		sourceColumn: Start Flag Order
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimWorker = m
+		mode: import
+		queryGroup: EDP
+		source =
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    Dim_vw_worker_milestones = fnCleanColumnNames(Source{[Schema="Dim",Item="vw_worker_milestones"]}[Data]),
+				    #"Add Division Order" = Table.AddColumn(#"Dim_vw_worker_milestones", "Division Order", each if [Worker Division] = "Disability" then 0 else if [Worker Division] = "CYF" then 1 else if [Worker Division] = "V&A" then 2 else if [Worker Division] = "GSL" then 3 else if [Worker Division] = "Corporate Services" then 4 else if [Worker Division] = "ASC" then 5 else if [Worker Division] = "NHN" then 6 else if [Worker Division] = "Finance" then 7 else if [Worker Division] = "IT" then 8 else if [Worker Division] = "NA" then 9 else if [Worker Division] = "Kanda Foundation" then 10 else if [Worker Division] = "APM" then 11 else if [Worker Division] = "Quality" then 12 else if [Worker Division] = "Office of the CEO" then 13 else if [Worker Division] = "Transformation" then 14 else if [Worker Division] = "Admin" then 15 else if [Worker Division] = "External" then 16 else 17),
+				    #"Added Conditional Column" = Table.AddColumn(#"Add Division Order", "Start Flag Order", each if [Start Flag] = "Never Start (Active)" then 0 else if [Start Flag] = "Never Start (Exited)" then 1 else if [Start Flag] = "Started" then 2 else if [Start Flag] = "Exited" then 3 else null),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Conditional Column",{{"Division Order", Int64.Type}, {"Start Flag Order", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

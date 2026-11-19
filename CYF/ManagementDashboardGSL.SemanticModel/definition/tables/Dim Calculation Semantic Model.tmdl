@@ -1,0 +1,41 @@
+/// Definition: Legacy copy of the data dictionary's report appearances, loaded from master_data_dictionary.json on SharePoint. One row per metric and report.
+/// For analysis: Not for analysis.
+table 'Dim Calculation Semantic Model'
+	lineageTag: 84b83554-5de9-4706-b077-15724857d779
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: e8009129-6583-479f-96d8-4dfcd9d0eeed
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Report Name'
+		dataType: string
+		lineageTag: a7500c98-c6ad-4a9b-8a15-1ec0731ecb36
+		summarizeBy: none
+		sourceColumn: Report Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculation Semantic Model' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Report Appearances"}),
+				    #"Expanded Report Appearances" = Table.ExpandListColumn(#"Removed Other Columns", "Report Appearances"),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Report Appearances", each [Report Appearances] <> null and [Report Appearances] <> ""),
+				    #"Expanded Report Appearances1" = #"fnCleanColumnNames (2)"(Table.ExpandRecordColumn(#"Filtered Rows", "Report Appearances", {"report_name", "pages"}, {"report_name", "pages"})),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Expanded Report Appearances1",{"Metric Id", "Report Name"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns1",{{"Report Name", type text}})
+				in
+				    #"Changed Type"
+

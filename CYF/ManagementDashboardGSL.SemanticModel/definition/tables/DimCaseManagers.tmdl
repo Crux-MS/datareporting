@@ -1,0 +1,179 @@
+/// Definition: CYF case managers, family support coordinators and acting CYF regional managers of any employment status, with their regional manager, from the HR employee table in L4_Analytical. One row per case manager.
+/// For analysis: Group case manager results here; Regional Manager Name rolls case managers up to their manager. Rows without a work email are excluded.
+table DimCaseManagers
+	lineageTag: f466c3ad-5ddc-4bc5-942e-df8527e3e3d3
+
+	/// Definition: Organisation identifier for the case manager's employing organisation.
+	column 'Id Organisation'
+		dataType: string
+		lineageTag: c1b0f282-df3c-49df-8c42-57a8dbc56316
+		summarizeBy: none
+		sourceColumn: Id Organisation
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Case manager's work email address. Personal information.
+	column 'Company Email'
+		dataType: string
+		lineageTag: f8938523-f966-47e0-a235-bfa912ed0985
+		summarizeBy: none
+		sourceColumn: Company Email
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Full name of the case manager's manager (regional manager). Personal information.
+	column 'Regional Manager Name'
+		dataType: string
+		lineageTag: 2e0b96e7-1f6b-4624-866c-aa2094fd1dab
+		summarizeBy: none
+		sourceColumn: Regional Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Legal entity that employs the case manager.
+	column 'Employing Entity'
+		dataType: string
+		lineageTag: c9d7919b-19a4-4098-9e83-72e7df3ac9da
+		summarizeBy: none
+		sourceColumn: Employing Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Case manager's job title.
+	column 'Job Title'
+		dataType: string
+		lineageTag: 5c71fd05-1587-40f9-8daa-7e3892db9461
+		summarizeBy: none
+		sourceColumn: Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Role group from the HR system, for example Case Manager.
+	/// For analysis: Family support coordinators and the acting CYF regional manager are included by job title.
+	column 'Role Category'
+		dataType: string
+		lineageTag: 4daa443b-4ba8-40cb-92ef-070959c20e81
+		summarizeBy: none
+		sourceColumn: Role Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the case manager started employment.
+	/// For analysis: Relates to the report's auto date table only.
+	column 'Start Date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 68d29090-d44f-4967-b0ec-e7ff2a33f9f6
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		variation Variation
+			isDefault
+			relationship: 512bb9fd-f003-4908-a5bd-a8c3ce118698
+			defaultHierarchy: LocalDateTable_67a9d32b-023f-4a94-a657-a53459f5554b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the case manager's employment ended; blank while employed.
+	/// For analysis: Relates to the report's auto date table only.
+	column 'Termination Date'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7c454c3e-5a73-455e-9a23-2d4daf227bfc
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+		variation Variation
+			isDefault
+			relationship: 01176796-57e3-484c-8b46-fd7c4826f104
+			defaultHierarchy: LocalDateTable_3b194bf3-8f2b-4162-8f29-d943eaa9d983.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Work location recorded for the regional manager.
+	column 'Regional Manager Location'
+		dataType: string
+		lineageTag: 9434d57f-e969-47cf-aa14-50195696302b
+		summarizeBy: none
+		sourceColumn: Regional Manager Location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment status of the regional manager.
+	column 'Regional Manager Status'
+		dataType: string
+		lineageTag: 144dedd9-b1f7-4a5d-bd1e-92682a5748af
+		summarizeBy: none
+		sourceColumn: Regional Manager Status
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Case manager's employee identifier from the HR system.
+	/// For analysis: Key: matches the snapshot tables and DimEmployees Id Manager.
+	column 'Id Case Manager'
+		dataType: string
+		lineageTag: ee3a8dbd-ff3e-4dd7-8d9f-bcd755c94adf
+		summarizeBy: none
+		sourceColumn: Id Case Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Case manager's payroll ID.
+	/// For analysis: No relationship in this model.
+	column 'Id Case Manager Payroll'
+		dataType: string
+		lineageTag: 02c91df1-8762-43cd-a906-baf6fe3ee548
+		summarizeBy: none
+		sourceColumn: Id Case Manager Payroll
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Case manager's full name. Personal information.
+	column 'Case Manager Name'
+		dataType: string
+		lineageTag: 3c327c92-b1cf-4cd2-a45b-ffc3b983705a
+		summarizeBy: none
+		sourceColumn: Case Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Work location recorded for the case manager.
+	column 'Case Manager Location'
+		dataType: string
+		lineageTag: af850cd2-1d51-4d73-b1bd-089fb2b88b8c
+		summarizeBy: none
+		sourceColumn: Case Manager Location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment status of the case manager.
+	/// For analysis: Includes inactive case managers; filter here for current staff only.
+	column 'Case Manager Status'
+		dataType: string
+		lineageTag: 30ea4a0f-a7ee-4320-8a79-e36c922679d6
+		summarizeBy: none
+		sourceColumn: Case Manager Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Case Manager Division'
+		dataType: string
+		lineageTag: 84b95e52-fc90-4bb7-82d3-227e77bc77e8
+		summarizeBy: none
+		sourceColumn: Case Manager Division
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCaseManagers = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(ServerName, DatabaseName, [Query="WITH Employees AS (#(lf)    SELECT [Id_Employee]#(lf)      ,[Id_Employee_Payroll]#(lf)      ,[Id_Organisation]#(lf)      ,[Id_Manager]#(lf)      ,[Company_Email]#(lf)      ,[Employee_Name]#(lf)      ,[Division]#(lf)      ,[Location]#(lf)      ,[Employing_Entity]#(lf)      ,[Job_Title]#(lf)      ,[Employee_Status]#(lf)      ,[Role_Category]#(lf)      ,[Start_Date]#(lf)      ,[Termination_Date]#(lf)    FROM [Dim].[employee]#(lf)),#(lf)ServiceManagers AS (#(lf)    SELECT *#(lf)    FROM Employees#(lf)    WHERE Role_Category = 'Case Manager' OR [Job_Title] = 'Family Support Coordinator' OR [Job_Title] = 'Regional Manager - Children, Youth and Family Services (Acting)'#(lf))#(lf)SELECT sm.[Id_Employee]             AS [Id_Case_Manager]#(lf)      ,sm.[Id_Employee_Payroll]     AS [Id_Case_Manager_Payroll]#(lf)      ,sm.[Id_Organisation]#(lf)      ,sm.[Company_Email]#(lf)      ,sm.[Employee_Name]           AS [Case_Manager_Name]#(lf)      ,sm.[Division]                AS [Case_Manager_Division]#(lf)      ,sm.[Location]                AS [Case_Manager_Location]#(lf)      ,e.[Employee_Name]            AS [Regional_Manager_Name]#(lf)      ,e.[Location]                 AS [Regional_Manager_Location]#(lf)      ,e.[Employee_Status]          AS [Regional_Manager_Status]#(lf)      ,sm.[Employing_Entity]#(lf)      ,sm.[Job_Title]#(lf)      ,sm.[Role_Category]#(lf)      ,sm.[Employee_Status]         AS [Case_Manager_Status]#(lf)      ,sm.[Start_Date]#(lf)      ,sm.[Termination_Date]#(lf)FROM ServiceManagers sm#(lf)LEFT JOIN Employees e ON sm.[Id_Manager] = e.[Id_Employee]"]),
+				    RenameColumns = #"fnCleanColumnNames"(Source)
+				in
+				    RenameColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

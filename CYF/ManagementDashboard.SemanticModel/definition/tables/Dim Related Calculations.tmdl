@@ -1,0 +1,48 @@
+/// Definition: Legacy copy of the data dictionary's related metrics, loaded from master_data_dictionary.json on SharePoint. One row per metric and related metric.
+/// For analysis: Not for analysis.
+table 'Dim Related Calculations'
+	lineageTag: 380540ff-cfe8-413b-bfd4-d1c9b519959b
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1348de19-16c5-4143-9109-913fe775ff3f
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Related Metric Id'
+		dataType: string
+		lineageTag: 65e10999-180b-44d9-8104-9e0c3ebbadec
+		summarizeBy: none
+		sourceColumn: Related Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Related Metric Name'
+		dataType: string
+		lineageTag: 9aa7d327-d57e-4f0d-aa5b-6963a7bb91e9
+		summarizeBy: none
+		sourceColumn: Related Metric Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Related Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Related Metrics"}),
+				    #"Expanded Related Metrics" = Table.ExpandListColumn(#"Removed Other Columns", "Related Metrics"),
+				    #"Expanded Related Metrics1" = #"fnCleanColumnNames (2)"(Table.ExpandRecordColumn(#"Expanded Related Metrics", "Related Metrics", {"metric_id", "metric_name"}, {"Related_metric_id", "related_metric_name"}))
+				in
+				    #"Expanded Related Metrics1"
+

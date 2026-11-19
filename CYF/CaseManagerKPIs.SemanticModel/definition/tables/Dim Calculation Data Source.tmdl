@@ -1,0 +1,68 @@
+table 'Dim Calculation Data Source'
+	lineageTag: 560445d8-14b2-4066-9da9-695a03d877af
+
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1d317ae5-08fd-4708-a922-ddf18863b2e4
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Edp Layer'
+		dataType: string
+		lineageTag: df1fc2fe-b0b8-4068-8e6f-cf662bea055e
+		summarizeBy: none
+		sourceColumn: Edp Layer
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: ce5e1de8-f58e-4849-b7ad-e34a61d6a5c6
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column model_table_names
+		dataType: string
+		lineageTag: 684df132-d416-42a2-96ed-4a8c5ca09fa8
+		summarizeBy: none
+		sourceColumn: model_table_names
+
+		annotation SummarizationSetBy = Automatic
+
+	column columns
+		dataType: string
+		lineageTag: 2e156cdc-91d8-48b7-a1c6-aff716b8ed64
+		summarizeBy: none
+		sourceColumn: columns
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Edp Source'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 43e3a11a-5194-497b-8da4-069165f75675
+		summarizeBy: none
+		sourceColumn: Edp Source
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculation Data Source' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Edp Layer", "Source Tables", "Edp Source"}),
+				    #"Expanded Source Tables" = Table.ExpandListColumn(#"Removed Other Columns", "Source Tables"),
+				    #"Expanded Source Tables1" = Table.ExpandRecordColumn(#"Expanded Source Tables", "Source Tables", {"name", "model_table_names", "columns"}, {"name", "model_table_names", "columns"}),
+				    #"Expanded model_table_names" = Table.ExpandListColumn(#"Expanded Source Tables1", "model_table_names"),
+				    #"Expanded columns" = Table.ExpandListColumn(#"Expanded model_table_names", "columns"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Expanded columns",{{"name", type text}, {"columns", type text}})
+				in
+				    #"Changed Type"
+

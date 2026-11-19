@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "b11bcb726ec126c210dc",
   "position": {
     "x": 55.440729483282681,
     "y": 429.90881458966567,
-    "z": 3000,
+    "z": 1000,
     "height": 260.66869300911856,
     "width": 592.34042553191489,
-    "tabOrder": 5000
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -20,15 +20,16 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Employment Start Date"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Employment Start Date.MMM YYYY",
-              "nativeQueryRef": "MMM YYYY",
-              "active": true
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
+              "nativeQueryRef": "Month",
+              "active": true,
+              "displayName": "Month"
             }
           ]
         },
@@ -39,16 +40,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Job Categories"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "DivisionAcronym"
+                  "Property": "Division"
                 }
               },
-              "queryRef": "Dim Job Categories.DivisionAcronym",
-              "nativeQueryRef": " ",
-              "active": true,
-              "displayName": " "
+              "queryRef": "DimEmployee.Division",
+              "nativeQueryRef": "Division",
+              "active": true
             }
           ]
         },
@@ -59,81 +59,20 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "DisplayRollingTurnover"
+                  "Property": "Rolling12MTurnoverRate"
                 }
               },
-              "queryRef": "Fact Workforce.DisplayRollingTurnover",
-              "nativeQueryRef": "DisplayRollingTurnover"
+              "queryRef": "ParamMeasures.Rolling12MTurnoverRate",
+              "nativeQueryRef": "Rolling12MTurnoverRate"
             }
           ]
         }
       }
     },
     "objects": {
-      "values": [
-        {
-          "properties": {
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "FillRule": {
-                      "Input": {
-                        "Measure": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Workforce"
-                            }
-                          },
-                          "Property": "DisplayRollingTurnover"
-                        }
-                      },
-                      "FillRule": {
-                        "linearGradient2": {
-                          "min": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#F8F6F0'"
-                              }
-                            }
-                          },
-                          "max": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#FBD760'"
-                              }
-                            }
-                          },
-                          "nullColoringStrategy": {
-                            "strategy": {
-                              "Literal": {
-                                "Value": "'noColor'"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Fact Workforce.DisplayRollingTurnover"
-          }
-        }
-      ],
       "subTotals": [
         {
           "properties": {
@@ -1226,20 +1165,6 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "49D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Dim Job Categories.DivisionAcronym"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
                   "Value": "54.474393530997304D"
                 }
               }
@@ -1346,6 +1271,80 @@
             ]
           }
         }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "DisplayMeasures"
+                            }
+                          },
+                          "Property": "Rolling12MTurnoverRate"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#F8F6F0'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#FBD760'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "ParamMeasures.Rolling12MTurnoverRate"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -1403,40 +1402,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "469c9d2483a94b3d74e7",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Job Categories"
-              }
-            },
-            "Property": "DivisionAcronym"
-          }
-        },
-        "type": "Categorical",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true,
-        "objects": {
-          "general": [
-            {
-              "properties": {
-                "isInvertedSelectionMode": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "true"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
   }
 }

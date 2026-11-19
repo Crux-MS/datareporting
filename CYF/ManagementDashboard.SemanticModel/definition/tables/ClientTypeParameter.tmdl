@@ -1,0 +1,58 @@
+/// Definition: Report slicer for the funding stream option: Total, IPS, OSD or Other.
+/// For analysis: Report slicer. Not for analysis.
+table ClientTypeParameter
+	lineageTag: 42b6629e-1ce1-4d68-81e5-247d12dade46
+
+	/// Definition: Option shown on the report slicer.
+	/// For analysis: Report slicer. Not for analysis.
+	column 'Client Type'
+		lineageTag: 173e00ef-2638-4f65-90e8-0ced7a4abdea
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'ClientTypeParameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Model field each option points to.
+	/// For analysis: Report helper. Not for analysis.
+	column 'ClientTypeParameter Fields'
+		isHidden
+		lineageTag: 621d7db7-5fcb-498f-b184-606759090de5
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order of the options.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 54ec170b-a751-4a75-af4c-f1346f499a13
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ClientTypeParameter = calculated
+		mode: import
+		source =
+				{
+				    ("Total", NAMEOF('ClientType'[Total]), 0),
+				    ("IPS", NAMEOF('ClientType'[IPS]), 1),
+				    ("OSD", NAMEOF('ClientType'[OSD]), 2),
+				    ("Other", NAMEOF('ClientType'[Other]), 3)
+				}
+
+	annotation PBI_Id = 2d757d357911451181de0e76f0620b4c
+

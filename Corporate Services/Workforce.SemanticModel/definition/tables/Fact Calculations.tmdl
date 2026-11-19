@@ -1,83 +1,141 @@
+/// Definition: Legacy copy of the data dictionary, loaded from master_data_dictionary.json on SharePoint.
+/// For analysis: Not for analysis.
 table 'Fact Calculations'
-	isHidden
 	lineageTag: ba792ba9-1e1d-41a2-aefa-91cdf7ccf613
 
-	measure 'Data Sources' = CONCATENATEX(VALUES('Dim Calculation Data Source'[Data Source]), 'Dim Calculation Data Source'[Data Source], ", ")
-		isHidden
+	/// Definition: Legacy dictionary display measure.
+	/// For analysis: Not for analysis.
+	measure 'Data Sources' = CONCATENATEX(VALUES('Dim Calculation Data Source'[name]), 'Dim Calculation Data Source'[name], ", ")
 		lineageTag: 0a740108-d10a-4779-9642-30f0ec34d287
 
 		changedProperty = IsHidden
 
-	measure 'Accountable Stakeholders' = CONCATENATEX(VALUES('Dim Accountable Stakeholders'[StakeholderName]), 'Dim Accountable Stakeholders'[StakeholderName], ", ")
-		isHidden
-		lineageTag: 666b3ba1-8133-4eb4-b505-b7c5f542f391
-
-		changedProperty = IsHidden
-
-	measure 'Source Calculations list' = CONCATENATEX(VALUES('Dim Related Calculations'[RelatedCalculation]), 'Dim Related Calculations'[RelatedCalculation], ", ")
-		isHidden
+	/// Definition: Legacy dictionary display measure.
+	/// For analysis: Not for analysis.
+	measure 'Source Calculations list' = CONCATENATEX(VALUES('Dim Related Calculations'[Related Metric Name]), 'Dim Related Calculations'[Related Metric Name], ", ")
 		lineageTag: 3e78ae41-a069-4512-9147-68eebd184590
 
 		changedProperty = IsHidden
 
-	column ID
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Last Updated'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 68af36bc-a7d0-4002-a096-d160ed0c0ec5
+		summarizeBy: none
+		sourceColumn: Last Updated
+
+		variation Variation
+			isDefault
+			relationship: 36178245-28cf-4a7a-b8e7-54d0157890fa
+			defaultHierarchy: LocalDateTable_56ce4453-281e-4dca-904e-82fce3840338.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Id'
 		dataType: int64
-		isHidden
 		formatString: 0
-		lineageTag: 1a279866-f6fa-40ab-be02-769bd3159ea8
+		lineageTag: 47d6eb6b-f4ed-44e1-abb0-0031d42e4272
 		summarizeBy: none
-		sourceColumn: ID
+		sourceColumn: Metric Id
 
 		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
-	column Created
-		dataType: dateTime
-		isHidden
-		formatString: General Date
-		lineageTag: afdf23bf-b7a0-49f9-ba53-1379eb3e8806
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Name'
+		dataType: string
+		lineageTag: e31c40a5-2c05-4826-90ec-edd8a9b6dcc3
 		summarizeBy: none
-		sourceColumn: Created
-
-		variation Variation
-			isDefault
-			relationship: f26f3169-5151-4f5d-a3e6-b89e3b51c7e3
-			defaultHierarchy: LocalDateTable_61cc6fe0-1f6c-4f16-b13b-80f9e9e9aa0b.'Date Hierarchy'
+		sourceColumn: Metric Name
 
 		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
-	column Modified
-		dataType: dateTime
-		isHidden
-		formatString: General Date
-		lineageTag: e55c5395-a85c-4ee0-902e-8d0b7a81c20a
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Plain English Definition'
+		dataType: string
+		lineageTag: ea1ad38d-1d00-4df1-967a-07aa373f6ed6
 		summarizeBy: none
-		sourceColumn: Modified
+		sourceColumn: Plain English Definition
+		sortByColumn: 'Metric Id'
 
-		variation Variation
-			isDefault
-			relationship: b89c4ed6-ca06-4844-87d3-05f6e375278a
-			defaultHierarchy: LocalDateTable_5adf32fc-0583-4c6a-a252-da57b63016e0.'Date Hierarchy'
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Technical Lineage'
+		dataType: string
+		lineageTag: 51e2b7c9-0378-4a54-8bf4-df0da957c95e
+		summarizeBy: none
+		sourceColumn: Technical Lineage
 
 		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
-	column Version
-		dataType: double
-		isHidden
-		lineageTag: 5be0a52a-b40e-465e-bab1-04a074578a00
-		summarizeBy: sum
-		sourceColumn: Version
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Technical Notes'
+		dataType: string
+		lineageTag: ce374b45-9b99-4150-b927-fd68a5a290ce
+		summarizeBy: none
+		sourceColumn: Technical Notes
 
 		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column Aliases
+		dataType: string
+		lineageTag: e587b1d5-e8a4-4ef1-bc05-4546e384aa59
+		summarizeBy: none
+		sourceColumn: Aliases
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json. Personal information.
+	/// For analysis: Not for analysis.
+	column 'Accountable Stakeholder'
+		dataType: string
+		lineageTag: e0500218-ab0a-48bf-b0b2-498e7e569ffb
+		summarizeBy: none
+		sourceColumn: Accountable Stakeholder
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json. Personal information.
+	/// For analysis: Not for analysis.
+	column 'Technical Contributors'
+		dataType: string
+		lineageTag: c599a272-78af-4893-9436-feba77f9f712
+		summarizeBy: none
+		sourceColumn: Technical Contributors
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
 
 	partition 'Fact Calculations' = m
 		mode: import
@@ -85,10 +143,11 @@ table 'Fact Calculations'
 		source =
 				let
 				    Source = #"Data Dictionary - Source",
-				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Created", "Modified", "Version"}),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"Version", type number}})
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Last Updated", "Metric Id", "Metric Name", "Aliases", "Plain English Definition", "Technical Lineage", "Accountable Stakeholder", "Technical Contributors", "Technical Notes"}),
+				    #"Extracted Values" = Table.TransformColumns(#"Removed Other Columns", {"Aliases", each Text.Combine(List.Transform(_, Text.From), ", "), type text}),
+				    #"Extracted Values1" = Table.TransformColumns(#"Extracted Values", {"Technical Contributors", each Text.Combine(List.Transform(_, Text.From), ", "), type text})
 				in
-				    #"Changed Type"
+				    #"Extracted Values1"
 
 	changedProperty = IsHidden
 

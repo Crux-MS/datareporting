@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "9824f99749c30ccb489e",
   "position": {
     "x": 55.440729483282681,
     "y": 442.52583586626145,
-    "z": 4000,
+    "z": 2000,
     "height": 251.91489361702128,
     "width": 389.05775075987845,
-    "tabOrder": 3000
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "barChart",
@@ -20,30 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "Visa type"
+                  "Property": "Role Category"
                 }
               },
-              "queryRef": "Dim Workforce.Visa type",
-              "nativeQueryRef": "Visa type",
+              "queryRef": "DimEmployee.Role Category",
+              "nativeQueryRef": "Role Category",
               "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Workforce"
-                    }
-                  },
-                  "Property": "Nationality"
-                }
-              },
-              "queryRef": "Dim Workforce.Nationality",
-              "nativeQueryRef": "Nationality",
-              "active": false
             }
           ]
         },
@@ -54,15 +39,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Currently Employed %"
+                  "Property": "Employees%"
                 }
               },
-              "queryRef": "Fact Workforce.Currently Employed %",
-              "nativeQueryRef": "Currently Employed",
-              "displayName": "Currently Employed"
+              "queryRef": "DisplayMeasures.Employees%",
+              "nativeQueryRef": "Current Employees",
+              "displayName": "Current Employees"
             }
           ],
           "fieldParameters": [
@@ -71,10 +56,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Workforce %"
+                      "Entity": "WorkerParam%"
                     }
                   },
-                  "Property": "Workforce %"
+                  "Property": "WorkerParam"
                 }
               },
               "index": 0,
@@ -90,10 +75,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Workforce"
+                    "Entity": "DisplayMeasures"
                   }
                 },
-                "Property": "Currently Employed %"
+                "Property": "Employees%"
               }
             },
             "direction": "Descending"
@@ -138,7 +123,58 @@
       ],
       "dataPoint": [
         {
-          "properties": {},
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Aggregation": {
+                          "Expression": {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Entity": "DimEmployee"
+                                }
+                              },
+                              "Property": "Employing Entity"
+                            }
+                          },
+                          "Function": 5
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#c0cbb2'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#617e3e'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "selector": {
             "data": [
               {
@@ -150,20 +186,7 @@
           }
         },
         {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 5,
-                      "Percent": 0
-                    }
-                  }
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "labels": [
@@ -228,38 +251,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "6f75c2b1a1a487de0545",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Workforce"
-              }
-            },
-            "Property": "Visa type"
-          }
-        },
-        "type": "Categorical",
-        "objects": {
-          "general": [
-            {
-              "properties": {
-                "isInvertedSelectionMode": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "true"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
   }
 }

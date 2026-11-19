@@ -1,11 +1,11 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "40c5d9cc6449c47eefa9",
   "position": {
     "x": 55,
-    "y": 150,
+    "y": 130,
     "z": 3501,
-    "height": 540,
+    "height": 570,
     "width": 1200,
     "tabOrder": 3000
   },
@@ -20,89 +20,58 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Calculations"
+                      "Entity": "Fact Calculations"
                     }
                   },
-                  "Property": "Metric Name"
+                  "Property": "Aliases"
                 }
               },
-              "queryRef": "Dim Calculations.Metric Name",
-              "nativeQueryRef": "Calculation Name",
-              "displayName": "Calculation Name"
+              "queryRef": "Fact Calculations.Aliases",
+              "nativeQueryRef": "Metric aliases",
+              "displayName": "Metric aliases"
             },
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Calculations"
-                    }
-                  },
-                  "Property": "Description"
-                }
-              },
-              "queryRef": "Dim Calculations.Description",
-              "nativeQueryRef": "Description"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
                       "Entity": "Fact Calculations"
                     }
                   },
-                  "Property": "Source Calculations list"
+                  "Property": "Plain English Definition"
                 }
               },
-              "queryRef": "Dim Related Calculations.Source Calculations list",
-              "nativeQueryRef": "Referenced Calculations",
-              "displayName": "Referenced Calculations"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Fact Calculations"
-                    }
-                  },
-                  "Property": "Data Sources"
-                }
-              },
-              "queryRef": "Dim Data Source.Data Sources",
-              "nativeQueryRef": "Data Source/s",
-              "displayName": "Data Source/s"
+              "queryRef": "Fact Calculations.Plain English Definition",
+              "nativeQueryRef": "Definition",
+              "displayName": "Definition"
             },
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Technical Owner"
+                      "Entity": "Fact Calculations"
                     }
                   },
-                  "Property": "TechnicalOwnerName"
+                  "Property": "Accountable Stakeholder"
                 }
               },
-              "queryRef": "Dim Author.AuthorName",
-              "nativeQueryRef": "Technical Owner",
-              "displayName": "Technical Owner"
+              "queryRef": "Fact Calculations.Accountable Stakeholder",
+              "nativeQueryRef": "Accountable Stakeholder"
             },
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
                       "Entity": "Fact Calculations"
                     }
                   },
-                  "Property": "Accountable Stakeholders"
+                  "Property": "Technical Contributors"
                 }
               },
-              "queryRef": "Dim Accountable Stakeholders.Accountable Stakeholders",
-              "nativeQueryRef": "Accountable Stakeholder/s",
-              "displayName": "Accountable Stakeholder/s"
+              "queryRef": "Fact Calculations.Technical Contributors",
+              "nativeQueryRef": "Technical Contributors"
             }
           ]
         }
@@ -114,10 +83,10 @@
               "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Dim Calculations"
+                    "Entity": "Fact Calculations"
                   }
                 },
-                "Property": "Description"
+                "Property": "Plain English Definition"
               }
             },
             "direction": "Ascending"
@@ -132,13 +101,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "410.8608278407259D"
+                  "Value": "712.4513314121102D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Dim Calculations.Description"
+            "metadata": "Fact Calculations.Plain English Definition"
           }
         },
         {
@@ -146,13 +115,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "110.3300321129261D"
+                  "Value": "202.20946377961803D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Dim Accountable Stakeholders.Accountable Stakeholders"
+            "metadata": "Fact Calculations.Aliases"
           }
         },
         {
@@ -160,13 +129,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "148.25618437165375D"
+                  "Value": "101.58852556557682D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Dim Data Source.Data Sources"
+            "metadata": "Fact Calculations.Accountable Stakeholder"
           }
         },
         {
@@ -174,41 +143,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "116.52193512038018D"
+                  "Value": "120.88527338300912D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Dim Author.AuthorName"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "209.83634670418147D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Dim Calculations.Metric Name"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "178.08290111096179D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Dim Related Calculations.Source Calculations list"
+            "metadata": "Fact Calculations.Technical Contributors"
           }
         }
       ],
@@ -224,6 +165,26 @@
             }
           }
         }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'fitToContent'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
@@ -231,15 +192,31 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "7c66adc02890b86e045b",
+        "name": "a0ed83c40bab9462d552",
         "field": {
           "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Calculations"
+                "Entity": "Fact Calculations"
               }
             },
-            "Property": "Type of Calculation"
+            "Property": "Plain English Definition"
+          }
+        },
+        "type": "Advanced",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "c25d45400c6902906598",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Calculation Semantic Model"
+              }
+            },
+            "Property": "Report Name"
           }
         },
         "type": "Categorical",
@@ -248,7 +225,7 @@
           "From": [
             {
               "Name": "d",
-              "Entity": "Dim Calculations",
+              "Entity": "Dim Calculation Semantic Model",
               "Type": 0
             }
           ],
@@ -264,7 +241,7 @@
                             "Source": "d"
                           }
                         },
-                        "Property": "Type of Calculation"
+                        "Property": "Report Name"
                       }
                     }
                   ],
@@ -272,7 +249,7 @@
                     [
                       {
                         "Literal": {
-                          "Value": "'Measure'"
+                          "Value": "'Workforce'"
                         }
                       }
                     ]
@@ -283,6 +260,163 @@
           ]
         },
         "howCreated": "User"
+      },
+      {
+        "name": "d38c75a84ec677030949",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Calculations"
+              }
+            },
+            "Property": "Metric Name"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "Fact Calculations",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "f"
+                              }
+                            },
+                            "Property": "Metric Name"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'Headcount%'"
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'Leave%'"
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'NeverStarts%'"
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'NewStarters%'"
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'Overtime%'"
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'TotalPayroll%'"
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'Exits%'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "1cc54938b64e206c6be6",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Calculations"
+              }
+            },
+            "Property": "Aliases"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "318660e4915c0a0a5836",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Calculations"
+              }
+            },
+            "Property": "Accountable Stakeholder"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "b7e3274a3d71d59b30c9",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact Calculations"
+              }
+            },
+            "Property": "Technical Contributors"
+          }
+        },
+        "type": "Categorical"
       }
     ]
   }

@@ -1,0 +1,535 @@
+/// Definition: A person with an active profile in Employment Hero, the organisation's HR and payroll system. A profile is active from the employee's start date until their termination date. In this report: employees in every division except Admin and External, one row per employee, from the HR employee table in L4_Analytical.
+/// For analysis: Group workforce results here. Start Date is the active date join; other dates are inactive.
+table DimEmployee
+	lineageTag: 4665117d-f844-41f8-94c7-2eab6692a01e
+
+	/// Definition: Data quality flag for the probation end date: 0 when it is set, or blank for a casual employee; 1 when it is missing.
+	/// For analysis: Conditional formatting helper. Not for analysis.
+	measure ProbationBlankValid = ```
+			SWITCH(
+			    TRUE(),
+			    SELECTEDVALUE(DimEmployee[Employment Type]) = "Casual" && SELECTEDVALUE(DimEmployee[Probation End Date]) = BLANK(), 0, 
+			    SELECTEDVALUE(DimEmployee[Probation End Date]) <> BLANK(), 0, 
+			1)
+			```
+		formatString: 0
+		lineageTag: 28e6311d-9fca-4bf2-8336-07736bef3b84
+
+	/// Definition: Data quality flag for the termination date: 0 when it matches the employment status (terminated with a date; active with no date or a future date; expired or pending with no date); 1 otherwise.
+	/// For analysis: Conditional formatting helper. Not for analysis.
+	measure ExitDateBlankValid =
+			SWITCH(TRUE(),
+			    SELECTEDVALUE(DimEmployee[Employee Status]) = "terminated" && SELECTEDVALUE(DimEmployee[Termination Date]) <> BLANK(), 0,
+			    SELECTEDVALUE(DimEmployee[Employee Status]) = "active" && (SELECTEDVALUE(DimEmployee[Termination Date]) = BLANK() || SELECTEDVALUE(DimEmployee[Termination Date]) > TODAY()) , 0,
+			    SELECTEDVALUE(DimEmployee[Employee Status]) = "pending", 0,
+			    SELECTEDVALUE(DimEmployee[Employee Status]) = "expired", 0,
+			    1)
+		formatString: 0
+		lineageTag: 6049bcff-524a-4788-87d2-2912e39ee644
+
+	/// Definition: Employee identifier from the HR system.
+	/// For analysis: Count distinct for employee numbers. Do not sum.
+	column 'Id Employee'
+		dataType: string
+		lineageTag: 5be52842-5224-483e-8588-3ae21a14586a
+		summarizeBy: none
+		sourceColumn: Id Employee
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's payroll ID.
+	/// For analysis: Key: joins DimWorker Id Employee Payroll (many-to-many, both directions).
+	column 'Id Employee Payroll'
+		dataType: string
+		lineageTag: 1b5c35dd-a0f6-4c0d-b1ff-28f18fd59765
+		summarizeBy: none
+		sourceColumn: Id Employee Payroll
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Identifier of the employing organisation.
+	column 'Id Organisation'
+		dataType: string
+		isHidden
+		lineageTag: b478755d-412d-4959-87e0-68ca66118013
+		summarizeBy: none
+		sourceColumn: Id Organisation
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Identifier of the employee's division.
+	column 'Id Division'
+		dataType: string
+		isHidden
+		lineageTag: 7d325515-f405-4332-9110-e46b53a2ffd9
+		summarizeBy: none
+		sourceColumn: Id Division
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee identifier of the employee's manager.
+	column 'Id Manager'
+		dataType: string
+		lineageTag: 5810495f-ea0e-4a54-b464-31bcb3801601
+		summarizeBy: none
+		sourceColumn: Id Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Division the employee belongs to, for example NDIS or CYF.
+	column Division
+		dataType: string
+		lineageTag: b9b4b115-415f-4b7d-8337-c6d94b404965
+		summarizeBy: none
+		sourceColumn: Division
+		sortByColumn: 'Division Order'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's job title.
+	column 'Job Title'
+		dataType: string
+		lineageTag: 21aef650-0d64-4685-aad5-29568e77e162
+		summarizeBy: none
+		sourceColumn: Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Role grouping from the HR system, for example Support Worker, Case Manager or Corporate.
+	column 'Role Category'
+		dataType: string
+		lineageTag: 24168b87-ea86-4525-aeb7-91530213e567
+		summarizeBy: none
+		sourceColumn: Role Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment status recorded in the HR system.
+	column 'Employee Status'
+		dataType: string
+		lineageTag: eb5b2d22-39b1-4a44-a56f-8bfc59ba99a7
+		summarizeBy: none
+		sourceColumn: Employee Status
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment agreement or award the employee is paid under.
+	column 'Employee Employment Agreement'
+		dataType: string
+		lineageTag: d7b25c15-1d7e-4b58-b702-773e78eb1612
+		summarizeBy: none
+		sourceColumn: Employee Employment Agreement
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Legal entity that employs the employee.
+	column 'Employing Entity'
+		dataType: string
+		lineageTag: b9c96fda-15b6-42e4-95fe-7d6c392485fe
+		summarizeBy: none
+		sourceColumn: Employing Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment basis: casual, part-time or full-time.
+	column 'Employment Type'
+		dataType: string
+		lineageTag: b7621a06-cc7d-4753-8981-05909c75f03a
+		summarizeBy: none
+		sourceColumn: Employment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Work location recorded for the employee.
+	column Location
+		dataType: string
+		lineageTag: 5130fbd8-3d06-4575-97fd-980d44105e15
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's title, for example Ms or Mr.
+	column Title
+		dataType: string
+		lineageTag: 5da88a6d-1eb8-4273-9e62-5034658f629f
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's first name. Personal information.
+	column 'First Name'
+		dataType: string
+		lineageTag: dd40a515-c2ed-4289-8587-814dead5594f
+		summarizeBy: none
+		sourceColumn: First Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's last name. Personal information.
+	column 'Last Name'
+		dataType: string
+		lineageTag: ca430853-d99c-4818-846f-adb56ddcaf2b
+		summarizeBy: none
+		sourceColumn: Last Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's full name. Personal information.
+	column 'Employee Name'
+		dataType: string
+		lineageTag: bfb70ee0-e73f-4823-9b3a-6b578f543b38
+		summarizeBy: none
+		sourceColumn: Employee Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's date of birth. Personal information.
+	/// For analysis: Used to derive Age Band; use Age Band for analysis.
+	column 'Date Of Birth'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 92e0eabe-d248-4013-bcaf-63bb24fb75cf
+		summarizeBy: none
+		sourceColumn: Date Of Birth
+
+		variation Variation
+			isDefault
+			relationship: e59ff790-a43d-4ef0-bf8e-7cd31c1ac0ea
+			defaultHierarchy: LocalDateTable_9de4099f-8834-425b-85ac-b356aa7210e8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's gender as recorded in the HR system. Personal information.
+	column Gender
+		dataType: string
+		lineageTag: 3b205793-fd40-427f-b783-49b062e79760
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's work email address. Personal information.
+	column 'Company Email'
+		dataType: string
+		lineageTag: 6053bc55-4888-4ea8-91d5-e5e346a9fdfd
+		summarizeBy: none
+		sourceColumn: Company Email
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Suburb recorded for the employee. Personal information.
+	column Suburb
+		dataType: string
+		lineageTag: c827a53e-3e9a-4b4a-9449-f478334be234
+		summarizeBy: none
+		sourceColumn: Suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: State or territory recorded for the employee, for example QLD. Personal information.
+	column State
+		dataType: string
+		lineageTag: 0acbfc22-34ac-4b24-b017-6c9d87a3fef6
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Postcode recorded for the employee. Personal information.
+	column Postcode
+		dataType: string
+		lineageTag: f033d723-fe46-42eb-9d5d-a8f169ba3647
+		summarizeBy: none
+		sourceColumn: Postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Country recorded for the employee. Personal information.
+	column Country
+		dataType: string
+		lineageTag: 20877838-1828-42ce-8ae1-b773653bbc02
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: True when the job title is a variant of Service Manager.
+	/// For analysis: Flag to limit results to service managers.
+	column 'Is Service Manager'
+		dataType: boolean
+		isHidden
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a3b9d97c-bb43-4665-85a4-ee6cb535710d
+		summarizeBy: none
+		sourceColumn: Is Service Manager
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: True when the job title is a variant of Case Manager.
+	/// For analysis: Flag to limit results to case managers.
+	column 'Is Case Manager'
+		dataType: boolean
+		isHidden
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9f700924-85c3-489f-9f68-a28ee4e113ed
+		summarizeBy: none
+		sourceColumn: Is Case Manager
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Full name of the employee's manager. Personal information.
+	column 'Manager Name'
+		dataType: string
+		lineageTag: e8cf220f-0540-437f-b314-25a6566b2c79
+		summarizeBy: none
+		sourceColumn: Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the employee started employment.
+	/// For analysis: Active relationship to DimEmployeeTenureDate Date.
+	column 'Start Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 6540f22a-10db-4e26-9f28-df6c51908b3b
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Date the employee's employment ended; blank while employed.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date; activate it for exits by month.
+	column 'Termination Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: 7ec8531c-e1cd-4acf-a9f2-4d73131dc9c8
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Date the employee's probation ends; blank for casual employees and where no probation is set.
+	/// For analysis: Inactive relationship to DimEmployeeTenureDate Date.
+	column 'Probation End Date'
+		dataType: dateTime
+		formatString: d/m/yyyy
+		lineageTag: a1a3d196-dce2-46d9-96a5-4c0d07780fc8
+		summarizeBy: none
+		sourceColumn: Probation End Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Definition: Length of the employee's probation in months.
+	/// For analysis: Do not sum.
+	column 'Probation Length Months'
+		dataType: double
+		lineageTag: aebaa168-6394-402f-85df-56740278ee2d
+		summarizeBy: sum
+		sourceColumn: Probation Length Months
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Sort order for divisions in visuals.
+	/// For analysis: Sort helper. Not for analysis.
+	column 'Division Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f16d0ff1-dd56-4110-8f10-748e72723c42
+		summarizeBy: sum
+		sourceColumn: Division Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's age group at the last refresh: Under 21, 21-34, 35-49 or 50+; blank where no date of birth is recorded.
+	/// For analysis: Sorted by Age Band Order.
+	column 'Age Band'
+		dataType: string
+		lineageTag: de6dc096-55e4-43c4-8c5c-c55ab5efeaf5
+		summarizeBy: none
+		sourceColumn: Age Band
+		sortByColumn: 'Age Band Order'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Probation outcome: Passed, In Probation, Failed (left on or before the probation end date), Casual employee or Probation not defined.
+	column 'Probation Status'
+		dataType: string
+		lineageTag: ca8fdfca-f191-4af4-bc49-caef721898cf
+		summarizeBy: none
+		sourceColumn: Probation Status
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Role group from the role category: Client Facing (support workers, clinical), Non-Client Facing (case managers, team leaders, service managers, regional managers), Corporate (corporate, executive, general managers) or Unclassified.
+	column 'Role Group'
+		dataType: string
+		lineageTag: f1757b76-b223-4c12-af19-a3eaf6601a7b
+		summarizeBy: none
+		sourceColumn: Role Group
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order for Age Band: 1 Under 21, 2 21-34, 3 35-49, 4 50+, 5 no date of birth recorded.
+	/// For analysis: Sort helper. Not for analysis.
+	column 'Age Band Order'
+		dataType: double
+		isHidden
+		lineageTag: a550c56b-bf92-4a62-b83d-11176fd98d44
+		summarizeBy: sum
+		sourceColumn: Age Band Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Number of data quality issues on the employee record, 0 to 5: missing division, job title, employment type or start date, and a termination date that does not match the employment status. The probation end date is not counted.
+	/// For analysis: 0 means no issues; filter on values above 0 to find records to fix.
+	column DataQualityCheck = ```
+			VAR _division = IF(DimEmployee[Division] <> BLANK(), 0, 1)
+			VAR _jobTitle = IF(DimEmployee[Job Title] <> BLANK(), 0, 1)
+			VAR _employmentType = IF(DimEmployee[Employment Type] <> BLANK(), 0, 1)
+			VAR _startDate = IF(DimEmployee[Start Date] <> BLANK(), 0, 1)
+			VAR _probationDate = SWITCH(
+			    TRUE(),
+			    DimEmployee[Employment Type] = "Casual" && DimEmployee[Probation End Date] = BLANK(), 0, 
+			    DimEmployee[Probation End Date] <> BLANK(), 0, 
+			    1)
+			VAR _exitDate = SWITCH(
+			    TRUE(),
+			    DimEmployee[Employee Status] = "terminated" && DimEmployee[Termination Date] <> BLANK(), 0,
+			    DimEmployee[Employee Status] = "active" && (DimEmployee[Termination Date] = BLANK() || DimEmployee[Termination Date] > TODAY()) , 0,
+			    DimEmployee[Employee Status] = "expired" && DimEmployee[Termination Date] = BLANK(), 0,
+			    DimEmployee[Employee Status] = "pending" && DimEmployee[Termination Date] = BLANK(), 0,
+			    1)
+			VAR _total = _division + _jobTitle + _employmentType + _startDate + _exitDate 
+			RETURN  _total
+			```
+		formatString: 0
+		lineageTag: 5359b0aa-9a2f-46f4-8d34-1103800eca77
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimEmployee = m
+		mode: import
+		queryGroup: EDP
+		source =
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    Dim_employee = fnCleanColumnNames(Source{[Schema="Dim",Item="employee"]}[Data]),
+				    #"Filtered Rows" = Table.SelectRows(Dim_employee, each [Division] <> "Admin" and [Division] <> "External"),
+				    #"Added Division Order" = Table.AddColumn(#"Filtered Rows", "Division Order", each if [Division] = "Disability" then 0 else if [Division] = "CYF" then 1 else if [Division] = "V&A" then 2 else if [Division] = "GSL" then 3 else if [Division] = "Corporate Services" then 4 else if [Division] = "ASC" then 5 else if [Division] = "NHN" then 6 else if [Division] = "Finance" then 7 else if [Division] = "IT" then 8 else if [Division] = "NA" then 9 else if [Division] = "Kanda Foundation" then 10 else if [Division] = "APM" then 11 else if [Division] = "Quality" then 12 else if [Division] = "Office of the CEO" then 13 else if [Division] = "Transformation" then 14 else if [Division] = "Admin" then 15 else if [Division] = "External" then 16 else 17),
+				    #"Added Age Band" = Table.AddColumn(
+				    #"Added Division Order",
+				    "Age Band",
+				    each
+				        let
+				            DOB     = Date.From(DateTimeZone.FromText([Date Of Birth])),
+				            Today   = Date.From(DateTime.LocalNow()),
+				            Age     = Date.Year(Today) - Date.Year(DOB)
+				                      - (if (Date.Month(Today) < Date.Month(DOB))
+				                            or (Date.Month(Today) = Date.Month(DOB)
+				                                and Date.Day(Today) < Date.Day(DOB))
+				                         then 1 else 0),
+				            Band    = if DOB = null          then null
+				                      else if Age < 21       then "Under 21"
+				                      else if Age <= 34      then "21-34"
+				                      else if Age <= 49      then "35-49"
+				                      else                       "50+"
+				        in
+				            Band,
+				    type text
+				),
+				    #"Added Age Band Order" = Table.AddColumn(
+				    #"Added Age Band",
+				    "Age Band Order",
+				    each
+				        let
+				            DOB     = Date.From(DateTimeZone.FromText([Date Of Birth])),
+				            Today   = Date.From(DateTime.LocalNow()),
+				            Age     = Date.Year(Today) - Date.Year(DOB)
+				                      - (if (Date.Month(Today) < Date.Month(DOB))
+				                            or (Date.Month(Today) = Date.Month(DOB)
+				                                and Date.Day(Today) < Date.Day(DOB))
+				                         then 1 else 0),
+				            Band    = if DOB = null          then 5
+				                      else if Age < 21       then 1
+				                      else if Age <= 34      then 2
+				                      else if Age <= 49      then 3
+				                      else                       4
+				        in
+				            Band,
+				    type number
+				),
+				    #"Added Probation Status" = Table.AddColumn(
+				    #"Added Age Band Order",
+				    "Probation Status",
+				    each
+				        let
+				            Today           = Date.From(DateTime.LocalNow()),
+				            StartDate       = [Start Date],
+				            TerminationDate = [Termination Date],
+				            ProbationEnd    = Date.From([Probation End Date]),
+				
+				            Status =
+				                if [Employment Type] = "Casual" then "Casual employee"
+				                else if StartDate = null or ProbationEnd = null then "Probation not defined"
+				                else if TerminationDate = null then
+				                    if ProbationEnd <= Today then "Passed"
+				                    else "In Probation"
+				                else if ProbationEnd >= TerminationDate then "Failed"
+				                else "Passed"
+				        in
+				            Status,
+				    type text
+				),
+				    #"Added Role Group" = Table.AddColumn(#"Added Probation Status",
+				    "Role Group",
+				    each
+				        if List.Contains({"Support Worker", "Clinical"}, [Role Category])                                    then "Client Facing"
+				        else if List.Contains({"Case Manager", "Team Leader", "Service Manager", "Regional Manager"}, [Role Category]) then "Non-Client Facing"
+				        else if List.Contains({"Corporate", "Executive", "General Manager"}, [Role Category])                then "Corporate"
+				        else "Unclassified",
+				    type text
+				),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Role Group",{{"Probation End Date", type date}, {"Date Of Birth", type datetime}, {"Division Order", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

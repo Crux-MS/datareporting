@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "f497e4dc330c70582ed0",
   "position": {
     "x": 55,
     "y": 430,
-    "z": 8000,
+    "z": 7000,
     "height": 256,
     "width": 580,
-    "tabOrder": 7000
+    "tabOrder": 6000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Employment Start Date"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Employment Start Date.MMM YYYY",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
               "nativeQueryRef": "MMM YYYY",
               "active": true
             }
@@ -39,16 +39,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Job Categories"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "DivisionAcronym"
+                  "Property": "Division"
                 }
               },
-              "queryRef": "Dim Job Categories.DivisionAcronym",
-              "nativeQueryRef": " ",
-              "active": true,
-              "displayName": " "
+              "queryRef": "DimEmployee.Division",
+              "nativeQueryRef": "Division",
+              "active": true
             }
           ]
         },
@@ -59,14 +58,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "DisplayProbationTurnoverRate"
+                  "Property": "UnsuccessfulProbationRate"
                 }
               },
-              "queryRef": "Fact Workforce.DisplayProbationTurnoverRate",
-              "nativeQueryRef": "DisplayProbationTurnoverRate"
+              "queryRef": "DisplayMeasures.UnsuccessfulProbationRate",
+              "nativeQueryRef": "UnsuccessfulProbationRate"
             }
           ]
         }
@@ -83,67 +82,6 @@
                 }
               }
             }
-          }
-        }
-      ],
-      "values": [
-        {
-          "properties": {
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "FillRule": {
-                      "Input": {
-                        "Measure": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Workforce"
-                            }
-                          },
-                          "Property": "DisplayProbationTurnoverRate"
-                        }
-                      },
-                      "FillRule": {
-                        "linearGradient2": {
-                          "min": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#F8F6F0'"
-                              }
-                            }
-                          },
-                          "max": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#FBD760'"
-                              }
-                            }
-                          },
-                          "nullColoringStrategy": {
-                            "strategy": {
-                              "Literal": {
-                                "Value": "'noColor'"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Fact Workforce.DisplayProbationTurnoverRate"
           }
         }
       ],
@@ -560,7 +498,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "48.70633355953992D"
+                  "Value": "54.31691776244005D"
                 }
               }
             }
@@ -671,20 +609,6 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "49D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Dim Job Categories.DivisionAcronym"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
                   "Value": "54.390243902439025D"
                 }
               }
@@ -754,6 +678,80 @@
             ]
           }
         }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "DisplayMeasures"
+                            }
+                          },
+                          "Property": "UnsuccessfulProbationRate"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#F8F6F0'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#FBD760'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "DisplayMeasures.UnsuccessfulProbationRate"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -811,150 +809,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "96658ec95b621d94eb38",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Employment Start Date"
-              }
-            },
-            "Property": "Employment Start Date"
-          }
-        },
-        "type": "RelativeDate",
-        "howCreated": "User"
-      },
-      {
-        "name": "f670cbc987fb73db9116",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Job Categories"
-              }
-            },
-            "Property": "Division"
-          }
-        },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Job Categories",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Not": {
-                  "Expression": {
-                    "In": {
-                      "Expressions": [
-                        {
-                          "Column": {
-                            "Expression": {
-                              "SourceRef": {
-                                "Source": "d"
-                              }
-                            },
-                            "Property": "Division"
-                          }
-                        }
-                      ],
-                      "Values": [
-                        [
-                          {
-                            "Literal": {
-                              "Value": "'N/A'"
-                            }
-                          }
-                        ]
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true,
-        "objects": {
-          "general": [
-            {
-              "properties": {
-                "isInvertedSelectionMode": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "true"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      },
-      {
-        "name": "90c4d883babba08e7fdf",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Extract Date"
-              }
-            },
-            "Property": "EH Reporting Year Flag"
-          }
-        },
-        "type": "Advanced",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Extract Date",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 0,
-                  "Left": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
-                        }
-                      },
-                      "Property": "EH Reporting Year Flag"
-                    }
-                  },
-                  "Right": {
-                    "Literal": {
-                      "Value": "1L"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
-      }
-    ]
   }
 }

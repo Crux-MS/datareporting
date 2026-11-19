@@ -1,0 +1,116 @@
+/// Definition: Legacy copy of the data dictionary's metric definitions, loaded from master_data_dictionary.json on SharePoint. One row per metric.
+/// For analysis: Not for analysis.
+table 'Fact Calculations'
+	lineageTag: 540841cf-fde9-4885-a69a-3e4f70604a23
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Last Updated'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: ad0b548e-4e4c-49f7-b3d7-00d1490b1adb
+		summarizeBy: none
+		sourceColumn: Last Updated
+
+		variation Variation
+			isDefault
+			relationship: b424786a-2251-4aae-95e2-441563709cf6
+			defaultHierarchy: LocalDateTable_f512036e-844a-4cdc-8e4e-d5b7eda18661.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: 02615ba9-e0be-4508-84c6-a8906e4a08be
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Name'
+		dataType: string
+		lineageTag: 75c429d9-bd3e-4fa6-aa2d-33caf9f411f4
+		summarizeBy: none
+		sourceColumn: Metric Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column Aliases
+		dataType: string
+		lineageTag: c10c23e8-7299-45fd-bc63-8324b085705f
+		summarizeBy: none
+		sourceColumn: Aliases
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Plain English Definition'
+		dataType: string
+		lineageTag: 9591c669-7702-4a8a-9fa2-af75340f5fc4
+		summarizeBy: none
+		sourceColumn: Plain English Definition
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Technical Lineage'
+		dataType: string
+		lineageTag: a594bece-bd43-422d-92dc-3fe68541d5f2
+		summarizeBy: none
+		sourceColumn: Technical Lineage
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json. Personal information.
+	/// For analysis: Not for analysis.
+	column 'Accountable Stakeholder'
+		dataType: string
+		lineageTag: cc1257d3-fd16-4555-86e7-35fa36acc62d
+		summarizeBy: none
+		sourceColumn: Accountable Stakeholder
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json. Personal information.
+	/// For analysis: Not for analysis.
+	column 'Technical Contributors'
+		dataType: string
+		lineageTag: bc75f0da-5444-44a2-8c5f-90c895d79aed
+		summarizeBy: none
+		sourceColumn: Technical Contributors
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Technical Notes'
+		dataType: string
+		lineageTag: 80453b32-c989-4ba7-8495-e62717115bc2
+		summarizeBy: none
+		sourceColumn: Technical Notes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Last Updated", "Metric Id", "Metric Name", "Aliases", "Plain English Definition", "Technical Lineage", "Accountable Stakeholder", "Technical Contributors", "Technical Notes"}),
+				    #"Extracted Values" = Table.TransformColumns(#"Removed Other Columns", {"Aliases", each Text.Combine(List.Transform(_, Text.From), ", "), type text}),
+				    #"Extracted Values1" = Table.TransformColumns(#"Extracted Values", {"Technical Contributors", each Text.Combine(List.Transform(_, Text.From), ", "), type text})
+				in
+				    #"Extracted Values1"
+

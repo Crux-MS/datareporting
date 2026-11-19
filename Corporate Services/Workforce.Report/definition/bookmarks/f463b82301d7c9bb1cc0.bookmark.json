@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
   "displayName": "OB Close",
   "name": "f463b82301d7c9bb1cc0",
   "options": {
@@ -39,147 +39,6 @@
               "objects": {}
             }
           },
-          "46a5735afc0f942b2ad2": {
-            "filters": {
-              "byExpr": [
-                {
-                  "name": "9b0fd428c5dcdd71d1ff",
-                  "type": "RelativeDate",
-                  "filter": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "d",
-                        "Entity": "Dim Extract Date",
-                        "Type": 0
-                      }
-                    ],
-                    "Where": [
-                      {
-                        "Condition": {
-                          "Between": {
-                            "Expression": {
-                              "Column": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "d"
-                                  }
-                                },
-                                "Property": "Extract Date"
-                              }
-                            },
-                            "LowerBound": {
-                              "DateSpan": {
-                                "Expression": {
-                                  "DateAdd": {
-                                    "Expression": {
-                                      "DateAdd": {
-                                        "Expression": {
-                                          "Now": {}
-                                        },
-                                        "Amount": 1,
-                                        "TimeUnit": 0
-                                      }
-                                    },
-                                    "Amount": -2,
-                                    "TimeUnit": 3
-                                  }
-                                },
-                                "TimeUnit": 0
-                              }
-                            },
-                            "UpperBound": {
-                              "DateSpan": {
-                                "Expression": {
-                                  "Now": {}
-                                },
-                                "TimeUnit": 0
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Extract Date"
-                    }
-                  },
-                  "howCreated": 1
-                },
-                {
-                  "name": "746ad2e37d984e76448d",
-                  "type": "Categorical",
-                  "expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Slicer MMM YYYY"
-                    }
-                  },
-                  "howCreated": 0
-                }
-              ]
-            },
-            "singleVisual": {
-              "visualType": "slicer",
-              "objects": {
-                "merge": {
-                  "data": [
-                    {
-                      "properties": {
-                        "mode": {
-                          "expr": {
-                            "Literal": {
-                              "Value": "'Dropdown'"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              },
-              "orderBy": [
-                {
-                  "Direction": 2,
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Slicer MMM YYYY"
-                    }
-                  }
-                }
-              ],
-              "activeProjections": {
-                "Values": [
-                  {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Dim Extract Date"
-                        }
-                      },
-                      "Property": "Slicer MMM YYYY"
-                    }
-                  }
-                ]
-              }
-            }
-          },
           "5841e3fe4c36610b274d": {
             "singleVisual": {
               "visualType": "actionButton",
@@ -195,12 +54,6 @@
           "7480ef171dedbe673f6d": {
             "singleVisual": {
               "visualType": "actionButton",
-              "objects": {}
-            }
-          },
-          "8432e4c04030e5e8fe7e": {
-            "singleVisual": {
-              "visualType": "textbox",
               "objects": {}
             }
           },

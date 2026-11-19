@@ -1,0 +1,56 @@
+/// Definition: Report field parameter holding the dollars or hours option for payroll visuals.
+/// For analysis: Report slicer. Not for analysis.
+table HoursDollarsParam
+	lineageTag: 533e118f-a9bc-46e3-ab6f-3bea63c8780a
+
+	/// Definition: Option shown on the report slicer.
+	/// For analysis: Report slicer. Not for analysis.
+	column HoursDollarsParam
+		lineageTag: 7b99721d-ed82-4f5a-ba9c-fe4f8a118e0e
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'HoursDollarsParam Order'
+
+		relatedColumnDetails
+			groupByColumn: 'HoursDollarsParam Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Model field each option points to.
+	/// For analysis: Report helper. Not for analysis.
+	column 'HoursDollarsParam Fields'
+		isHidden
+		lineageTag: ce9a63de-d918-4350-8110-73395a4fd961
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'HoursDollarsParam Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order of the options.
+	/// For analysis: Report helper. Not for analysis.
+	column 'HoursDollarsParam Order'
+		isHidden
+		formatString: 0
+		lineageTag: e7388036-7006-45f7-ba2e-8c76e042b211
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition HoursDollarsParam = calculated
+		mode: import
+		source =
+				{
+				    ("Total Hours", NAMEOF('FactDivisionFortnightlyPaySummary'[Total Hours]), 0),
+				    ("Total Amount ($)", NAMEOF('FactDivisionFortnightlyPaySummary'[Total Hourly Amount]), 0)
+				}
+
+	annotation PBI_Id = 71025206350b40f086e7c9d696c68095
+

@@ -1,10 +1,10 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "a511f7dc722190a9099a",
   "position": {
     "x": 48.135072908672292,
     "y": 88.309286262532567,
-    "z": 3000,
+    "z": 5000,
     "height": 80.729483282674778,
     "width": 234.40729483282675,
     "tabOrder": 2000
@@ -20,16 +20,30 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Extract Date"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "Slicer MMM YYYY"
+                  "Property": "Division"
                 }
               },
-              "queryRef": "Dim Extract Date.Slicer MMM YYYY",
-              "nativeQueryRef": "Reporting Month",
-              "active": true,
-              "displayName": "Reporting Month"
+              "queryRef": "DimEmployee.Division",
+              "nativeQueryRef": "Division",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "Employing Entity"
+                }
+              },
+              "queryRef": "DimEmployee.Employing Entity",
+              "nativeQueryRef": "Employing Entity",
+              "active": false
             }
           ]
         }
@@ -85,49 +99,7 @@
       ],
       "general": [
         {
-          "properties": {
-            "filter": {
-              "filter": {
-                "Version": 2,
-                "From": [
-                  {
-                    "Name": "d",
-                    "Entity": "Dim Extract Date",
-                    "Type": 0
-                  }
-                ],
-                "Where": [
-                  {
-                    "Condition": {
-                      "In": {
-                        "Expressions": [
-                          {
-                            "Column": {
-                              "Expression": {
-                                "SourceRef": {
-                                  "Source": "d"
-                                }
-                              },
-                              "Property": "Slicer MMM YYYY"
-                            }
-                          }
-                        ],
-                        "Values": [
-                          [
-                            {
-                              "Literal": {
-                                "Value": "'Current Month'"
-                              }
-                            }
-                          ]
-                        ]
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "selection": [
@@ -144,87 +116,7 @@
         }
       ]
     },
-    "syncGroup": {
-      "groupName": "Employing entity",
-      "fieldChanges": true,
-      "filterChanges": true
-    },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "e31bdba10c4b7d9c60a0",
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "9b0fd428c5dcdd71d1ff",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Extract Date"
-              }
-            },
-            "Property": "Extract Date"
-          }
-        },
-        "type": "RelativeDate",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Extract Date",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Between": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
-                        }
-                      },
-                      "Property": "Extract Date"
-                    }
-                  },
-                  "LowerBound": {
-                    "DateSpan": {
-                      "Expression": {
-                        "DateAdd": {
-                          "Expression": {
-                            "DateAdd": {
-                              "Expression": {
-                                "Now": {}
-                              },
-                              "Amount": 1,
-                              "TimeUnit": 0
-                            }
-                          },
-                          "Amount": -2,
-                          "TimeUnit": 3
-                        }
-                      },
-                      "TimeUnit": 0
-                    }
-                  },
-                  "UpperBound": {
-                    "DateSpan": {
-                      "Expression": {
-                        "Now": {}
-                      },
-                      "TimeUnit": 0
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User"
-      }
-    ]
-  }
+  "parentGroupName": "e31bdba10c4b7d9c60a0"
 }

@@ -1,0 +1,603 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "a0fd1f12a9175d76ec0a",
+  "position": {
+    "x": 55.451263537906136,
+    "y": 114.59927797833934,
+    "z": 3500,
+    "height": 591.48014440433212,
+    "width": 1200.5198555956679,
+    "tabOrder": 9001
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Start of Month"
+                }
+              },
+              "queryRef": "DimDate.Start of Month",
+              "nativeQueryRef": "Months",
+              "active": false,
+              "displayName": "Months"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Fortnight Start Date"
+                }
+              },
+              "queryRef": "DimDate.Fortnight Start Date",
+              "nativeQueryRef": "Fortnights",
+              "active": true,
+              "displayName": "Fortnights"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Start of Week (Monday)"
+                }
+              },
+              "queryRef": "DimDate.Start of Week (Monday)",
+              "nativeQueryRef": "Weeks",
+              "active": false,
+              "displayName": "Weeks"
+            }
+          ],
+          "fieldParameters": [
+            {
+              "parameterExpr": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PeriodParam"
+                    }
+                  },
+                  "Property": "MonthWeekParam"
+                }
+              },
+              "index": 0,
+              "length": 3
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCaseManagers"
+                    }
+                  },
+                  "Property": "Case Manager Name"
+                }
+              },
+              "queryRef": "DimActiveCMs.Case Manager Name",
+              "nativeQueryRef": "Case Manager",
+              "active": true,
+              "displayName": "Case Manager"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableHoursRate"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableHoursRate",
+              "nativeQueryRef": "Unbillable (%)",
+              "displayName": "Unbillable (%)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableMeetingHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableMeetingHours",
+              "nativeQueryRef": "Meetings",
+              "displayName": "Meetings"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableTrainingHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableTrainingHours",
+              "nativeQueryRef": "Training",
+              "displayName": "Training"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableAdminHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableAdminHours",
+              "nativeQueryRef": "Admin",
+              "displayName": "Admin"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableShadowShiftHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableShadowShiftHours",
+              "nativeQueryRef": "Shadow shifts",
+              "displayName": "Shadow shifts"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableAwakeHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableAwakeHours",
+              "nativeQueryRef": "Unbillable Awake",
+              "displayName": "Unbillable Awake"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableTravelHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableTravelHours",
+              "nativeQueryRef": "Travel",
+              "displayName": "Travel"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillablePHNWHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillablePHNWHours",
+              "nativeQueryRef": "PHNW",
+              "displayName": "PHNW"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerUnbillableOtherHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerUnbillableOtherHours",
+              "nativeQueryRef": "Other Unbillable",
+              "displayName": "Other Unbillable"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "WorkerBillableHours"
+                }
+              },
+              "queryRef": "ParameterMeasures.WorkerBillableHours",
+              "nativeQueryRef": "Billable",
+              "displayName": "Billable"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "ParameterMeasures"
+                  }
+                },
+                "Property": "WorkerUnbillableHoursRate"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'fitToContent'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "valuesOnRow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Worker Unbillable Hours'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "''"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "63c4b05c6d432ae7be51",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMWeeklySnapshot"
+              }
+            },
+            "Property": "Week Start Date"
+          }
+        },
+        "type": "RelativeDate",
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "c5c3f6952655b53919c6",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMMonthlySnapshot"
+              }
+            },
+            "Property": "Month Start Date"
+          }
+        },
+        "type": "RelativeDate",
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "fdb050dcdd42be07a261",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Start of Month"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "11fa54ad256390e06670",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Fortnight Start Date"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "1130d458c44cc261e2b5",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Start of Week (Monday)"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "73dae25ba5012cb8205b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCaseManagers"
+              }
+            },
+            "Property": "Case Manager Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "8c3dd271da493547871c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableHoursRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "717633749e2900041293",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableMeetingHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ebf967cd766b664c09cc",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableTrainingHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2f767ad3840209d6246b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableAdminHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b3bc9777c76452a77eec",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableShadowShiftHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "024142f340d345c0308a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableAwakeHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "75fcf033c938d609c1cb",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableTravelHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "df6657895414055337d9",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillablePHNWHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b4c9dec02227dab1076b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerUnbillableOtherHours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "087bb195e80a23633dd5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "WorkerBillableHours"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

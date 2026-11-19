@@ -1,0 +1,323 @@
+/// Definition: Employees, their manager, role and employment details, from the HR employee table in L4_Analytical (all columns). One row per employee.
+/// For analysis: Linked to DimCaseManagers through Id Manager; filters FactCMWorkerRoster by Id Employee. Start and termination dates relate to the report's auto date tables only.
+table DimEmployees
+	lineageTag: 4da4ecec-3244-4220-803b-da38b7004a0d
+
+	/// Definition: Work location recorded for the employee.
+	column Location
+		dataType: string
+		lineageTag: 4d328640-ba38-4a59-a030-bb682b217e17
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's title, for example Ms or Mr.
+	column Title
+		dataType: string
+		lineageTag: 4ef87a10-14bd-40d7-a12c-da3869bcd32c
+		summarizeBy: none
+		sourceColumn: Title
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's gender as recorded in the HR system. Personal information.
+	column Gender
+		dataType: string
+		lineageTag: cad243c7-11d9-4b17-bcc9-8ca3e4e0d07c
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Suburb recorded for the employee. Personal information.
+	column Suburb
+		dataType: string
+		lineageTag: 69b865c6-e9af-445d-b1cd-b0a9f5460e8a
+		summarizeBy: none
+		sourceColumn: Suburb
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: State or territory recorded for the employee, for example QLD. Personal information.
+	column State
+		dataType: string
+		lineageTag: 78495e5a-7448-44ec-a916-aeeba76d0f43
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Postcode recorded for the employee. Personal information.
+	column Postcode
+		dataType: string
+		lineageTag: e69a69b2-0f0c-4ccd-87c2-ae203d046504
+		summarizeBy: none
+		sourceColumn: Postcode
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Country recorded for the employee. Personal information.
+	column Country
+		dataType: string
+		lineageTag: f78b0e41-39bf-4b66-9efb-7864cc4c397d
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee identifier from the HR system.
+	/// For analysis: Key: joins FactCMWorkerRoster Id Employee.
+	column 'Id Employee'
+		dataType: string
+		lineageTag: 3e3ac631-d85d-47e6-9fc7-8383c13c39eb
+		summarizeBy: none
+		sourceColumn: Id Employee
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's payroll ID.
+	/// For analysis: No relationship in this model.
+	column 'Id Employee Payroll'
+		dataType: string
+		lineageTag: 1f186417-b394-4e30-a2fa-f20d3e207684
+		summarizeBy: none
+		sourceColumn: Id Employee Payroll
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's first name. Personal information.
+	column 'First Name'
+		dataType: string
+		lineageTag: e1aa5d5f-11ba-4bdb-a6f9-cafbdf8e8b36
+		summarizeBy: none
+		sourceColumn: First Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's last name. Personal information.
+	column 'Last Name'
+		dataType: string
+		lineageTag: d60e2570-7287-439d-b37c-9dd66cf346b7
+		summarizeBy: none
+		sourceColumn: Last Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's full name. Personal information.
+	column 'Employee Name'
+		dataType: string
+		lineageTag: 6a099a25-7384-4cd2-95f6-3b2b46bbf971
+		summarizeBy: none
+		sourceColumn: Employee Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's date of birth. Personal information.
+	column 'Date Of Birth'
+		dataType: string
+		lineageTag: d4a05c0d-3629-4881-ad82-585a15e0b5b7
+		summarizeBy: none
+		sourceColumn: Date Of Birth
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's work email address. Personal information.
+	column 'Company Email'
+		dataType: string
+		lineageTag: 4c5dfb0f-b36f-43b2-b914-693f09910576
+		summarizeBy: none
+		sourceColumn: Company Email
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Identifier of the employing organisation.
+	column 'Id Organisation'
+		dataType: string
+		lineageTag: ccaaf5b4-0403-4cd3-9f16-2c6a9ca11867
+		summarizeBy: none
+		sourceColumn: Id Organisation
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment status recorded in the HR system.
+	column 'Employee Status'
+		dataType: string
+		lineageTag: 51ef7e30-03ef-478a-ad54-e37a44d1b12b
+		summarizeBy: none
+		sourceColumn: Employee Status
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment agreement or award the employee is paid under.
+	column 'Employee Employment Agreement'
+		dataType: string
+		lineageTag: 6d6aca43-6089-4f16-8eb4-8e942dd8621d
+		summarizeBy: none
+		sourceColumn: Employee Employment Agreement
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Legal entity that employs the employee.
+	column 'Employing Entity'
+		dataType: string
+		lineageTag: df3cc15d-af09-4b0b-8713-518e69885b81
+		summarizeBy: none
+		sourceColumn: Employing Entity
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employment basis: casual, part-time or full-time.
+	column 'Employment Type'
+		dataType: string
+		lineageTag: 33fbb1a9-abf5-42de-b495-4f3f17298766
+		summarizeBy: none
+		sourceColumn: Employment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee's job title.
+	column 'Job Title'
+		dataType: string
+		lineageTag: 24c6eb72-2087-47ab-83d2-295fc541a245
+		summarizeBy: none
+		sourceColumn: Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Role grouping from the HR system, for example Support Worker, Case Manager or Corporate.
+	column 'Role Category'
+		dataType: string
+		lineageTag: 612cb88d-9791-4963-9f3e-bd24018eead7
+		summarizeBy: none
+		sourceColumn: Role Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee identifier of the employee's manager.
+	/// For analysis: Key: joins DimCaseManagers Id Case Manager.
+	column 'Id Manager'
+		dataType: string
+		lineageTag: f63e4006-2d1a-426d-bdc0-2bc8a7447799
+		summarizeBy: none
+		sourceColumn: Id Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Full name of the employee's manager. Personal information.
+	column 'Manager Name'
+		dataType: string
+		lineageTag: 63731f3b-d547-4eac-b5d9-c3d246599e67
+		summarizeBy: none
+		sourceColumn: Manager Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the employee started employment.
+	/// For analysis: Relates to the report's auto date table only.
+	column 'Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 655af56a-ce2f-4b4d-8055-1efcbd9e2bb4
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		variation Variation
+			isDefault
+			relationship: 272c6e65-a22f-4dd9-bd68-757951682cf3
+			defaultHierarchy: LocalDateTable_d2a53635-736f-4330-81f7-4d206205d575.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Date the employee's employment ended; blank while employed.
+	/// For analysis: Relates to the report's auto date table only.
+	column 'Termination Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f453d88c-6c6a-4f39-96a3-28b63d7145da
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+		variation Variation
+			isDefault
+			relationship: 4b70e5fd-9835-44c5-abf7-9c7bdd9f8662
+			defaultHierarchy: LocalDateTable_e9db6697-e7e0-487e-a303-e5eb3646158e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Date the employee's probation ends; blank for casual employees and where no probation is set.
+	column 'Probation End Date'
+		dataType: string
+		lineageTag: 70246b4f-f55b-494b-aef7-1a5623f54311
+		summarizeBy: none
+		sourceColumn: Probation End Date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Length of the employee's probation in months.
+	/// For analysis: Do not sum.
+	column 'Probation Length Months'
+		dataType: double
+		lineageTag: 44b1290f-ea28-4819-a6cf-00d90e882672
+		summarizeBy: sum
+		sourceColumn: Probation Length Months
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: True when the job title is a variant of Service Manager.
+	/// For analysis: Flag to limit results to service managers.
+	column 'Is Service Manager'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 3b8003a8-7f91-471a-bb6c-a7948d489bac
+		summarizeBy: none
+		sourceColumn: Is Service Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Identifier of the employee's division.
+	column 'Id Division'
+		dataType: string
+		lineageTag: 3648f169-57b3-4b77-b3b8-8138249046e9
+		summarizeBy: none
+		sourceColumn: Id Division
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Division the employee belongs to, for example NDIS or CYF.
+	column Division
+		dataType: string
+		lineageTag: baff0c6d-6566-43c6-8ec9-e4d2ef688c03
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Case Manager'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c0f1976a-bc53-4971-bad9-0887893b5813
+		summarizeBy: none
+		sourceColumn: Is Case Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimEmployees = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    Dim_employee = fnCleanColumnNames(Source{[Schema="Dim",Item="employee"]}[Data])
+				in
+				    Dim_employee
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

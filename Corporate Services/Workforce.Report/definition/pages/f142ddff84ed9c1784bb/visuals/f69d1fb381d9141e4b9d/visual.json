@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "f69d1fb381d9141e4b9d",
   "position": {
     "x": 464.6305418719212,
     "y": 166.69950738916256,
-    "z": 5000,
+    "z": 3000,
     "height": 527.58620689655174,
     "width": 538.22660098522169,
-    "tabOrder": 4000
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -20,30 +20,30 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce Location"
+                      "Entity": "DimEmployee"
                     }
                   },
                   "Property": "State"
                 }
               },
-              "queryRef": "Dim Workforce Location.State",
-              "nativeQueryRef": "State1",
+              "queryRef": "DimEmployee.State",
+              "nativeQueryRef": "State | Division | Location",
               "active": true,
-              "displayName": "State"
+              "displayName": "State | Division | Location"
             },
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "Employing entity"
+                  "Property": "Division"
                 }
               },
-              "queryRef": "Dim Workforce.Employing entity",
-              "nativeQueryRef": "Employing entity",
+              "queryRef": "DimEmployee.Division",
+              "nativeQueryRef": "Division",
               "active": false
             },
             {
@@ -51,16 +51,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Employment Start Date"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "MMM YYYY"
+                  "Property": "Location"
                 }
               },
-              "queryRef": "Dim Employment Start Date.MMM YYYY",
-              "nativeQueryRef": ".",
-              "active": false,
-              "displayName": "."
+              "queryRef": "DimEmployee.Location",
+              "nativeQueryRef": "Location",
+              "active": false
             }
           ]
         },
@@ -71,15 +70,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Currently Employed %"
+                  "Property": "Employees%"
                 }
               },
-              "queryRef": "Fact Workforce.Currently Employed %",
-              "nativeQueryRef": "Currently Employed",
-              "displayName": "Currently Employed"
+              "queryRef": "DisplayMeasures.Employees%",
+              "nativeQueryRef": "Current Employees",
+              "displayName": "Current Employees"
             }
           ],
           "fieldParameters": [
@@ -88,10 +87,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Workforce %"
+                      "Entity": "WorkerParam%"
                     }
                   },
-                  "Property": "Workforce %"
+                  "Property": "WorkerParam"
                 }
               },
               "index": 0,
@@ -108,10 +107,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Workforce"
+                    "Entity": "DisplayMeasures"
                   }
                 },
-                "Property": "Currently Employed %"
+                "Property": "Employees%"
               }
             },
             "direction": "Descending"
@@ -127,7 +126,7 @@
         "levels": [
           {
             "queryRefs": [
-              "Dim Workforce Location.State"
+              "DimEmployee.State"
             ],
             "isCollapsed": true,
             "identityKeys": [
@@ -135,7 +134,7 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce Location"
+                      "Entity": "DimEmployee"
                     }
                   },
                   "Property": "State"
@@ -146,14 +145,26 @@
           },
           {
             "queryRefs": [
-              "Dim Workforce.Employing entity"
+              "DimEmployee.Division"
             ],
             "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployee"
+                    }
+                  },
+                  "Property": "Division"
+                }
+              }
+            ],
             "isPinned": true
           },
           {
             "queryRefs": [
-              "Dim Employment Start Date.MMM YYYY"
+              "DimEmployee.Location"
             ],
             "isCollapsed": true,
             "isPinned": true
@@ -163,67 +174,16 @@
       }
     ],
     "objects": {
-      "columnFormatting": [
+      "columnHeaders": [
         {
           "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#F8F6F0'"
-                    }
-                  }
-                }
-              }
-            },
-            "styleHeader": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "styleTotal": {
+            "autoSizeColumnWidth": {
               "expr": {
                 "Literal": {
                   "Value": "true"
                 }
               }
             }
-          },
-          "selector": {
-            "metadata": "Dim Employment Start Date.MMM YYYY"
-          }
-        }
-      ],
-      "columnWidth": [
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "79.1598161340343D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Fact Workforce.Currently Employed %"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "197D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Dim Workforce Location.State"
           }
         }
       ]
@@ -246,10 +206,10 @@
                     "Column": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "Workforce %"
+                          "Entity": "WorkerParam%"
                         }
                       },
-                      "Property": "Workforce %"
+                      "Property": "WorkerParam"
                     }
                   },
                   "Function": 3
@@ -314,57 +274,6 @@
           }
         },
         "type": "Categorical",
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
-      },
-      {
-        "name": "9d8afe7e11be482d180e",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Extract Date"
-              }
-            },
-            "Property": "EH Reporting Month Flag"
-          }
-        },
-        "type": "Advanced",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Extract Date",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 0,
-                  "Left": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
-                        }
-                      },
-                      "Property": "EH Reporting Month Flag"
-                    }
-                  },
-                  "Right": {
-                    "Literal": {
-                      "Value": "1L"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
         "howCreated": "User",
         "isHiddenInViewMode": true,
         "isLockedInViewMode": true

@@ -1,0 +1,100 @@
+/// Definition: Operating areas with their state and regional managers, from the area table in L4_Analytical. One row per area.
+/// For analysis: Filters the weekly, fortnightly and monthly snapshots and the roster (by the worker's area). Does not filter critical incidents or Standard of Care Reviews. Separate disability (Dis) and CYF regional manager columns.
+table DimArea
+	lineageTag: 005eb89f-e689-4e22-a2cb-7f84c807b876
+
+	/// Definition: Area code.
+	/// For analysis: Key: joins the snapshot tables and FactCMWorkerRoster Worker Id Area.
+	column 'Id Area'
+		dataType: string
+		lineageTag: 95cd0913-ae43-4e19-b898-d7e8b3d04def
+		summarizeBy: none
+		sourceColumn: Id Area
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: State or territory abbreviation, for example QLD.
+	column State
+		dataType: string
+		lineageTag: 9c485147-b601-41bb-b2cb-7764e8c13e85
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: State or territory full name.
+	column 'State Full Name'
+		dataType: string
+		lineageTag: 616c90f4-7d59-41f7-baef-8f4e1805b413
+		summarizeBy: none
+		sourceColumn: State Full Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee identifier of the area's disability regional manager.
+	column 'Id Regional Manager Dis'
+		dataType: string
+		lineageTag: 3c347d4c-ee57-4768-ba78-304e6172a212
+		summarizeBy: none
+		sourceColumn: Id Regional Manager Dis
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Full name of the area's disability regional manager. Personal information.
+	column 'Regional Manager Name Dis'
+		dataType: string
+		lineageTag: 74a209c6-9fc7-4872-8ef4-48b21d7dd3e5
+		summarizeBy: none
+		sourceColumn: Regional Manager Name Dis
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Employee identifier of the area's CYF regional manager.
+	column 'Id Regional Manager Cyf'
+		dataType: string
+		lineageTag: a4b063ed-17f0-41fc-9115-ead6245ecf24
+		summarizeBy: none
+		sourceColumn: Id Regional Manager Cyf
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Full name of the area's CYF regional manager. Personal information.
+	column 'Regional Manager Name Cyf'
+		dataType: string
+		lineageTag: 6c4c8fba-662b-4983-94c7-4a270c36eb2f
+		summarizeBy: none
+		sourceColumn: Regional Manager Name Cyf
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: True when the area has active clients or active employees for any case manager in any week, fortnight or month in the snapshots.
+	/// For analysis: Used to limit the area slicers to areas the case managers work in.
+	column ActiveArea =
+			VAR _weeklyClients = CALCULATE(SUM(FactCMWeeklySnapshot[Client Active Count]), CROSSFILTER(DimArea[Id Area], FactCMWeeklySnapshot[Id Area], Both))
+			VAR _fortnightlyClients = CALCULATE(SUM(FactCMFortnightlySnapshot[Client Active Count]), CROSSFILTER(DimArea[Id Area], FactCMFortnightlySnapshot[Id Area], Both))
+			VAR __monthlyClients = CALCULATE(SUM(FactCMMonthlySnapshot[Client Active Count]), CROSSFILTER(DimArea[Id Area], FactCMMonthlySnapshot[Id Area], Both))
+			VAR _weeklyEmployees = CALCULATE(SUM(FactCMWeeklySnapshot[Employee Active Count]), CROSSFILTER(DimArea[Id Area], FactCMWeeklySnapshot[Id Area], Both))
+			VAR _fortnightlyEmployees = CALCULATE(SUM(FactCMFortnightlySnapshot[Employee Active Count]), CROSSFILTER(DimArea[Id Area], FactCMFortnightlySnapshot[Id Area], Both))
+			VAR __monthlyEmployees = CALCULATE(SUM(FactCMMonthlySnapshot[Employee Active Count]), CROSSFILTER(DimArea[Id Area], FactCMMonthlySnapshot[Id Area], Both))
+			VAR _activeFlag = IF(_weeklyClients > 0 || _fortnightlyClients > 0 || __monthlyClients > 0 || _weeklyEmployees > 0 || _fortnightlyEmployees > 0 || __monthlyEmployees > 0, TRUE(), FALSE())
+			
+			RETURN _activeFlag
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f6d85ff0-4c5d-4be0-b891-0b092a10a354
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimArea = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Dim_area = #"fnCleanColumnNames"(Source{[Schema="Dim",Item="area"]}[Data])
+				in
+				    Dim_area
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "f359417b4402d906a3d0",
   "position": {
     "x": 54.957064793130371,
     "y": 149.88290398126463,
-    "z": 5500,
+    "z": 4000,
     "height": 259.79703356752538,
     "width": 592.5370804059329,
-    "tabOrder": 8000
+    "tabOrder": 6000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Employment Start Date"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
                   "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Employment Start Date.MMM YYYY",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
               "nativeQueryRef": "MMM YYYY",
               "active": true
             }
@@ -39,16 +39,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Job Categories"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "DivisionAcronym"
+                  "Property": "Division"
                 }
               },
-              "queryRef": "Dim Job Categories.DivisionAcronym",
-              "nativeQueryRef": " ",
-              "active": true,
-              "displayName": " "
+              "queryRef": "DimEmployee.Division",
+              "nativeQueryRef": "Division",
+              "active": true
             }
           ]
         },
@@ -59,14 +58,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "DisplayCurrentEmployees"
+                  "Property": "EmployeeCount"
                 }
               },
-              "queryRef": "Fact Workforce.DisplayCurrentEmployees",
-              "nativeQueryRef": "DisplayCurrentEmployees"
+              "queryRef": "ParamMeasures.Headcount",
+              "nativeQueryRef": "Headcount"
             }
           ]
         }
@@ -93,88 +92,13 @@
           }
         }
       ],
-      "values": [
-        {
-          "properties": {
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "FillRule": {
-                      "Input": {
-                        "Measure": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Entity": "Fact Workforce"
-                            }
-                          },
-                          "Property": "DisplayCurrentEmployees"
-                        }
-                      },
-                      "FillRule": {
-                        "linearGradient2": {
-                          "min": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#F8F6F0'"
-                              }
-                            }
-                          },
-                          "max": {
-                            "color": {
-                              "Literal": {
-                                "Value": "'#F79978'"
-                              }
-                            }
-                          },
-                          "nullColoringStrategy": {
-                            "strategy": {
-                              "Literal": {
-                                "Value": "'noColor'"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Fact Workforce.DisplayCurrentEmployees"
-          }
-        }
-      ],
       "columnWidth": [
         {
           "properties": {
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "51.24121725631653D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Dim Job Categories.DivisionAcronym"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "44.65653189750283D"
+                  "Value": "43.683882086104454D"
                 }
               }
             }
@@ -211,7 +135,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "46.65653495440729D"
+                  "Value": "42.765957446808514D"
                 }
               }
             }
@@ -248,7 +172,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "40.848016752781504D"
+                  "Value": "44.738606215316125D"
                 }
               }
             }
@@ -285,7 +209,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "43.70528488061625D"
+                  "Value": "41.738615579769295D"
                 }
               }
             }
@@ -322,7 +246,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "42.71124840837176D"
+                  "Value": "41.749286434527164D"
                 }
               }
             }
@@ -359,7 +283,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "40.82066869300912D"
+                  "Value": "42.765957446808514D"
                 }
               }
             }
@@ -396,7 +320,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "41.73859265299281D"
+                  "Value": "41.73863850650575D"
                 }
               }
             }
@@ -433,7 +357,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "41.8753824703447D"
+                  "Value": "41.87536981466572D"
                 }
               }
             }
@@ -470,7 +394,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "41.71123275630626D"
+                  "Value": "42.68389919564204D"
                 }
               }
             }
@@ -507,7 +431,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "40.60181141484349D"
+                  "Value": "43.51976391689599D"
                 }
               }
             }
@@ -544,7 +468,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "40.848029358325924D"
+                  "Value": "40.84800414722654D"
                 }
               }
             }
@@ -581,7 +505,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "44.683886393338675D"
+                  "Value": "43.711263606735656D"
                 }
               }
             }
@@ -618,7 +542,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "43.17241862327105D"
+                  "Value": "44.0591370122056D"
                 }
               }
             }
@@ -655,7 +579,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "40.73892128347505D"
+                  "Value": "42.51231999356747D"
                 }
               }
             }
@@ -766,7 +690,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "43.76059893778954D"
+                  "Value": "41.06735385552595D"
                 }
               }
             }
@@ -1247,7 +1171,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "49.299191374663074D"
+                  "Value": "43.261455525606465D"
                 }
               }
             }
@@ -1284,7 +1208,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "43.84906408273295D"
+                  "Value": "44.71159750834963D"
                 }
               }
             }
@@ -1352,18 +1276,239 @@
               }
             ]
           }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployeeTenureDate"
+                          }
+                        },
+                        "Property": "MMM YYYY"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Apr 2026'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployeeTenureDate"
+                          }
+                        },
+                        "Property": "MMM YYYY"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'May 2026'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {},
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployeeTenureDate"
+                          }
+                        },
+                        "Property": "MMM YYYY"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Jun 2026'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "150.48024399222223D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimEmployee.Division"
+          }
         }
       ],
       "columnHeaders": [
         {
           "properties": {
-            "alignment": {
+            "autoSizeColumnWidth": {
               "expr": {
                 "Literal": {
-                  "Value": "'Center'"
+                  "Value": "true"
                 }
               }
             }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "DisplayMeasures"
+                            }
+                          },
+                          "Property": "NewStarters"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#F8F6F0'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#339eb1'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "ParamMeasures.NewStarters"
+          }
+        },
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "FillRule": {
+                      "Input": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "DisplayMeasures"
+                            }
+                          },
+                          "Property": "EmployeeCount"
+                        }
+                      },
+                      "FillRule": {
+                        "linearGradient2": {
+                          "min": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#F8F6F0'"
+                              }
+                            }
+                          },
+                          "max": {
+                            "color": {
+                              "Literal": {
+                                "Value": "'#f9ad93'"
+                              }
+                            }
+                          },
+                          "nullColoringStrategy": {
+                            "strategy": {
+                              "Literal": {
+                                "Value": "'asZero'"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "ParamMeasures.Headcount"
           }
         }
       ]
@@ -1372,6 +1517,13 @@
       "title": [
         {
           "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Current employees'"
+                }
+              }
+            },
             "show": {
               "expr": {
                 "Literal": {
@@ -1447,13 +1599,6 @@
               "expr": {
                 "Literal": {
                   "Value": "'Century Gothic'"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Current employees'"
                 }
               }
             }
@@ -1652,7 +1797,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#081729'"
+                      "Value": "'#252423'"
                     }
                   }
                 }
@@ -1699,6 +1844,20 @@
       "visualTooltip": [
         {
           "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "type": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Canvas'"
+                }
+              }
+            },
             "titleFontColor": {
               "solid": {
                 "color": {
@@ -1721,6 +1880,41 @@
                 }
               }
             },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "'9'"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "italic": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "underline": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Century Gothic'"
+                }
+              }
+            },
             "background": {
               "solid": {
                 "color": {
@@ -1729,6 +1923,13 @@
                       "Value": "'#F8F6F0'"
                     }
                   }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "5D"
                 }
               }
             },
@@ -1771,6 +1972,13 @@
       "visualHeader": [
         {
           "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
             "background": {
               "solid": {
                 "color": {
@@ -1810,6 +2018,104 @@
                   }
                 }
               }
+            },
+            "showVisualInformationButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showVisualWarningButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showVisualErrorButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showDrillRoleSelector": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showDrillUpButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showDrillToggleButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showDrillDownLevelButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showDrillDownExpandButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showPinButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showFilterRestatementButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showFocusModeButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showSeeDataLayoutToggleButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showOptionsMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showTooltipButton": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -1817,6 +2123,49 @@
       "visualHeaderTooltip": [
         {
           "properties": {
+            "titleFontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#C15800'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "'9'"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Century Gothic'"
+                }
+              }
+            },
+            "background": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F8F6F0'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "5D"
+                }
+              }
+            },
             "themedTitleFontColor": {
               "solid": {
                 "color": {
@@ -1830,60 +2179,34 @@
             }
           }
         }
-      ]
-    },
-    "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "bfd523b321a2a15b4501",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Job Categories"
-              }
-            },
-            "Property": "DivisionAcronym"
-          }
-        },
-        "type": "Categorical",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true,
-        "objects": {
-          "general": [
-            {
-              "properties": {
-                "isInvertedSelectionMode": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "true"
-                    }
-                  }
+      ],
+      "lockAspect": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
-          ]
-        }
-      },
-      {
-        "name": "daa4cee2c04c6c5d8085",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Extract Date"
-              }
-            },
-            "Property": "EH Reporting Year Flag"
           }
-        },
-        "type": "Advanced",
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
-      }
-    ]
+        }
+      ],
+      "stylePreset": [
+        {
+          "properties": {
+            "name": {
+              "expr": {
+                "Literal": {
+                  "Value": "'None'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
   }
 }

@@ -1,0 +1,164 @@
+expression ServerName = "yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com" meta [IsParameterQuery=true, List={"yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com"}, DefaultValue="yntrrjdg3j4eblsx4xrnbtn7xu-3nzrwlnfp2be7fmcsksohwynmq.datawarehouse.fabric.microsoft.com", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: ced0a42a-7e49-41bd-bfbd-6d04fd0d8e25
+	queryGroup: Utilities
+
+	annotation PBI_ResultType = Text
+
+expression DatabaseName = "L4_Analytical" meta [IsParameterQuery=true, List={"L3_Conformed", "L4_Analytical"}, DefaultValue="L4_Analytical", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 52f9d9e3-4131-4c2e-a3f7-0fe31e40312f
+	queryGroup: Utilities
+
+	annotation PBI_ResultType = Text
+
+expression fnCleanColumnNames =
+		let
+		    fnCleanColumnNames = (tbl as table) as table =>
+		        let
+		            OldNames = Table.ColumnNames(tbl),
+		            NewNames = List.Transform(OldNames, each Text.Proper(Text.Replace(_, "_", " "))),
+		            Result   = Table.RenameColumns(tbl, List.Zip({OldNames, NewNames}))
+		        in
+		            Result
+		in
+		      fnCleanColumnNames
+	lineageTag: 1e4603fd-170a-499b-9911-bf9c960eb35a
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression 'FactCriticalIncidents - Source' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/IP/ESS", [ApiVersion = 15]),
+		    #"01 Critical Incidents xlsx_https://cruxscss sharepoint com/IP/ESS/Child Protection Documents/Licensing/" = Source{[Name="01 Critical Incidents.xlsx",#"Folder Path"="https://cruxscss.sharepoint.com/IP/ESS/Child Protection Documents/Licensing/"]}[Content],
+		    #"Imported Excel Workbook" = Excel.Workbook(#"01 Critical Incidents xlsx_https://cruxscss sharepoint com/IP/ESS/Child Protection Documents/Licensing/")
+		in
+		    #"Imported Excel Workbook"
+	lineageTag: 26ebc09e-ea8d-46d9-9049-f6a5e931289f
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactIncidentPass - Source' =
+		let
+		    Source = #"FactCriticalIncidents - Source",
+		    #"CIs Confirmed within Timeframe_Sheet" = Source{[Item="CIs Confirmed within Timeframe",Kind="Sheet"]}[Data],
+		    #"Removed Top Rows" = Table.Skip(#"CIs Confirmed within Timeframe_Sheet",2),
+		    #"Filtered Rows" = Table.SelectRows(#"Removed Top Rows", each ([Column1] <> null and [Column1] <> "Difference" and [Column1] <> "Justified Pass" and [Column1] <> "Organisation %")),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true]),
+		    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Promoted Headers", {"Location"}, "Date", "IncidentsReportedWithinTimeframe"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Unpivoted Other Columns",{{"Date", type date}, {"IncidentsReportedWithinTimeframe", Int64.Type}}),
+		    #"Calculated End of Month" = Table.TransformColumns(#"Changed Type",{{"Date", Date.EndOfMonth, type date}}),
+		    #"Grouped Rows" = Table.Group(#"Calculated End of Month", {"Location", "Date"}, {{"ReportedWithinTimeframeCount", each List.Sum([IncidentsReportedWithinTimeframe]), type nullable number}})
+		in
+		    #"Grouped Rows"
+	lineageTag: 87787316-5db5-4a45-ac08-9d0bb7e0f32a
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'FactConfirmedIncidentFails - Source' =
+		let
+		    Source = #"FactCriticalIncidents - Source",
+		    #"CI Confirmed Fails_Sheet" = Source{[Item="CI Confirmed Fails",Kind="Sheet"]}[Data],
+		    #"Removed Top Rows" = Table.Skip(#"CI Confirmed Fails_Sheet",1),
+		    #"Filtered Rows" = Table.SelectRows(#"Removed Top Rows", each ([Column1] <> null and [Column1] <> "Organisation %")),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true]),
+		    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Promoted Headers", {"Location"}, "Date", "ConfirmedFailsCount"),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Unpivoted Other Columns",{{"Date", type date}, {"ConfirmedFailsCount", Int64.Type}}),
+		    #"Calculated End of Month" = Table.TransformColumns(#"Changed Type",{{"Date", Date.EndOfMonth, type date}}),
+		    #"Grouped Rows" = Table.Group(#"Calculated End of Month", {"Location", "Date"}, {{"ConfirmedFailsCount", each List.Sum([ConfirmedFailsCount]), type nullable number}})
+		in
+		    #"Grouped Rows"
+	lineageTag: 9b1c278d-d502-45c1-9229-d297c28ef655
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Parameter1 = #"Sample File" meta [IsParameterQuery=true, BinaryIdentifier=#"Sample File", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 1f7f54bc-c0ae-4761-84ba-3d580760976e
+	queryGroup: 'Utilities\Data Dictionary\Transform File from Data Dictionary - Source\Helper Queries'
+
+expression 'Sample File' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData"),
+		    #"Filtered Rows" = Table.SelectRows(Source, each Text.Contains([Name], "master_data_dictionary.json")),
+		    Navigation1 = #"Filtered Rows"{0}[Content]
+		in
+		    Navigation1
+	lineageTag: a8119ff9-f7ec-42ec-8bc4-a2627b45e2c5
+	queryGroup: 'Utilities\Data Dictionary\Transform File from Data Dictionary - Source\Helper Queries'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transform File' =
+		let
+		    Source = (Parameter1 as binary) => let
+		    Source = Json.Document(Parameter1),
+		    #"Converted to Table" = Table.FromRecords({Source}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Converted to Table",{"last_updated", "metrics"}),
+		    #"Expanded metrics" = Table.ExpandListColumn(#"Removed Other Columns", "metrics"),
+		    #"Expanded metrics1" = Table.ExpandRecordColumn(#"Expanded metrics", "metrics", {"metric_id", "metric_name", "aliases", "plain_english_definition", "technical_definition", "technical_lineage", "calculation_type", "edp_source", "edp_layer", "source_tables","accountable_stakeholder", "technical_contributors", "report_appearances", "related_metrics", "technical_notes", "definition_flag", "duplicate_flag"}, {"metric_id", "metric_name", "aliases", "plain_english_definition", "technical_definition", "technical_lineage", "calculation_type", "edp_source", "edp_layer", "source_tables", "accountable_stakeholder", "technical_contributors", "report_appearances", "related_metrics", "technical_notes", "definition_flag", "duplicate_flag"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded metrics1",{{"last_updated", type date}, {"metric_id", Int64.Type}, {"metric_name", type text}, {"aliases", type any}, {"plain_english_definition", type text}, {"technical_definition", type text}, {"technical_lineage", type text}, {"calculation_type", type any}, {"edp_source", type logical}, {"edp_layer", type text}, {"source_tables", type any}, {"accountable_stakeholder", type text}, {"technical_contributors", type any}, {"report_appearances", type any}, {"related_metrics", type any}, {"technical_notes", type text}, {"definition_flag", type text}, {"duplicate_flag", type any}})
+		in
+		    #"Changed Type"
+		in
+		    Source
+	lineageTag: bc887efe-8e0b-4042-bed6-0bbd0dec96e1
+	queryGroup: 'Utilities\Data Dictionary\Transform File from Data Dictionary - Source\Helper Queries'
+
+	annotation PBI_ResultType = Function
+
+expression 'Transform Sample File' =
+		let
+		    Source = Json.Document(Parameter1),
+		    #"Converted to Table" = Table.FromRecords({Source}),
+		    #"Removed Other Columns" = Table.SelectColumns(#"Converted to Table",{"last_updated", "metrics"}),
+		    #"Expanded metrics" = Table.ExpandListColumn(#"Removed Other Columns", "metrics"),
+		    #"Expanded metrics1" = Table.ExpandRecordColumn(#"Expanded metrics", "metrics", {"metric_id", "metric_name", "aliases", "plain_english_definition", "technical_definition", "technical_lineage", "calculation_type", "edp_source", "edp_layer", "source_tables","accountable_stakeholder", "technical_contributors", "report_appearances", "related_metrics", "technical_notes", "definition_flag", "duplicate_flag"}, {"metric_id", "metric_name", "aliases", "plain_english_definition", "technical_definition", "technical_lineage", "calculation_type", "edp_source", "edp_layer", "source_tables", "accountable_stakeholder", "technical_contributors", "report_appearances", "related_metrics", "technical_notes", "definition_flag", "duplicate_flag"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded metrics1",{{"last_updated", type date}, {"metric_id", Int64.Type}, {"metric_name", type text}, {"aliases", type any}, {"plain_english_definition", type text}, {"technical_definition", type text}, {"technical_lineage", type text}, {"calculation_type", type any}, {"edp_source", type logical}, {"edp_layer", type text}, {"source_tables", type any}, {"accountable_stakeholder", type text}, {"technical_contributors", type any}, {"report_appearances", type any}, {"related_metrics", type any}, {"technical_notes", type text}, {"definition_flag", type text}, {"duplicate_flag", type any}})
+		in
+		    #"Changed Type"
+	lineageTag: 4c884a70-cf02-49a8-8952-b3f422c633e4
+	queryGroup: 'Utilities\Data Dictionary\Transform File from Data Dictionary - Source'
+
+expression 'Data Dictionary - Source' =
+		let
+		    Source = SharePoint.Files("https://cruxscss.sharepoint.com/sites/BusinessTransformation-PROD-ReportingData"),
+		    #"Filtered Rows" = Table.SelectRows(Source, each Text.Contains([Name], "master_data_dictionary.json")),
+		    #"Filtered Hidden Files1" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+		    #"Invoke Custom Function1" = Table.AddColumn(#"Filtered Hidden Files1", "Transform File", each #"Transform File"([Content])),
+		    #"Renamed Columns1" = Table.RenameColumns(#"Invoke Custom Function1", {"Name", "Source.Name"}),
+		    #"Removed Other Columns1" = Table.SelectColumns(#"Renamed Columns1",{"Date modified", "Transform File"}),
+		    #"Expanded Table Column1" = Table.ExpandTableColumn(#"Removed Other Columns1", "Transform File", Table.ColumnNames(#"Transform File"(#"Sample File"))),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Table Column1",{{"last_updated", type date}, {"metric_id", Int64.Type}, {"metric_name", type text}, {"aliases", type any}, {"plain_english_definition", type text}, {"technical_definition", type text}, {"technical_lineage", type text}, {"calculation_type", type any}, {"edp_source", type logical}, {"edp_layer", type text}, {"source_tables", type any},{"accountable_stakeholder", type text}, {"technical_contributors", type any}, {"report_appearances", type any}, {"related_metrics", type any}, {"technical_notes", type text}, {"definition_flag", type text}, {"duplicate_flag", type any}}),
+		    #"Cleaned Column Names" = #"fnCleanColumnNames (2)"(#"Changed Type")
+		in
+		    #"Cleaned Column Names"
+	lineageTag: 117749a0-839c-4738-80e6-56691f7e1a82
+	queryGroup: 'Utilities\Data Dictionary'
+
+	annotation PBI_ResultType = Table
+
+expression 'fnCleanColumnNames (2)' =
+		let
+		    fnCleanColumnNames = (tbl as table) as table =>
+		        let
+		            OldNames = Table.ColumnNames(tbl),
+		            NewNames = List.Transform(OldNames, each Text.Proper(Text.Replace(_, "_", " "))),
+		            Result   = Table.RenameColumns(tbl, List.Zip({OldNames, NewNames}))
+		        in
+		            Result
+		in
+		      fnCleanColumnNames
+	lineageTag: 86cc7d5a-1470-4471-9ec9-dca76ca88ebd
+	queryGroup: Utilities
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+

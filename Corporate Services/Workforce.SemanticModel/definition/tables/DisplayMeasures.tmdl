@@ -1,0 +1,682 @@
+/// Definition: Holds the report's workforce, new starter, onboarding and payroll measures. Contains no data rows.
+/// For analysis: Measures only. Helpers and parameter-driven measures say Not for analysis.
+table DisplayMeasures
+	lineageTag: 44ec32cc-3936-4c7b-a1cf-51f928743d06
+
+	/// Definition: The number of employees employed at the end of the selected period, counting anyone who had started and had not yet left by that date.
+	/// For analysis: Distinct employees who started on or before the latest date in context and had not left by then.
+	measure EmployeeCount = ```
+			VAR _currentDate = MAX('DimEmployeeTenureDate'[Date])
+			VAR _logic = CALCULATE(
+			    DISTINCTCOUNT(DimEmployee[Id Employee]), 
+			    OR(DimEmployee[Termination Date] >= _currentDate, DimEmployee[Termination date] = BLANK()),
+			    FILTER(
+			        ALL(DimEmployeeTenureDate[Date]), 
+			        'DimEmployeeTenureDate'[Date] <= _currentDate)
+			)
+			RETURN _logic
+			```
+		formatString: #,0
+		displayFolder: Employees
+		lineageTag: 95e313aa-0319-4bc0-abb3-5004b2fa552d
+
+	/// Definition: The number of employees whose employment ended during the selected period.
+	/// For analysis: Distinct employees by termination date through the inactive DimEmployeeTenureDate relationship. Returns 0 rather than blank.
+	measure Exits =
+			CALCULATE(
+			    DISTINCTCOUNT(DimEmployee[Id Employee]),
+			    USERELATIONSHIP(DimEmployee[Termination date], 'DimEmployeeTenureDate'[Date])
+			)+0
+		formatString: #,0
+		displayFolder: Employees
+		lineageTag: b03fd446-18cb-41c7-bf9f-b0f4b7039204
+
+	/// Definition: The number of employees who left in the 12 months up to the end of the selected period.
+	/// For analysis: Building block of Rolling12MTurnoverRate; distinct employees by termination date. Returns 0 rather than blank.
+	measure Exits12MRolling =
+			
+			CALCULATE(
+			    [Exits],
+			    DATESINPERIOD(DimEmployeeTenureDate[Date], MAX(DimEmployeeTenureDate[Date]), -12, MONTH),
+			    USERELATIONSHIP(DimEmployee[Termination date], 'DimEmployeeTenureDate'[Date])
+			)+0
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: b275bc62-2d98-48ce-b1b3-6a8575bb4232
+
+	/// Definition: The average of the number of current employees at the start and end of the 12 months up to the selected period.
+	/// For analysis: Two-point average; denominator of Rolling12MTurnoverRate.
+	measure 'AvgHeadcount 12M Rolling' = ```
+			VAR _currentMonth = MAX('DimEmployeeTenureDate'[Date])
+			VAR _startMonth = EOMONTH(_currentMonth, -11)
+			VAR _currentlyEmployed = [EmployeeCount]
+			VAR _currentEmpsPrevYr = CALCULATE(
+			    DISTINCTCOUNT(DimEmployee[Id Employee]), 
+			    OR(DimEmployee[Termination Date] >= _startMonth, DimEmployee[Termination date] = BLANK()),
+			    FILTER(
+			        ALL(DimEmployeeTenureDate[Date]), 
+			        'DimEmployeeTenureDate'[Date] <= _startMonth)
+			)
+			VAR _rollingAvgYrEmployees = (_currentlyEmployed + _currentEmpsPrevYr)/2
+			RETURN _rollingAvgYrEmployees
+			```
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: a84f527b-092d-42e8-ad78-d91465ba715c
+
+	/// Definition: The number of employees who left over the past 12 months, as a proportion of the average of the number of employees at the start and end of that 12 months.
+	/// For analysis: Exits12MRolling divided by AvgHeadcount 12M Rolling; rate 0 to 1.
+	measure Rolling12MTurnoverRate = DIVIDE([Exits12MRolling], [AvgHeadcount 12M Rolling], 0)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Employees
+		lineageTag: e3e87eaf-fb87-43fc-a57f-8094ce6de164
+
+	/// Definition: The number of employees who started employment during the selected period.
+	/// For analysis: Distinct employees whose start date falls in the period in context. Returns 0 rather than blank.
+	measure NewStarters =
+			CALCULATE(
+			    DISTINCTCOUNT(DimEmployee[Id Employee]),
+			    FILTER(
+			        DimEmployee,
+			        DimEmployee[Start Date] >= MIN(DimEmployeeTenureDate[Date]) &&
+			        DimEmployee[Start Date] <= MAX(DimEmployeeTenureDate[Date])
+			    )
+			)+0
+		formatString: #,0
+		displayFolder: New Employees
+		lineageTag: 7179ae3c-3a82-4135-8249-20ace41558df
+
+	/// Definition: Overtime as a proportion of total hourly pay for the selected period, in dollars or hours depending on the option selected.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis; use Overtime Paid % of Total or of Total Hours instead.
+	measure PayrollHoursDollarsOvertime% =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", [Overtime Paid % of Total],
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", [Overtime Paid % of Total Hours]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Payroll
+		lineageTag: d1a643fb-9309-4314-85ae-ea0cedf15cd1
+
+	/// Definition: Personal leave as a proportion of total hourly pay for the selected period, in dollars or hours depending on the option selected.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis; use Personal Leave Paid % of Total or of Total Hours instead.
+	measure PayrollHoursDollarsPersonalLeave% =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", [Personal Leave Paid % of Total],
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", [Personal Leave Paid % of Total Hours]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Payroll
+		lineageTag: 984ab9e0-cd5c-4b21-a699-534a22749418
+
+	/// Definition: Total hourly pay for the selected period, shown in dollars or hours depending on the option selected. Dollars exclude one-off payments and negative amounts.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis; sum Total Hourly Amount or Total Hours instead.
+	measure PayrollHoursDollarsPaid =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", SUM(FactDivisionFortnightlyPaySummary[Total Hourly Amount]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", SUM(FactDivisionFortnightlyPaySummary[Total Hours])
+			)
+		formatString: #,0.00
+		displayFolder: Payroll
+		lineageTag: c05da7cb-a9f6-43a6-95f7-1dd675daaa8a
+
+	/// Definition: Total leave paid for the selected period, shown in dollars or hours depending on the option selected.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis; sum Total Leave Amount or Total Leave Hours instead.
+	measure PayrollHoursDollarsLeavePaid =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", SUM(FactDivisionFortnightlyPaySummary[Total Leave Amount]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", SUM(FactDivisionFortnightlyPaySummary[Total Leave Hours])
+			)
+		displayFolder: Payroll
+		lineageTag: 23915d09-9c20-40a1-854c-b127b2714d5f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Total personal leave paid for the selected period, shown in dollars or hours depending on the option selected.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis; sum Total Personal Leave Amount or Hours instead.
+	measure PayrollHoursDollarsPersonalLeavePaid =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", SUM(FactDivisionFortnightlyPaySummary[Total Personal Leave Amount]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", SUM(FactDivisionFortnightlyPaySummary[Total Personal Leave Hours])
+			)
+		formatString: #,0.00
+		displayFolder: Payroll
+		lineageTag: 9d3eee4c-8d6f-45a1-94c2-e1c376f4b080
+
+	/// Definition: Total overtime paid for the selected period, shown in dollars or hours depending on the option selected.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis; sum Total Overtime Amount or Hours instead.
+	measure PayrollHoursDollarsOvertimePaid =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", SUM(FactDivisionFortnightlyPaySummary[Total Overtime Amount]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", SUM(FactDivisionFortnightlyPaySummary[Total Overtime Hours])
+			)
+		displayFolder: Payroll
+		lineageTag: 536cf2ff-2bf2-462e-800a-1e596f324226
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The number of full-time equivalent staff, based on hours paid in the selected period against a standard 38-hour week.
+	/// For analysis: Hours paid divided by 38 hours a week across the days in the selected period.
+	measure FullTimeEquivalentCount = ```
+			
+			VAR _periodStart = MIN(DimShiftDate[Date])
+			VAR _periodEnd = MAX(DimShiftDate[Date])
+			VAR _countDays = DATEDIFF(_periodStart, _periodEnd, DAY) + 1
+			VAR _dailyFTE = DIVIDE(38, 7)
+			VAR _periodBaseFTE = _countDays * _dailyFTE
+			VAR _hoursWorked = Sum(FactDivisionFortnightlyPaySummary[Total Hours])        
+			VAR _periodFTE = DIVIDE(_hoursWorked, _periodBaseFTE)
+			RETURN 
+			    _periodFTE
+			```
+		formatString: #,0
+		displayFolder: Payroll
+		lineageTag: 2b52c5c3-a6bb-4e7b-bfdf-cd26b428fcee
+
+	/// Definition: The number of employees who started during the selected period and left on or before the end of their probation.
+	/// For analysis: Distinct new starters in the period with Probation Status Failed; casuals excluded.
+	measure UnsuccessfulProbationCount =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(DimEmployee[Id Employee]),
+			        FILTER(
+			            DimEmployee,
+			            DimEmployee[Probation Status] = "Failed" &&
+			            DimEmployee[Start Date] >= MIN(DimEmployeeTenureDate[Date]) &&
+			            DimEmployee[Start Date] <= MAX(DimEmployeeTenureDate[Date])
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 423dfada-ee6e-4acf-b947-75340bb4e4d2
+
+	/// Definition: The proportion of employees who started during the selected period who left on or before the end of their probation.
+	/// For analysis: UnsuccessfulProbationCount divided by NewStarters; rate 0 to 1.
+	measure UnsuccessfulProbationRate =
+			
+			DIVIDE(
+			    [UnsuccessfulProbationCount],
+			    [NewStarters],
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: 4208f320-7715-49ac-8f54-e2932dc983cb
+
+	/// Definition: The number of employees who started during the selected period and are still in probation.
+	/// For analysis: Distinct new starters with Probation Status In Probation.
+	measure InProbationCount =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(DimEmployee[Id Employee]),
+			        FILTER(
+			            DimEmployee,
+			            DimEmployee[Probation Status] = "In Probation" &&
+			            DimEmployee[Start Date] >= MIN(DimEmployeeTenureDate[Date]) &&
+			            DimEmployee[Start Date] <= MAX(DimEmployeeTenureDate[Date])
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: New Employees
+		lineageTag: 2958fa7d-baed-4952-9856-8e5467814b5a
+
+	/// Definition: The number of never starts with no termination date at the end of the selected period: current workers who have not had a billable shift, including those not yet at a recorded onboarding stage.
+	/// For analysis: Workers at an onboarding stage before first billable shift (PE Scheduled, PE Completed, EEM Shift Completed, Shadow Shift Completed) or Other, account created by then and not terminated.
+	measure NeverStartActiveCount = ```
+			VAR _maxDate = CALCULATE(MAX(DimEmployeeTenureDate[Date]), USERELATIONSHIP(DimWorker[Start Month], DimEmployeeTenureDate[Date]))
+			RETURN
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(DimWorker[Id Worker]),
+			        FILTER(
+			            DimWorker,
+			            (
+			                DimWorker[New Starter Status] = "Shadow Shift Completed"    ||
+			                DimWorker[New Starter Status] = "EEM Shift Completed"       ||
+			                DimWorker[New Starter Status] = "PE Completed"              ||
+			                DimWorker[New Starter Status] = "PE Scheduled"              ||
+			                DimWorker[New Starter Status] = "EH Account Created"        ||
+			                DimWorker[New Starter Status] = "Other"
+			            ) && 
+			            DimWorker[Eh Account Created Date] <= _maxDate &&
+			            DimWorker[Termination Date] = BLANK()
+			        )
+			    ),
+			    0
+			)
+			```
+		formatString: #,0
+		displayFolder: New Employees
+		lineageTag: 7af0b77b-9d05-40aa-86f5-5c8d4617a2c7
+
+	/// Definition: The number of new starters in the selected period who had their first shift by the end of it.
+	/// For analysis: Not used on any visual. Distinct workers.
+	measure HasFirstShiftByPeriodCount =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(DimWorker[Id Worker]),
+			        FILTER(
+			            DimEmployee,
+			            DimEmployee[Start Date] <= MAX(DimEmployeeTenureDate[Date]) &&
+			            DimEmployee[Start Date] >= MIN(DimEmployeeTenureDate[Date])
+			        ),
+			        FILTER(
+			            DimWorker,
+			            NOT ISBLANK(DimWorker[First Shift Date]) &&
+			            DimWorker[First Shift Date] <= MAX('DimShiftDate'[Date])
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: Employees
+		lineageTag: 339cd940-857b-409f-a704-959009c64f2f
+
+	/// Definition: The number of never starts who left during the selected period without ever having a billable shift.
+	/// For analysis: Distinct workers by termination date with no first billable shift date.
+	measure NeverStartExitCount =
+			VAR _maxDate = CALCULATE(MAX(DimEmployeeTenureDate[Date]), USERELATIONSHIP(DimWorker[Termination Date], DimEmployeeTenureDate[Date]))
+			VAR _logic = CALCULATE(
+			        DISTINCTCOUNT(DimWorker[Id Worker]),
+			        FILTER(
+			            DimWorker,
+			            DimWorker[Termination Date] <= _maxDate &&
+			            DimWorker[First Billable Shift Date] = BLANK()
+			        )
+			)
+			RETURN _logic
+		formatString: 0
+		displayFolder: New Employees
+		lineageTag: 1d99ca1a-b622-4599-9574-5166565173f0
+
+	/// Definition: The number of new starters in the selected period who have reached their first billable shift.
+	/// For analysis: Distinct workers with New Starter Status First Billable Shift. Not used on any visual.
+	measure ActiveNewStarters =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(DimWorker[Id Worker]),
+			        FILTER(
+			            DimEmployee,
+			            DimEmployee[Start Date] <= MAX(DimEmployeeTenureDate[Date]) &&
+			            DimEmployee[Start Date] >= MIN(DimEmployeeTenureDate[Date])
+			        ),
+			        FILTER(
+			            DimWorker,
+			            DimWorker[New Starter Status] = "First Billable Shift"
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: New Employees
+		lineageTag: 70a60ae0-24f7-4a2f-9bcd-e4284e715b16
+
+	/// Definition: Each group's share of all current employees in the current selection, for example the proportion of current employees in each division.
+	/// For analysis: Share within the current selection; result depends on the visual's grouping.
+	measure Employees% = DIVIDE([EmployeeCount], CALCULATE([EmployeeCount], ALLSELECTED(DimEmployee)))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Employees
+		lineageTag: 80f42c24-370b-475c-9fd7-f2718437ceaa
+
+	/// Definition: Each group's share of new starters who have reached their first billable shift.
+	/// For analysis: Share within the current selection; result depends on the visual's grouping. Not used on any visual.
+	measure HasShiftSinceStart% = DIVIDE([ActiveNewStarters], CALCULATE([ActiveNewStarters], ALLSELECTED(DimEmployee)))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: e0832da1-8970-45f4-80a4-36302d1b4b87
+
+	/// Definition: Each group's share of all employees who left in the current selection.
+	/// For analysis: Share within the current selection; result depends on the visual's grouping.
+	measure Exits% = DIVIDE([Exits], CALCULATE([Exits], ALLSELECTED(DimEmployee)))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: Employees
+		lineageTag: 6cd37927-c45f-4f0b-9b04-622ab140b16a
+
+	/// Definition: Visual title for leave paid, in dollars or hours.
+	/// For analysis: Display text. Not for analysis.
+	measure PayrollLeaveTitle =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", "Leave Paid ($)",
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", "Leave Paid (hours)"
+			)
+		displayFolder: Payroll
+		lineageTag: ea8f859e-63f7-4488-b00d-650fb05ceca4
+
+	/// Definition: Visual title for payroll, in dollars or hours.
+	/// For analysis: Display text. Not for analysis.
+	measure PayrollTitle =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", "Payroll ($)",
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", "Payroll (hours)"
+			)
+		displayFolder: Payroll
+		lineageTag: a0792996-eb56-4138-9608-242ba77bac16
+
+	/// Definition: Each group's share of all leave paid in the current selection.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis.
+	measure Leave% = DIVIDE([PayrollHoursDollarsLeavePaid], CALCULATE([PayrollHoursDollarsLeavePaid], ALLSELECTED(FactDivisionFortnightlyPaySummary)))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Payroll
+		lineageTag: 3708cc0d-6629-41c7-b1b9-8845759e2532
+
+	/// Definition: Each group's share of all overtime paid in the current selection.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis.
+	measure Overtime% = DIVIDE([PayrollHoursDollarsOvertimePaid], CALCULATE([PayrollHoursDollarsOvertimePaid], ALLSELECTED(FactDivisionFortnightlyPaySummary)))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Payroll
+		lineageTag: 21cd561b-5ce1-4003-b88c-9568c9592f49
+
+	/// Definition: Each group's share of total hourly pay in the current selection, for example the proportion paid in each division.
+	/// For analysis: Report display measure that changes with the dollars or hours option. Not for analysis.
+	measure TotalPayroll% = DIVIDE([PayrollHoursDollarsPaid], CALCULATE([PayrollHoursDollarsPaid], ALLSELECTED(FactDivisionFortnightlyPaySummary)))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Payroll
+		lineageTag: 213b51e2-a93f-481e-a170-709c464c6ab8
+
+	/// Definition: Visual title for overtime paid, in dollars or hours.
+	/// For analysis: Display text. Not for analysis.
+	measure PayrollOvertimeTitle =
+			SWITCH(
+			    SELECTEDVALUE(HoursDollarsParam[HoursDollarsParam Fields]),
+			    "'FactDivisionFortnightlyPaySummary'[Total Hourly Amount]", "Overtime Paid ($)",
+			    "'FactDivisionFortnightlyPaySummary'[Total Hours]", "Overtime Paid (hours)"
+			)
+		displayFolder: Payroll
+		lineageTag: a7772bea-726e-459e-b9a5-5d7e3e96970c
+
+	/// Definition: Each group's share of all workers in the current selection who left without ever having a billable shift.
+	/// For analysis: Share within the current selection; result depends on the visual's grouping.
+	measure NeverStarts% = DIVIDE([NeverStartExitCount], CALCULATE([NeverStartExitCount], ALLSELECTED(DimEmployee)))
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: New Employees
+		lineageTag: ed96528d-b314-43d8-88ff-a41480ca4408
+
+	/// Definition: Each group's share of all new starters in the current selection.
+	/// For analysis: Share within the current selection; result depends on the visual's grouping.
+	measure NewStarters% = DIVIDE([NewStarters], CALCULATE([NewStarters], ALLSELECTED(DimEmployee)))
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: New Employees
+		lineageTag: 7732b173-0322-4bb4-8644-eb90afd0d29e
+
+	/// Definition: Each group's share of all employees in the current selection who left on or before the end of their probation.
+	/// For analysis: Share within the current selection; result depends on the visual's grouping.
+	measure UnsuccessfulProbation% = COALESCE(DIVIDE([UnsuccessfulProbationCount], CALCULATE([UnsuccessfulProbationCount], ALLSELECTED(DimEmployee))),0)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Employees
+		lineageTag: 124dd6c8-c845-4b9b-948c-ca2f8a0bb775
+
+	/// Definition: Fixed axis maximum for new starter charts: the highest month plus 10%.
+	/// For analysis: Visual helper. Not for analysis.
+	measure NewStartersYAxisMax =
+			
+			// Tallest NewStarters bar across all months on the axis, plus 10% headroom.
+			// Used as the fixed y-axis maximum for BOTH visuals so they share a scale.
+			// MAXX iterates the months (same MMM YYYY grain as the axis) and takes the
+			// peak; ALLSELECTED keeps it to the months actually in view (respects slicers).
+			VAR _peakMonth =
+			    MAXX (
+			        ALLSELECTED ( 'DimEmployeeTenureDate'[MMM YYYY] ),     // the axis field, so it spans all visible months
+			        [NewStarters]
+			    )
+			RETURN
+			    _peakMonth * 1.1
+		displayFolder: Visual Helpers
+		lineageTag: eb32cded-4722-41df-8fe2-3445c5e0d72e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The number of current employees at the end of the selected period, excluding never starts (workers who have not had a billable shift), whether still employed or exited.
+	/// For analysis: EmployeeCount minus NeverStartActiveCount minus NeverStartExitCount; canonical headcount for the Headcount visual.
+	measure Headcount = [EmployeeCount] - [NeverStartActiveCount] - [NeverStartExitCount]
+		formatString: #,0
+		displayFolder: Employees
+		lineageTag: f76fced3-943b-4a46-a682-9a48ae643857
+
+	/// Definition: The number of workers with at least one shift that has a timesheet in the selected period.
+	/// For analysis: Distinct workers on roster lines with a timesheet.
+	measure ActiveWorkers = CALCULATE(DISTINCTCOUNT(FactWorkerRoster[Id Worker]), FactWorkerRoster[Id Timesheet] <> -1)+0
+		formatString: #,0
+		displayFolder: Employees
+		lineageTag: 021324ea-5a4d-40f4-a338-f7f3f9e47126
+
+	/// Definition: The number of workers who completed Practice Essentials in the selected period.
+	/// For analysis: Counts workers by PE completed date. Returns 0 rather than blank.
+	measure PECompleted = CALCULATE(COUNTROWS(DimWorker), USERELATIONSHIP(DimWorker[Pe Completed Date], DimEmployeeTenureDate[Date])) + 0
+		formatString: #,0
+		displayFolder: Onboarding
+		lineageTag: ab36bc5c-4b93-47d1-98db-2d7405d97650
+
+	/// Definition: The number of workers who completed a shadow shift in the selected period.
+	/// For analysis: Counts workers by shadow completed date. Returns 0 rather than blank.
+	measure ShadowShiftCompleted = CALCULATE(COUNTROWS(DimWorker), USERELATIONSHIP(DimWorker[Shadow Completed Date], DimEmployeeTenureDate[Date])) + 0
+		formatString: #,0
+		displayFolder: Onboarding
+		lineageTag: 8fa2f467-f161-46fa-8aee-08ee77878aa6
+
+	/// Definition: The number of workers who had their first billable shift in the selected period.
+	/// For analysis: Counts workers by first billable shift date. Returns 0 rather than blank.
+	measure BillableShiftCompleted = CALCULATE(COUNTROWS(DimWorker), USERELATIONSHIP(DimWorker[First Billable Shift Date], DimEmployeeTenureDate[Date])) + 0
+		formatString: #,0
+		displayFolder: Onboarding
+		lineageTag: 1cc44b07-6d08-47aa-8d30-a6354bafe376
+
+	/// Definition: The number of new starters who left during the selected period after reaching a shift.
+	/// For analysis: Distinct workers with New Starter Status Exited, by termination date. Returns 0 rather than blank.
+	measure ExitedNewStartersWithShift = CALCULATE(DISTINCTCOUNT(DimWorker[Id Worker]), DimWorker[New Starter Status] = "Exited", USERELATIONSHIP(DimWorker[Termination Date], DimEmployeeTenureDate[Date])) + 0
+		formatString: #,0
+		displayFolder: New Employees
+		lineageTag: c1c41453-aa50-4870-8156-2fc9b2016603
+
+	/// Definition: Average days from the engagement meeting to the shadow shift.
+	/// For analysis: Average of Days Eem To Shadow.
+	measure AvgEEMtoShadowDays = AVERAGE(DimWorker[Days Eem To Shadow])
+		displayFolder: Onboarding
+		lineageTag: ce352c9e-fc01-4c74-88e4-e91e174eb31f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Average days from Employment Hero account creation to the first billable shift.
+	/// For analysis: Sum of the four stage averages.
+	measure AvgOnboardingDays = [AvgPECompletionDays] + [AvgPEtoEEMDays] + [AvgEEMtoShadowDays] + [AvgShadowToBillableDays]
+		formatString: 0.0
+		displayFolder: Onboarding
+		lineageTag: 67be4126-0a3e-4929-8f3b-f7677e7f459e
+
+	/// Definition: Average days from Employment Hero account creation to completing Practice Essentials.
+	/// For analysis: Average of Days Eh To Pe across workers in context.
+	measure AvgPECompletionDays = AVERAGE(DimWorker[Days Eh To Pe])
+		displayFolder: Onboarding
+		lineageTag: 30cab5d8-a059-486b-a53b-86f8b22a0b89
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Average days from Practice Essentials to the first billable shift.
+	/// For analysis: Sum of the three stage averages after PE.
+	measure AvgPEToBillableDays = [AvgPEtoEEMDays] + [AvgEEMtoShadowDays] + [AvgShadowToBillableDays]
+		displayFolder: Onboarding
+		lineageTag: fea8b271-a019-48ce-9a94-8df21f27da8e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Average days from Practice Essentials to the engagement meeting.
+	/// For analysis: Average of Days Pe To Eem.
+	measure AvgPEtoEEMDays = AVERAGE(DimWorker[Days Pe To Eem])
+		displayFolder: Onboarding
+		lineageTag: d3be2481-8f35-49c7-b8d4-a13adf71c64f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Average days from the shadow shift to the first billable shift.
+	/// For analysis: Average of Days Shadow To Billable.
+	measure AvgShadowToBillableDays = AVERAGE(DimWorker[Days Shadow To Billable])
+		displayFolder: Onboarding
+		lineageTag: b41db86d-bee9-4a9f-892c-1137b42248af
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Total onboarding days across workers, from account creation to first billable shift.
+	/// For analysis: Not used on any visual.
+	measure TotalOnboardingDays = SUM(DimWorker[Days Eh To Pe]) + SUM(DimWorker[Days Pe To Eem]) + SUM(DimWorker[Days Eem To Shadow]) + SUM(DimWorker[Days Shadow To Billable])
+		formatString: 0
+		displayFolder: Onboarding
+		lineageTag: 18d85438-b050-4de9-9f8f-8cadb1d8b147
+
+	/// Definition: The number of new starters who left during the selected period without ever having a billable shift.
+	/// For analysis: Distinct workers flagged Is Never Started, by termination date. Is Never Started also flags active never starts, so the termination date relationship is what limits this to exits; use with a date in context. Returns 0 rather than blank.
+	measure ExitedNewStartersWithoutShift = CALCULATE(DISTINCTCOUNT(DimWorker[Id Worker]), DimWorker[Is Never Started] = 1, USERELATIONSHIP(DimWorker[Termination Date], DimEmployeeTenureDate[Date])) + 0
+		formatString: #,0
+		displayFolder: New Employees
+		lineageTag: 3d82031a-c6c1-4fa6-9b9a-a88b82144cbd
+
+	/// Definition: The total number of new starters with a worker record who left during the selected period, with or without a billable shift.
+	/// For analysis: Sum of the with-shift and without-shift exit counts.
+	measure ExitedNewStartersFrontline = [ExitedNewStartersWithoutShift] + [ExitedNewStartersWithShift]
+		formatString: #,0
+		displayFolder: New Employees
+		lineageTag: 32258fd1-8b3d-46f3-8571-2d789c36b69e
+
+	/// Definition: The number of workers who completed the engagement meeting in the selected period.
+	/// For analysis: Counts workers by EEM completed date. Returns 0 rather than blank.
+	measure EEMCompleted = CALCULATE(COUNT(DimWorker[Id Worker]), USERELATIONSHIP(DimWorker[Eem Completed Date], DimEmployeeTenureDate[Date])) + 0
+		formatString: #,0
+		displayFolder: Onboarding
+		lineageTag: 2a758092-b72f-45db-895f-70a8da125552
+
+	/// Definition: The number of new starters in the selected period who have a Visual Care worker record.
+	/// For analysis: Denominator of FrontlineNewStarters%; ignores worker groupings in the selection.
+	measure FrontlineNewEmployeesTotal =
+			
+			// New starters: distinct employees whose Start Date falls within the date
+			// window in the current filter context. Uses KEEPFILTERS with a boolean
+			// predicate rather than FILTER over the whole table, so the measure composes
+			// correctly with outer ALLSELECTED / REMOVEFILTERS for share-of-total use.
+			VAR _windowStart = MIN ( DimEmployeeTenureDate[Date] )
+			VAR _windowEnd = MAX ( DimEmployeeTenureDate[Date] )
+			VAR _count =
+			    CALCULATE (
+			        DISTINCTCOUNT ( DimEmployee[Id Employee] ),
+			        ALLSELECTED(DimWorker),
+			        DimWorker[Id Employee Payroll] <> BLANK(),
+			        KEEPFILTERS (
+			            DimEmployee[Start Date] >= _windowStart
+			                && DimEmployee[Start Date] <= _windowEnd
+			        )
+			    )
+			RETURN
+			    _count
+		formatString: 0
+		displayFolder: New Employees
+		lineageTag: 436f3c89-3db8-4c49-986c-1326d65ae764
+
+	/// Definition: The number of corporate new starters in the selected period who have since left.
+	/// For analysis: New starters with status terminated and Role Group Corporate. Not used on any visual.
+	measure ExitedNewStartersNonFrontline = CALCULATE([NewStarters], DimEmployee[Employee Status] = "terminated", DimEmployee[Role Group] = "Corporate")
+		formatString: 0
+		displayFolder: New Employees
+		lineageTag: 9a1ab2e1-5261-4b1d-b794-3e70c62ef10d
+
+	/// Definition: Visual title showing the latest month for workers onboarded.
+	/// For analysis: Display text. Not for analysis.
+	measure WorkersOnboardedTitle =
+			VAR _maxDate = MAX(DimEmployeeTenureDate[Date])
+			RETURN "Workers Onboarded (" & CALCULATE(SELECTEDVALUE(DimEmployeeTenureDate[MMM YYYY]), DimEmployeeTenureDate[Date] = _maxDate) & ")"
+		displayFolder: Onboarding
+		lineageTag: fb572501-2281-4e01-9dd5-0831722c5e9d
+
+	/// Definition: The average of new starters in the first and last of the three full months before the selected month.
+	/// For analysis: Two-point average (organisation rule); denominator of Rolling3MNeverStartExitRate.
+	measure AvgNewStarters3MRolling =
+			
+			VAR _currentMonth = EOMONTH(MAX ( DimEmployeeTenureDate[Date] ), -1)
+			VAR _startMonth   = EOMONTH ( _currentMonth, -2 )
+			VAR _nowStarters = CALCULATE ( [NewStarters], DATESINPERIOD ( DimEmployeeTenureDate[Date], _currentMonth, -1, MONTH ) )
+			VAR _thenStarters = CALCULATE ( [NewStarters], DATESINPERIOD ( DimEmployeeTenureDate[Date], _startMonth, -1, MONTH ) )
+			VAR _logic = DIVIDE ( _nowStarters + _thenStarters, 2 )
+			RETURN _logic
+		displayFolder: New Employees
+		lineageTag: 733c50f7-8d30-49fa-88ae-ba54b62eea29
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: The number of workers who left without a billable shift in the three full months before the selected month.
+	/// For analysis: Numerator of Rolling3MNeverStartExitRate.
+	measure NeverStartExits3MRolling =
+			
+			// Never-start exits (workers with a termination date but no billable shift)
+			// whose termination falls in the 3 FULL months before the current column's
+			// month. REMOVEFILTERS releases the column's own date filter so the trailing
+			// window can reach prior months for every column, not just the last.
+			VAR _currentMonth = MAX ( DimEmployeeTenureDate[Date] )
+			VAR _priorMonthEnd = EOMONTH ( _currentMonth, -1 )
+			VAR _neverStartExits =
+			    CALCULATE (
+			        DISTINCTCOUNT ( DimWorker[Id Worker] ),
+			        DimWorker[First Billable Shift Date] = BLANK (),
+			        REMOVEFILTERS ( DimEmployeeTenureDate ),
+			        DATESINPERIOD ( DimEmployeeTenureDate[Date], _priorMonthEnd, -3, MONTH ),
+			        USERELATIONSHIP ( DimWorker[Termination Date], DimEmployeeTenureDate[Date] )
+			    )
+			RETURN
+			    _neverStartExits
+		formatString: 0
+		displayFolder: New Employees
+		lineageTag: 7fc4bb1f-75a9-4963-b613-cdc5697ca0ab
+
+	/// Definition: Workers who left without a billable shift over the three full months before the selected month, as a proportion of the average new starters in the first and last of those months.
+	/// For analysis: NeverStartExits3MRolling divided by AvgNewStarters3MRolling; rate 0 to 1.
+	measure Rolling3MNeverStartExitRate = DIVIDE([NeverStartExits3MRolling], [AvgNewStarters3MRolling], 0)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: New Employees
+		lineageTag: a5a40099-2103-43ce-9192-96601856f0aa
+
+	/// Definition: Each worker group's share of all new starters with a worker record in the current selection.
+	/// For analysis: Share within the current selection; result depends on the visual's grouping.
+	measure FrontlineNewStarters% =
+			// Share of new starters within each DimWorker category (e.g. New Starter
+			// Status), as a percentage of total new starters across all categories in the
+			// current selection. The denominator removes the DimWorker grouping -- the
+			// table carrying the category on THIS visual -- so each category divides by the
+			// visual's total rather than itself.
+			VAR _categoryStarters = [NewStarters]
+			VAR _totalStarters =
+			    CALCULATE ( [FrontlineNewEmployeesTotal] )
+			VAR _share =
+			    DIVIDE ( _categoryStarters, _totalStarters )
+			RETURN
+			    _share
+		formatString: 0%;-0%;0%
+		displayFolder: Onboarding
+		lineageTag: c2aea742-8daa-46c5-93f1-d56a6810ac54
+
+	/// Definition: Plain English definition of the rolling 3 month never start exit rate (data dictionary ID 185), shown on the report.
+	/// For analysis: Display text read from Fact Calculations. Not for analysis.
+	measure Rolling3MonthNeverSTartExitDefinition = CALCULATE(SELECTEDVALUE('Fact Calculations'[Plain English Definition]), 'Fact Calculations'[Metric Id] = 185)
+		lineageTag: 3811ba0e-c7ba-4d0d-89cc-0fdd5005371f
+
+	partition DisplayMeasures = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

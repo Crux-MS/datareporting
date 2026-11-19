@@ -1,0 +1,71 @@
+/// Definition: Confirmed critical incidents per location and month, combining incidents reported within the required timeframe and those that were not, from the incident files on SharePoint. One row per location and month.
+/// For analysis: Related to DimDate only; case manager and area slicers do not filter it.
+table FactCriticalIncidents
+	lineageTag: e6ffcdea-87ab-4810-b707-5f73855d1410
+
+	/// Definition: The number of confirmed critical incidents each month, counting incidents reported within the required timeframe and those that were not.
+	/// For analysis: Adds ReportedWithinTimeframeCount and ConfirmedFailsCount; not filtered by case manager or area.
+	measure TotalCriticalIncidents = SUM(FactCriticalIncidents[ReportedWithinTimeframeCount]) + SUM(FactCriticalIncidents[ConfirmedFailsCount])
+		formatString: #,0
+		lineageTag: 64ae2f5b-f4a3-47fc-8429-3a2299e90c34
+
+	/// Definition: CYF location (house or office) the incidents relate to.
+	column Location
+		dataType: string
+		lineageTag: 1950f6c2-c2fe-4a2f-a599-4229a2c7a6df
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Month the incidents are counted in.
+	/// For analysis: Key: joins DimDate Date.
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 85695711-f36c-4f03-9a4c-9eceb57890dd
+		summarizeBy: none
+		sourceColumn: Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: Confirmed critical incidents reported within the required timeframe.
+	/// For analysis: Additive across locations and months.
+	column ReportedWithinTimeframeCount
+		dataType: double
+		formatString: 0
+		lineageTag: bd4ebe3a-26eb-4b11-89ba-82f7f9384cdd
+		summarizeBy: sum
+		sourceColumn: ReportedWithinTimeframeCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Confirmed critical incidents not reported within the required timeframe.
+	/// For analysis: Additive across locations and months.
+	column ConfirmedFailsCount
+		dataType: double
+		formatString: 0
+		lineageTag: 2dfc55e4-124b-4e74-b69e-436b347428ed
+		summarizeBy: sum
+		sourceColumn: ConfirmedFailsCount
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactCriticalIncidents = m
+		mode: import
+		source =
+				let
+				    Source = Table.NestedJoin(#"FactIncidentPass - Source", {"Location", "Date"}, #"FactConfirmedIncidentFails - Source", {"Location", "Date"}, "FactIncidentFails - Source", JoinKind.FullOuter),
+				    #"Expanded FactIncidentFails - Source" = Table.ExpandTableColumn(Source, "FactIncidentFails - Source", {"ConfirmedFailsCount"}, {"ConfirmedFailsCount"})
+				in
+				    #"Expanded FactIncidentFails - Source"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

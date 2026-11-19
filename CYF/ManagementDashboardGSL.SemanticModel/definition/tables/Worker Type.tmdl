@@ -1,0 +1,63 @@
+/// Definition: Helper table holding the worker type options: workers, case managers (labelled Service Managers) and total.
+/// For analysis: Report helper. Not for analysis.
+table 'Worker Type'
+	isHidden
+	lineageTag: 350d044f-7c48-4741-b1fe-1faf8b33adde
+
+	/// Definition: Placeholder column for the Workers option.
+	/// For analysis: Report helper. Not for analysis.
+	column Workers
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7dc9a90b-1615-4350-b2a5-1b787d36c1ed
+		summarizeBy: sum
+		sourceColumn: Workers
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Placeholder column for the Service Managers option, which shows case managers' own hours as workers.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Service Managers'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a0dff2ab-abb1-45e6-89ec-c7e528782d07
+		summarizeBy: sum
+		sourceColumn: Service Managers
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Placeholder column for the Total option.
+	/// For analysis: Report helper. Not for analysis.
+	column Total
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 88ae0b3d-b4a7-473c-ad1b-ab9298c930d7
+		summarizeBy: sum
+		sourceColumn: Total
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Worker Type' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WMlTSgeLYWAA=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Workers = _t, #"Service Managers" = _t, Total = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Workers", Int64.Type}, {"Service Managers", Int64.Type}, {"Total", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "72b598b16b50c0b95266",
   "position": {
-    "x": 705.96634092479189,
-    "y": 29.199888638246662,
+    "x": 704.3696049188809,
+    "y": 30.617283950617285,
     "z": 4000,
-    "height": 130.4582765826172,
-    "width": 485.97172127517609,
+    "height": 130.37037037037038,
+    "width": 485.92592592592592,
     "tabOrder": 2000
   },
   "visual": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Job History"
+                      "Entity": "DimEmployee"
                     }
                   },
-                  "Property": "Job FNC Flag"
+                  "Property": "Role Group"
                 }
               },
-              "queryRef": "Dim Job History.Job FNC Flag",
-              "nativeQueryRef": "Job FNC Flag"
+              "queryRef": "DimEmployee.Role Group",
+              "nativeQueryRef": "Role Group"
             }
           ]
         },
@@ -38,15 +38,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Fact Workforce"
+                      "Entity": "DisplayMeasures"
                     }
                   },
-                  "Property": "Currently Employed %"
+                  "Property": "Employees%"
                 }
               },
-              "queryRef": "Fact Workforce.Currently Employed %",
-              "nativeQueryRef": "Currently Employed",
-              "displayName": "Currently Employed"
+              "queryRef": "DisplayMeasures.Employees%",
+              "nativeQueryRef": "Current Employees",
+              "displayName": "Current Employees"
             }
           ],
           "fieldParameters": [
@@ -55,10 +55,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Workforce %"
+                      "Entity": "WorkerParam%"
                     }
                   },
-                  "Property": "Workforce %"
+                  "Property": "WorkerParam"
                 }
               },
               "index": 0,
@@ -74,10 +74,10 @@
               "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Fact Workforce"
+                    "Entity": "DisplayMeasures"
                   }
                 },
-                "Property": "Currently Employed %"
+                "Property": "Employees%"
               }
             },
             "direction": "Descending"
@@ -331,6 +331,342 @@
               }
             ]
           }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 4,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "_Role_Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Corporate'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 7,
+                      "Percent": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "_Role_Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Frontline'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 3,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "_Role_Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Non-Frontline'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 3,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Role Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Non-Frontline'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 7,
+                      "Percent": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Role Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Frontline'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 4,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Role Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Corporate'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 7,
+                      "Percent": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Role Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Client Facing'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 3,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DimEmployee"
+                          }
+                        },
+                        "Property": "Role Group"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Non-Client Facing'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       ],
       "legend": [
@@ -420,110 +756,87 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "3739890831364eb33740",
+        "name": "60c2c765829903b479ec",
         "field": {
-          "Column": {
+          "Aggregation": {
             "Expression": {
-              "SourceRef": {
-                "Entity": "Dim Job History"
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimEmployee"
+                  }
+                },
+                "Property": "Id Employee"
               }
             },
-            "Property": "MemberLatestJobFlag"
+            "Function": 5
           }
         },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Dim Job History",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "d"
-                          }
-                        },
-                        "Property": "MemberLatestJobFlag"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "0D"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "isLockedInViewMode": true
+        "type": "Advanced",
+        "howCreated": "User"
       },
       {
-        "name": "97c30cbc1ea607765e2d",
+        "name": "d0648d9f85e5e1d23fcb",
         "field": {
           "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Dim Job History"
+                "Entity": "DimEmployeeTenureDate"
               }
             },
-            "Property": "Job title"
+            "Property": "Month Start Date"
           }
         },
-        "type": "Categorical",
+        "type": "RelativeDate",
         "filter": {
           "Version": 2,
           "From": [
             {
               "Name": "d",
-              "Entity": "Dim Job History",
+              "Entity": "DimEmployeeTenureDate",
               "Type": 0
             }
           ],
           "Where": [
             {
               "Condition": {
-                "Not": {
+                "Between": {
                   "Expression": {
-                    "In": {
-                      "Expressions": [
-                        {
-                          "Column": {
-                            "Expression": {
-                              "SourceRef": {
-                                "Source": "d"
-                              }
-                            },
-                            "Property": "Job title"
-                          }
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "d"
                         }
-                      ],
-                      "Values": [
-                        [
-                          {
-                            "Literal": {
-                              "Value": "null"
-                            }
-                          }
-                        ]
-                      ]
+                      },
+                      "Property": "Month Start Date"
+                    }
+                  },
+                  "LowerBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "DateAdd": {
+                          "Expression": {
+                            "Now": {}
+                          },
+                          "Amount": -1,
+                          "TimeUnit": 2
+                        }
+                      },
+                      "TimeUnit": 2
+                    }
+                  },
+                  "UpperBound": {
+                    "DateSpan": {
+                      "Expression": {
+                        "DateAdd": {
+                          "Expression": {
+                            "Now": {}
+                          },
+                          "Amount": -1,
+                          "TimeUnit": 2
+                        }
+                      },
+                      "TimeUnit": 2
                     }
                   }
                 }
@@ -531,23 +844,7 @@
             }
           ]
         },
-        "howCreated": "User",
-        "isHiddenInViewMode": true,
-        "objects": {
-          "general": [
-            {
-              "properties": {
-                "isInvertedSelectionMode": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "true"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
+        "howCreated": "User"
       }
     ]
   }

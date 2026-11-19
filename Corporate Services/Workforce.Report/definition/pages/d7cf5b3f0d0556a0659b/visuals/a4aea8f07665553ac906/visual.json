@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "a4aea8f07665553ac906",
   "position": {
     "x": 47.962529274004687,
@@ -7,7 +7,7 @@
     "z": 8125,
     "height": 79.93754879000781,
     "width": 234.81654957064794,
-    "tabOrder": 9000
+    "tabOrder": 7000
   },
   "visual": {
     "visualType": "slicer",
@@ -20,33 +20,35 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce Location"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
-                  "Property": "State"
+                  "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Workforce Location.State",
-              "nativeQueryRef": "State",
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
+              "nativeQueryRef": "MMM YYYY",
               "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Workforce"
-                    }
-                  },
-                  "Property": "Location"
-                }
-              },
-              "queryRef": "Dim Workforce.Location",
-              "nativeQueryRef": "Location",
-              "active": false
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimEmployeeTenureDate"
+                  }
+                },
+                "Property": "MMM YYYY"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {
@@ -104,7 +106,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'State | Location'"
+                  "Value": "'Employee Start Month'"
                 }
               }
             }
@@ -119,5 +121,77 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "ecbfb4a34755900eaa62"
+  "parentGroupName": "ecbfb4a34755900eaa62",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "863d8c475082eb09140d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployeeTenureDate"
+              }
+            },
+            "Property": "MMM YYYY"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "8b95e1ad6962c786d42d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployeeTenureDate"
+              }
+            },
+            "Property": "EmployeeStartDateFlag"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimEmployeeTenureDate",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "EmployeeStartDateFlag"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
 }

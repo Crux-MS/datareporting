@@ -1,0 +1,630 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "c05607a9621cedb0c126",
+  "position": {
+    "x": 63.068243188895394,
+    "y": 139.31492525308238,
+    "z": 4000,
+    "height": 546.90521332460037,
+    "width": 1192.6487182138876,
+    "tabOrder": 9001
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Start of Month"
+                }
+              },
+              "queryRef": "DimDate.Start of Month",
+              "nativeQueryRef": "Months",
+              "active": true,
+              "displayName": "Months"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Fortnight Start Date"
+                }
+              },
+              "queryRef": "DimDate.Fortnight Start Date",
+              "nativeQueryRef": "Fortnights",
+              "active": false,
+              "displayName": "Fortnights"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "Start of Week (Monday)"
+                }
+              },
+              "queryRef": "DimDate.Start of Week (Monday)",
+              "nativeQueryRef": "Weeks",
+              "active": false,
+              "displayName": "Weeks"
+            }
+          ],
+          "fieldParameters": [
+            {
+              "parameterExpr": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PeriodParam"
+                    }
+                  },
+                  "Property": "MonthWeekParam"
+                }
+              },
+              "index": 0,
+              "length": 3
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCaseManagers"
+                    }
+                  },
+                  "Property": "Case Manager Name"
+                }
+              },
+              "queryRef": "DimActiveCMs.Case Manager Name",
+              "nativeQueryRef": "Case Manager | Employment Type | Worker",
+              "active": true,
+              "displayName": "Case Manager | Employment Type | Worker"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployees"
+                    }
+                  },
+                  "Property": "Employment Type"
+                }
+              },
+              "queryRef": "DimEmployees.Employment Type",
+              "nativeQueryRef": "Employment Type",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployees"
+                    }
+                  },
+                  "Property": "Employee Name"
+                }
+              },
+              "queryRef": "DimEmployees.Employee Name",
+              "nativeQueryRef": "Worker",
+              "active": false,
+              "displayName": "Worker"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "EmployeeCompletedShifts"
+                }
+              },
+              "queryRef": "ParameterMeasures.EmployeeCompletedShifts",
+              "nativeQueryRef": "Completed (hours)",
+              "displayName": "Completed (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "EmployeeBillableShifts"
+                }
+              },
+              "queryRef": "ParameterMeasures.EmployeeBillableShifts",
+              "nativeQueryRef": "Billable (hours)",
+              "displayName": "Billable (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "EmployeeUnbillableShifts"
+                }
+              },
+              "queryRef": "ParameterMeasures.EmployeeUnbillableShifts",
+              "nativeQueryRef": "Unbillable (hours)",
+              "displayName": "Unbillable (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "EmployeeCancellations"
+                }
+              },
+              "queryRef": "ParameterMeasures.EmployeeCancellations",
+              "nativeQueryRef": "Cancellations (hours)",
+              "displayName": "Cancellations (hours)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ParameterMeasures"
+                    }
+                  },
+                  "Property": "EmployeeCancellationRate"
+                }
+              },
+              "queryRef": "ParameterMeasures.EmployeeCancellationRate",
+              "nativeQueryRef": "Cancellations (%)",
+              "displayName": "Cancellations (%)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "ParameterMeasures"
+                  }
+                },
+                "Property": "EmployeeCancellationRate"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DimActiveCMs.Case Manager Name"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimEmployees.Employment Type"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEmployees"
+                    }
+                  },
+                  "Property": "Employment Type"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimEmployees.Employee Name"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "valuesOnRow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "columnSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "188.56782562493606D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimActiveCMs.Case Manager Name"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Client Service Hours Completed'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "''"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "84ca52d05ea945a51f87",
+        "ordinal": 0,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "ActiveEmployees"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "10c8b003f13441331ae5",
+        "ordinal": 1,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMWorkerRoster"
+              }
+            },
+            "Property": "BillableCompletedShifts"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "14a69169af14d824dec5",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMWorkerRoster"
+              }
+            },
+            "Property": "Id Employee"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "c5c3f6952655b53919c6",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMMonthlySnapshot"
+              }
+            },
+            "Property": "Month Start Date"
+          }
+        },
+        "type": "RelativeDate",
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "63c4b05c6d432ae7be51",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMWeeklySnapshot"
+              }
+            },
+            "Property": "Week Start Date"
+          }
+        },
+        "type": "RelativeDate",
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "d1bd3970ea4f2bb5114a",
+        "ordinal": 5,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Start of Month"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c650107c2a58c68e6fec",
+        "ordinal": 6,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactCMWorkerRoster"
+              }
+            },
+            "Property": "TotalCancellations"
+          }
+        },
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "5396605254aa8a4163a2",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployees"
+              }
+            },
+            "Property": "Employment Type"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "320e62f299e8b4cba418",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployees"
+              }
+            },
+            "Property": "Employee Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "5209e110d03d8e792acd",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "EmployeeCompletedShifts"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a954fec8acd060e20ce0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "EmployeeBillableShifts"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5523ae89d07eed1b0a7d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "EmployeeUnbillableShifts"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1baec0edeac4d7922803",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "EmployeeCancellations"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2d214f03405d79160ed1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ParameterMeasures"
+              }
+            },
+            "Property": "EmployeeCancellationRate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b8ff50df2e77949c6c00",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Fortnight Start Date"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c4912850c292647a6848",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDate"
+              }
+            },
+            "Property": "Start of Week (Monday)"
+          }
+        },
+        "type": "Categorical"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

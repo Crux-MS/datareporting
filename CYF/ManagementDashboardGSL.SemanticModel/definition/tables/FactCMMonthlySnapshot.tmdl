@@ -1,0 +1,672 @@
+/// Definition: Case manager KPIs per month for CYF case managers: clients, employees, payroll, shifts and schedules, from the monthly case manager KPI table in L4_Analytical (selected columns). One row per case manager, area and calendar month.
+/// For analysis: Pre-aggregated in the warehouse. Group by DimCaseManagers, DimArea and DimDate through Month Start Date.
+table FactCMMonthlySnapshot
+	lineageTag: 8db192c7-a710-4afd-95bc-d7a8f750d525
+
+	/// Definition: Date the calendar month starts.
+	/// For analysis: Key: joins DimDate Date; group by DimDate period columns.
+	column 'Month Start Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7b5d16d8-2336-4f39-b742-990a22c5b030
+		summarizeBy: none
+		sourceColumn: Month Start Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Clients who started with the case manager in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Enter Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: 8428e1c4-f6fe-4919-9991-5043e06f72fa
+		summarizeBy: sum
+		sourceColumn: Client Enter Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Clients who stopped being supported by the case manager in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Exit Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: e7c9b511-0bdf-4ec6-ab85-02b49872329c
+		summarizeBy: sum
+		sourceColumn: Client Exit Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Billable CYF shift hours delivered by workers in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Billable Cyf Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 7dfcbe77-9d16-41ab-85ec-5c9158091415
+		summarizeBy: sum
+		sourceColumn: Worker Billable Cyf Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Billable NDIS shift hours delivered by workers in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Billable Ndis Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: d097cf00-1445-4df7-bcb9-9ab7f6fabe8b
+		summarizeBy: sum
+		sourceColumn: Worker Billable Ndis Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on admin in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Admin Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: b3be387a-49e2-4d21-8ca1-afa1ed7ede21
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Admin Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on training in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Training Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 91471a2f-9979-4e34-a6d1-1c68f00cf526
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Training Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on meetings in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Meeting Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 2d47742f-1ae0-4153-b170-60f4a925a4cc
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Meeting Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on shadow shifts in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Shadow Shift Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 247882f2-1e52-4017-b72a-8381baf5a290
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Shadow Shift Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on awake shifts in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Awake Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 9304cf3e-9a48-4890-a26c-fd7ccf6a4ab7
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Awake Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on travel in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Travel Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: c2cf6b0a-1b09-482b-bd9b-27b3c6fe80b6
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Travel Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on public holidays not worked (PHNW) in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Phnw Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 9b45a1ea-4041-41e1-9f1b-f92b1339c74a
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Phnw Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours workers spent on other unbillable activity in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Worker Unbillable Other Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 81308675-fd82-4da0-8b23-f739ee2fde5f
+		summarizeBy: sum
+		sourceColumn: Worker Unbillable Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Client service hours scheduled in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Hours'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: 115ca731-63c3-4e34-a87f-1a2dab653eaf
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Scheduled client service hours completed in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Hours Completed'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: b190110c-a57f-41c4-afdf-19f32d9c5b3b
+		summarizeBy: sum
+		sourceColumn: Client Schedule Hours Completed
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Overtime hours paid to employees in the calendar month, in decimal hours.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Overtime Hours'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: b47880dd-d98d-4385-90b7-77a5fdd3545d
+		summarizeBy: sum
+		sourceColumn: Payroll Overtime Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Leave hours paid to employees in the calendar month, in decimal hours.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Leave Hours'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: 31ff58c2-ec40-4b9b-a671-8d3ab8905c1c
+		summarizeBy: sum
+		sourceColumn: Payroll Leave Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Standard hours paid to employees in the calendar month, in decimal hours.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Standard Hours'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: b11a2286-99de-4680-bd63-f03d3c1862ef
+		summarizeBy: sum
+		sourceColumn: Payroll Standard Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Hours paid to employees that are not standard, leave or overtime hours, in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Other Hours'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: c4e0d455-d88b-4b7d-93c2-e14e141eb5b2
+		summarizeBy: sum
+		sourceColumn: Payroll Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Share of clients who left over the rolling 12 months to the calendar month, 0 to 1.
+	/// For analysis: Calculated per case manager and area in the warehouse. Do not sum; use the median.
+	column 'Client Rolling 12M Churn Rate'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: 7b7c3be0-64ca-4906-83e9-5cb92c3a8882
+		summarizeBy: sum
+		sourceColumn: Client Rolling 12M Churn Rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Active workers linked to the case manager who took no shifts in the calendar month.
+	/// For analysis: Shows workers not taking shifts, for example offboarding candidates. Do not sum across periods; add across case managers and areas.
+	column 'Worker No Shift Count'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: e3a6ffc3-7984-40ba-9492-6d0cba3be0d1
+		summarizeBy: sum
+		sourceColumn: Worker No Shift Count
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Active workers linked to the case manager who took at least one shift in the calendar month.
+	/// For analysis: With Worker No Shift Count gives the share of active workers taking shifts. Do not sum across periods; add across case managers and areas.
+	column 'Worker With Shift Count'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: a670fe72-1392-4ebd-bfb5-37883f902394
+		summarizeBy: sum
+		sourceColumn: Worker With Shift Count
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Employees active and reporting to the case manager in the calendar month.
+	/// For analysis: Do not sum across periods; add across case managers and areas.
+	column 'Employee Active Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Workers
+		lineageTag: ee65513c-0493-4c39-9fe1-31c1caf78830
+		summarizeBy: sum
+		sourceColumn: Employee Active Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Pay for overtime hours in the calendar month, in AUD (wages, no GST).
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Overtime Amount'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: 71afb939-19fa-4726-a10e-0a26d073434c
+		summarizeBy: sum
+		sourceColumn: Payroll Overtime Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Pay for leave in the calendar month, in AUD (wages, no GST).
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Leave Amount'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: 502eadad-5868-4f60-a070-ca2072555aa4
+		summarizeBy: sum
+		sourceColumn: Payroll Leave Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Pay for standard hours in the calendar month, in AUD (wages, no GST).
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Standard Amount'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: 921d535b-f733-4a4e-868c-961125337fdc
+		summarizeBy: sum
+		sourceColumn: Payroll Standard Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Pay that is not standard, leave or overtime pay in the calendar month, in AUD (wages, no GST).
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Payroll Other Amount'
+		dataType: double
+		displayFolder: Payroll
+		lineageTag: 3457e65d-165b-4fc7-8c34-73b8e18f8ab4
+		summarizeBy: sum
+		sourceColumn: Payroll Other Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Client service hours scheduled under funding streams other than IPS or OSD in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Other Hours'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: 65b87d63-8d9b-4274-b329-53316f135241
+		summarizeBy: sum
+		sourceColumn: Client Schedule Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Scheduled client service hours under funding streams other than IPS or OSD completed in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Other Hours Completed'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: 40bd1e3e-d442-45b9-a6d8-b2cf2a62a0c8
+		summarizeBy: sum
+		sourceColumn: Client Schedule Other Hours Completed
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Shift hours the case manager delivered while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Delivered Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 54b6f7a4-fd8c-4fdf-b0b8-c86a4d6ef3b3
+		summarizeBy: sum
+		sourceColumn: Worker Sm Delivered Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Shift hours the case manager delivered under funding streams other than IPS or OSD while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Delivered Other Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 6349137d-8631-4ad5-9a15-eba034241ae9
+		summarizeBy: sum
+		sourceColumn: Worker Sm Delivered Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Shift hours cancelled from the case manager's own worker shifts in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Cancellation Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 66ca42ef-cc10-428d-b2ea-107ee4fa34a2
+		summarizeBy: sum
+		sourceColumn: Worker Sm Cancellation Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Billable CYF shift hours the case manager delivered while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Billable Cyf Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: f59dd70a-48f8-43de-81f1-2affe77e93c0
+		summarizeBy: sum
+		sourceColumn: Worker Sm Billable Cyf Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Billable NDIS shift hours the case manager delivered while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Billable Ndis Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: c7aee902-1c8f-449f-89ee-772f37a0cc05
+		summarizeBy: sum
+		sourceColumn: Worker Sm Billable Ndis Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on admin while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Admin Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 7cf53610-8eac-42f7-b6aa-feef19f6173e
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Admin Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on training while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Training Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 2f2285c8-6b17-4084-b7d2-63c95c371408
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Training Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on meetings while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Meeting Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: e792cfb6-70ed-463b-89bc-9200e4db5b4c
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Meeting Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on shadow shifts while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Shadow Shift Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: cb26ea2a-59b0-435f-ba15-b96a8a0317f6
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Shadow Shift Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on awake shifts while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Awake Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 807ca6a1-d7d2-4397-9eee-3753efd6d043
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Awake Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on travel while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Travel Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 994cbccf-724c-4e1f-8c25-af3a4456234c
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Travel Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on public holidays not worked (PHNW) while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Phnw Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: d55c806e-9588-4375-bc4b-bf8ed0e6c87f
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Phnw Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Unbillable hours the case manager spent on other unbillable activity while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Unbillable Other Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: b6be4c87-1795-4e3a-b36f-e5bd2113fd62
+		summarizeBy: sum
+		sourceColumn: Worker Sm Unbillable Other Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Active clients supported by the case manager in the calendar month.
+	/// For analysis: Do not sum across periods; add across case managers and areas.
+	column 'Client Active Count'
+		dataType: int64
+		formatString: 0
+		displayFolder: Clients
+		lineageTag: dd199661-2c7e-4edb-9260-0369841de503
+		summarizeBy: sum
+		sourceColumn: Client Active Count
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Client service hours scheduled under the IPS funding stream in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Ips Hours'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: a76c8f3b-f113-43cd-9db1-a041afb14b40
+		summarizeBy: sum
+		sourceColumn: Client Schedule Ips Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Client service hours scheduled under the OSD funding stream in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Osd Hours'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: b44bc045-932a-4a4a-a5cd-ee4818a500c4
+		summarizeBy: sum
+		sourceColumn: Client Schedule Osd Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Scheduled client service hours under the IPS funding stream completed in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Ips Hours Completed'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: 9124ad5f-1b55-48cb-804e-83bdaa3e2ede
+		summarizeBy: sum
+		sourceColumn: Client Schedule Ips Hours Completed
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Scheduled client service hours under the OSD funding stream completed in the calendar month.
+	/// For analysis: Additive across case managers, areas and periods.
+	column 'Client Schedule Osd Hours Completed'
+		dataType: double
+		displayFolder: Clients
+		lineageTag: bf0cb909-73f7-4547-b4a9-9120a59de4c8
+		summarizeBy: sum
+		sourceColumn: Client Schedule Osd Hours Completed
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Shift hours the case manager delivered under the IPS funding stream while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Delivered Ips Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 63c5eb0d-c65b-45b3-83da-a76a43d175c5
+		summarizeBy: sum
+		sourceColumn: Worker Sm Delivered Ips Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Shift hours the case manager delivered under the OSD funding stream while working as a worker, in the calendar month.
+	/// For analysis: Hours worked by the case manager as a worker; add the matching worker column for the team total.
+	column 'Worker Sm Delivered Osd Hours'
+		dataType: double
+		displayFolder: Workers
+		lineageTag: 2a5f2143-8043-48e4-87c1-9fd3bebc2e10
+		summarizeBy: sum
+		sourceColumn: Worker Sm Delivered Osd Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Case manager identifier from the HR system (warehouse column Id_Service_Manager, renamed in the query).
+	/// For analysis: Key: joins DimCaseManagers Id Case Manager.
+	column 'Id Case Manager'
+		dataType: string
+		lineageTag: b3f1f9f8-5ffd-4c90-b504-2e18dab79f78
+		summarizeBy: none
+		sourceColumn: Id Case Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Area of the clients, workers or employees behind the row: client figures use the client's area, worker figures the worker's area, employee figures the area on the employee's Visual Care worker profile; blank when unknown.
+	/// For analysis: Key: joins DimArea Id Area. Add across areas for case manager totals.
+	column 'Id Area'
+		dataType: string
+		lineageTag: e4d4c395-5562-4875-b1ab-dd71345c29a0
+		summarizeBy: none
+		sourceColumn: Id Area
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactCMMonthlySnapshot = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(ServerName, DatabaseName, [Query="SELECT [Id_Service_Manager]  AS [Id_Case_Manager]#(lf)      ,[Id_Area]#(lf)      ,[Month_Start_Date]#(lf)      ,[Client_Active_Count]#(lf)      ,[Client_Enter_Count]#(lf)      ,[Client_Exit_Count]#(lf)      ,[Client_Schedule_Hours]#(lf)      ,[Client_Schedule_IPS_Hours]#(lf)      ,[Client_Schedule_OSD_Hours]#(lf)      ,[Client_Schedule_Other_Hours]#(lf)      ,[Client_Schedule_Hours_Completed]#(lf)      ,[Client_Schedule_IPS_Hours_Completed]#(lf)      ,[Client_Schedule_OSD_Hours_Completed]#(lf)      ,[Client_Schedule_Other_Hours_Completed]#(lf)      ,[Client_Rolling_12M_Churn_Rate]#(lf)      ,[Employee_Active_Count]#(lf)      ,[Payroll_Overtime_Hours]#(lf)      ,[Payroll_Leave_Hours]#(lf)      ,[Payroll_Standard_Hours]#(lf)      ,[Payroll_Other_Hours]#(lf)      ,[Payroll_Overtime_Amount]#(lf)      ,[Payroll_Leave_Amount]#(lf)      ,[Payroll_Standard_Amount]#(lf)      ,[Payroll_Other_Amount]#(lf)      ,[Worker_Billable_CYF_Hours]#(lf)      ,[Worker_Billable_NDIS_Hours]#(lf)      ,[Worker_Unbillable_Admin_Hours]#(lf)      ,[Worker_Unbillable_Training_Hours]#(lf)      ,[Worker_Unbillable_Meeting_Hours]#(lf)      ,[Worker_Unbillable_Shadow_Shift_Hours]#(lf)      ,[Worker_Unbillable_Awake_Hours]#(lf)      ,[Worker_Unbillable_Travel_Hours]#(lf)      ,[Worker_Unbillable_PHNW_Hours]#(lf)      ,[Worker_Unbillable_Other_Hours]#(lf)      ,[Worker_SM_Delivered_Hours]#(lf)      ,[Worker_SM_Delivered_IPS_Hours]#(lf)      ,[Worker_SM_Delivered_OSD_Hours]#(lf)      ,[Worker_SM_Delivered_Other_Hours]#(lf)      ,[Worker_SM_Cancellation_Hours]#(lf)      ,[Worker_SM_Billable_CYF_Hours]#(lf)      ,[Worker_SM_Billable_NDIS_Hours]#(lf)      ,[Worker_SM_Unbillable_Admin_Hours]#(lf)      ,[Worker_SM_Unbillable_Training_Hours]#(lf)      ,[Worker_SM_Unbillable_Meeting_Hours]#(lf)      ,[Worker_SM_Unbillable_Shadow_Shift_Hours]#(lf)      ,[Worker_SM_Unbillable_Awake_Hours]#(lf)      ,[Worker_SM_Unbillable_Travel_Hours]#(lf)      ,[Worker_SM_Unbillable_PHNW_Hours]#(lf)      ,[Worker_SM_Unbillable_Other_Hours]#(lf)      ,[Worker_No_Shift_Count]#(lf)      ,[Worker_With_Shift_Count]#(lf)  FROM [Fact].[case_manager_kpi_monthly]"]),
+				    #"Clean Column Names" = #"fnCleanColumnNames"(Source)//,
+				    //#"Transform Exit Columns" = Table.TransformColumns(#"Clean Column Names", {{"Client Exit Cas Count", each 0 - _, type number}, {"Client Exit Sil Count", each 0 - _, type number}, {"Client Exit Unknown Count", each 0 - _, type number}, {"Client Exit Count", each 0 - _, type number}})
+				in
+				    #"Clean Column Names"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

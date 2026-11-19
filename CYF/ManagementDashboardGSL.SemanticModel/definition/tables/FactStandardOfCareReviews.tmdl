@@ -1,0 +1,61 @@
+/// Definition: Standard of Care Reviews (SoCRs) per location and month, from the SoCR workbook on SharePoint (Child Protection licensing documents). One row per location and month.
+/// For analysis: Related to DimDate only; case manager and area slicers do not filter it.
+table FactStandardOfCareReviews
+	lineageTag: 8e991852-5b34-46c4-8b27-3fe0bce11c1a
+
+	/// Definition: CYF location the reviews relate to.
+	column Location
+		dataType: string
+		lineageTag: 44729dde-e6ef-4b43-9ffa-a1f245bf7dda
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Month the reviews are counted in.
+	/// For analysis: Key: joins DimDate Date.
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: e3599103-9519-4948-9bd7-b653d6673ac5
+		summarizeBy: none
+		sourceColumn: Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Definition: The number of Standard of Care Reviews recorded each month, by location.
+	/// For analysis: Additive across locations and months.
+	column SOCRCount
+		dataType: int64
+		formatString: 0
+		lineageTag: a665a73b-34fe-469e-a423-9bb978ad431f
+		summarizeBy: sum
+		sourceColumn: SOCRCount
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactStandardOfCareReviews = m
+		mode: import
+		source =
+				let
+				    Source = SharePoint.Files("https://cruxscss.sharepoint.com/IP/ESS", [ApiVersion = 15]),
+				    #"02 Standard of Care Reviews (SoCRs) xlsx_https://cruxscss sharepoint com/IP/ESS/Child Protection Documents/Licensing/" = Source{[Name="02 Standard of Care Reviews (SoCRs).xlsx",#"Folder Path"="https://cruxscss.sharepoint.com/IP/ESS/Child Protection Documents/Licensing/"]}[Content],
+				    #"Imported Excel Workbook" = Excel.Workbook(#"02 Standard of Care Reviews (SoCRs) xlsx_https://cruxscss sharepoint com/IP/ESS/Child Protection Documents/Licensing/"),
+				    #"SoCRs by Location_Sheet" = #"Imported Excel Workbook"{[Item="SoCRs by Location",Kind="Sheet"]}[Data],
+				    #"Removed Top Rows" = Table.Skip(#"SoCRs by Location_Sheet",2),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Top Rows", each ([Column1] <> null and [Column1] <> "Total SCSS SoCRs")),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true]),
+				    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Promoted Headers", {"Location"}, "Date", "SOCRCount"),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Unpivoted Other Columns",{{"Date", type date}, {"SOCRCount", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

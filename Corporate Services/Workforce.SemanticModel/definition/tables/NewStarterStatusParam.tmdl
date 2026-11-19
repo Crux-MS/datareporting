@@ -1,0 +1,56 @@
+/// Definition: Report field parameter for the new starter breakdown: Onboarding Stage (New Starter Status) or Never Start Status (Start Flag).
+/// For analysis: Report slicer. Not for analysis.
+table NewStarterStatusParam
+	lineageTag: 0f554e1d-0a28-4d27-b225-77dc678c3091
+
+	/// Definition: Option shown on the report slicer.
+	/// For analysis: Report slicer. Not for analysis.
+	column NewStarterStatusParam
+		lineageTag: 6140af4a-47db-4324-9ba9-e12ba318ed48
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Model field each option points to.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: fef97f58-1ec5-4090-911b-6ebe9e96b507
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Sort order of the options.
+	/// For analysis: Report helper. Not for analysis.
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 47ef7d35-c09b-4137-bbb1-3cf11a4d8671
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition NewStarterStatusParam = calculated
+		mode: import
+		source =
+				{
+				    ("Onboarding Stage", NAMEOF('DimWorker'[New Starter Status]), 0),
+				    ("Never Start Status", NAMEOF('DimWorker'[Start Flag]), 1)
+				}
+
+	annotation PBI_Id = 0048caed6074438983fe21e170f38c29
+

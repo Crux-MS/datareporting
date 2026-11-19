@@ -1,0 +1,43 @@
+table DimWorkers
+	lineageTag: 58f997bf-6f41-4756-84b9-0335db5b3328
+
+	column 'Id Worker'
+		dataType: int64
+		formatString: 0
+		lineageTag: 7d72857d-0823-4db1-ac2b-5c19fb44fcc9
+		summarizeBy: sum
+		sourceColumn: Id Worker
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Employee Payroll'
+		dataType: string
+		lineageTag: bfa011e0-c7fd-4cd8-920d-ff25298024ab
+		summarizeBy: none
+		sourceColumn: Id Employee Payroll
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Area'
+		dataType: string
+		lineageTag: 5ed7c8e9-f7a9-4081-8a7c-d944cb7422b1
+		summarizeBy: none
+		sourceColumn: Id Area
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimWorkers = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Dim_employee = Source{[Schema="Dim",Item="worker"]}[Data],
+				    #"Removed Other Columns" = Table.SelectColumns(Dim_employee,{"Id_Worker", "Id_Employee_Payroll", "Id_Area"}),
+				    #"Clean Column Names" = fnCleanColumnNames(#"Removed Other Columns")
+				in
+				    #"Clean Column Names"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

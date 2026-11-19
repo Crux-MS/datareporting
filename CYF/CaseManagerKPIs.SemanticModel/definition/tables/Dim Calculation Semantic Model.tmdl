@@ -1,0 +1,35 @@
+table 'Dim Calculation Semantic Model'
+	lineageTag: 5bfbca88-0bb9-48ea-9832-b8782e9637ac
+
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: b36851bd-3372-484a-84b8-8ed5372d8e85
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Report Name'
+		dataType: string
+		lineageTag: d6b1fb2a-0972-4d05-b8f9-5750fd68fc51
+		summarizeBy: none
+		sourceColumn: Report Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Calculation Semantic Model' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Report Appearances"}),
+				    #"Expanded Report Appearances" = Table.ExpandListColumn(#"Removed Other Columns", "Report Appearances"),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Report Appearances", each [Report Appearances] <> null and [Report Appearances] <> ""),
+				    #"Expanded Report Appearances1" = #"fnCleanColumnNames (2)"(Table.ExpandRecordColumn(#"Filtered Rows", "Report Appearances", {"report_name", "pages"}, {"report_name", "pages"})),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Expanded Report Appearances1",{"Metric Id", "Report Name"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns1",{{"Report Name", type text}})
+				in
+				    #"Changed Type"
+

@@ -1,0 +1,96 @@
+table 'Fact Calculations'
+	lineageTag: e9067049-7541-47a6-a41d-64881bd132f3
+
+	column 'Last Updated'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d2de7628-a96d-4ef3-b73b-4a92f3878027
+		summarizeBy: none
+		sourceColumn: Last Updated
+
+		variation Variation
+			isDefault
+			relationship: 9f36afb1-b90d-46b2-8171-21aff6b8d2da
+			defaultHierarchy: LocalDateTable_ec5d97dc-7c1d-44e3-892b-2eeecc65f1f0.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Metric Id'
+		dataType: int64
+		formatString: 0
+		lineageTag: 0fa983b4-9df3-481e-be43-c10381ed489b
+		summarizeBy: none
+		sourceColumn: Metric Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Metric Name'
+		dataType: string
+		lineageTag: f0089ff2-9a5d-47c2-bc59-cbffb846fdde
+		summarizeBy: none
+		sourceColumn: Metric Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Aliases
+		dataType: string
+		lineageTag: 58afb083-1ceb-4e9b-b0a1-81077fa58ee5
+		summarizeBy: none
+		sourceColumn: Aliases
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Plain English Definition'
+		dataType: string
+		lineageTag: db081ffe-def1-4be5-9ad3-bd3114671cda
+		summarizeBy: none
+		sourceColumn: Plain English Definition
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Technical Lineage'
+		dataType: string
+		lineageTag: 5d48bcb1-a204-4dbd-8841-784a0695e682
+		summarizeBy: none
+		sourceColumn: Technical Lineage
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Accountable Stakeholder'
+		dataType: string
+		lineageTag: d1f92c17-0fad-4fd6-b2b9-e32ba9a3ba3a
+		summarizeBy: none
+		sourceColumn: Accountable Stakeholder
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Technical Contributors'
+		dataType: string
+		lineageTag: 60f3f09e-d358-46bd-80fc-1977c69caa2e
+		summarizeBy: none
+		sourceColumn: Technical Contributors
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Technical Notes'
+		dataType: string
+		lineageTag: 23605471-0c11-431d-80ef-96a4ddf60e69
+		summarizeBy: none
+		sourceColumn: Technical Notes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Calculations' = m
+		mode: import
+		queryGroup: 'Utilities\Data Dictionary'
+		source =
+				let
+				    Source = #"Data Dictionary - Source",
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Last Updated", "Metric Id", "Metric Name", "Aliases", "Plain English Definition", "Technical Lineage", "Accountable Stakeholder", "Technical Contributors", "Technical Notes"}),
+				    #"Extracted Values" = Table.TransformColumns(#"Removed Other Columns", {"Aliases", each Text.Combine(List.Transform(_, Text.From), ", "), type text}),
+				    #"Extracted Values1" = Table.TransformColumns(#"Extracted Values", {"Technical Contributors", each Text.Combine(List.Transform(_, Text.From), ", "), type text})
+				in
+				    #"Extracted Values1"
+

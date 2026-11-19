@@ -1,0 +1,88 @@
+table DimArea
+	lineageTag: 80acee42-706f-4c1f-b061-8515dadd8d99
+
+	column 'Id Area'
+		dataType: string
+		lineageTag: d522831f-e359-483f-9f7a-673153d332bb
+		summarizeBy: none
+		sourceColumn: Id Area
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 36513b58-b639-4d61-9a38-7ae297eaf18f
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'State Full Name'
+		dataType: string
+		lineageTag: 2ad1ffff-5de0-42b0-9926-1e1b0a8f0a55
+		summarizeBy: none
+		sourceColumn: State Full Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Regional Manager Dis'
+		dataType: string
+		lineageTag: 4b6494bf-f7a9-4ea6-84a9-6f986dc93c2c
+		summarizeBy: none
+		sourceColumn: Id Regional Manager Dis
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Regional Manager Name Dis'
+		dataType: string
+		lineageTag: 431e353f-a794-49b8-b781-5ed5dd173db2
+		summarizeBy: none
+		sourceColumn: Regional Manager Name Dis
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Regional Manager Cyf'
+		dataType: string
+		lineageTag: 6456b383-f56c-40bc-846c-714ff00118df
+		summarizeBy: none
+		sourceColumn: Id Regional Manager Cyf
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Regional Manager Name Cyf'
+		dataType: string
+		lineageTag: b3c3817b-9295-4c74-b756-2c36d986100e
+		summarizeBy: none
+		sourceColumn: Regional Manager Name Cyf
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActiveArea =
+			VAR _weeklyClients = CALCULATE(SUM(FactCMWeeklySnapshot[Client Active Count]), CROSSFILTER(DimArea[Id Area], FactCMWeeklySnapshot[Id Area], Both))
+			VAR _fortnightlyClients = CALCULATE(SUM(FactCMFortnightlySnapshot[Client Active Count]), CROSSFILTER(DimArea[Id Area], FactCMFortnightlySnapshot[Id Area], Both))
+			VAR __monthlyClients = CALCULATE(SUM(FactCMMonthlySnapshot[Client Active Count]), CROSSFILTER(DimArea[Id Area], FactCMMonthlySnapshot[Id Area], Both))
+			VAR _weeklyEmployees = CALCULATE(SUM(FactCMWeeklySnapshot[Employee Active Count]), CROSSFILTER(DimArea[Id Area], FactCMWeeklySnapshot[Id Area], Both))
+			VAR _fortnightlyEmployees = CALCULATE(SUM(FactCMFortnightlySnapshot[Employee Active Count]), CROSSFILTER(DimArea[Id Area], FactCMFortnightlySnapshot[Id Area], Both))
+			VAR __monthlyEmployees = CALCULATE(SUM(FactCMMonthlySnapshot[Employee Active Count]), CROSSFILTER(DimArea[Id Area], FactCMMonthlySnapshot[Id Area], Both))
+			VAR _activeFlag = IF(_weeklyClients > 0 || _fortnightlyClients > 0 || __monthlyClients > 0 || _weeklyEmployees > 0 || _fortnightlyEmployees > 0 || __monthlyEmployees > 0, TRUE(), FALSE())
+			
+			RETURN _activeFlag
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ae12e22d-1262-4b1a-a4bd-66924c7eadee
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimArea = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Dim_area = #"fnCleanColumnNames"(Source{[Schema="Dim",Item="area"]}[Data])
+				in
+				    Dim_area
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,148 @@
+table DimClients
+	lineageTag: 356de2ed-9e90-4160-9ca9-8d72843817a7
+
+	measure ExitedClientName = CALCULATE(SELECTEDVALUE(DimClients[Client Name]), USERELATIONSHIP(DimDate[Date], DimClients[Service End]))
+		lineageTag: 1208c301-07bb-48b3-9b17-d64b43c15f14
+
+	measure ServiceEndIsValid =
+			VAR _serviceStatus = MAX(DimClients[Service Status])
+			VAR _serviceEnd = MAX(DimClients[Service End])
+			VAR _logic = SWITCH(
+			    TRUE(),
+			    _serviceStatus = "Pending" && _serviceEnd = BLANK(), 0,
+			    _serviceStatus = "Current" && (_serviceEnd = BLANK() || _serviceEnd > TODAY()), 1,
+			    _serviceStatus <> "Current" && _serviceStatus <> "Pending" && _serviceEnd = BLANK(), 2,
+			    _serviceStatus <> "Current" && _serviceStatus <> "Pending" && _serviceEnd <> BLANK(), 1,
+			    2
+			)
+			RETURN _logic
+		formatString: 0
+		lineageTag: e1a50519-71bc-41c2-bc96-ddbaf0609cc8
+
+	measure ServiceEndIsValidExitedClients =
+			VAR _serviceStatus = CALCULATE(MAX(DimClients[Service Status]),USERELATIONSHIP(DimDate[Date], DimClients[Service End]))
+			VAR _serviceEnd = CALCULATE(MAX(DimClients[Service End]), USERELATIONSHIP(DimDate[Date], DimClients[Service End]))
+			VAR _logic = SWITCH(
+			    TRUE(),
+			    _serviceStatus = "Pending" && _serviceEnd = BLANK(), 0,
+			    _serviceStatus = "Current" && (_serviceEnd = BLANK() || _serviceEnd > TODAY()), 1,
+			    _serviceStatus <> "Current" && _serviceStatus <> "Pending" && _serviceEnd = BLANK(), 2,
+			    _serviceStatus <> "Current" && _serviceStatus <> "Pending" && _serviceEnd <> BLANK(), 1
+			)
+			RETURN _logic
+		formatString: 0
+		lineageTag: 2abb80bc-161d-47d0-8e23-8b984a2a22ac
+
+	column 'Id Client'
+		dataType: int64
+		formatString: 0
+		lineageTag: c612f2a8-c3fc-4805-9fce-12368bd01e71
+		summarizeBy: sum
+		sourceColumn: Id Client
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Manager Email'
+		dataType: string
+		isHidden
+		lineageTag: f090a9c2-4c86-49b5-9852-23e3eca6ef09
+		summarizeBy: none
+		sourceColumn: Service Manager Email
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Funding Type'
+		dataType: string
+		lineageTag: 0fb784b7-719d-4335-b1a5-c8de5973f92b
+		summarizeBy: none
+		sourceColumn: Funding Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Start'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: d0de3020-a93e-4b0f-a851-3e52a810acd7
+		summarizeBy: none
+		sourceColumn: Service Start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Service End'
+		dataType: dateTime
+		formatString: d/mm/yyyy
+		lineageTag: 352a4af8-934a-4037-abfd-5b8b6c803e75
+		summarizeBy: none
+		sourceColumn: Service End
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column 'Service Status'
+		dataType: string
+		lineageTag: f0cbc165-fa27-49f5-b45f-4e2d348f9e62
+		summarizeBy: none
+		sourceColumn: Service Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Name'
+		dataType: string
+		lineageTag: a81b3789-4f68-4a1c-8d68-7448b647a5db
+		summarizeBy: none
+		sourceColumn: Client Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Type'
+		dataType: string
+		lineageTag: 349afa0e-d218-45ca-ba72-750187c7adcf
+		summarizeBy: none
+		sourceColumn: Client Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Client Status'
+		dataType: string
+		lineageTag: 6a40fd45-dbb4-4830-a85e-10ae49727794
+		summarizeBy: none
+		sourceColumn: Client Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Id Area'
+		dataType: string
+		lineageTag: 62629654-c65a-4c1a-8974-7e5d890f196a
+		summarizeBy: none
+		sourceColumn: Id Area
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimClients = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(#"ServerName", #"DatabaseName"),
+				    Dim_client = Source{[Schema="Dim",Item="client"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(Dim_client, each ([Division] = "CYF")),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"Id_Client", "Id_Area", "First_Name", "Last_Name", "Client_Type", "Client_Status", "Service_Start", "Service_End", "Service_Status", "Service_Manager_Email", "Funding_Type"}),
+				    #"Merged Columns" = Table.CombineColumns(#"Removed Other Columns",{"First_Name", "Last_Name"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Client Name"),
+				    #"Clean Column Names" = fnCleanColumnNames(#"Merged Columns")
+				in
+				    #"Clean Column Names"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

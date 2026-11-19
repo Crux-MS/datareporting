@@ -1,0 +1,33 @@
+table FAQSharepointLink
+	lineageTag: 7ed8b8cf-279d-40c5-a945-32d5f3887489
+
+	column DisplayText
+		dataType: string
+		lineageTag: 43fa74bc-3099-4915-8337-b7c21ecf7a64
+		summarizeBy: none
+		sourceColumn: DisplayText
+
+		annotation SummarizationSetBy = Automatic
+
+	column URL
+		dataType: string
+		lineageTag: d13d2412-43c4-4e63-bba9-d1eda863930c
+		dataCategory: Uncategorized
+		summarizeBy: none
+		sourceColumn: URL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FAQSharepointLink = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("LY5fT4MwFMW/ysKzpQUBgYQYpllilhg2NZuZe7jQAnWuZb1lf769dfPt3HPO7+ZsNt7MiMMolP25TAB3gk/chVZqhd6d11s7YE5pY8YzNog+9mDEoKWyfqP3NB9zaihKK5BOR5RKIL4bUNhqs4e/L+QZLIDiS0cZK1VH31y7gs4RK212rtgIYq4pIU0PyiXEAWRWLnzA4fzIi9M9AOdJmHLe1lHEOMTZQybasE7bMIvb8GtkLEwabIvgJk+iLv7d6+TiZVHq4MASkrHX5Xy1Vsd5lA7rS1k/fX8eZTyU/bSXIqhiZnQW3VBRpF1lPmJvu/0F", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [DisplayText = _t, URL = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"DisplayText", type text}, {"URL", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

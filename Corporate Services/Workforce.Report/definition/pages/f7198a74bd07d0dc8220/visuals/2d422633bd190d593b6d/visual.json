@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "2d422633bd190d593b6d",
   "position": {
     "x": 48.135072908672292,
@@ -20,34 +20,35 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce Location"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
-                  "Property": "State"
+                  "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Workforce Location.State",
-              "nativeQueryRef": "State",
-              "active": true,
-              "displayName": "State"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Workforce"
-                    }
-                  },
-                  "Property": "Location"
-                }
-              },
-              "queryRef": "Dim Workforce.Location",
-              "nativeQueryRef": "Location",
-              "active": false
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
+              "nativeQueryRef": "MMM YYYY",
+              "active": true
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimEmployeeTenureDate"
+                  }
+                },
+                "Property": "MMM YYYY"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {
@@ -113,7 +114,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'State | Location'"
+                  "Value": "'Month'"
                 }
               }
             }
@@ -128,5 +129,63 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "92f520765005593e91aa"
+  "parentGroupName": "92f520765005593e91aa",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8b95e1ad6962c786d42d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployeeTenureDate"
+              }
+            },
+            "Property": "EmployeeStartDateFlag"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimEmployeeTenureDate",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "EmployeeStartDateFlag"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
 }

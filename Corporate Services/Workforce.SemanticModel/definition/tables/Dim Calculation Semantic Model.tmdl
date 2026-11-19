@@ -1,25 +1,28 @@
+/// Definition: Legacy copy of the data dictionary, loaded from master_data_dictionary.json on SharePoint.
+/// For analysis: Not for analysis.
 table 'Dim Calculation Semantic Model'
-	isHidden
 	lineageTag: 1dfc8324-6f99-4fe9-88e0-2e0f7980fad4
 
-	column ID
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Id'
 		dataType: int64
-		isHidden
 		formatString: 0
-		lineageTag: 6a39df4e-bbf8-412e-a394-6d32f7d2083e
+		lineageTag: 983bf70e-39c1-40c1-96dc-379a4c211158
 		summarizeBy: none
-		sourceColumn: ID
+		sourceColumn: Metric Id
 
 		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'Semantic Model'
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Report Name'
 		dataType: string
-		isHidden
-		lineageTag: c67cb782-33f6-46fa-895d-52716dd72fae
+		lineageTag: 1bf5c730-f5fc-42b9-913b-7cd96aca4e61
 		summarizeBy: none
-		sourceColumn: Semantic Model
+		sourceColumn: Report Name
 
 		changedProperty = IsHidden
 
@@ -31,10 +34,14 @@ table 'Dim Calculation Semantic Model'
 		source =
 				let
 				    Source = #"Data Dictionary - Source",
-				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID", "Semantic Model"}),
-				    #"Expanded Semantic Model" = Table.ExpandListColumn(#"Removed Other Columns", "Semantic Model")
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Report Appearances"}),
+				    #"Expanded Report Appearances" = Table.ExpandListColumn(#"Removed Other Columns", "Report Appearances"),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded Report Appearances", each [Report Appearances] <> null and [Report Appearances] <> ""),
+				    #"Expanded Report Appearances1" = fnCleanColumnNames(Table.ExpandRecordColumn(#"Filtered Rows", "Report Appearances", {"report_name", "pages"}, {"report_name", "pages"})),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Expanded Report Appearances1",{"Metric Id", "Report Name"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns1",{{"Report Name", type text}})
 				in
-				    #"Expanded Semantic Model"
+				    #"Changed Type"
 
 	changedProperty = IsHidden
 

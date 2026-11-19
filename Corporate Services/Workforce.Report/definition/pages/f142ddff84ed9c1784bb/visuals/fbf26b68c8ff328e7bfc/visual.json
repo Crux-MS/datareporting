@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "fbf26b68c8ff328e7bfc",
   "position": {
     "x": 48.135072908672292,
@@ -20,30 +20,16 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Dim Workforce Location"
+                      "Entity": "DimEmployeeTenureDate"
                     }
                   },
-                  "Property": "State"
+                  "Property": "MMM YYYY"
                 }
               },
-              "queryRef": "Dim Workforce Location.State",
-              "nativeQueryRef": "State",
-              "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Workforce"
-                    }
-                  },
-                  "Property": "Location"
-                }
-              },
-              "queryRef": "Dim Workforce.Location",
-              "nativeQueryRef": "Location",
-              "active": true
+              "queryRef": "DimEmployeeTenureDate.MMM YYYY",
+              "nativeQueryRef": "Month",
+              "active": true,
+              "displayName": "Month"
             }
           ]
         }
@@ -55,66 +41,17 @@
               "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Dim Workforce Location"
+                    "Entity": "DimEmployeeTenureDate"
                   }
                 },
-                "Property": "State"
+                "Property": "MMM YYYY"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
     },
-    "expansionStates": [
-      {
-        "roles": [
-          "Values"
-        ],
-        "levels": [
-          {
-            "queryRefs": [
-              "Dim Workforce Location.State"
-            ],
-            "isCollapsed": true,
-            "identityKeys": [
-              {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Workforce Location"
-                    }
-                  },
-                  "Property": "State"
-                }
-              }
-            ],
-            "isPinned": true
-          },
-          {
-            "queryRefs": [
-              "Dim Workforce.Location"
-            ],
-            "isCollapsed": true,
-            "isPinned": true
-          }
-        ],
-        "root": {
-          "children": [
-            {
-              "identityValues": [
-                {
-                  "Literal": {
-                    "Value": "'Western Australia'"
-                  }
-                }
-              ],
-              "isToggled": true
-            }
-          ]
-        }
-      }
-    ],
     "objects": {
       "data": [
         {
@@ -163,19 +100,6 @@
         {
           "properties": {}
         }
-      ],
-      "header": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'State | Location'"
-                }
-              }
-            }
-          }
-        }
       ]
     },
     "syncGroup": {
@@ -185,5 +109,63 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "b8be9db1851e08f0c911"
+  "parentGroupName": "b8be9db1851e08f0c911",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8b95e1ad6962c786d42d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimEmployeeTenureDate"
+              }
+            },
+            "Property": "EmployeeStartDateFlag"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimEmployeeTenureDate",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "EmployeeStartDateFlag"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
 }

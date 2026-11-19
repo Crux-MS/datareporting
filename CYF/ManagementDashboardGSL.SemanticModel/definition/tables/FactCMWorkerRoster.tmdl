@@ -1,0 +1,202 @@
+/// Definition: Rostered shifts for workers whose manager is a CYF case manager, family support coordinator or acting CYF regional manager, from the roster, service, worker and employee tables in L4_Analytical. One row per roster line from 1 January 2025, for employees still employed on or after 1 July 2025.
+/// For analysis: Event history by date of service; group by DimDate, DimEmployees, DimCaseManagers (through DimEmployees) and DimArea (through Worker Id Area).
+table FactCMWorkerRoster
+	lineageTag: 4861765f-a8cf-4018-b39a-42a5b2dac0b8
+
+	/// Definition: The total hours of completed shifts, not counting cancelled shifts or shifts without a timesheet.
+	/// For analysis: Sum of Duration Hours with a timesheet and not a cancellation; canonical completed shift hours for this report.
+	measure TotalCompletedShifts = CALCULATE(SUM(FactCMWorkerRoster[Duration Hours]), FactCMWorkerRoster[Is Cancellation] = FALSE(), FactCMWorkerRoster[Id Timesheet] <> -1)
+		formatString: #,0.0
+		lineageTag: c2e6f5e1-b248-4de8-ac0b-cd7efa33c4ae
+
+	/// Definition: The average number of completed shift hours per worker who worked at least one shift in each week, fortnight or month.
+	/// For analysis: Completed shift hours from the roster divided by workers with a shift from the snapshot; follows the period, case manager and area slicers.
+	measure AverageHoursPerWorker = DIVIDE([TotalCompletedShifts], [WorkerWithShiftCount])
+		lineageTag: 88dc8e72-a0dd-410c-8986-26ca67c8c9bd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Hours of cancelled shifts.
+	/// For analysis: Sum of Duration Hours where Is Cancellation is true.
+	measure TotalCancellations = CALCULATE(SUM(FactCMWorkerRoster[Duration Hours]), FactCMWorkerRoster[Is Cancellation] = TRUE())
+		lineageTag: 47d62a39-218c-4a07-b008-37c22e8ff07d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Hours of completed unbillable shifts.
+	/// For analysis: Completed shift hours where Is Billable is false.
+	measure UnbillableCompletedShifts = CALCULATE(SUM(FactCMWorkerRoster[Duration Hours]), FactCMWorkerRoster[Is Billable] = FALSE(), FactCMWorkerRoster[Id Timesheet] <> -1, FactCMWorkerRoster[Is Cancellation] = FALSE())
+		lineageTag: 6405a3f3-0b01-4fe1-9aa8-fdafce5631cc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Cancelled shift hours as a share of completed shift hours.
+	/// For analysis: TotalCancellations divided by TotalCompletedShifts; rate 0 to 1, can exceed 1.
+	measure CancellationRate = DIVIDE([TotalCancellations], [TotalCompletedShifts])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 63d1dc42-a918-40f9-a9cc-d20a92672823
+
+	/// Definition: Hours of completed billable shifts.
+	/// For analysis: Completed shift hours where Is Billable is true.
+	measure BillableCompletedShifts = CALCULATE(SUM(FactCMWorkerRoster[Duration Hours]), FactCMWorkerRoster[Is Billable] = TRUE(), FactCMWorkerRoster[Id Timesheet] <> -1, FactCMWorkerRoster[Is Cancellation] = FALSE())
+		lineageTag: 52cf74de-813d-43a4-bb93-dd01ad244f15
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: Employee who worked the shift, matched through the worker's payroll ID.
+	/// For analysis: Key: joins DimEmployees Id Employee.
+	column 'Id Employee'
+		dataType: string
+		lineageTag: c7f4aef3-c704-428b-85f6-3e85e8e598ef
+		summarizeBy: none
+		sourceColumn: Id Employee
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Roster line identifier.
+	/// For analysis: Identifier only. Do not sum; count rows for shift numbers.
+	column 'Id Roster'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6bfc6cd1-d33e-4659-87e5-1028f47abf14
+		summarizeBy: sum
+		sourceColumn: Id Roster
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Service type identifier for the shift.
+	/// For analysis: Identifier only. Do not sum.
+	column 'Id Service'
+		dataType: int64
+		formatString: 0
+		lineageTag: c49c7552-de3c-4a1e-8434-1532abb20bda
+		summarizeBy: sum
+		sourceColumn: Id Service
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date the shift was delivered.
+	/// For analysis: Key: joins DimDate Date.
+	column 'Date Of Service'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 919c2ac6-50bd-4a37-8757-315a90b38d4f
+		summarizeBy: none
+		sourceColumn: Date Of Service
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date and time the shift was rostered to start.
+	column 'Start Datetime'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3c7bfbc8-4023-4d72-91b3-d100c63ccdf6
+		summarizeBy: none
+		sourceColumn: Start Datetime
+
+		variation Variation
+			isDefault
+			relationship: 2a40aac9-40f7-4943-a8e8-a64748aa74f9
+			defaultHierarchy: LocalDateTable_5493e5bd-cc36-4e27-ac4f-9bf16f6513c4.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Date and time the shift was rostered to end.
+	column 'End Datetime'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 2e0c3d67-a68a-4721-830c-3ec439990aed
+		summarizeBy: none
+		sourceColumn: End Datetime
+
+		variation Variation
+			isDefault
+			relationship: 5c3072f1-239f-4e45-9a70-ab1844da0140
+			defaultHierarchy: LocalDateTable_9f043815-14ad-436c-90cf-214faacb2481.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Length of the rostered shift in decimal hours, including breaks.
+	/// For analysis: Sum for shift hours; completed shifts have a timesheet and are not cancellations.
+	column 'Duration Hours'
+		dataType: double
+		lineageTag: f3065a58-e512-45d6-9ff6-e6ea39d404ff
+		summarizeBy: sum
+		sourceColumn: Duration Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Definition: True when the shift's service is a cancellation.
+	column 'Is Cancellation'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8be40fec-6832-440b-9fba-1e1a994ff58d
+		summarizeBy: none
+		sourceColumn: Is Cancellation
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: True when the shift's service can be billed.
+	column 'Is Billable'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 4aee480f-15f8-46ed-bf0b-92a84d336699
+		summarizeBy: none
+		sourceColumn: Is Billable
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Billing category of a billable shift; blank for unbillable shifts.
+	column 'Billable Category'
+		dataType: string
+		lineageTag: 98a1a74c-03e9-44dc-975f-5ceb94684e56
+		summarizeBy: none
+		sourceColumn: Billable Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Reason a shift is unbillable, for example admin or travel; blank for billable shifts.
+	column 'Unbillable Category'
+		dataType: string
+		lineageTag: 890c0b3a-facd-48a9-92d3-89b1856667b5
+		summarizeBy: none
+		sourceColumn: Unbillable Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Timesheet identifier; -1 when no timesheet exists.
+	/// For analysis: Identifier only. Do not sum; exclude -1 for completed shifts.
+	column 'Id Timesheet'
+		dataType: int64
+		formatString: 0
+		lineageTag: ea3e0762-8738-4ea0-b29f-ba649af36de6
+		summarizeBy: sum
+		sourceColumn: Id Timesheet
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Definition: Area the worker who held the shift is assigned to in Visual Care.
+	/// For analysis: Key: joins DimArea Id Area.
+	column 'Worker Id Area'
+		dataType: string
+		lineageTag: 26945a4a-917e-4cfd-97dd-403fe75d2d85
+		summarizeBy: none
+		sourceColumn: Worker Id Area
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactCMWorkerRoster = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(ServerName, DatabaseName, [Query="WITH CaseManagers AS (#(lf)    SELECT *#(lf)    FROM [Dim].[employee]#(lf)    WHERE Role_Category = 'Case Manager' OR [Job_Title] = 'Family Support Coordinator' OR [Job_Title] = 'Regional Manager - Children, Youth and Family Services (Acting)'#(lf))#(lf)SELECT e.[Id_Employee]#(lf)      ,wr.[Id_Roster]#(lf)      ,wr.[Id_Service]#(lf)      ,wr.[Id_Timesheet]#(lf)      ,w.[Id_Area] AS [Worker_Id_Area]#(lf)      ,wr.[Date_Of_Service]#(lf)      ,wr.[Start_Datetime]#(lf)      ,wr.[End_Datetime]#(lf)      ,wr.[Duration_Hours]#(lf)      ,s.[Is_Cancellation]#(lf)      ,s.[Is_Billable]#(lf)      ,s.[Billable_Category]#(lf)      ,s.[Unbillable_Category]#(lf)FROM [Fact].[worker_roster] wr#(lf)LEFT JOIN [Dim].[service] s on wr.[Id_Service] = s.[Id_Service]#(lf)LEFT JOIN [Dim].[worker] w ON wr.[Id_Worker] = w.[Id_Worker]#(lf)LEFT JOIN [Dim].[employee] e ON e.[Id_Employee_Payroll] = w.[Id_Employee_Payroll]#(lf)INNER JOIN CaseManagers cm ON e.[Id_Manager] = cm.[Id_Employee]#(lf)WHERE (e.[Termination_Date] IS NULL OR e.[Termination_Date] >= '2025-07-01') AND [Date_Of_Service] >= '2025-01-01'"]),
+				    RenameColumns = #"fnCleanColumnNames"(Source)
+				in
+				    RenameColumns
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,33 +1,46 @@
+/// Definition: Legacy copy of the data dictionary, loaded from master_data_dictionary.json on SharePoint.
+/// For analysis: Not for analysis.
 table 'Dim Related Calculations'
 	isHidden
 	lineageTag: d85df221-85e3-4282-9039-24d4a299d919
 
-	column ID
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Metric Id'
 		dataType: int64
 		isHidden
 		formatString: 0
-		lineageTag: 12393cf7-3887-4ec6-b654-7cb7cfb0cbbe
+		lineageTag: 98f592da-94c4-4af9-86dc-7d3fc4f7d711
 		summarizeBy: none
-		sourceColumn: ID
+		sourceColumn: Metric Id
 
 		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
-	column RelatedCalculationId
-		dataType: int64
-		formatString: 0
-		lineageTag: d150def5-5427-4628-ad66-8571d5d9ba6e
-		summarizeBy: count
-		sourceColumn: RelatedCalculationId
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Related Metric Id'
+		dataType: string
+		isHidden
+		lineageTag: d685a478-34f4-49bd-b73a-1daedcc23cfb
+		summarizeBy: none
+		sourceColumn: Related Metric Id
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
-	column RelatedCalculation
+	/// Definition: Data dictionary field copied from master_data_dictionary.json.
+	/// For analysis: Not for analysis.
+	column 'Related Metric Name'
 		dataType: string
-		lineageTag: 829bc0ff-e05f-4c36-9db1-a8acda6200be
+		isHidden
+		lineageTag: 1a7a33d8-f489-4c8e-82b5-d216cff1cb20
 		summarizeBy: none
-		sourceColumn: RelatedCalculation
+		sourceColumn: Related Metric Name
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
@@ -37,12 +50,11 @@ table 'Dim Related Calculations'
 		source =
 				let
 				    Source = #"Data Dictionary - Source",
-				    #"Removed Other Columns" = Table.SelectColumns(Source,{"ID","Related Calculations"}),
-				    #"Expanded Related Calculations" = Table.ExpandTableColumn(#"Removed Other Columns", "Related Calculations", {"lookupId", "lookupValue"}, {"RelatedCalculationId", "RelatedCalculation"}),
-				    #"Filtered Rows" = Table.SelectRows(#"Expanded Related Calculations", each ([RelatedCalculationId] <> null)),
-				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"RelatedCalculationId", Int64.Type}, {"RelatedCalculation", type text}})
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Metric Id", "Related Metrics"}),
+				    #"Expanded Related Metrics" = Table.ExpandListColumn(#"Removed Other Columns", "Related Metrics"),
+				    #"Expanded Related Metrics1" = fnCleanColumnNames(Table.ExpandRecordColumn(#"Expanded Related Metrics", "Related Metrics", {"metric_id", "metric_name"}, {"Related_metric_id", "related_metric_name"}))
 				in
-				    #"Changed Type"
+				    #"Expanded Related Metrics1"
 
 	changedProperty = IsHidden
 
